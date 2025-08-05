@@ -46,23 +46,23 @@ export default function PitaLogo({ size = 'md', animated = true, className = '' 
             `}
           />
           
-          {/* Segunda parte - Naranja vibrante (flecha) */}
+          {/* Segunda parte - Azul oscuro (cuerpo) */}
           <path 
             d="M13171 8010 c-626 -1063 -918 -1550 -930 -1550 -10 0 -37 -36 -71 -91 -394 -653 -1056 -1105 -1811 -1233 -223 -38 -513 -44 -739 -16 -453 57 -900 243 -1272 527 -104 79 -318 284 -401 383 l-47 55 0 -1221 0 -1221 128 -60 c1130 -536 2518 -560 3682 -63 1078 460 1943 1321 2399 2387 266 622 385 1243 368 1923 -12 461 -78 860 -213 1281 -50 158 -163 449 -173 449 -3 0 -417 -698 -920 -1550z" 
-            fill="#ee3923"
-            className={`
-              transition-all duration-300
-              ${animated && isHovered ? 'fill-[#ee3923]/80' : 'fill-[#ee3923]'}
-            `}
-          />
-          
-          {/* Tercera parte - Azul oscuro (detalles) */}
-          <path 
-            d="M14505 12965 c-825 -326 -1506 -598 -1514 -602 -11 -7 94 -92 408 -329 232 -175 427 -320 434 -322 7 -1 273 101 592 227 l580 229 3 -32 c2 -17 -15 -295 -38 -616 -23 -321 -40 -599 -38 -616 3 -30 36 -58 433 -358 l430 -326 8 48 c7 45 227 3209 227 3265 0 15 -5 27 -12 26 -7 0 -688 -267 -1513 -594z" 
             fill="#1f2841"
             className={`
               transition-all duration-300
               ${animated && isHovered ? 'fill-[#1f2841]/80' : 'fill-[#1f2841]'}
+            `}
+          />
+          
+          {/* Tercera parte - Naranja vibrante (punta superior derecha) */}
+          <path 
+            d="M14505 12965 c-825 -326 -1506 -598 -1514 -602 -11 -7 94 -92 408 -329 232 -175 427 -320 434 -322 7 -1 273 101 592 227 l580 229 3 -32 c2 -17 -15 -295 -38 -616 -23 -321 -40 -599 -38 -616 3 -30 36 -58 433 -358 l430 -326 8 48 c7 45 227 3209 227 3265 0 15 -5 27 -12 26 -7 0 -688 -267 -1513 -594z" 
+            fill="#ee3923"
+            className={`
+              transition-all duration-300
+              ${animated && isHovered ? 'fill-[#ee3923]/80' : 'fill-[#ee3923]'}
             `}
           />
         </g>
