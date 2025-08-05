@@ -16,6 +16,7 @@ import {
   User,
   Globe
 } from 'lucide-react';
+import VenezuelaFlag from './VenezuelaFlag';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -209,7 +210,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
           transition-all duration-300 hover:bg-slate-700/50
         `}>
           <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
-            <Globe className="w-5 h-5 text-white" />
+            <VenezuelaFlag size="sm" animated={true} />
           </div>
           {isExpanded && (
             <div className="flex-1 animate-fadeIn">
