@@ -20,7 +20,7 @@ export default function PitaLogo({ size = 'md', animated = true, className = '' 
 
   return (
     <div 
-      className={`relative ${sizeClasses[size]} ${className}`}
+      className={`${sizeClasses[size]} ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -36,46 +36,37 @@ export default function PitaLogo({ size = 'md', animated = true, className = '' 
         }}
       >
         <g transform="translate(0.000000,1356.000000) scale(0.100000,-0.100000)" stroke="none">
-          {/* Primera parte - Azul oscuro/navy (forma principal) */}
+          {/* Primera parte - Azul oscuro (forma principal) */}
           <path 
             d="M9655 12263 c-1333 -85 -2551 -745 -3358 -1819 -439 -585 -743 -1314 -852 -2041 -52 -349 -49 -110 -52 -4135 l-4 -3728 971 0 970 0 3 3717 c3 4060 -2 3747 57 4013 68 315 197 618 379 892 433 651 1109 1062 1897 1154 166 20 479 14 644 -11 557 -84 1072 -345 1470 -744 199 -199 348 -404 475 -653 71 -138 73 -140 88 -117 8 13 256 433 551 933 l535 909 -42 51 c-75 91 -369 386 -481 483 -748 644 -1661 1020 -2651 1093 -127 9 -477 11 -600 3z" 
-            fill="#1e3a8a"
+            fill="#1f2841"
             className={`
               transition-all duration-300
-              ${animated && isHovered ? 'fill-blue-700' : 'fill-blue-800'}
+              ${animated && isHovered ? 'fill-[#1f2841]/80' : 'fill-[#1f2841]'}
             `}
           />
           
-          {/* Segunda parte - Naranja-rojo vibrante (flecha) */}
+          {/* Segunda parte - Naranja vibrante (flecha) */}
           <path 
             d="M13171 8010 c-626 -1063 -918 -1550 -930 -1550 -10 0 -37 -36 -71 -91 -394 -653 -1056 -1105 -1811 -1233 -223 -38 -513 -44 -739 -16 -453 57 -900 243 -1272 527 -104 79 -318 284 -401 383 l-47 55 0 -1221 0 -1221 128 -60 c1130 -536 2518 -560 3682 -63 1078 460 1943 1321 2399 2387 266 622 385 1243 368 1923 -12 461 -78 860 -213 1281 -50 158 -163 449 -173 449 -3 0 -417 -698 -920 -1550z" 
-            fill="#dc2626"
+            fill="#ee3923"
             className={`
               transition-all duration-300
-              ${animated && isHovered ? 'fill-red-500' : 'fill-red-600'}
+              ${animated && isHovered ? 'fill-[#ee3923]/80' : 'fill-[#ee3923]'}
             `}
           />
           
-          {/* Tercera parte - Azul oscuro/navy (detalles) */}
+          {/* Tercera parte - Azul oscuro (detalles) */}
           <path 
             d="M14505 12965 c-825 -326 -1506 -598 -1514 -602 -11 -7 94 -92 408 -329 232 -175 427 -320 434 -322 7 -1 273 101 592 227 l580 229 3 -32 c2 -17 -15 -295 -38 -616 -23 -321 -40 -599 -38 -616 3 -30 36 -58 433 -358 l430 -326 8 48 c7 45 227 3209 227 3265 0 15 -5 27 -12 26 -7 0 -688 -267 -1513 -594z" 
-            fill="#1e3a8a"
+            fill="#1f2841"
             className={`
               transition-all duration-300
-              ${animated && isHovered ? 'fill-blue-700' : 'fill-blue-800'}
+              ${animated && isHovered ? 'fill-[#1f2841]/80' : 'fill-[#1f2841]'}
             `}
           />
         </g>
       </svg>
-      
-      {/* Efecto de brillo en hover */}
-      {animated && (
-        <div className={`
-          absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
-          ${isHovered ? 'animate-pulse' : ''}
-          transition-all duration-500 pointer-events-none
-        `}></div>
-      )}
     </div>
   );
 } 
