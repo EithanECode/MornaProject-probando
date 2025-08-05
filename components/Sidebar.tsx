@@ -128,7 +128,9 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               </div>
             </div>
           ) : (
-            <PitaLogo size="md" animated={true} />
+            <div className="flex items-center justify-center w-full">
+              <PitaLogo size="lg" animated={true} />
+            </div>
           )}
           <Button
             variant="ghost"
