@@ -113,11 +113,11 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
     <div className={`
       fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 
       border-r border-slate-700/50 shadow-2xl backdrop-blur-sm z-50
-      transition-all duration-300 ease-in-out flex flex-col
+      transition-all duration-500 ease-in-out flex flex-col
       ${isExpanded ? 'w-72' : 'w-20'}
     `}>
       {/* Header */}
-      <div className={`${isExpanded ? 'p-6' : 'p-4'} border-b border-slate-700/50 flex-shrink-0`}>
+      <div className={`${isExpanded ? 'p-6' : 'p-4'} border-b border-slate-700/50 flex-shrink-0 transition-all duration-500 ease-in-out`}>
         <div className="flex items-center justify-between">
           <div className={`flex items-center transition-all duration-500 ease-in-out ${isExpanded ? 'space-x-3' : 'justify-center w-full'}`}>
             <div className={`transition-all duration-500 ease-in-out ${isExpanded ? 'w-auto' : 'w-full flex justify-center'}`}>
@@ -145,7 +145,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className={`flex-1 ${isExpanded ? 'p-4' : 'p-2'} space-y-2 overflow-y-auto`}>
+      <nav className={`flex-1 ${isExpanded ? 'p-4' : 'p-2'} space-y-2 overflow-y-auto transition-all duration-500 ease-in-out`}>
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeItem === item.id;
@@ -156,7 +156,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               onClick={() => handleNavigation(item.id)}
               className={`
                 w-full flex items-center ${isExpanded ? 'space-x-3 px-4 py-3' : 'justify-center p-3'} rounded-xl
-                transition-all duration-200 group relative overflow-hidden
+                transition-all duration-500 ease-in-out group relative overflow-hidden
                 ${isActive 
                   ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-white shadow-lg border border-blue-500/30' 
                   : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
@@ -191,7 +191,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               </div>
               
               {!isExpanded && item.badge && (
-                <div className="absolute top-1 right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+                <div className="absolute top-1 right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center animate-pulse transition-all duration-500 ease-in-out">
                   <span className="text-xs text-white font-bold">{item.badge}</span>
                 </div>
               )}
