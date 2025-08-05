@@ -123,7 +123,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
             <div className="flex items-center space-x-3 transition-all duration-300">
               <PitaLogo size="md" animated={true} />
               <div className="animate-fadeIn">
-                <h1 className="text-xl font-bold text-white">LogiDash Pro</h1>
+                <h1 className="text-xl font-bold text-white">Pita Express</h1>
                 <p className="text-xs text-slate-400">Admin Panel</p>
               </div>
             </div>
