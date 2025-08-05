@@ -11,14 +11,12 @@ import {
   Users,
   Truck,
   FileText,
-  ChevronLeft,  ChevronRight,
   LogOut,
   User,
   Globe
 } from 'lucide-react';
 import VenezuelaFlag from './VenezuelaFlag';
 import PitaLogo from './PitaLogo';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 interface SidebarProps {
@@ -28,6 +26,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
   const [activeItem, setActiveItem] = useState('dashboard');
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Detectar la página actual
   useEffect(() => {
@@ -38,6 +37,21 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       setActiveItem('pedidos');
     }
   }, []);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      setHoverTimeout(null);
+    }
+    setIsExpanded(true);
+  };
+
+  const handleMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setIsExpanded(false);
+    }, 300); // 300ms delay antes de cerrar
+    setHoverTimeout(timeout);
+  };
 
   const handleNavigation = (itemId: string) => {
     setActiveItem(itemId);
@@ -110,22 +124,26 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
   ];
 
   return (
-    <div className={`
-      fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 
-      border-r border-slate-700/50 shadow-2xl backdrop-blur-sm z-50
-      transition-all duration-500 ease-in-out flex flex-col
-      ${isExpanded ? 'w-72' : 'w-20'}
-    `}>
+    <div 
+      className={`
+        fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 
+        border-r border-slate-700/50 shadow-2xl backdrop-blur-sm z-50
+        transition-all duration-500 ease-in-out flex flex-col
+        ${isExpanded ? 'w-72' : 'w-20'}
+      `}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {/* Header */}
       <div className={`${isExpanded ? 'p-6' : 'p-4'} border-b border-slate-700/50 flex-shrink-0 transition-all duration-500 ease-in-out`}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center">
           <div className={`flex items-center transition-all duration-500 ease-in-out ${isExpanded ? 'space-x-3' : 'justify-center w-full'}`}>
             <div className={`transition-all duration-500 ease-in-out ${isExpanded ? 'w-auto' : 'w-full flex justify-center'}`}>
               <PitaLogo size={isExpanded ? "md" : "lg"} animated={true} />
             </div>
             <div className={`
-              transition-all duration-500 ease-in-out overflow-hidden
-              ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+              transition-all duration-500 ease-in-out overflow-hidden transform
+              ${isExpanded ? 'w-auto opacity-100 scale-100' : 'w-0 opacity-0 scale-95'}
             `}>
               <div className="whitespace-nowrap">
                 <h1 className="text-xl font-bold text-white">Pita Express</h1>
@@ -133,14 +151,6 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               </div>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-500 ease-in-out"
-          >
-            {isExpanded ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-          </Button>
         </div>
       </div>
 
