@@ -137,7 +137,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
             variant="ghost"
             size="sm"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-200"
+            className="text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-500 ease-in-out"
           >
             {isExpanded ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </Button>
@@ -177,8 +177,8 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               </div>
               
               <div className={`
-                transition-all duration-500 ease-in-out overflow-hidden
-                ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+                transition-all duration-500 ease-in-out overflow-hidden transform
+                ${isExpanded ? 'w-auto opacity-100 scale-100' : 'w-0 opacity-0 scale-95'}
               `}>
                 <div className="flex items-center justify-between whitespace-nowrap">
                   <span className="font-medium">{item.label}</span>
@@ -211,8 +211,8 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
             <VenezuelaFlag size="sm" animated={true} />
           </div>
           <div className={`
-            transition-all duration-500 ease-in-out overflow-hidden
-            ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+            transition-all duration-500 ease-in-out overflow-hidden transform
+            ${isExpanded ? 'w-auto opacity-100 scale-100' : 'w-0 opacity-0 scale-95'}
           `}>
             <div className="whitespace-nowrap">
               <p className="text-sm font-medium text-white">Empleado Vzla</p>
@@ -242,8 +242,8 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                 <Icon className={`${isExpanded ? 'w-5 h-5' : 'w-6 h-6'} ${item.color} transition-all duration-300`} />
               </div>
               <div className={`
-                transition-all duration-500 ease-in-out overflow-hidden
-                ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+                transition-all duration-500 ease-in-out overflow-hidden transform
+                ${isExpanded ? 'w-auto opacity-100 scale-100' : 'w-0 opacity-0 scale-95'}
               `}>
                 <span className="font-medium whitespace-nowrap">{item.label}</span>
               </div>
@@ -265,8 +265,8 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
             <LogOut className={`${isExpanded ? 'w-5 h-5' : 'w-6 h-6'} transition-all duration-300`} />
           </div>
           <div className={`
-            transition-all duration-500 ease-in-out overflow-hidden
-            ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+            transition-all duration-500 ease-in-out overflow-hidden transform
+            ${isExpanded ? 'w-auto opacity-100 scale-100' : 'w-0 opacity-0 scale-95'}
           `}>
             <span className="font-medium whitespace-nowrap">Cerrar Sesión</span>
           </div>
