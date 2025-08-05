@@ -1,0 +1,107 @@
+Documento de Contexto del Programa "Morna"
+1. Resumen Ejecutivo
+El programa "Morna" es una plataforma integral de gestión de logística y compras internacionales diseñada para simplificar el proceso de adquisición de productos desde el extranjero para clientes en Venezuela. La aplicación centraliza las operaciones, la comunicación y el seguimiento, dividiendo las responsabilidades entre el cliente, un equipo en China, un equipo en Venezuela y un rol de administración ("Master"). El objetivo es ofrecer un servicio transparente, eficiente y escalable, con reglas de negocio claras para optimizar los recursos.
+
+2. Objetivo Principal del Sistema
+El objetivo principal es proporcionar una plataforma digital que permita a los clientes solicitar cotizaciones y compras de productos, mientras se automatiza y gestiona de manera colaborativa todo el flujo de trabajo de la operación, desde la cotización inicial hasta la entrega final del producto.
+
+3. Roles y Flujos de Trabajo
+El sistema está estructurado en torno a cinco roles principales, cada uno con responsabilidades y flujos de trabajo específicos:
+
+Cliente
+Registro y Acceso: Registro de usuario con datos personales, validación por código de WhatsApp y creación de un ID de cliente para seguimiento. Login con nombre de usuario o ID.
+
+Solicitud de Pedidos:
+
+Envía la solicitud a través de un enlace de un producto online o subiendo una foto con una descripción detallada.
+
+Indica cantidad y especificaciones técnicas.
+
+Selecciona las opciones de envío (puerta a puerta, aéreo, marítimo o ambos) y de entrega nacional (courier o retiro en oficina).
+
+Gestión de Pedidos:
+
+Recibe la cotización y tiene un plazo máximo para responder.
+
+Puede solicitar hasta 2 modificaciones o rechazar la propuesta.
+
+Si acepta la propuesta, se le asigna un número de orden de compra.
+
+Pagos: Realiza pagos en Bs (pago móvil, transferencia) o USD (Binance, Zelle, Paypal), con un plazo máximo definido.
+
+Seguimiento y Cierre: Utiliza el sistema de tracking, recibe notificaciones de recepción y entrega, y completa una encuesta de satisfacción.
+
+Soporte: Accede a un chat de soporte online.
+
+Empleado China
+Gestión de Pedidos:
+
+Recibe el pedido inicial del cliente (al por menor).
+
+Incorpora al sistema la descripción, tamaño, peso, precio (producto y envíos a almacenes) y tiempo de despacho del proveedor.
+
+Envía esta información al empleado en Venezuela para la cotización final.
+
+Logística:
+
+Recibe el número de orden de compra.
+
+Hace registro de paquetes, reempacando y asignando números de paquete y de caja para el tracking.
+
+Pagos: Confirma la recepción del pago del producto en la cuenta china, realizado por el empleado validador en Venezuela.
+
+Empleado Venezuela
+Validación y Comunicación:
+
+Revisa la información del pedido de China (principalmente en la fase inicial).
+
+Envía al cliente la cotización final por la App o WhatsApp, incluyendo la descripción, precio final (con opciones de envío) y fecha de entrega estimada.
+
+Soporte: Atiende el chat de soporte.
+
+Logística:
+
+Registra el tracking de los paquetes en cada fase (salida de China, llegada a aduana, llegada a almacén local, despacho nacional).
+
+Registra las notificaciones de arribo y entrega final.
+
+Métricas: Revisa y procesa las encuestas de satisfacción del cliente.
+
+Empleados Pagos Validador Venezuela
+Gestión Financiera:
+
+Valida los pagos de los clientes.
+
+Registra y procesa los pagos que se realizan hacia China.
+
+Revisa el tracking para asegurar la coherencia del proceso.
+
+Master (Administrador)
+Configuración:
+
+Define los parámetros de negocio (costos de envío, porcentajes de ganancia, valor del dólar, descuentos por pago en USD).
+
+Establece credenciales y niveles de acceso para todos los usuarios.
+
+Supervisión y Reportes:
+
+Verifica el tracking de todos los pedidos.
+
+Genera reportes para análisis y toma de decisiones.
+
+Recibe alertas cuando un pedido no ha sido respondido en un plazo definido.
+
+Verifica los accesos de los empleados.
+
+4. Reglas de Negocio Clave
+Límites de Cotización: Un cliente puede realizar hasta 5 cotizaciones en un mes si no ha efectuado ninguna compra.
+
+Modificaciones de Pedido: Se permiten hasta 2 solicitudes de modificación por pedido. Un tercer intento resultará en el rechazo automático de la compra.
+
+Plazos: Se definen plazos máximos para la recepción de la cotización y para el pago del pedido por parte del cliente.
+
+Tipos de Compra:
+
+Las compras al por mayor se envían directamente a un empleado en Venezuela.
+
+Las compras al detal se envían al empleado en China.
