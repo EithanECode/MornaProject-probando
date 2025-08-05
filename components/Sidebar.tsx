@@ -17,6 +17,7 @@ import {
   Globe
 } from 'lucide-react';
 import VenezuelaFlag from './VenezuelaFlag';
+import PitaLogo from './PitaLogo';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -120,18 +121,14 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
         <div className="flex items-center justify-between">
           {isExpanded ? (
             <div className="flex items-center space-x-3 transition-all duration-300">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Package className="w-6 h-6 text-white animate-pulse" />
-              </div>
+              <PitaLogo size="md" animated={true} />
               <div className="animate-fadeIn">
                 <h1 className="text-xl font-bold text-white">LogiDash Pro</h1>
                 <p className="text-xs text-slate-400">Admin Panel</p>
               </div>
             </div>
           ) : (
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Package className="w-6 h-6 text-white animate-pulse" />
-            </div>
+            <PitaLogo size="md" animated={true} />
           )}
           <Button
             variant="ghost"
