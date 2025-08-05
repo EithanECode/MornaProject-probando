@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Package, 
@@ -27,6 +27,25 @@ interface SidebarProps {
 
 export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
   const [activeItem, setActiveItem] = useState('dashboard');
+
+  // Detectar la página actual
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path === '/') {
+      setActiveItem('dashboard');
+    } else if (path === '/pedidos') {
+      setActiveItem('pedidos');
+    }
+  }, []);
+
+  const handleNavigation = (itemId: string) => {
+    setActiveItem(itemId);
+    if (itemId === 'dashboard') {
+      window.location.href = '/';
+    } else if (itemId === 'pedidos') {
+      window.location.href = '/pedidos';
+    }
+  };
 
   const menuItems = [
     {
@@ -130,7 +149,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
           return (
             <button
               key={item.id}
-              onClick={() => setActiveItem(item.id)}
+              onClick={() => handleNavigation(item.id)}
               className={`
                 w-full flex items-center space-x-3 px-4 py-3 rounded-xl
                 transition-all duration-200 group relative overflow-hidden
