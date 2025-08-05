@@ -231,21 +231,22 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               className={`
                 w-full flex items-center ${isExpanded ? 'space-x-3 px-4' : 'justify-center px-2'} py-3 rounded-xl
                 text-slate-400 hover:text-white hover:bg-slate-700/50
-                transition-all duration-200 group
+                transition-all duration-500 ease-in-out group
               `}
             >
-              {isExpanded ? (
-                <div className="w-8 h-8 flex items-center justify-center rounded-lg group-hover:bg-slate-600/50 transition-all duration-200">
-                  <Icon className={`w-5 h-5 ${item.color}`} />
-                </div>
-              ) : (
-                <div className="w-full flex items-center justify-center">
-                  <Icon className={`w-6 h-6 ${item.color}`} />
-                </div>
-              )}
-              {isExpanded && (
-                <span className="font-medium animate-fadeIn">{item.label}</span>
-              )}
+              <div className={`
+                transition-all duration-500 ease-in-out
+                ${isExpanded ? 'w-8 h-8' : 'w-full h-full'} flex items-center justify-center rounded-lg
+                group-hover:bg-slate-600/50
+              `}>
+                <Icon className={`${isExpanded ? 'w-5 h-5' : 'w-6 h-6'} ${item.color} transition-all duration-300`} />
+              </div>
+              <div className={`
+                transition-all duration-500 ease-in-out overflow-hidden
+                ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+              `}>
+                <span className="font-medium whitespace-nowrap">{item.label}</span>
+              </div>
             </button>
           );
         })}
@@ -254,20 +255,21 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
         <button className={`
           w-full flex items-center ${isExpanded ? 'space-x-3 px-4' : 'justify-center px-2'} py-3 rounded-xl
           text-red-400 hover:text-red-300 hover:bg-red-500/10
-          transition-all duration-200 group border border-red-500/20
+          transition-all duration-500 ease-in-out group border border-red-500/20
         `}>
-          {isExpanded ? (
-            <div className="w-8 h-8 flex items-center justify-center rounded-lg group-hover:bg-red-500/20 transition-all duration-200">
-              <LogOut className="w-5 h-5" />
-            </div>
-          ) : (
-            <div className="w-full flex items-center justify-center">
-              <LogOut className="w-6 h-6" />
-            </div>
-          )}
-          {isExpanded && (
-            <span className="font-medium animate-fadeIn">Cerrar Sesión</span>
-          )}
+          <div className={`
+            transition-all duration-500 ease-in-out
+            ${isExpanded ? 'w-8 h-8' : 'w-full h-full'} flex items-center justify-center rounded-lg
+            group-hover:bg-red-500/20
+          `}>
+            <LogOut className={`${isExpanded ? 'w-5 h-5' : 'w-6 h-6'} transition-all duration-300`} />
+          </div>
+          <div className={`
+            transition-all duration-500 ease-in-out overflow-hidden
+            ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+          `}>
+            <span className="font-medium whitespace-nowrap">Cerrar Sesión</span>
+          </div>
         </button>
       </div>
     </div>
