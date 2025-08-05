@@ -11,8 +11,7 @@ import {
   Users,
   Truck,
   FileText,
-  ChevronLeft,
-  ChevronRight,
+  ChevronLeft,  ChevronRight,
   LogOut,
   User,
   Globe
@@ -116,19 +115,23 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       ${isExpanded ? 'w-72' : 'w-20'}
     `}>
       {/* Header */}
-      <div className="p-6 border-b border-slate-700/50 flex-shrink-0">
+      <div className={`${isExpanded ? 'p-6' : 'p-4'} border-b border-slate-700/50 flex-shrink-0`}>
         <div className="flex items-center justify-between">
-          <div className={`flex items-center space-x-3 transition-all duration-300 ${!isExpanded && 'opacity-0'}`}>
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Package className="w-6 h-6 text-white animate-pulse" />
-            </div>
-            {isExpanded && (
+          {isExpanded ? (
+            <div className="flex items-center space-x-3 transition-all duration-300">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Package className="w-6 h-6 text-white animate-pulse" />
+              </div>
               <div className="animate-fadeIn">
                 <h1 className="text-xl font-bold text-white">LogiDash Pro</h1>
                 <p className="text-xs text-slate-400">Admin Panel</p>
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Package className="w-6 h-6 text-white animate-pulse" />
+            </div>
+          )}
           <Button
             variant="ghost"
             size="sm"
@@ -141,7 +144,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav className={`flex-1 ${isExpanded ? 'p-4' : 'p-2'} space-y-2 overflow-y-auto`}>
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeItem === item.id;
@@ -151,7 +154,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               key={item.id}
               onClick={() => handleNavigation(item.id)}
               className={`
-                w-full flex items-center space-x-3 px-4 py-3 rounded-xl
+                w-full flex items-center ${isExpanded ? 'space-x-3 px-4 py-3' : 'justify-center p-3'} rounded-xl
                 transition-all duration-200 group relative overflow-hidden
                 ${isActive 
                   ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-white shadow-lg border border-blue-500/30' 
@@ -199,10 +202,10 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       </nav>
 
       {/* Bottom Section */}
-      <div className="p-4 border-t border-slate-700/50 space-y-4 flex-shrink-0">
+      <div className={`${isExpanded ? 'p-4' : 'p-2'} border-t border-slate-700/50 space-y-4 flex-shrink-0`}>
         {/* User Profile */}
         <div className={`
-          flex items-center space-x-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50
+          flex items-center ${isExpanded ? 'space-x-3 p-3' : 'justify-center p-2'} rounded-xl bg-slate-800/50 border border-slate-700/50
           transition-all duration-300 hover:bg-slate-700/50
         `}>
           <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
