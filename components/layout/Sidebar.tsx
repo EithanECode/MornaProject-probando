@@ -15,8 +15,8 @@ import {
   User,
   Globe
 } from 'lucide-react';
-import VenezuelaFlag from './VenezuelaFlag';
-import PitaLogo from './PitaLogo';
+import VenezuelaFlag from '@/components/ui/common/VenezuelaFlag';
+import PitaLogo from '@/components/ui/common/PitaLogo';
 import { Badge } from '@/components/ui/badge';
 
 interface SidebarProps {
@@ -31,7 +31,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
   // Detectar la página actual
   useEffect(() => {
     const path = window.location.pathname;
-    if (path === '/') {
+    if (path === '/dashboard' || path === '/') {
       setActiveItem('dashboard');
     } else if (path === '/pedidos') {
       setActiveItem('pedidos');
@@ -55,16 +55,11 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
 
   const handleNavigation = (itemId: string) => {
     setActiveItem(itemId);
-    // Usar navegación del lado del cliente para transiciones suaves
+    // Navegación inmediata sin delays artificiales
     if (itemId === 'dashboard') {
-      // Simular navegación suave - en una app real usarías Next.js router
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 150); // Pequeño delay para que se vea la transición
+      window.location.href = '/dashboard';
     } else if (itemId === 'pedidos') {
-      setTimeout(() => {
-        window.location.href = '/pedidos';
-      }, 150);
+      window.location.href = '/pedidos';
     }
   };
 
@@ -134,7 +129,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       className={`
         fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 
         border-r border-slate-700/50 shadow-2xl backdrop-blur-sm z-50
-        transition-all duration-300 ease-in-out flex flex-col
+        transition-all duration-200 ease-out flex flex-col
         ${isExpanded ? 'w-72' : 'w-20'}
       `}
       onMouseEnter={handleMouseEnter}
@@ -145,7 +140,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
         <div className={`flex items-center ${isExpanded ? 'space-x-3' : 'justify-center'}`}>
           <PitaLogo size={isExpanded ? "md" : "lg"} animated={true} />
           <div className={`
-            transition-all duration-300 ease-in-out overflow-hidden
+            transition-all duration-200 ease-out overflow-hidden
             ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
           `}>
             <div className="whitespace-nowrap">
@@ -168,7 +163,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               onClick={() => handleNavigation(item.id)}
               className={`
                 w-full flex items-center ${isExpanded ? 'space-x-3 px-4 py-3' : 'justify-center p-3'} rounded-xl
-                transition-all duration-300 ease-in-out group relative
+                transition-all duration-200 ease-out group relative
                 active:scale-95 active:shadow-inner
                 ${isActive 
                   ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-white shadow-lg border border-blue-500/30' 
@@ -179,16 +174,16 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               {/* Active indicator */}
               <div className={`
                 absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-indigo-500 rounded-r-full
-                transition-all duration-300 ease-in-out
+                transition-all duration-200 ease-out
                 ${isActive ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'}
               `} />
               
               <div className={`${isExpanded ? 'w-8 h-8' : 'w-full h-full'} flex items-center justify-center rounded-lg`}>
-                <Icon className={`w-5 h-5 ${item.color} transition-all duration-300 ease-in-out ${isActive ? 'scale-110 animate-pulse' : 'scale-100'}`} />
+                <Icon className={`w-5 h-5 ${item.color} transition-all duration-200 ease-out ${isActive ? 'scale-110 animate-pulse' : 'scale-100'}`} />
               </div>
               
               <div className={`
-                transition-all duration-300 ease-in-out overflow-hidden
+                transition-all duration-200 ease-out overflow-hidden
                 ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
               `}>
                 <div className="flex items-center justify-between whitespace-nowrap">
@@ -214,12 +209,12 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       {/* Bottom Section */}
       <div className="p-4 border-t border-slate-700/50 space-y-4 flex-shrink-0">
         {/* User Profile */}
-        <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-300 ease-in-out">
+        <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-200 ease-out">
           <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
             <VenezuelaFlag size="sm" animated={true} />
           </div>
           <div className={`
-            transition-all duration-300 ease-in-out overflow-hidden
+            transition-all duration-200 ease-out overflow-hidden
             ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
           `}>
             <div className="whitespace-nowrap">
@@ -236,13 +231,13 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
           return (
             <button
               key={item.id}
-              className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-300 ease-in-out group"
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-200 ease-out group"
             >
               <div className="w-8 h-8 flex items-center justify-center rounded-lg group-hover:bg-slate-600/50">
                 <Icon className={`w-5 h-5 ${item.color}`} />
               </div>
               <div className={`
-                transition-all duration-300 ease-in-out overflow-hidden
+                transition-all duration-200 ease-out overflow-hidden
                 ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
               `}>
                 <span className="font-medium whitespace-nowrap">{item.label}</span>
@@ -252,12 +247,12 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
         })}
 
         {/* Logout */}
-        <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-300 ease-in-out group border border-red-500/20">
+        <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 ease-out group border border-red-500/20">
           <div className="w-8 h-8 flex items-center justify-center rounded-lg group-hover:bg-red-500/20">
             <LogOut className="w-5 h-5" />
           </div>
           <div className={`
-            transition-all duration-300 ease-in-out overflow-hidden
+            transition-all duration-200 ease-out overflow-hidden
             ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
           `}>
             <span className="font-medium whitespace-nowrap">Cerrar Sesión</span>
