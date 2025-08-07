@@ -55,10 +55,16 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
 
   const handleNavigation = (itemId: string) => {
     setActiveItem(itemId);
+    // Usar navegación del lado del cliente para transiciones suaves
     if (itemId === 'dashboard') {
-      window.location.href = '/';
+      // Simular navegación suave - en una app real usarías Next.js router
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 150); // Pequeño delay para que se vea la transición
     } else if (itemId === 'pedidos') {
-      window.location.href = '/pedidos';
+      setTimeout(() => {
+        window.location.href = '/pedidos';
+      }, 150);
     }
   };
 
@@ -163,6 +169,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               className={`
                 w-full flex items-center ${isExpanded ? 'space-x-3 px-4 py-3' : 'justify-center p-3'} rounded-xl
                 transition-all duration-300 ease-in-out group relative
+                active:scale-95 active:shadow-inner
                 ${isActive 
                   ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-white shadow-lg border border-blue-500/30' 
                   : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
@@ -170,12 +177,14 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               `}
             >
               {/* Active indicator */}
-              {isActive && (
-                <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-indigo-500 rounded-r-full animate-pulse" />
-              )}
+              <div className={`
+                absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-indigo-500 rounded-r-full
+                transition-all duration-300 ease-in-out
+                ${isActive ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'}
+              `} />
               
               <div className={`${isExpanded ? 'w-8 h-8' : 'w-full h-full'} flex items-center justify-center rounded-lg`}>
-                <Icon className={`w-5 h-5 ${item.color} ${isActive ? 'animate-bounce' : ''}`} />
+                <Icon className={`w-5 h-5 ${item.color} transition-all duration-300 ease-in-out ${isActive ? 'scale-110 animate-pulse' : 'scale-100'}`} />
               </div>
               
               <div className={`
