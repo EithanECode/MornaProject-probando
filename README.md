@@ -47,6 +47,7 @@ project/
 
 ## 🚀 Tecnologías Utilizadas
 
+- **Node.js 20.19.4** - Runtime de JavaScript
 - **Next.js 14** - Framework de React con App Router
 - **TypeScript** - Tipado estático
 - **Tailwind CSS** - Framework de CSS utilitario
