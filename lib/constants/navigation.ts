@@ -17,7 +17,7 @@ export const MENU_ITEMS: MenuItem[] = [
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
-    href: '/dashboard'
+    href: '/'
   },
   {
     id: 'pedidos',

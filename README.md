@@ -9,19 +9,10 @@ Sistema de administración para Pita Express, una empresa de logística internac
 ```
 project/
 ├── app/                          # App Router de Next.js 13+
-│   ├── dashboard/                # Dashboard principal
-│   │   ├── layout.tsx           # Layout específico del dashboard
-│   │   └── page.tsx             # Página principal del dashboard
+│   ├── page.tsx                 # Dashboard principal (ruta /)
 │   ├── pedidos/                 # Página de pedidos
-│   ├── tracking/                # Página de tracking
-│   ├── chat/                    # Página de chat
-│   ├── reportes/                # Página de reportes
-│   ├── clientes/                # Página de clientes
-│   ├── documentos/              # Página de documentos
-│   ├── configuracion/           # Página de configuración
 │   ├── globals.css              # Estilos globales
-│   ├── layout.tsx               # Layout raíz
-│   └── page.tsx                 # Página principal (redirección)
+│   └── layout.tsx               # Layout raíz
 ├── components/                   # Componentes React
 │   ├── layout/                  # Componentes de layout
 │   │   ├── Sidebar.tsx          # Barra lateral de navegación
@@ -73,7 +64,8 @@ project/
 
 ### 🧭 Navegación
 - **Sidebar funcional** - Navegación principal con expansión/contracción
-- **Rutas organizadas** - Estructura de carpetas por funcionalidad
+- **Dashboard en ruta raíz** - Acceso directo a `/` para el dashboard
+- **Página de pedidos** - Gestión de pedidos implementada
 - **Transiciones básicas** - Animaciones simples entre páginas
 
 ### 🎨 Diseño
@@ -104,7 +96,8 @@ npm run build
 - **Separación de responsabilidades** - Componentes modulares y reutilizables
 - **Tipos TypeScript** - Definición clara de interfaces y tipos
 - **Constantes centralizadas** - Datos y configuraciones organizadas
-- **Layouts anidados** - Estructura de layouts eficiente
+- **Dashboard integrado** - Página principal con sidebar incluido
+- **Rutas simplificadas** - Dashboard directamente en `/`
 
 ### 🎯 Componentes
 - **Componentes específicos** - Cada funcionalidad tiene su componente
@@ -119,6 +112,8 @@ npm run build
 
 ## 🚀 Próximas Mejoras
 
+- [ ] Implementar diseño responsive completo
+- [ ] Agregar páginas faltantes (tracking, chat, reportes, clientes, documentos, configuración)
 - [ ] Agregar autenticación
 - [ ] Implementar base de datos
 - [ ] Sistema de notificaciones en tiempo real

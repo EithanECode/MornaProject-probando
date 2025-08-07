@@ -46,7 +46,7 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
     subtitle: 'Confirmación de pago',
     icon: CheckCircle,
     status: 'pending',
-    color: 'text-gray-400'
+    color: 'text-gray-500'
   },
   {
     id: 'empaque',
@@ -54,7 +54,7 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
     subtitle: 'Preparación para envío',
     icon: Package,
     status: 'pending',
-    color: 'text-gray-400'
+    color: 'text-gray-500'
   },
   {
     id: 'transito',
@@ -62,7 +62,7 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
     subtitle: 'Aéreo/Marítimo',
     icon: Plane,
     status: 'pending',
-    color: 'text-gray-400'
+    color: 'text-gray-500'
   },
   {
     id: 'almacen',
@@ -70,7 +70,7 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
     subtitle: 'Llegada a Venezuela',
     icon: MapPin,
     status: 'pending',
-    color: 'text-gray-400'
+    color: 'text-gray-500'
   },
   {
     id: 'entregado',
@@ -78,7 +78,7 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
     subtitle: 'Entrega final',
     icon: CheckCircle,
     status: 'pending',
-    color: 'text-gray-400'
+    color: 'text-gray-500'
   }
 ];
 

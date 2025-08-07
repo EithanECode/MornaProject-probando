@@ -31,7 +31,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
   // Detectar la página actual
   useEffect(() => {
     const path = window.location.pathname;
-    if (path === '/dashboard' || path === '/') {
+    if (path === '/') {
       setActiveItem('dashboard');
     } else if (path === '/pedidos') {
       setActiveItem('pedidos');
@@ -57,7 +57,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
     setActiveItem(itemId);
     // Navegación inmediata sin delays artificiales
     if (itemId === 'dashboard') {
-      window.location.href = '/dashboard';
+      window.location.href = '/';
     } else if (itemId === 'pedidos') {
       window.location.href = '/pedidos';
     }
