@@ -202,13 +202,11 @@ npm run build
 ### Daniela
 - Próximas asignaciones.
 
-### Integración
-- Unir todas las páginas, adaptar y resolver issues del sidebar y la navegación entre secciones.
-
 ---
 
 > [!IMPORTANT]
 > RECUERDEN PASAR ANTES DE PEDIRLE ALGO A LA IA EL ARCHIVO `contexto.txt` (está en la raíz del proyecto).
+> PARA EJECUTAR EL PROGRAMA SE UTILIZA NPM RUN DEV
 
 > [!NOTE]
 > Activos estáticos: todas las imágenes, animaciones y videos deben colocarse en `public/` (por ejemplo, `public/images`, `public/animations`, `public/videos`).
