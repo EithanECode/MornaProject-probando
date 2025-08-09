@@ -172,67 +172,38 @@ npm run build
 
 ## 👥 Asignación de Tareas
 
-1. María: Dashboard y Pedidos
+### María — Dashboard y Pedidos
+- **Dashboard**
+  - **Acciones Rápidas**:
+    - "Nuevo Pedido (China)": abrir interfaz de creación de pedido al detal.
+    - "Nuevo Pedido (Vzla)": abrir interfaz de creación de pedido al por mayor.
+    - "Avanzar Todos los Pedidos": avanzar todos los pedidos activos a la siguiente etapa del flujo (como en el index de Morna / propuesta de Vicky).
+- **Pedidos**
+  - **Interactividad**:
+    - "Ver": navegar a la página de detalles del pedido.
+    - "Exportar": descargar la lista de pedidos.
 
-   - Dashboard
-     - Hacer que los botones de "Acciones Rápidas" funcionen:
-       - "Nuevo Pedido (China)"
-       - "Nuevo Pedido (Vzla)"
-       - "Avanzar Todos los Pedidos" //Así como en el index que nos paso Morna o como lo hizo Vicky xd
+### Marí V — Tracking y Alertas
+- **Tracking**
+  - Página/panel con búsqueda por código de tracking.
+  - Historial detallado de movimientos (fechas, ubicaciones, eventos clave).
+- **Alertas**
+  - Panel/lista de alertas críticas (p. ej. pedidos fuera de SLA).
+  - Contador de alertas pendientes en el ítem del sidebar.
 
-   - Pedidos
-     - Hacer que la tabla sea interactiva y funcional:
-       - Al hacer clic en "Ver": Navegar a la página de detalles de ese pedido.
-       - Botón "Exportar": Debe implementar la funcionalidad para descargar la lista de pedidos.
+### Stefano — Validación de Pagos y Reportes
+- **Validación de Pagos**: listado de pagos pendientes con acciones Aprobar/Rechazar; vista de auditoría de pagos realizados hacia China.
+- **Reportes**: selector de tipo (por mes, por empleado, por estado); resultados con gráficos/tablas.
 
-2. Marí V: Tracking y Alertas
+### Luis — Usuarios y Configuración
+- **Usuarios**: tabla de empleados; formulario para crear/editar/suspender; asignación de roles y niveles de acceso.
+- **Configuración**: formularios para parámetros del negocio (costos de envío, porcentajes, valor del dólar, descuentos); botón “modo oscuro” deshabilitado por ahora.
 
-   - Tracking
-     - Propósito: Una herramienta para verificar el seguimiento logístico en detalle.
-     - Tareas de Front-end:
-       - Diseñar una interfaz que muestre un historial detallado del movimiento de un paquete, incluyendo fechas, ubicaciones y eventos clave.
+### Daniela
+- Próximas asignaciones.
 
-   - Alertas
-     - Propósito: Un sistema para notificar al Master sobre problemas que requieren atención inmediata.
-     - Tareas de Front-end:
-       - Crear un panel o lista que muestre las alertas críticas, como los pedidos no respondidos a tiempo.
-       - Implementar un contador de alertas pendientes en el ítem del sidebar para una visibilidad inmediata.
-
-3. Stefano: Validación de Pagos y Reportes
-
-   - Validación de Pagos
-     - Propósito: Supervisar y auditar el proceso de pagos.
-     - Tareas de Front-end:
-       - Construir una interfaz que muestre todos los pagos pendientes de validación, con botones para aprobar o rechazar cada uno.
-       - Crear una vista para auditar y ver los pagos que han sido registrados hacia China.
-
-   - Reportes
-     - Propósito: Generar reportes para el análisis de la operación.
-     - Tareas de Front-end:
-       - Diseñar una interfaz donde el Master pueda seleccionar diferentes tipos de reportes (por mes, por empleado, por estado de pedidos).
-       - Implementar una vista que muestre los resultados de estos reportes, posiblemente usando gráficos o tablas.
-
-4. Luis: Usuarios y Configuración
-
-   - Usuarios
-     - Propósito: Gestionar a los empleados y sus accesos.
-     - Tareas de Front-end:
-       - Crear una tabla que liste a todos los empleados del sistema.
-       - Desarrollar un formulario para crear, editar o suspender usuarios, y asignar sus roles y niveles de acceso.
-
-   - Configuración
-     - Propósito: El centro para definir las reglas y parámetros del negocio.
-     - Tareas de Front-end:
-       - Construir una interfaz con formularios para que el Master pueda definir y actualizar los parámetros clave, como los costos de envío y los porcentajes de ganancia.
-       - Agregar un botón para cambiar a modo oscuro, pero que por los momentos no tenga ninguna funcionalidad activa. A la IA se le debe especificar que no implemente la funcionalidad aún, ya que después se modificarán otros archivos para hacerla funcional.
-
-5. Daniela
-
-   - Rol: Próximamente se le asignarán tareas.
-
-6. Integración
-
-   - Mi rol: Me encargaré de unir todas las páginas, adaptarlas y solucionar los problemas del sidebar y de la navegación entre ellas.
+### Integración
+- Unir todas las páginas, adaptar y resolver issues del sidebar y la navegación entre secciones.
 
 ---
 
