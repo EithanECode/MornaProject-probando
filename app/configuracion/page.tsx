@@ -435,7 +435,7 @@ export default function ConfiguracionPage() {
                       <Input
                         id="maxMods"
                         type="number"
-                        value={config.maxModificationsPerOrder}
+                        value={config.maxModificationsPerOrder} 
                         onChange={(e) => updateConfig('maxModificationsPerOrder', parseInt(e.target.value))}
                       />
                       <p className="text-xs text-slate-500">Después se rechaza automáticamente</p>
