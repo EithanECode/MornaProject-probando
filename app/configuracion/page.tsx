@@ -120,7 +120,7 @@ export default function ConfiguracionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex cursor-always-visible">
       <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
 
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
@@ -156,7 +156,7 @@ export default function ConfiguracionPage() {
           </div>
         </header>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 cursor-always-visible">
           {/* Alert de advertencia */}
           <Alert className="border-orange-200 bg-orange-50">
             <AlertTriangle className="h-4 w-4 text-orange-600" />
@@ -167,7 +167,7 @@ export default function ConfiguracionPage() {
           </Alert>
 
           <Tabs defaultValue="shipping" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 bg-white/60 backdrop-blur-sm">
+            <TabsList className="grid w-full grid-cols-5 bg-white/60 backdrop-blur-sm cursor-always-visible">
               <TabsTrigger value="shipping" className="flex items-center space-x-2">
                 <Package className="w-4 h-4" />
                 <span>Envíos</span>
@@ -194,7 +194,7 @@ export default function ConfiguracionPage() {
             <TabsContent value="shipping" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Envío Aéreo */}
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm cursor-always-visible">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Plane className="w-5 h-5 mr-2 text-blue-600" />
@@ -257,7 +257,7 @@ export default function ConfiguracionPage() {
                 </Card>
 
                 {/* Envío Marítimo */}
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm cursor-always-visible">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Ship className="w-5 h-5 mr-2 text-teal-600" />
@@ -324,7 +324,7 @@ export default function ConfiguracionPage() {
             {/* TAB: Configuración Financiera */}
             <TabsContent value="financial" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm cursor-always-visible">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Globe className="w-5 h-5 mr-2 text-green-600" />
@@ -354,7 +354,7 @@ export default function ConfiguracionPage() {
                   </CardContent>
                 </Card>
 
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm cursor-always-visible">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Percent className="w-5 h-5 mr-2 text-purple-600" />
@@ -391,7 +391,7 @@ export default function ConfiguracionPage() {
             {/* TAB: Reglas de Negocio */}
             <TabsContent value="business" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm cursor-always-visible">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Users className="w-5 h-5 mr-2 text-blue-600" />
@@ -426,7 +426,7 @@ export default function ConfiguracionPage() {
                   </CardContent>
                 </Card>
 
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm cursor-always-visible">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Clock className="w-5 h-5 mr-2 text-orange-600" />
@@ -559,7 +559,7 @@ export default function ConfiguracionPage() {
           </Tabs>
 
           {/* Panel de Resumen */}
-          <Card className="shadow-lg border-0 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <Card className="shadow-lg border-0 bg-gradient-to-r from-blue-50 to-indigo-50 cursor-always-visible">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Calculator className="w-5 h-5 mr-2 text-blue-600" />
