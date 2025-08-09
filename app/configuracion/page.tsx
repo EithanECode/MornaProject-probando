@@ -17,7 +17,9 @@ import {
   AlertTriangle,
   CheckCircle,
   Users,
-  Bell
+  Bell,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from 'next-themes';
 
 interface BusinessConfig {
   // Parámetros de envío
@@ -60,6 +63,8 @@ interface BusinessConfig {
 
 export default function ConfiguracionPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [config, setConfig] = useState<BusinessConfig>({
     airShippingRate: 8.50,
     seaShippingRate: 180.00,
@@ -88,6 +93,7 @@ export default function ConfiguracionPage() {
     if (savedDate) {
       setLastSaved(new Date(savedDate));
     }
+    setMounted(true);
   }, []);
 
   const handleSave = async () => {
@@ -139,6 +145,16 @@ export default function ConfiguracionPage() {
                     Guardado: {lastSaved.toLocaleString('es-VE')}
                   </div>
                 )}
+                {/* Switch tema claro/oscuro */}
+                <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/60 border border-slate-200">
+                  <Sun className={`w-4 h-4 ${mounted && theme === 'light' ? 'text-yellow-500' : 'text-slate-400'}`} />
+                  <Switch
+                    aria-label="Cambiar tema"
+                    checked={mounted ? theme === 'dark' : false}
+                    onCheckedChange={(checked: boolean) => setTheme(checked ? 'dark' : 'light')}
+                  />
+                  <Moon className={`w-4 h-4 ${mounted && theme === 'dark' ? 'text-indigo-600' : 'text-slate-400'}`} />
+                </div>
                 <Button 
                   onClick={handleSave}
                   disabled={isLoading}
