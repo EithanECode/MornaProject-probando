@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { MoreVertical, Plus, Search, UserCog, Shield, CheckCircle, XCircle } from 'lucide-react';
+import { MoreVertical, Plus, Search, UserCog, Shield, CheckCircle, XCircle, Trash2 } from 'lucide-react';
 
 type UserStatus = 'activo' | 'inactivo';
 type UserRole = 'Cliente' | 'Empleado China' | 'Empleado Vzla' | 'Validador Pagos' | 'Admin';
@@ -300,7 +300,7 @@ export default function UsuariosPage() {
                                 <Shield className="w-4 h-4 mr-2" /> {user.status === 'activo' ? 'Desactivar' : 'Activar'}
                               </DropdownMenuItem>
                               <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(user)}>
-                                Eliminar
+                                <Trash2 className="w-4 h-4 mr-2" /> Eliminar
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
