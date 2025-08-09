@@ -236,8 +236,12 @@ npm run build
 
 ---
 
-RECUERDEN PASAR ANTES DE PEDIRLE ALGO A LA IA EL ARCHIVO 'contexto.txt' está en la raiz del proyecto.
+> [!IMPORTANT]
+> RECUERDEN PASAR ANTES DE PEDIRLE ALGO A LA IA EL ARCHIVO `contexto.txt` (está en la raíz del proyecto).
 
-Nota de activos estáticos:
-- Todas las imágenes, animaciones y videos deben colocarse dentro de la carpeta `public/` (por ejemplo, `public/images`, `public/animations`, `public/videos`).
+> [!NOTE]
+> Activos estáticos: todas las imágenes, animaciones y videos deben colocarse en `public/` (por ejemplo, `public/images`, `public/animations`, `public/videos`).
+
+> [!TIP]
+> Si necesitan ayuda en algo, no duden en avisarme ;D ¡Ustedes pueden!
 
