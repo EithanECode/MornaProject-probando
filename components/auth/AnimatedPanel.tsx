@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { Mail, Phone, Shield, Check } from "lucide-react";
-import ProgressDots from "./common/ProgressDots";
-import { ANIMATION_CONTENTS } from "../utils/constants";
+import ProgressDots from "@/components/ui/progress-dots";
+import { ANIMATION_CONTENTS } from "@/lib/constants/auth";
 
 const ANIMATION_ICONS = [Shield, Mail, Phone, Check];
 

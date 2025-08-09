@@ -3,9 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Mail, ChevronRight, ArrowLeft, Check } from "lucide-react";
 import Lottie from "react-lottie";
-import LoadingSpinner from "../components/common/LoadingSpinner";
-import { STEPS } from "../utils/constants";
-import successAnimation from "../animations/Success.json"; // fallback import if fetch fails
+import LoadingSpinner from "@/components/ui/loading-spinner";
+import { STEPS } from "@/lib/constants/auth";
 import Image from "next/image";
 
 type Props = {
@@ -82,7 +81,7 @@ export default function FormPanel(props: Props): JSX.Element {
         if (!cancelled) setSuccessAnim(data);
       })
       .catch(() => {
-        setSuccessAnim(successAnimation as unknown);
+        // si falla la carga, no mostramos animación
       });
     return () => {
       cancelled = true;

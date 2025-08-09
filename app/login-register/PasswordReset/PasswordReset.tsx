@@ -2,9 +2,8 @@
 
 import React, { useState } from "react";
 import FormPanel from "./FormPanel";
-import AnimatedPanel from "../components/AnimatedPanel";
-import { STEPS, CONTACT_METHODS } from "../utils/constants";
-import "../styles/PasswordReset.css";
+import AnimatedPanel from "@/components/auth/AnimatedPanel";
+import { STEPS, CONTACT_METHODS } from "@/lib/constants/auth";
 
 type Props = {
   onNavigateToAuth: () => void;
