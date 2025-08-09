@@ -146,12 +146,13 @@ export default function ConfiguracionPage() {
                   </div>
                 )}
                 {/* Switch tema claro/oscuro */}
-                <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/60 border border-slate-200">
+                <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/60 border border-slate-200 opacity-60 cursor-not-allowed" aria-disabled>
                   <Sun className={`w-4 h-4 ${mounted && theme === 'light' ? 'text-yellow-500' : 'text-slate-400'}`} />
                   <Switch
                     aria-label="Cambiar tema"
                     checked={mounted ? theme === 'dark' : false}
                     onCheckedChange={(checked: boolean) => setTheme(checked ? 'dark' : 'light')}
+                    disabled
                   />
                   <Moon className={`w-4 h-4 ${mounted && theme === 'dark' ? 'text-indigo-600' : 'text-slate-400'}`} />
                 </div>
