@@ -206,11 +206,12 @@ npm run build
 
 > [!IMPORTANT]
 > RECUERDEN PASAR ANTES DE PEDIRLE ALGO A LA IA EL ARCHIVO `contexto.txt` (está en la raíz del proyecto).
+
 > PARA EJECUTAR EL PROGRAMA SE UTILIZA NPM RUN DEV
 
 > [!NOTE]
 > Activos estáticos: todas las imágenes, animaciones y videos deben colocarse en `public/` (por ejemplo, `public/images`, `public/animations`, `public/videos`).
 
 > [!TIP]
-> Si necesitan ayuda en algo, no duden en avisarme ;D ¡Ustedes pueden!
+> Si necesitan ayuda en algo, no duden en avisarme, ¡Ustedes pueden! ;D
 
