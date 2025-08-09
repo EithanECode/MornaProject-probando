@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Package, 
@@ -13,7 +14,8 @@ import {
   FileText,
   LogOut,
   User,
-  Globe
+  Globe,
+  BadgeDollarSign
 } from 'lucide-react';
 import VenezuelaFlag from '@/components/ui/common/VenezuelaFlag';
 import PitaLogo from '@/components/ui/common/PitaLogo';
@@ -25,6 +27,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
+  const router = useRouter();
   const [activeItem, setActiveItem] = useState('dashboard');
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
@@ -35,6 +38,18 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       setActiveItem('dashboard');
     } else if (path === '/pedidos') {
       setActiveItem('pedidos');
+    } else if (path === '/tracking') {
+      setActiveItem('tracking');
+    } else if (path === '/alertas') {
+      setActiveItem('alertas');
+    } else if (path === '/validacion-pagos' || path === '/pagos') {
+      setActiveItem('validacion-pagos');
+    } else if (path === '/reportes') {
+      setActiveItem('reportes');
+    } else if (path === '/usuarios') {
+      setActiveItem('usuarios');
+    } else if (path === '/configuracion') {
+      setActiveItem('settings');
     }
   }, []);
 
@@ -57,9 +72,21 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
     setActiveItem(itemId);
     // Navegación inmediata sin delays artificiales
     if (itemId === 'dashboard') {
-      window.location.href = '/';
+      router.push('/');
     } else if (itemId === 'pedidos') {
-      window.location.href = '/pedidos';
+      router.push('/pedidos');
+    } else if (itemId === 'tracking') {
+      router.push('/tracking');
+    } else if (itemId === 'alertas') {
+      router.push('/alertas');
+    } else if (itemId === 'validacion-pagos') {
+      router.push('/validacion-pagos');
+    } else if (itemId === 'reportes') {
+      router.push('/reportes');
+    } else if (itemId === 'usuarios') {
+      router.push('/usuarios');
+    } else if (itemId === 'settings') {
+      router.push('/configuracion');
     }
   };
 
@@ -78,41 +105,41 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       badge: 23,
       color: 'text-orange-500'
     },
-    // {
-    //   id: 'tracking',
-    //   label: 'Tracking',
-    //   icon: Truck,
-    //   badge: 5,
-    //   color: 'text-green-500'
-    // },
-    // {
-    //   id: 'chat',
-    //   label: 'Chat Soporte',
-    //   icon: MessageCircle,
-    //   badge: 3,
-    //   color: 'text-purple-500'
-    // },
-    // {
-    //   id: 'reportes',
-    //   label: 'Reportes',
-    //   icon: BarChart3,
-    //   badge: null,
-    //   color: 'text-indigo-500'
-    // },
-    // {
-    //   id: 'clientes',
-    //   label: 'Clientes',
-    //   icon: Users,
-    //   badge: null,
-    //   color: 'text-teal-500'
-    // },
-    // {
-    //   id: 'documentos',
-    //   label: 'Documentos',
-    //   icon: FileText,
-    //   badge: null,
-    //   color: 'text-slate-500'
-    // },
+    {
+      id: 'tracking',
+      label: 'Tracking',
+      icon: Truck,
+      badge: 5,
+      color: 'text-green-500'
+    },
+    {
+      id: 'alertas',
+      label: 'Alertas',
+      icon: Bell,
+      badge: 3,
+      color: 'text-red-500'
+    },
+    {
+      id: 'validacion-pagos',
+      label: 'Validación de Pagos',
+      icon: BadgeDollarSign,
+      badge: null,
+      color: 'text-emerald-500'
+    },
+    {
+      id: 'reportes',
+      label: 'Reportes',
+      icon: BarChart3,
+      badge: null,
+      color: 'text-indigo-500'
+    },
+    {
+      id: 'usuarios',
+      label: 'Usuarios',
+      icon: Users,
+      badge: null,
+      color: 'text-teal-500'
+    },
   ];
 
   const bottomItems = [
@@ -179,7 +206,10 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               `} />
               
               <div className={`${isExpanded ? 'w-8 h-8' : 'w-full h-full'} flex items-center justify-center rounded-lg`}>
-                <Icon className={`w-5 h-5 ${item.color} transition-all duration-200 ease-out ${isActive ? 'scale-110 animate-pulse' : 'scale-100'}`} />
+                <Icon 
+                  className={`w-5 h-5 ${item.color} transition-all duration-200 ease-out ${isActive ? 'scale-110 animate-bounce' : 'scale-100'}`}
+                  style={isActive ? { animationDuration: '1.5s' } : undefined}
+                />
               </div>
               
               <div className={`
@@ -231,6 +261,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
           return (
             <button
               key={item.id}
+              onClick={() => handleNavigation(item.id)}
               className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-200 ease-out group"
             >
               <div className="w-8 h-8 flex items-center justify-center rounded-lg group-hover:bg-slate-600/50">
