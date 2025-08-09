@@ -172,58 +172,58 @@ npm run build
 
 ## 👥 Asignación de Tareas
 
-### María — Dashboard y Pedidos
-- Dashboard
-  - Hacer que los botones de "Acciones Rápidas" funcionen:
-    - "Nuevo Pedido (China)": Al hacer clic, debe abrir la interfaz de creación de pedido al detal.
-    - "Nuevo Pedido (Vzla)": Al hacer clic, debe abrir la interfaz de creación de pedido al por mayor.
-    - "Avanzar Todos los Pedidos": Este botón debe ejecutar la lógica para mover todos los pedidos activos a la siguiente etapa del flujo.
-- Pedidos
-  - Hacer que la tabla sea interactiva y funcional:
-    - Al hacer clic en "Ver": Navegar a la página de detalles de ese pedido.
-    - Botón "Exportar": Debe implementar la funcionalidad para descargar la lista de pedidos.
+### **María — Dashboard y Pedidos**
+- **Dashboard**
+  - Hacer que los botones de **"Acciones Rápidas"** funcionen:
+    - **"Nuevo Pedido (China)"**: Al hacer clic, debe abrir la interfaz de creación de pedido al detal.
+    - **"Nuevo Pedido (Vzla)"**: Al hacer clic, debe abrir la interfaz de creación de pedido al por mayor.
+    - **"Avanzar Todos los Pedidos"**: Este botón debe ejecutar la lógica para mover todos los pedidos activos a la siguiente etapa del flujo.
+- **Pedidos**
+  - Hacer que la **tabla sea interactiva y funcional**:
+    - Al hacer clic en **"Ver"**: Navegar a la página de detalles de ese pedido.
+    - Botón **"Exportar"**: Debe implementar la funcionalidad para descargar la lista de pedidos.
 
-### Marí V — Tracking y Alertas
-- Tracking
-  - Propósito: Una herramienta para verificar el seguimiento logístico en detalle.
-  - Tareas de Front-end:
-    - Crear una página o panel dedicado con un campo de búsqueda para códigos de tracking.
-    - Diseñar una interfaz que muestre un historial detallado del movimiento de un paquete, incluyendo fechas, ubicaciones y eventos clave.
-- Alertas
-  - Propósito: Un sistema para notificar al Master sobre problemas que requieren atención inmediata.
-  - Tareas de Front-end:
-    - Crear un panel o lista que muestre las alertas críticas, como los pedidos no respondidos a tiempo.
-    - Implementar un contador de alertas pendientes en el ítem del sidebar para una visibilidad inmediata.
+### **Marí V — Tracking y Alertas**
+- **Tracking**
+  - **Propósito**: Una herramienta para verificar el seguimiento logístico en detalle.
+  - **Tareas de Front-end**:
+    - Crear una **página/panel** con **búsqueda por código** de tracking.
+    - Diseñar una interfaz con **historial detallado** (fechas, ubicaciones y eventos clave).
+- **Alertas**
+  - **Propósito**: Notificar al Master sobre problemas que requieren atención inmediata.
+  - **Tareas de Front-end**:
+    - Panel/lista de **alertas críticas** (p. ej., pedidos no respondidos a tiempo).
+    - **Contador** de alertas pendientes en el ítem del sidebar.
 
-### Stefano — Validación de Pagos y Reportes
-- Validación de Pagos
-  - Propósito: Supervisar y auditar el proceso de pagos.
-  - Tareas de Front-end:
-    - Construir una interfaz que muestre todos los pagos pendientes de validación, con botones para aprobar o rechazar cada uno.
-    - Crear una vista para auditar y ver los pagos que han sido registrados hacia China.
-- Reportes
-  - Propósito: Generar reportes para el análisis de la operación.
-  - Tareas de Front-end:
-    - Diseñar una interfaz donde el Master pueda seleccionar diferentes tipos de reportes (por mes, por empleado, por estado de pedidos).
-    - Implementar una vista que muestre los resultados de estos reportes, posiblemente usando gráficos o tablas.
+### **Stefano — Validación de Pagos y Reportes**
+- **Validación de Pagos**
+  - **Propósito**: Supervisar y auditar el proceso de pagos.
+  - **Tareas de Front-end**:
+    - Interfaz de **pagos pendientes** con acciones **Aprobar/Rechazar**.
+    - **Vista de auditoría** para pagos registrados hacia China.
+- **Reportes**
+  - **Propósito**: Generar reportes para el análisis de la operación.
+  - **Tareas de Front-end**:
+    - Interfaz para seleccionar reportes (**por mes**, **por empleado**, **por estado de pedidos**).
+    - Vista de resultados con **gráficos/tablas**.
 
-### Luis — Usuarios y Configuración
-- Usuarios
-  - Propósito: Gestionar a los empleados y sus accesos.
-  - Tareas de Front-end:
-    - Crear una tabla que liste a todos los empleados del sistema.
-    - Desarrollar un formulario para crear, editar o suspender usuarios, y asignar sus roles y niveles de acceso.
-- Configuración
-  - Propósito: El centro para definir las reglas y parámetros del negocio.
-  - Tareas de Front-end:
-    - Construir una interfaz con formularios para que el Master pueda definir y actualizar los parámetros clave, como los costos de envío y los porcentajes de ganancia.
-    - Agregar un botón para cambiar a modo oscuro, pero que por los momentos no tenga ninguna funcionalidad activa. A la IA se le debe especificar que no implemente la funcionalidad aún, ya que después se modificarán otros archivos para hacerla funcional.
+### **Luis — Usuarios y Configuración**
+- **Usuarios**
+  - **Propósito**: Gestionar a los empleados y sus accesos.
+  - **Tareas de Front-end**:
+    - **Tabla** de empleados.
+    - **Formulario** para crear/editar/suspender y asignar **roles/niveles de acceso**.
+- **Configuración**
+  - **Propósito**: Centro para definir reglas y parámetros del negocio.
+  - **Tareas de Front-end**:
+    - Formularios para **parámetros clave** (costos de envío, porcentajes de ganancia, valor del dólar, descuentos por USD).
+    - Botón **modo oscuro** (deshabilitado por ahora; no implementar funcionalidad todavía).
 
-### Daniela
-- Rol: Próximamente se le asignarán tareas.
+### **Daniela**
+- **Rol**: Próximamente se le asignarán tareas.
 
-### Mi rol
-- Me encargaré de unir todas las páginas, adaptarlas y solucionar los problemas del sidebar y de la navegación entre ellas.
+### **Mi rol**
+- Me encargaré de **unir todas las páginas**, **adaptarlas** y solucionar los problemas del **sidebar** y de la **navegación** entre ellas.
 
 ---
 
