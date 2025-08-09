@@ -8,41 +8,87 @@ Sistema de administración para Pita Express, una empresa de logística internac
 
 ```
 project/
-├── app/                          # App Router de Next.js 13+
-│   ├── page.tsx                 # Dashboard principal (ruta /)
-│   ├── pedidos/                 # Página de pedidos
-│   ├── globals.css              # Estilos globales
-│   └── layout.tsx               # Layout raíz
-├── components/                   # Componentes React
-│   ├── layout/                  # Componentes de layout
-│   │   ├── Sidebar.tsx          # Barra lateral de navegación
-│   │   └── Header.tsx           # Encabezado del dashboard
-│   ├── dashboard/               # Componentes específicos del dashboard
-│   │   ├── StatsCards.tsx       # Tarjetas de estadísticas
-│   │   ├── WorkflowSection.tsx  # Sección del flujo de trabajo
-│   │   ├── RecentOrders.tsx     # Pedidos recientes
-│   │   └── QuickActions.tsx     # Acciones rápidas
-│   ├── orders/                  # Componentes de pedidos (vacío)
-│   ├── ui/                      # Componentes de UI reutilizables
-│   │   ├── common/              # Componentes comunes
-│   │   │   ├── PitaLogo.tsx     # Logo de la empresa
-│   │   │   └── VenezuelaFlag.tsx # Bandera de Venezuela
-│   │   ├── forms/               # Componentes de formularios (vacío)
-│   │   ├── data-display/        # Componentes de visualización (vacío)
-│   │   └── [shadcn/ui]          # Componentes de shadcn/ui (completos)
-├── lib/                         # Utilidades y configuraciones
-│   ├── types/                   # Tipos TypeScript
-│   │   ├── dashboard.ts         # Tipos del dashboard
-│   │   └── navigation.ts        # Tipos de navegación
-│   ├── constants/               # Constantes de la aplicación
-│   │   ├── dashboard.ts         # Datos del dashboard
-│   │   └── navigation.ts        # Configuración de navegación
-│   ├── utils.ts                 # Funciones utilitarias
-│   ├── hooks/                   # Custom hooks (vacío)
-│   ├── services/                # Servicios y APIs (vacío)
-│   └── validations/             # Validaciones (vacío)
-├── hooks/                       # Hooks globales
-└── public/                      # Archivos estáticos
+├── app/                                # App Router de Next.js
+│   ├── layout.tsx                      # Layout raíz
+│   ├── globals.css                     # Estilos globales
+│   ├── page.tsx                        # Dashboard principal (ruta /)
+│   ├── login-register/                 # Flujo de autenticación (UI)
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── AuthPage.tsx
+│   │   ├── LoginForm.tsx
+│   │   ├── RegisterForm.tsx
+│   │   └── PasswordReset/
+│   │       ├── PasswordReset.tsx
+│   │       └── FormPanel.tsx
+│   ├── pedidos/                        # Página de pedidos (ruta /pedidos)
+│   │   └── page.tsx
+│   ├── tracking/                       # Placeholder de tracking (ruta /tracking)
+│   │   └── page.tsx
+│   ├── alertas/                        # Placeholder de alertas (ruta /alertas)
+│   │   └── page.tsx
+│   ├── validacion-pagos/               # Placeholder de validación de pagos (ruta /validacion-pagos)
+│   │   └── page.tsx
+│   ├── reportes/                       # Placeholder de reportes (ruta /reportes)
+│   │   └── page.tsx
+│   ├── usuarios/                       # Placeholder de usuarios (ruta /usuarios)
+│   │   └── page.tsx
+│   ├── configuracion/                  # Placeholder de configuración (ruta /configuracion)
+│   └── styles/
+│       └── auth/
+│           ├── AuthPage.css
+│           └── PasswordReset.css
+├── components/                         # Componentes React
+│   ├── auth/
+│   │   └── AnimatedPanel.tsx
+│   ├── layout/
+│   │   ├── Header.tsx
+│   │   └── Sidebar.tsx
+│   ├── dashboard/
+│   │   ├── StatsCards.tsx
+│   │   ├── WorkflowSection.tsx
+│   │   ├── RecentOrders.tsx
+│   │   └── QuickActions.tsx
+│   ├── orders/                         # (vacío)
+│   └── ui/                             # Componentes shadcn/ui + comunes
+│       ├── common/
+│       │   ├── PitaLogo.tsx
+│       │   └── VenezuelaFlag.tsx
+│       └── ...                         # botones, cards, select, etc.
+├── lib/                                # Utilidades y configuraciones
+│   ├── constants/
+│   │   ├── auth.ts
+│   │   ├── dashboard.ts
+│   │   └── navigation.ts
+│   ├── types/
+│   │   ├── dashboard.ts
+│   │   └── navigation.ts
+│   ├── hooks/                          # (vacío)
+│   ├── services/                       # (vacío)
+│   ├── validations/                    # (vacío)
+│   └── utils.ts
+├── hooks/
+│   └── use-toast.ts
+├── public/                             # Archivos estáticos
+│   ├── animations/
+│   │   ├── login.json
+│   │   ├── Register.json
+│   │   └── Success.json
+│   ├── images/
+│   │   ├── background.jpg
+│   │   ├── escudo.gif
+│   │   └── logos/
+│   │       ├── pita_logo.png
+│   │       ├── pita_logo.svg
+│   │       └── PitaSinFondo.svg
+│   └── videos/
+│       └── wait.mp4
+├── UsuarioP-front/                     # App React separada (cliente)
+├── tailwind.config.ts
+├── tsconfig.json
+├── next.config.js
+├── package.json
+└── README.md
 ```
 
 ## 🚀 Tecnologías Utilizadas
@@ -187,4 +233,11 @@ npm run build
 6. Integración
 
    - Mi rol: Me encargaré de unir todas las páginas, adaptarlas y solucionar los problemas del sidebar y de la navegación entre ellas.
+
+---
+
+RECUERDEN PASAR ANTES DE PEDIRLE ALGO A LA IA EL ARCHIVO 'contexto.txt' está en la raiz del proyecto.
+
+Nota de activos estáticos:
+- Todas las imágenes, animaciones y videos deben colocarse dentro de la carpeta `public/` (por ejemplo, `public/images`, `public/animations`, `public/videos`).
 
