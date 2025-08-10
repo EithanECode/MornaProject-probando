@@ -13,15 +13,21 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loginAnim, setLoginAnim] = useState<any | null>(null);
+  const [animError, setAnimError] = useState<boolean>(false);
 
   React.useEffect(() => {
     let cancelled = false;
     fetch("/animations/login.json")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("No se pudo cargar la animación");
+        return res.json();
+      })
       .then((data) => {
         if (!cancelled) setLoginAnim(data);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setAnimError(true);
+      });
     return () => {
       cancelled = true;
     };
@@ -52,7 +58,15 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
   return (
     <form className="auth-form login-form" onSubmit={handleSubmit}>
       <div className="login-lottie-icon">
-        {defaultLoginOptions && <Lottie options={defaultLoginOptions} height={70} width={70} />}
+        {defaultLoginOptions && !animError && (
+          <Lottie options={defaultLoginOptions} height={70} width={70} />
+        )}
+        {animError && (
+          <div style={{ color: 'red', fontSize: 14, textAlign: 'center' }}>
+            <i className="fas fa-exclamation-triangle" style={{ fontSize: 24 }}></i>
+            <div>No se pudo cargar la animación</div>
+          </div>
+        )}
       </div>
       <h2>Iniciar Sesión</h2>
       <label htmlFor="login-email">Correo electrónico</label>

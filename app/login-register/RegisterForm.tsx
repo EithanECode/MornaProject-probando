@@ -6,12 +6,19 @@ import Lottie from "react-lottie";
 export default function RegisterForm(): JSX.Element {
   const [registerAnim, setRegisterAnim] = useState<any | null>(null);
   const [successAnim, setSuccessAnim] = useState<any | null>(null);
+  const [registerAnimError, setRegisterAnimError] = useState<boolean>(false);
 
   React.useEffect(() => {
     let cancelled = false;
     Promise.all([
-      fetch("/animations/Register.json").then((r) => r.json()),
-      fetch("/animations/Success.json").then((r) => r.json()),
+      fetch("/animations/Register.json").then((r) => {
+        if (!r.ok) throw new Error("No se pudo cargar la animación Register");
+        return r.json();
+      }),
+      fetch("/animations/Success.json").then((r) => {
+        if (!r.ok) throw new Error("No se pudo cargar la animación Success");
+        return r.json();
+      })
     ])
       .then(([reg, suc]) => {
         if (!cancelled) {
@@ -19,7 +26,9 @@ export default function RegisterForm(): JSX.Element {
           setSuccessAnim(suc);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setRegisterAnimError(true);
+      });
     return () => {
       cancelled = true;
     };
@@ -194,8 +203,14 @@ export default function RegisterForm(): JSX.Element {
   return (
     <form className="auth-form register-form" onSubmit={handleSubmit}>
       <div className="register-lottie-icon">
-        {defaultRegisterOptions && (
+        {defaultRegisterOptions && !registerAnimError && (
           <Lottie options={defaultRegisterOptions} height={70} width={70} />
+        )}
+        {registerAnimError && (
+          <div style={{ color: 'red', fontSize: 14, textAlign: 'center' }}>
+            <i className="fas fa-exclamation-triangle" style={{ fontSize: 24 }}></i>
+            <div>No se pudo cargar la animación de registro</div>
+          </div>
         )}
       </div>
       <h2>Registrarse</h2>
@@ -284,7 +299,7 @@ export default function RegisterForm(): JSX.Element {
         )}
       </div>
 
-      <button type="submit">Crear cuenta</button>
+      <button type="submit">Registrarse</button>
     </form>
   );
 }

@@ -70,7 +70,7 @@ export default function AuthPage({
                   />
                 )}
               </div>
-              <h2>¡Bienvenido de Nuevo!</h2>
+              <h2 style={{ fontWeight:"bold", fontSize: "1.5rem" }}>¡Bienvenido de Nuevo!</h2>
               <p>
                 Para mantenerte conectado, por favor inicia sesión con tu
                 información personal.
@@ -92,7 +92,7 @@ export default function AuthPage({
                   />
                 )}
               </div>
-              <h2>¡Hola Amigo!</h2>
+              <h2 style={{ fontWeight: "bold", fontSize: "1.5rem" }}>¡Hola Amigo!</h2>
               <p>Introduce tus datos personales y comienza tu viaje con nosotros.</p>
               <button className="ghost-button" onClick={() => handleToggle(false)}>
                 Registrarse
