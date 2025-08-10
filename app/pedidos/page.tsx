@@ -476,7 +476,9 @@ export default function PedidosPage() {
       {/* Modal de Detalles del Pedido */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
         {selectedOrder && (
-          <DialogContent className="sm:max-w-[700px] bg-white p-0 rounded-lg shadow-2xl">
+          <DialogContent 
+            className="sm:max-w-[700px] bg-white p-0 rounded-lg shadow-2xl animate-in fade-in-0 slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+          >
             <div className="flex flex-col md:flex-row">
               {/* Sección izquierda - Detalles del pedido */}
               <div className="md:w-2/3 p-8 border-b md:border-b-0 md:border-r border-gray-200">
@@ -530,11 +532,12 @@ export default function PedidosPage() {
                     <div>
                       <p className="font-semibold text-lg text-slate-900">Estado Actual</p>
                       <Badge className={`${statusConfig[selectedOrder.status].color} border`}>
-                        {/* ✅ La variable `StatusIcon` debe crearse aquí también */}
-                        {(() => {
-                           const StatusIcon = statusConfig[selectedOrder.status].icon;
-                           return <StatusIcon className="w-3 h-3 mr-1" />;
-                        })()}
+                        {
+                          (() => {
+                            const StatusIcon = statusConfig[selectedOrder.status].icon;
+                            return <StatusIcon className="w-3 h-3 mr-1" />;
+                          })()
+                        }
                         {statusConfig[selectedOrder.status].label}
                       </Badge>
                     </div>
