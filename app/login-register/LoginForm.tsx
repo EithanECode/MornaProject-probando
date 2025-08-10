@@ -7,6 +7,7 @@ type Props = {
   onNavigateToPasswordReset: () => void;
 };
 
+
 export default function LoginForm({ onNavigateToPasswordReset }: Props) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
