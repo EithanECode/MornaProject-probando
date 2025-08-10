@@ -10,6 +10,11 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Pita Express - Admin Panel',
   description: 'Sistema de administración para Pita Express',
+  icons: {
+    icon: '/pita_icon.svg',
+    shortcut: '/pita_icon.svg',
+    apple: '/pita_icon.svg',
+  },
 };
 
 export default function RootLayout({
