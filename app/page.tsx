@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
@@ -6,9 +6,34 @@ import Header from '@/components/layout/Header';
 import StatsCards from '@/components/dashboard/StatsCards';
 import WorkflowSection from '@/components/dashboard/WorkflowSection';
 import RecentOrders from '@/components/dashboard/RecentOrders';
+
 import QuickActions from '@/components/dashboard/QuickActions';
+
 import { OrderStats } from '@/lib/types/dashboard';
 import { INITIAL_STATS, WORKFLOW_STEPS, RECENT_ORDERS } from '@/lib/constants/dashboard';
+
+// ✅ Interfaz para los datos del modal de China
+interface FormDataChina {
+  cliente: string
+  telefono: string
+  producto: string
+  cantidad: number | null
+  precioUnitario: number | null
+  direccionEntrega: string
+}
+
+// ✅ Interfaz para los datos del modal de Venezuela
+interface FormDataVzla {
+  empresa: string
+  rif: string
+  contacto: string
+  telefono: string
+  categoria: string
+  cantidadLotes: number | null
+  precioPorLote: number | null
+  almacenDestino: string
+  observaciones: string
+}
 
 export default function Dashboard() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -19,6 +44,17 @@ export default function Dashboard() {
   useEffect(() => {
     setAnimateStats(true);
   }, []);
+
+  // ✅ Crea las funciones que el componente QuickActions necesita
+  const handleChinaSubmit = (data: FormDataChina) => {
+    console.log('Nuevo pedido de China creado:', data);
+    // Aquí puedes agregar la lógica para guardar el pedido de China
+  };
+
+  const handleVzlaSubmit = (data: FormDataVzla) => {
+    console.log('Nuevo pedido de Venezuela creado:', data);
+    // Aquí puedes agregar la lógica para guardar el pedido de Venezuela
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
@@ -33,7 +69,11 @@ export default function Dashboard() {
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <RecentOrders orders={RECENT_ORDERS} />
-            <QuickActions />
+            {/* ✅ Renderiza el componente QuickActions y pásale las dos funciones como props */}
+            <QuickActions 
+              onChinaSubmit={handleChinaSubmit} 
+              onVzlaSubmit={handleVzlaSubmit} 
+            />
           </div>
         </div>
       </main>
