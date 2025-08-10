@@ -31,6 +31,10 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
+// ✅ Importación de las librerías
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
 interface Order {
   id: string;
   client: string;
@@ -82,11 +86,105 @@ export default function PedidosPage() {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.description.toLowerCase().includes(searchTerm.toLowerCase());
+                          order.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          order.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  // ✅ Nueva función para exportar a PDF con un diseño limpio
+  const handleExport = async () => {
+    // 1. Crear el HTML de la tabla en memoria
+    const pdfContent = document.createElement('div');
+    pdfContent.style.width = '210mm'; // Ancho de una hoja A4
+    pdfContent.style.padding = '10mm';
+
+    const title = document.createElement('h1');
+    title.innerText = 'Reporte de Pedidos';
+    title.style.fontSize = '24px';
+    title.style.marginBottom = '20px';
+    pdfContent.appendChild(title);
+
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+    
+    // Encabezados
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    const headers = ["ID", "Cliente", "Descripción", "Estado", "Asignado a", "Tiempo (días)"];
+    headers.forEach(text => {
+      const th = document.createElement('th');
+      th.innerText = text;
+      th.style.padding = '8px';
+      th.style.backgroundColor = '#1e3a8a';
+      th.style.color = 'white';
+      th.style.border = '1px solid #1e3a8a';
+      th.style.textAlign = 'left';
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Cuerpo de la tabla
+    const tbody = document.createElement('tbody');
+    filteredOrders.forEach((order, index) => {
+      const row = document.createElement('tr');
+      row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f3f4f6'; // Filas alternas
+      row.style.border = '1px solid #e2e8f0';
+
+      const rowData = [
+        order.id,
+        order.client,
+        order.description,
+        statusConfig[order.status].label,
+        assignedConfig[order.assignedTo].label,
+        `${order.daysElapsed} días`
+      ];
+
+      rowData.forEach(text => {
+        const td = document.createElement('td');
+        td.innerText = text;
+        td.style.padding = '8px';
+        td.style.border = '1px solid #e2e8f0';
+        td.style.fontSize = '12px';
+        row.appendChild(td);
+      });
+      tbody.appendChild(row);
+    });
+    table.appendChild(tbody);
+    pdfContent.appendChild(table);
+
+    // 2. Adjuntar temporalmente el elemento al DOM para que html2canvas lo procese
+    document.body.appendChild(pdfContent);
+
+    // 3. Convertir el contenido HTML a un canvas (imagen)
+    const canvas = await html2canvas(pdfContent, { scale: 2 });
+    
+    // 4. Eliminar el elemento temporal del DOM
+    document.body.removeChild(pdfContent);
+
+    // 5. Crear el PDF a partir del canvas
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+    
+    const finalWidth = imgWidth * ratio;
+    const finalHeight = imgHeight * ratio;
+    
+    const x = (pdfWidth - finalWidth) / 2;
+    const y = 10;
+    
+    pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+    
+    // 6. Guardar el archivo
+    pdf.save("reporte_pedidos.pdf");
+  };
 
   const itemsPerPage = 8;
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
@@ -116,9 +214,10 @@ export default function PedidosPage() {
                 <p className="text-sm text-slate-600">Administra y da seguimiento a todos los pedidos</p>
               </div>
               <div className="flex items-center space-x-4">
-                <Button variant="outline" size="sm">
+                {/* ✅ Botón de Exportar con la nueva funcionalidad */}
+                <Button variant="outline" size="sm" onClick={handleExport}>
                   <Download className="w-4 h-4 mr-2" />
-                  Exportar
+                  Exportar a PDF
                 </Button>
                 <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
                   <Plus className="w-4 h-4 mr-2" />
@@ -386,4 +485,4 @@ export default function PedidosPage() {
       </main>
     </div>
   );
-} 
+}
