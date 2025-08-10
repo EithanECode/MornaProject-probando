@@ -30,8 +30,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-
-// ✅ Importación de las librerías
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -92,11 +91,9 @@ export default function PedidosPage() {
     return matchesSearch && matchesStatus;
   });
 
-  // ✅ Nueva función para exportar a PDF con un diseño limpio
   const handleExport = async () => {
-    // 1. Crear el HTML de la tabla en memoria
     const pdfContent = document.createElement('div');
-    pdfContent.style.width = '210mm'; // Ancho de una hoja A4
+    pdfContent.style.width = '210mm';
     pdfContent.style.padding = '10mm';
 
     const title = document.createElement('h1');
@@ -109,7 +106,6 @@ export default function PedidosPage() {
     table.style.width = '100%';
     table.style.borderCollapse = 'collapse';
     
-    // Encabezados
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
     const headers = ["ID", "Cliente", "Descripción", "Estado", "Asignado a", "Tiempo (días)"];
@@ -126,11 +122,10 @@ export default function PedidosPage() {
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
-    // Cuerpo de la tabla
     const tbody = document.createElement('tbody');
     filteredOrders.forEach((order, index) => {
       const row = document.createElement('tr');
-      row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f3f4f6'; // Filas alternas
+      row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f3f4f6';
       row.style.border = '1px solid #e2e8f0';
 
       const rowData = [
@@ -155,16 +150,12 @@ export default function PedidosPage() {
     table.appendChild(tbody);
     pdfContent.appendChild(table);
 
-    // 2. Adjuntar temporalmente el elemento al DOM para que html2canvas lo procese
     document.body.appendChild(pdfContent);
 
-    // 3. Convertir el contenido HTML a un canvas (imagen)
     const canvas = await html2canvas(pdfContent, { scale: 2 });
     
-    // 4. Eliminar el elemento temporal del DOM
     document.body.removeChild(pdfContent);
 
-    // 5. Crear el PDF a partir del canvas
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -182,7 +173,6 @@ export default function PedidosPage() {
     
     pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
     
-    // 6. Guardar el archivo
     pdf.save("reporte_pedidos.pdf");
   };
 
@@ -214,7 +204,6 @@ export default function PedidosPage() {
                 <p className="text-sm text-slate-600">Administra y da seguimiento a todos los pedidos</p>
               </div>
               <div className="flex items-center space-x-4">
-                {/* ✅ Botón de Exportar con la nueva funcionalidad */}
                 <Button variant="outline" size="sm" onClick={handleExport}>
                   <Download className="w-4 h-4 mr-2" />
                   Exportar a PDF
@@ -362,7 +351,6 @@ export default function PedidosPage() {
                         <tr 
                           key={order.id}
                           className="border-b border-slate-100 hover:bg-slate-50/50 transition-all duration-200 cursor-pointer"
-                          onClick={() => setSelectedOrder(order)}
                         >
                           <td className="py-4 px-6">
                             <div className="flex items-center space-x-3">
@@ -401,6 +389,7 @@ export default function PedidosPage() {
                                 size="sm" 
                                 variant="outline"
                                 className="bg-white/50 border-slate-200 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                                onClick={() => setSelectedOrder(order)}
                               >
                                 <Eye className="w-4 h-4 mr-1" />
                                 Ver
@@ -483,6 +472,112 @@ export default function PedidosPage() {
           </Card>
         </div>
       </main>
+
+      {/* Modal de Detalles del Pedido */}
+      <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
+        {selectedOrder && (
+          <DialogContent className="sm:max-w-[700px] bg-white p-0 rounded-lg shadow-2xl">
+            <div className="flex flex-col md:flex-row">
+              {/* Sección izquierda - Detalles del pedido */}
+              <div className="md:w-2/3 p-8 border-b md:border-b-0 md:border-r border-gray-200">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold text-slate-900">
+                    Detalles del Pedido: {selectedOrder.id}
+                  </DialogTitle>
+                  <DialogDescription className="text-gray-500">
+                    Información detallada sobre el pedido y su estado actual.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="mt-6 space-y-4">
+                  {/* Detalles de la tarjeta */}
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Package className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-lg text-slate-900">Cliente</p>
+                      <p className="text-gray-600">{selectedOrder.client}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-lg text-slate-900">Asignado a</p>
+                      <Badge className={`${assignedConfig[selectedOrder.assignedTo].color} border`}>
+                        {assignedConfig[selectedOrder.assignedTo].label}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-lg text-slate-900">Tiempo Transcurrido</p>
+                      <p className="text-gray-600">{selectedOrder.daysElapsed} días</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-lg text-slate-900">Estado Actual</p>
+                      <Badge className={`${statusConfig[selectedOrder.status].color} border`}>
+                        {/* ✅ La variable `StatusIcon` debe crearse aquí también */}
+                        {(() => {
+                           const StatusIcon = statusConfig[selectedOrder.status].icon;
+                           return <StatusIcon className="w-3 h-3 mr-1" />;
+                        })()}
+                        {statusConfig[selectedOrder.status].label}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <p className="font-semibold text-xl text-slate-900">Descripción del Pedido</p>
+                  <p className="mt-2 text-gray-600">{selectedOrder.description}</p>
+                </div>
+              </div>
+
+              {/* Sección derecha - Historial y Acciones */}
+              <div className="md:w-1/3 p-8 bg-gray-50 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-bold text-lg text-slate-900">Historial del Pedido</h3>
+                  <div className="mt-4 space-y-4">
+                    {/* Placeholder para el historial */}
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 mr-4"></div>
+                      <span className="text-gray-600">Creado por Ana Pérez (2 días)</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 rounded-full bg-yellow-500 mr-4"></div>
+                      <span className="text-gray-600">En espera de cotización</span>
+                    </div>
+                    {/* Más pasos del historial */}
+                  </div>
+                </div>
+
+                <div className="mt-8 flex flex-col space-y-2">
+                  <Button
+                    className="w-full bg-gray-200 text-gray-700 hover:bg-gray-300 mt-4"
+                    onClick={() => setSelectedOrder(null)}
+                  >
+                    Volver
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
     </div>
   );
 }
