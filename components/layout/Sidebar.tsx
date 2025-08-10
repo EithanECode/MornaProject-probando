@@ -10,7 +10,9 @@ import {
   Settings, 
   Bell,
   Users,
+  ChartNoAxesGantt,
   Truck,
+  LockKeyhole,
   FileText,
   LogOut,
   User,
@@ -83,6 +85,8 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       router.push('/validacion-pagos');
     } else if (itemId === 'reportes') {
       router.push('/reportes');
+    } else if (itemId === 'gestion') {
+      router.push('/gestion');
     } else if (itemId === 'usuarios') {
       router.push('/usuarios');
     } else if (itemId === 'settings') {
@@ -106,13 +110,6 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       color: 'text-orange-500'
     },
     {
-      id: 'tracking',
-      label: 'Tracking',
-      icon: Truck,
-      badge: 5,
-      color: 'text-green-500'
-    },
-    {
       id: 'alertas',
       label: 'Alertas',
       icon: Bell,
@@ -134,9 +131,16 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       color: 'text-indigo-500'
     },
     {
+  id: 'gestion',
+  label: 'Gestión',
+  icon: ChartNoAxesGantt, // Puedes elegir otro icono de lucide-react si prefieres
+  badge: null,
+  color: 'text-purple-500'
+   },
+    {
       id: 'usuarios',
-      label: 'Usuarios',
-      icon: Users,
+      label: 'Seguridad',
+      icon: LockKeyhole,
       badge: null,
       color: 'text-teal-500'
     },
