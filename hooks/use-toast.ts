@@ -6,7 +6,7 @@ import * as React from 'react';
 import type { ToastActionElement, ToastProps } from '@/components/ui/toast';
 
 const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000;
+const TOAST_REMOVE_DELAY = 1000000; // fallback si no se especifica duration
 
 type ToasterToast = ToastProps & {
   id: string;
@@ -60,13 +60,17 @@ const addToRemoveQueue = (toastId: string) => {
     return;
   }
 
+  // Buscar el toast actual para obtener su duración personalizada
+  const toast = memoryState.toasts.find((t) => t.id === toastId);
+  const duration = toast && typeof toast.duration === 'number' ? toast.duration : TOAST_REMOVE_DELAY;
+
   const timeout = setTimeout(() => {
     toastTimeouts.delete(toastId);
     dispatch({
       type: 'REMOVE_TOAST',
       toastId: toastId,
     });
-  }, TOAST_REMOVE_DELAY);
+  }, duration);
 
   toastTimeouts.set(toastId, timeout);
 };
