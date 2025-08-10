@@ -230,8 +230,14 @@ export default function ConfiguracionPage() {
                           id="airRate"
                           type="number"
                           step="0.01"
+                          min={0}
                           value={config.airShippingRate}
-                          onChange={(e) => updateConfig('airShippingRate', parseFloat(e.target.value))}
+                          onChange={(e) => {
+                            const value = parseFloat(e.target.value);
+                            if (value >= 0 || e.target.value === "") {
+                              updateConfig('airShippingRate', isNaN(value) ? 0 : value);
+                            }
+                          }}
                           className="pl-10"
                         />
                       </div>
@@ -246,11 +252,17 @@ export default function ConfiguracionPage() {
                         <Input
                           id="airMin"
                           type="number"
+                          min={0}
                           value={config.airDeliveryDays.min}
-                          onChange={(e) => updateConfig('airDeliveryDays', {
-                            ...config.airDeliveryDays,
-                            min: parseInt(e.target.value)
-                          })}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value);
+                            if (value >= 0 || e.target.value === "") {
+                              updateConfig('airDeliveryDays', {
+                                ...config.airDeliveryDays,
+                                min: isNaN(value) ? 0 : value
+                              });
+                            }
+                          }}
                         />
                       </div>
                       <div className="space-y-2">
@@ -258,11 +270,17 @@ export default function ConfiguracionPage() {
                         <Input
                           id="airMax"
                           type="number"
+                          min={0}
                           value={config.airDeliveryDays.max}
-                          onChange={(e) => updateConfig('airDeliveryDays', {
-                            ...config.airDeliveryDays,
-                            max: parseInt(e.target.value)
-                          })}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value);
+                            if (value >= 0 || e.target.value === "") {
+                              updateConfig('airDeliveryDays', {
+                                ...config.airDeliveryDays,
+                                max: isNaN(value) ? 0 : value
+                              });
+                            }
+                          }}
                         />
                       </div>
                     </div>
@@ -293,8 +311,14 @@ export default function ConfiguracionPage() {
                           id="seaRate"
                           type="number"
                           step="0.01"
+                          min={0}
                           value={config.seaShippingRate}
-                          onChange={(e) => updateConfig('seaShippingRate', parseFloat(e.target.value))}
+                          onChange={(e) => {
+                            const value = parseFloat(e.target.value);
+                            if (value >= 0 || e.target.value === "") {
+                              updateConfig('seaShippingRate', isNaN(value) ? 0 : value);
+                            }
+                          }}
                           className="pl-10"
                         />
                       </div>
@@ -309,11 +333,17 @@ export default function ConfiguracionPage() {
                         <Input
                           id="seaMin"
                           type="number"
+                          min={0}
                           value={config.seaDeliveryDays.min}
-                          onChange={(e) => updateConfig('seaDeliveryDays', {
-                            ...config.seaDeliveryDays,
-                            min: parseInt(e.target.value)
-                          })}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value);
+                            if (value >= 0 || e.target.value === "") {
+                              updateConfig('seaDeliveryDays', {
+                                ...config.seaDeliveryDays,
+                                min: isNaN(value) ? 0 : value
+                              });
+                            }
+                          }}
                         />
                       </div>
                       <div className="space-y-2">
@@ -321,11 +351,17 @@ export default function ConfiguracionPage() {
                         <Input
                           id="seaMax"
                           type="number"
+                          min={0}
                           value={config.seaDeliveryDays.max}
-                          onChange={(e) => updateConfig('seaDeliveryDays', {
-                            ...config.seaDeliveryDays,
-                            max: parseInt(e.target.value)
-                          })}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value);
+                            if (value >= 0 || e.target.value === "") {
+                              updateConfig('seaDeliveryDays', {
+                                ...config.seaDeliveryDays,
+                                max: isNaN(value) ? 0 : value
+                              });
+                            }
+                          }}
                         />
                       </div>
                     </div>
@@ -358,8 +394,14 @@ export default function ConfiguracionPage() {
                         id="usdRate"
                         type="number"
                         step="0.01"
+                        min={0}
                         value={config.usdRate}
-                        onChange={(e) => updateConfig('usdRate', parseFloat(e.target.value))}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value);
+                          if (value >= 0 || e.target.value === "") {
+                            updateConfig('usdRate', isNaN(value) ? 0 : value);
+                          }
+                        }}
                       />
                     </div>
                     <Alert>
@@ -387,8 +429,14 @@ export default function ConfiguracionPage() {
                       <Input
                         id="profit"
                         type="number"
+                        min={0}
                         value={config.profitMargin}
-                        onChange={(e) => updateConfig('profitMargin', parseFloat(e.target.value))}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value);
+                          if (value >= 0 || e.target.value === "") {
+                            updateConfig('profitMargin', isNaN(value) ? 0 : value);
+                          }
+                        }}
                       />
                     </div>
                     <div className="space-y-2">
@@ -396,8 +444,14 @@ export default function ConfiguracionPage() {
                       <Input
                         id="discount"
                         type="number"
+                        min={0}
                         value={config.usdDiscountPercent}
-                        onChange={(e) => updateConfig('usdDiscountPercent', parseFloat(e.target.value))}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value);
+                          if (value >= 0 || e.target.value === "") {
+                            updateConfig('usdDiscountPercent', isNaN(value) ? 0 : value);
+                          }
+                        }}
                       />
                     </div>
                   </CardContent>
@@ -424,8 +478,14 @@ export default function ConfiguracionPage() {
                       <Input
                         id="maxQuotes"
                         type="number"
+                        min={0}
                         value={config.maxQuotationsPerMonth}
-                        onChange={(e) => updateConfig('maxQuotationsPerMonth', parseInt(e.target.value))}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value);
+                          if (value >= 0 || e.target.value === "") {
+                            updateConfig('maxQuotationsPerMonth', isNaN(value) ? 0 : value);
+                          }
+                        }}
                       />
                       <p className="text-xs text-slate-500">Para clientes sin historial de compra</p>
                     </div>
@@ -435,8 +495,14 @@ export default function ConfiguracionPage() {
                       <Input
                         id="maxMods"
                         type="number"
-                        value={config.maxModificationsPerOrder} 
-                        onChange={(e) => updateConfig('maxModificationsPerOrder', parseInt(e.target.value))}
+                        min={0}
+                        value={config.maxModificationsPerOrder}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value);
+                          if (value >= 0 || e.target.value === "") {
+                            updateConfig('maxModificationsPerOrder', isNaN(value) ? 0 : value);
+                          }
+                        }}
                       />
                       <p className="text-xs text-slate-500">Después se rechaza automáticamente</p>
                     </div>
@@ -459,8 +525,14 @@ export default function ConfiguracionPage() {
                       <Input
                         id="quoteValidity"
                         type="number"
+                        min={0}
                         value={config.quotationValidityDays}
-                        onChange={(e) => updateConfig('quotationValidityDays', parseInt(e.target.value))}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value);
+                          if (value >= 0 || e.target.value === "") {
+                            updateConfig('quotationValidityDays', isNaN(value) ? 0 : value);
+                          }
+                        }}
                       />
                     </div>
                     
@@ -469,8 +541,14 @@ export default function ConfiguracionPage() {
                       <Input
                         id="paymentDeadline"
                         type="number"
+                        min={0}
                         value={config.paymentDeadlineDays}
-                        onChange={(e) => updateConfig('paymentDeadlineDays', parseInt(e.target.value))}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value);
+                          if (value >= 0 || e.target.value === "") {
+                            updateConfig('paymentDeadlineDays', isNaN(value) ? 0 : value);
+                          }
+                        }}
                       />
                     </div>
                   </CardContent>
@@ -523,8 +601,14 @@ export default function ConfiguracionPage() {
                       <Input
                         id="alertDays"
                         type="number"
+                        min={0}
                         value={config.alertsAfterDays}
-                        onChange={(e) => updateConfig('alertsAfterDays', parseInt(e.target.value))}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value);
+                          if (value >= 0 || e.target.value === "") {
+                            updateConfig('alertsAfterDays', isNaN(value) ? 0 : value);
+                          }
+                        }}
                       />
                       <p className="text-xs text-slate-500">Días sin atención antes de generar alerta</p>
                     </div>
@@ -552,8 +636,14 @@ export default function ConfiguracionPage() {
                       <Input
                         id="sessionTimeout"
                         type="number"
+                        min={0}
                         value={config.sessionTimeout}
-                        onChange={(e) => updateConfig('sessionTimeout', parseInt(e.target.value))}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value);
+                          if (value >= 0 || e.target.value === "") {
+                            updateConfig('sessionTimeout', isNaN(value) ? 0 : value);
+                          }
+                        }}
                       />
                       <p className="text-xs text-slate-500">Tiempo de inactividad antes de cerrar sesión</p>
                     </div>
