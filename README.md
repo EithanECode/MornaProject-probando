@@ -11,7 +11,7 @@ project/
 ├── app/                                # App Router de Next.js
 │   ├── layout.tsx                      # Layout raíz
 │   ├── globals.css                     # Estilos globales
-│   ├── page.tsx                        # Dashboard principal (ruta /)
+│   ├── page.tsx                        # Redirección a la sección de login (ruta /)
 │   ├── login-register/                 # Flujo de autenticación (UI)
 │   │   ├── layout.tsx
 │   │   ├── page.tsx
