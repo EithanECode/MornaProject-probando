@@ -36,7 +36,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
   // Detectar la página actual
   useEffect(() => {
     const path = window.location.pathname;
-    if (path === '/') {
+    if (path === '/dashboard') {
       setActiveItem('dashboard');
     } else if (path === '/pedidos') {
       setActiveItem('pedidos');
@@ -74,7 +74,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
     setActiveItem(itemId);
     // Navegación inmediata sin delays artificiales
     if (itemId === 'dashboard') {
-      router.push('/');
+      router.push('/dashboard');
     } else if (itemId === 'pedidos') {
       router.push('/pedidos');
     } else if (itemId === 'tracking') {

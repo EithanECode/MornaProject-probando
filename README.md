@@ -21,6 +21,8 @@ project/
 │   │   └── PasswordReset/
 │   │       ├── PasswordReset.tsx
 │   │       └── FormPanel.tsx
+│   ├── dashboard/                      # Página de dashboard (ruta /dashboard)
+│   │   └── page.tsx
 │   ├── pedidos/                        # Página de pedidos (ruta /pedidos)
 │   │   └── page.tsx
 │   ├── tracking/                       # Placeholder de tracking (ruta /tracking)
