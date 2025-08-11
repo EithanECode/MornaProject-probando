@@ -19,7 +19,7 @@ export default function AuthCallbackPage() {
               body: JSON.stringify({ userId, userLevel: "Client" }),
             });
           } catch {}
-          window.location.replace("/gestion");
+          window.location.replace("/login-register");
         } else {
           window.location.replace("/login-register");
         }
