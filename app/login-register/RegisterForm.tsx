@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import Lottie from "react-lottie";
 
 export default function RegisterForm(): JSX.Element {
@@ -127,6 +128,10 @@ export default function RegisterForm(): JSX.Element {
     setPasswordMatchError(!doMatch);
   };
 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState<string>("");
+  const [successMsg, setSuccessMsg] = useState<string>("");
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -139,14 +144,48 @@ export default function RegisterForm(): JSX.Element {
     }
     setPasswordMatchError(false);
     try {
-      alert("¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.");
+      setLoading(true);
+      setErrorMsg("");
+      setSuccessMsg("");
+      const supabase = getSupabaseBrowserClient();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: fullName },
+          emailRedirectTo: process.env.NEXT_PUBLIC_SITE_URL
+            ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
+            : undefined,
+        },
+      });
+      if (error) throw error;
+      // Insertar nivel por defecto en tabla userlevel (lado servidor)
+      const userId = data?.user?.id;
+      if (userId) {
+        try {
+          const res = await fetch("/api/auth/after-signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, userLevel: "Client" }),
+          });
+          if (!res.ok) {
+            const payload = await res.json().catch(() => ({}));
+            console.warn("after-signup error:", payload?.error);
+          }
+        } catch (e) {
+          console.warn("after-signup fetch failed", e);
+        }
+      }
+      setSuccessMsg("¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.");
       setFullName("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      alert("Ocurrió un error inesperado: " + message);
+      setErrorMsg(message || "Error al registrarse");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -299,7 +338,15 @@ export default function RegisterForm(): JSX.Element {
         )}
       </div>
 
-      <button type="submit">Registrarse</button>
+      {errorMsg && (
+        <p className="text-red-500 text-sm mt-2" role="alert">{errorMsg}</p>
+      )}
+      {successMsg && (
+        <p className="text-green-600 text-sm mt-2" role="status">{successMsg}</p>
+      )}
+      <button type="submit" disabled={loading}>
+        {loading ? "Creando cuenta..." : "Registrarse"}
+      </button>
     </form>
   );
 }

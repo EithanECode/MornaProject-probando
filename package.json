@@ -38,6 +38,7 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
+    "@supabase/supabase-js": "^2.45.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.5.2",
@@ -76,5 +77,9 @@
     "vaul": "^0.9.9",
     "web-vitals": "^2.1.4",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "globby": "^14.1.0",
+    "recast": "^0.23.11"
   }
 }

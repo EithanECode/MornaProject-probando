@@ -4,13 +4,15 @@ import React, { useState } from "react";
 import FormPanel from "./FormPanel";
 import AnimatedPanel from "@/components/auth/AnimatedPanel";
 import { STEPS, CONTACT_METHODS } from "@/lib/constants/auth";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type Props = {
   onNavigateToAuth: () => void;
+  initialStep?: number; // Permite forzar el paso inicial (ej: recuperación desde email)
 };
 
-export default function PasswordReset({ onNavigateToAuth }: Props): JSX.Element {
-  const [step, setStep] = useState<number>(STEPS.CONTACT_METHOD);
+export default function PasswordReset({ onNavigateToAuth, initialStep }: Props): JSX.Element {
+  const [step, setStep] = useState<number>(initialStep ?? STEPS.CONTACT_METHOD);
   const [contactMethod, setContactMethod] = useState<string>(CONTACT_METHODS.EMAIL);
   const [contactValue, setContactValue] = useState<string>("");
   const [verificationCode, setVerificationCode] = useState<string[]>(["", "", "", "", "", ""]);
@@ -18,26 +20,32 @@ export default function PasswordReset({ onNavigateToAuth }: Props): JSX.Element 
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleSendCode = (): void => {
+  const handleSendCode = async (): Promise<void> => {
     if (!contactValue) return;
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { error } = await supabase.auth.resetPasswordForEmail(contactValue, {
+        // Redirige a la página dedicada para restablecer contraseña
+        redirectTo: process.env.NEXT_PUBLIC_SITE_URL
+          ? `${process.env.NEXT_PUBLIC_SITE_URL}/login-register/reset`
+          : undefined,
+      });
+      if (error) throw error;
+      // Permanecemos en paso inicial mostrando feedback mediante UI externa
+    } catch (err) {
+      // Podríamos integrar toast; por ahora silencioso para no romper UI
+    } finally {
       setIsLoading(false);
-      setStep(STEPS.NEW_PASSWORD);
-    }, 2000);
+    }
   };
 
   const handleVerifyCode = (): void => {
-    const code = verificationCode.join("");
-    if (code.length !== 6) return;
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setStep(STEPS.NEW_PASSWORD);
-    }, 1500);
+    // Flujo de Supabase usa link mágico; no se usa código numérico aquí.
+    setStep(STEPS.NEW_PASSWORD);
   };
 
-  const handleResetPassword = (): void => {
+  const handleResetPassword = async (): Promise<void> => {
     if (newPassword !== confirmPassword) {
       alert("Las contraseñas no coinciden.");
       return;
@@ -70,8 +78,10 @@ export default function PasswordReset({ onNavigateToAuth }: Props): JSX.Element 
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
       alert("¡Contraseña restablecida exitosamente! Serás redirigido al inicio de sesión.");
       setStep(STEPS.CONTACT_METHOD);
       setContactValue("");
@@ -79,7 +89,11 @@ export default function PasswordReset({ onNavigateToAuth }: Props): JSX.Element 
       setNewPassword("");
       setConfirmPassword("");
       onNavigateToAuth?.();
-    }, 2000);
+    } catch (err) {
+      alert("Ocurrió un error al restablecer la contraseña.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCodeInput = (index: number, value: string): void => {

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import Lottie from "react-lottie";
 
 type Props = {
@@ -42,10 +43,72 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
       }
     : null;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState<string>("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    // TODO: Lógica de autenticación
-    console.log("Login Data:", { email, password });
+    setErrorMsg("");
+    setLoading(true);
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      // Crear/actualizar userlevel tras login
+      const userId = data?.user?.id;
+      if (userId) {
+        try {
+          const res = await fetch("/api/auth/after-signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, userLevel: "Client" }),
+          });
+          if (!res.ok) {
+            const payload = await res.json().catch(() => ({}));
+            console.warn("after-signup error:", payload?.error);
+          }
+        } catch (e) {
+          console.warn("after-signup fetch failed", e);
+        }
+      }
+      // Consultar nivel desde la tabla 'userlevel' usando la id del usuario autenticado
+      let normalized = "";
+      let levelRaw = "";
+      if (userId) {
+        const { data: ul, error: ulError } = await supabase
+          .from("userlevel")
+          .select("user_level")
+          .eq("id", userId)
+          .maybeSingle();
+        if (ulError) {
+          console.warn("Error consultando userlevel:", ulError.message);
+        }
+        if (!ul) {
+          console.warn("No se encontró registro en userlevel para el usuario", userId);
+        }
+        const level = (ul?.user_level ?? "").toString();
+        levelRaw = level;
+        normalized = level.trim().toLowerCase();
+      }
+
+      const isClient = ["cliente", "client"].includes(normalized);
+      const isPrivileged = ["vzla", "venezuela", "china", "admin", "administrador", "administrator"].includes(normalized);
+
+      // Regla solicitada: Cliente -> login; Vzla/China/Admin -> dashboard (/gestion)
+      if (isClient) {
+        window.location.href = "/login-register"; // de momento, mantener en inicio de sesión
+      } else if (isPrivileged) {
+        window.location.href = "/gestion";
+      } else {
+        // Fallback si no hay nivel definido: enviar al dashboard por compatibilidad
+        window.location.href = "/gestion";
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setErrorMsg(message || "Error al iniciar sesión");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleShowPassword = (): void => setShowPassword(!showPassword);
@@ -98,7 +161,12 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
         ¿Olvidaste tu contraseña?
       </a>
 
-      <button type="submit">Iniciar Sesión</button>
+      {errorMsg && (
+        <p className="text-red-500 text-sm mt-2" role="alert">{errorMsg}</p>
+      )}
+      <button type="submit" disabled={loading}>
+        {loading ? "Ingresando..." : "Iniciar Sesión"}
+      </button>
     </form>
   );
 }

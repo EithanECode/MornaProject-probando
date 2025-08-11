@@ -44,7 +44,12 @@ interface BusinessConfig {
   usdRate: number;
   profitMargin: number;
   usdDiscountPercent: number;
- 
+  
+  // Parámetros operativos adicionales
+  maxQuotationsPerMonth?: number;
+  maxModificationsPerOrder?: number;
+  quotationValidityDays?: number;
+  paymentDeadlineDays?: number;
   
   // Notificaciones y alertas
   emailNotifications: boolean;
