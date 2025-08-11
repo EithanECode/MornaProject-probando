@@ -170,7 +170,7 @@ npm run build
 - [ ] Reportes avanzados
 - [ ] Entre otros
 
-## 👥 Asignación de Tareas
+## 👥 Asignación de Tareas Frontend
 
 ### **María — Dashboard y Pedidos**
 - **Dashboard**
@@ -222,8 +222,61 @@ npm run build
 ### **Daniela**
 - **Rol**: Próximamente se le asignarán tareas.
 
-### **Mi rol**
+### **Alexander**
 - Me encargaré de **unir todas las páginas**, **adaptarlas** y solucionar los problemas del **sidebar** y de la **navegación** entre ellas.
+
+## 👥 Asignación de Tareas Backend
+
+### **Luis — Dashboard**
+
+- **Dashboard**
+  - **Propósito**: Supervisar indicadores clave de la operación y ofrecer accesos rápidos a funcionalidades frecuentes.
+ ---
+
+### **Oscar — Pedidos del Cliente**
+
+- **Pedidos del Cliente**
+  - **Propósito**: Permitir al cliente crear sus pedidos.
+  - **Futuro**:
+    - Permitir al cliente pueda supervisar, filtrar y gestionar sus propios pedidos
+
+---
+
+### **Jade — Gestión de Pedidos**
+
+- **Gestión de Pedidos**
+  - **Propósito**: Controlar el flujo completo de los pedidos desde la creación hasta la entrega.
+
+---
+
+### **Andrea — Alertas y Sidebar**
+
+- **Alertas**
+  - **Propósito**: Informar sobre situaciones críticas que requieren atención inmediata.
+  - **Tareas de Front-end**:
+    - Panel de alertas urgentes (errores de sistemas, pedidos demorados).
+    - Contador de alertas pendientes con resaltado visual.
+    - Modal o pop-up para detalles y acciones correctivas.
+
+- **Sidebar**
+  - **Propósito**: Navegación principal y acceso rápido a secciones de la aplicación.
+
+---
+
+### **Sebastian — Reportes (solo del Admin)**
+
+- **Reportes**
+  - **Propósito**: Generar, visualizar y exportar análisis de datos empresariales, accesible únicamente para el rol administrador.
+
+---
+
+### **Tomas — Creación de Usuarios y Manejo de Tablas SQL**
+
+- **Creación de Usuarios**  
+  - **Propósito**: Gestionar la incorporación y permisos de nuevos usuarios.  
+
+- **Manejo de Tablas SQL**  
+  - **Propósito**: Administrar la estructura de la base de datos y ejecutar scripts de migración.  
 
 ---
 
