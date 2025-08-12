@@ -388,12 +388,14 @@ export default function PedidosPage() {
   ), [paginatedOrders]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex overflow-x-hidden">
       {/* Sidebar */}
       <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
 
       {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
+      <main className={`flex-1 transition-all duration-300 ${
+        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'
+      }`}>
         {/* Header */}
         <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40">
           <div className="px-6 py-4">
