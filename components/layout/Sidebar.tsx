@@ -26,6 +26,8 @@ import { Badge } from '@/components/ui/badge';
 interface SidebarProps {
   isExpanded: boolean;
   setIsExpanded: (expanded: boolean) => void;
+  isMobileMenuOpen?: boolean;
+  onMobileMenuClose?: () => void;
 }
 
 // Memoizar los elementos del menú para evitar recreaciones
@@ -100,7 +102,7 @@ const BOTTOM_ITEMS = [
 
 // Hook personalizado para detectar el tamaño de pantalla
 const useScreenSize = () => {
-  const [screenWidth, setScreenWidth] = useState(0);
+  const [screenWidth, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
   useEffect(() => {
     const updateScreenWidth = () => {
@@ -126,7 +128,7 @@ const useActivePage = () => {
   }, [pathname]);
 };
 
-export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
+export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = false, onMobileMenuClose }: SidebarProps) {
   const router = useRouter();
   const screenWidth = useScreenSize();
   const activeItem = useActivePage();
@@ -137,11 +139,14 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
     const isSmallScreen = screenWidth < 1366;
     const isMediumScreen = screenWidth < 1600;
     const isLargeScreen = screenWidth >= 1600;
+    const isMobile = screenWidth < 1024; // lg breakpoint
 
     return {
-      sidebarWidth: isExpanded 
-        ? (screenWidth < 1440 ? 'w-64' : 'w-72')
-        : (isSmallScreen ? 'w-16' : isMediumScreen ? 'w-18' : 'w-20'),
+      sidebarWidth: isMobile 
+        ? (isMobileMenuOpen ? 'w-80' : 'w-0') // Ancho fijo para móviles cuando está abierto, 0 cuando cerrado
+        : isExpanded 
+          ? (screenWidth < 1440 ? 'w-64' : 'w-72')
+          : (isSmallScreen ? 'w-16' : isMediumScreen ? 'w-18' : 'w-20'),
       
       iconSize: isExpanded
         ? (isSmallScreen ? 'w-4 h-4' : isMediumScreen ? 'w-4.5 h-4.5' : 'w-5 h-5')
@@ -169,25 +174,28 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       userContainerSize: isSmallScreen ? 'w-8 h-8' : 'w-10 h-10',
       userTextSize: isSmallScreen ? 'text-xs' : 'text-sm',
       userSubtextSize: isSmallScreen ? 'text-[10px]' : 'text-xs',
-      userPadding: isSmallScreen ? 'p-2' : 'p-3'
+      userPadding: isSmallScreen ? 'p-2' : 'p-3',
+      isMobile
     };
-  }, [isExpanded, screenWidth]);
+  }, [isExpanded, screenWidth, isMobileMenuOpen]);
 
-  // Optimizar el manejo del hover
+  // Optimizar el manejo del hover (solo en desktop)
   const handleMouseEnter = useCallback(() => {
+    if (responsiveConfig.isMobile) return;
     if (hoverTimeout) {
       clearTimeout(hoverTimeout);
       setHoverTimeout(null);
     }
     setIsExpanded(true);
-  }, [hoverTimeout, setIsExpanded]);
+  }, [hoverTimeout, setIsExpanded, responsiveConfig.isMobile]);
 
   const handleMouseLeave = useCallback(() => {
+    if (responsiveConfig.isMobile) return;
     const timeout = setTimeout(() => {
       setIsExpanded(false);
     }, 300);
     setHoverTimeout(timeout);
-  }, [setIsExpanded]);
+  }, [setIsExpanded, responsiveConfig.isMobile]);
 
   // Optimizar la navegación
   const handleNavigation = useCallback((path: string) => {
@@ -250,91 +258,108 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
   }, [isExpanded, activeItem, responsiveConfig, handleNavigation, screenWidth]);
 
   return (
-    <div 
-      className={`
-        fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 
-        border-r border-slate-700/50 shadow-2xl backdrop-blur-sm z-50
-        transition-all duration-150 ease-out flex flex-col
-        ${responsiveConfig.sidebarWidth}
-      `}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* Header */}
-      <div className={`${responsiveConfig.padding} border-b border-slate-700/50 flex-shrink-0`}>
-        <div className={`flex items-center ${isExpanded ? 'space-x-3' : 'justify-center'}`}>
-          <PitaLogo size={responsiveConfig.logoSize} animated={true} />
-          <div className={`
-            transition-all duration-150 ease-out overflow-hidden
-            ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
-          `}>
-            <div className="whitespace-nowrap">
-              <h1 className={`font-bold text-white ${responsiveConfig.titleSize}`}>Pita Express</h1>
-              <p className={`text-slate-400 ${responsiveConfig.subtitleSize}`}>Admin Panel</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className={`flex-1 ${responsiveConfig.padding} space-y-2 overflow-y-auto sidebar-scrollbar`}>
-        {MENU_ITEMS.map(renderMenuItem)}
-      </nav>
-
-      {/* Bottom Section */}
-      <div className={`${responsiveConfig.padding} border-t border-slate-700/50 space-y-4 flex-shrink-0`}>
-        {/* User Profile */}
-        <div className={`flex items-center space-x-3 ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
-          <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center`}>
-            <VenezuelaFlag size="sm" animated={true} />
-          </div>
-          <div className={`
-            transition-all duration-150 ease-out overflow-hidden
-            ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
-          `}>
-            <div className="whitespace-nowrap">
-              <p className={`font-medium text-white ${responsiveConfig.userTextSize}`}>Empleado Vzla</p>
-              <p className={`text-slate-400 ${responsiveConfig.userSubtextSize}`}>vzla@logidash.com</p>
+    <>
+      {/* Overlay para móviles */}
+      {responsiveConfig.isMobile && isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={onMobileMenuClose}
+        />
+      )}
+      
+      <div 
+        className={`
+          fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 
+          border-r border-slate-700/50 shadow-2xl backdrop-blur-sm z-50
+          transition-all duration-300 ease-out flex flex-col
+          ${responsiveConfig.isMobile 
+            ? 'w-80' 
+            : responsiveConfig.sidebarWidth
+          }
+        `}
+        style={{
+          display: responsiveConfig.isMobile && !isMobileMenuOpen ? 'none' : 'flex',
+          transform: responsiveConfig.isMobile && !isMobileMenuOpen ? 'translateX(-100%)' : 'translateX(0)'
+        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Header */}
+        <div className={`${responsiveConfig.padding} border-b border-slate-700/50 flex-shrink-0`}>
+          <div className={`flex items-center ${isExpanded ? 'space-x-3' : 'justify-center'}`}>
+            <PitaLogo size={responsiveConfig.logoSize} animated={true} />
+            <div className={`
+              transition-all duration-150 ease-out overflow-hidden
+              ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+            `}>
+              <div className="whitespace-nowrap">
+                <h1 className={`font-bold text-white ${responsiveConfig.titleSize}`}>Pita Express</h1>
+                <p className={`text-slate-400 ${responsiveConfig.subtitleSize}`}>Admin Panel</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Settings */}
-        {BOTTOM_ITEMS.map((item) => {
-          const Icon = item.icon;
-          
-          return (
-            <button
-              key={item.id}
-              onClick={() => handleNavigation(item.path)}
-              className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-150 ease-out group"
-            >
-              <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-slate-600/50`}>
-                <Icon className={`${responsiveConfig.iconSize} ${item.color}`} />
-              </div>
-              <div className={`
-                transition-all duration-150 ease-out overflow-hidden
-                ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
-              `}>
-                <span className="font-medium whitespace-nowrap">{item.label}</span>
-              </div>
-            </button>
-          );
-        })}
+        {/* Navigation */}
+        <nav className={`flex-1 ${responsiveConfig.padding} space-y-2 overflow-y-auto sidebar-scrollbar`}>
+          {MENU_ITEMS.map(renderMenuItem)}
+        </nav>
 
-        {/* Logout */}
-        <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ease-out group border border-red-500/20">
-          <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-red-500/20`}>
-            <LogOut className={responsiveConfig.iconSize} />
+        {/* Bottom Section */}
+        <div className={`${responsiveConfig.padding} border-t border-slate-700/50 space-y-4 flex-shrink-0`}>
+          {/* User Profile */}
+          <div className={`flex items-center space-x-3 ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
+            <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center`}>
+              <VenezuelaFlag size="sm" animated={true} />
+            </div>
+            <div className={`
+              transition-all duration-150 ease-out overflow-hidden
+              ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+            `}>
+              <div className="whitespace-nowrap">
+                <p className={`font-medium text-white ${responsiveConfig.userTextSize}`}>Empleado Vzla</p>
+                <p className={`text-slate-400 ${responsiveConfig.userSubtextSize}`}>vzla@logidash.com</p>
+              </div>
+            </div>
           </div>
-          <div className={`
-            transition-all duration-150 ease-out overflow-hidden
-            ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
-          `}>
-            <span className="font-medium whitespace-nowrap">Cerrar Sesión</span>
-          </div>
-        </button>
+
+          {/* Settings */}
+          {BOTTOM_ITEMS.map((item) => {
+            const Icon = item.icon;
+            
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavigation(item.path)}
+                className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-150 ease-out group"
+              >
+                <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-slate-600/50`}>
+                  <Icon className={`${responsiveConfig.iconSize} ${item.color}`} />
+                </div>
+                <div className={`
+                  transition-all duration-150 ease-out overflow-hidden
+                  ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+                `}>
+                  <span className="font-medium whitespace-nowrap">{item.label}</span>
+                </div>
+              </button>
+            );
+          })}
+
+          {/* Logout */}
+          <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ease-out group border border-red-500/20">
+            <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-red-500/20`}>
+              <LogOut className={responsiveConfig.iconSize} />
+            </div>
+            <div className={`
+              transition-all duration-150 ease-out overflow-hidden
+              ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+            `}>
+              <span className="font-medium whitespace-nowrap">Cerrar Sesión</span>
+            </div>
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

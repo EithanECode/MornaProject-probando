@@ -47,10 +47,24 @@ interface FormDataVzla {
   observaciones: string
 }
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [screenWidth, setScreenWidth] = useState(0);
   const [notifications, setNotifications] = useState(3);
   const [animateStats, setAnimateStats] = useState(false);
+
+  useEffect(() => {
+    const updateScreenWidth = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    updateScreenWidth();
+    window.addEventListener('resize', updateScreenWidth);
+    return () => window.removeEventListener('resize', updateScreenWidth);
+  }, []);
+
+  const isMobile = screenWidth < 1024;
 
   // Usar hooks optimizados
   const { 
@@ -87,15 +101,23 @@ export default function Dashboard() {
     // Aquí puedes agregar la lógica para guardar el pedido de Venezuela
   }, []);
 
+  const handleMobileMenuToggle = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleMobileMenuClose = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   // Memoizar el contenido principal para evitar re-renders innecesarios
   const mainContent = useMemo(() => (
-    <div className="p-6 space-y-8">
+    <div className="p-4 sm:p-6 space-y-6 sm:space-y-8">
       <StatsCards stats={stats} animateStats={animateStats} />
       
       {/* Lazy load components */}
       <LazyWorkflowSection workflowSteps={WORKFLOW_STEPS} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         <LazyRecentOrders orders={recentOrders} />
         <QuickActions 
           onChinaSubmit={handleChinaSubmit} 
@@ -107,7 +129,7 @@ export default function Dashboard() {
 
   // Memoizar el error state
   const errorContent = useMemo(() => (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <p className="text-red-800">
           {statsError || ordersError}
@@ -132,12 +154,24 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex overflow-x-hidden">
-      <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
+      <Sidebar 
+        isExpanded={sidebarExpanded} 
+        setIsExpanded={setSidebarExpanded}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onMobileMenuClose={handleMobileMenuClose}
+      />
       
-      <main className={`flex-1 transition-all duration-200 ease-out ${
-        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'
-      }`}>
-        <Header notifications={notifications} />
+      <main 
+        className="flex-1 transition-all duration-200 ease-out"
+        style={{
+          marginLeft: isMobile ? '0' : (sidebarExpanded ? '18rem' : '5rem'),
+          width: isMobile ? '100%' : (sidebarExpanded ? 'calc(100% - 18rem)' : 'calc(100% - 5rem)')
+        }}
+      >
+        <Header 
+          notifications={notifications} 
+          onMenuToggle={handleMobileMenuToggle}
+        />
         
         {/* Stale indicator */}
         {staleIndicator}
