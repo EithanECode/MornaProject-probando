@@ -1,0 +1,764 @@
+:root {
+    --card-background: #f4f4f4; /* Usando un gris claro para el fondo */
+    --primary-red: #EE3C23;
+    --primary-dark: #202841;
+    --text-dark-gray: #514F4F;
+    --text-black: #000000;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --border-color: #d1d1d1;
+    --light-gray-bg: #e9e9e9;
+    --hover-dark-bg: #202841; /* Color de hover para opciones de radio/checkbox */
+    --card-shadow-color: rgba(32, 40, 65, 0.1);
+}
+
+.order-request-card {
+    background-color: var(--card-background);
+    border-radius: 12px;
+    padding: 30px 40px;
+    box-shadow: 0 4px 15px var(--card-shadow-color);
+    width: 90%;
+    max-width: 900px;
+    margin-top: 20px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.card-title {
+    font-size: 1.8rem;
+    color: var(--primary-dark);
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.card-subtitle {
+    font-size: 1rem;
+    color: var(--text-dark-gray);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.order-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-section h3 {
+    font-size: 1.2rem;
+    color: var(--text-dark-gray);
+    margin-bottom: 15px;
+    margin-top: 30px;
+}
+
+.radio-group, .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.radio-option, .checkbox-option {
+    display: flex;
+    align-items: center;
+    background-color: var(--light-gray-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+}
+
+.radio-option:hover, .checkbox-option:hover {
+    background-color: var(--hover-dark-bg);
+    border-color: var(--hover-dark-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    color: rgb(255, 255, 255); /* Color de texto blanco en hover */
+}
+
+.radio-option.selected .option-title,
+.radio-option.selected .option-description,
+.checkbox-option.selected .option-title,
+.checkbox-option.selected .option-description {
+    color: #fff !important;
+}
+
+.radio-option.selected, .checkbox-option.selected {
+    border-color: var(--primary-red); /* rojo */
+    background-color: #202841 !important;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    color: #fff !important;
+}
+
+.radio-option input[type="radio"],
+.checkbox-option input[type="checkbox"] {
+    accent-color: var(--primary-red);
+}
+
+.radio-option input[type="radio"]:checked {
+    accent-color: var(--primary-red) !important;
+    /* Para navegadores que no soportan accent-color, puedes usar box-shadow como fallback */
+}
+
+.option-content {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.option-content .icon {
+    font-size: 1.8rem;
+    margin-right: 15px;
+    color: var(--primary-red);
+}
+
+/* Ajuste del color del icono en el hover para las opciones */
+.radio-option:hover .option-content .icon,
+.checkbox-option:hover .option-content .icon {
+    color: white;
+}
+
+.option-content .text-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.option-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark-gray);
+}
+
+.option-description {
+    font-size: 0.9rem;
+    color: var(--text-dark-gray);
+}
+
+.form-group {
+    margin: 30px 0;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-dark-gray);
+}
+
+.text-input, .textarea-input, .select-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: black;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
+
+.text-input:focus, .textarea-input:focus, .select-input:focus {
+    outline: none;
+    border-color: var(--primary-red);
+    box-shadow: 0 0 0 3px rgba(238, 60, 35, 0.2);
+}
+
+.textarea-input {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.submit-button {
+    background-color: #202841; 
+    color: white;
+    box-shadow: 0 4px 10px rgba(15, 50, 96, 0.3);
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 10px;
+    align-self: center;
+    margin: 20px auto 0 auto;
+    border: none;
+    display: block;
+}
+
+.submit-button:hover {
+    background-color: var(--button-hover-blue);
+    box-shadow: 0 4px 10px rgba(15, 50, 96, 0.3);
+}
+
+/* Estilos para la sección del carrito */
+.cart-section {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e0e0e0;
+}
+
+.cart-section h3 {
+    color: var(--primary-dark);
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid var(--primary-red);
+    padding-bottom: 10px;
+}
+
+.cart-items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.cart-item {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.cart-item:hover {
+    background-color: #fff;
+    border-color: var(--primary-red);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cart-item-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.cart-item-main-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.cart-item-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.cart-item-title {
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 1.1rem;
+}
+
+.cart-item-quantity {
+    background-color: var(--primary-red);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.cart-item-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-item-url,
+.cart-item-description {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cart-item-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.action-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.delete-button {
+    background-color: #ffeff1;
+    color: #ff4757;
+}
+
+.delete-button:hover {
+    background-color: #ff4757;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(255, 71, 87, 0.3);
+}
+
+.edit-button {
+    background-color: #eef2ff;
+    color: #3742fa;
+}
+
+.edit-button:hover {
+    background-color: #3742fa;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(55, 66, 250, 0.3);
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--text-dark-gray);
+    font-style: italic;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Estilos para el botón Agregar a la Caja */
+.add-to-cart-button {
+    background-color: #202841;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 auto;
+    max-width: 250px;
+    width: fit-content;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.add-to-cart-button:hover {
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+    background: var(--button-hover-blue);
+}
+
+.add-to-cart-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3);
+}
+
+.add-to-cart-text {
+    white-space: nowrap;
+}
+
+.add-to-cart-lottie {
+    flex-shrink: 0;
+}
+
+.image-upload-area {
+    border: 2px dashed #e7b6ac; /* Borde rojo claro punteado */
+    border-radius: 12px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fcf1ef; /* Fondo rojo muy claro */
+    text-align: center;
+    gap: 15px;
+}
+
+.folder-icon {
+    font-size: 4rem;
+    color: var(--primary-red);
+    margin-bottom: 10px;
+}
+
+.select-image-button {
+    background-color: #202841; 
+    color: white;
+    box-shadow: 0 4px 10px rgba(15, 50, 96, 0.3);
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.select-image-button:hover {
+    background-color: var(--button-hover-blue);
+    box-shadow: 0 4px 10px rgba(15, 50, 96, 0.3);
+}
+
+.file-info {
+    font-size: 0.9rem;
+    color: var(--text-dark-gray);
+}
+
+.file-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-dark-gray);
+    margin-top: 5px;
+}
+
+.select-input option {
+    padding: 8px 10px;
+}
+
+.checkbox-option .option-content {
+    display: flex;
+    align-items: center;
+}
+
+.option-content .icon {
+    margin-right: 10px;
+    font-size: 1.5rem;
+}
+
+.delivery-lottie-icon {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px;
+    min-height: 30px;
+}
+
+/* Estilos para las opciones de envío en fila */
+.shipping-row-options {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.shipping-option {
+    display: flex;
+    flex: 1;
+    min-width: 200px;
+    align-items: flex-start;
+    background-color: var(--light-gray-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+}
+
+.shipping-option:hover {
+    background-color: var(--hover-dark-bg);
+    border-color: var(--hover-dark-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    color: rgb(255, 255, 255);
+}
+
+.shipping-option.selected {
+    border-color: var(--primary-red);
+    background-color: #202841 !important;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    color: #fff !important;
+}
+
+.shipping-option input[type="radio"] {
+    accent-color: var(--primary-red);
+    margin-right: 10px;
+    margin-top: 2px;
+    align-self: flex-start;
+}
+
+.shipping-option-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.shipping-lottie-container {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shipping-text-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.shipping-option-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark-gray);
+    margin-bottom: 2px;
+}
+
+.shipping-option-description {
+    font-size: 0.85rem;
+    color: var(--text-dark-gray);
+}
+
+.shipping-option.selected .shipping-option-title,
+.shipping-option.selected .shipping-option-description {
+    color: #fff !important;
+}
+
+.shipping-option:hover .shipping-option-title,
+.shipping-option:hover .shipping-option-description {
+    color: white;
+}
+
+.shipping-lottie-icon {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+/* Espaciado para la sección de entrega en Venezuela */
+.delivery-section {
+    margin-top: 35px;
+}
+
+.venezuela-label {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.photo-description-section {
+    opacity: 0;
+    visibility: hidden;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, max-height 0.3s ease;
+}
+
+.photo-description-section.visible {
+    opacity: 1;
+    visibility: visible;
+    max-height: 500px;
+}
+
+/* Responsive adjustments for form */
+@media (max-width: 768px) {
+    .order-request-card {
+        padding: 25px 20px;
+        width: 95%;
+    }
+    .card-title {
+        font-size: 1.6rem;
+    }
+    .card-subtitle {
+        font-size: 0.9rem;
+    }
+    .form-section h3 {
+        font-size: 1.1rem;
+    }
+    .radio-option, .checkbox-option {
+        padding: 12px 15px;
+    }
+    .option-content .icon {
+        font-size: 1.5rem;
+        margin-right: 10px;
+    }
+    .option-title {
+        font-size: 1rem;
+    }
+    .option-description {
+        font-size: 0.85rem;
+    }
+    .text-input, .textarea-input, .select-input {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+    .submit-button {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+    /* Responsivo para sección del carrito en tabletas */
+    .cart-section {
+        padding: 20px;
+        margin: 15px 0;
+    }
+    
+    .cart-item {
+        padding: 15px;
+    }
+    
+    .cart-item-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .cart-item-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .cart-item-actions {
+        justify-content: flex-end;
+    }
+    
+    .cart-item-details-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .cart-item-actions {
+        flex-direction: row;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    /* Responsivo para botón agregar a la caja en tabletas */
+    .add-to-cart-button {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+        max-width: 220px;
+    }
+    /* Responsivo para opciones de envío en tabletas */
+    .shipping-row-options {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .shipping-option {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .order-request-card {
+        padding: 20px 15px;
+    }
+    .card-title {
+        font-size: 1.4rem;
+    }
+    .radio-option, .checkbox-option {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 12px;
+        text-align: left;
+    }
+    .radio-option input[type="radio"],
+    .checkbox-option input[type="checkbox"] {
+        margin-right: 0;
+        margin-bottom: 10px;
+        align-self: flex-start;
+    }
+    .option-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .option-content .icon {
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+    .option-title, .option-description {
+        text-align: left;
+    }
+    /* Responsivo para opciones de envío en móviles */
+    .shipping-row-options {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .shipping-option {
+        min-width: 100%;
+        padding: 12px;
+    }
+    .shipping-option-title {
+        font-size: 0.95rem;
+    }
+    .shipping-option-description {
+        font-size: 0.8rem;
+    }
+    /* Responsivo para sección del carrito en móviles */
+    .cart-section {
+        padding: 15px;
+        margin: 10px 0;
+    }
+    
+    .cart-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+    
+    .cart-item {
+        padding: 12px;
+    }
+    
+    .cart-item-title {
+        font-size: 1rem;
+    }
+    
+    .cart-item-quantity {
+        font-size: 0.8rem;
+        padding: 3px 10px;
+    }
+    
+    .cart-item-url,
+    .cart-item-description {
+        font-size: 0.8rem;
+    }
+    
+    .action-button {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .action-icon {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .action-label {
+        font-size: 0.65rem;
+    }
+    
+    .empty-cart {
+        padding: 20px 15px;
+    }
+    
+    /* Responsivo para botón agregar a la caja en móviles */
+    .add-to-cart-button {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+        max-width: 200px;
+        margin: 15px auto 0;
+    }
+}
