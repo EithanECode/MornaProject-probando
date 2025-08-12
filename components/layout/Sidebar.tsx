@@ -277,7 +277,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className={`flex-1 ${responsiveConfig.padding} space-y-2 overflow-y-auto`}>
+      <nav className={`flex-1 ${responsiveConfig.padding} space-y-2 overflow-y-auto sidebar-scrollbar`}>
         {MENU_ITEMS.map(renderMenuItem)}
       </nav>
 

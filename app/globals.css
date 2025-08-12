@@ -92,6 +92,33 @@ body, html, * {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;  /* Safari and Chrome */
   }
+
+  /* Estilos personalizados para el scrollbar del sidebar */
+  .sidebar-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-track {
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 3px;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3b82f6, #6366f1);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #2563eb, #4f46e5);
+    transform: scaleX(1.2);
+  }
+
+  /* Para Firefox */
+  .sidebar-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #3b82f6 rgba(51, 65, 85, 0.3);
+  }
   
   /* Line clamp para controlar líneas de texto */
   .line-clamp-2 {
