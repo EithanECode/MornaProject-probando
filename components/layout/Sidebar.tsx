@@ -141,8 +141,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     const isLargeScreen = screenWidth >= 1600;
     const isMobile = screenWidth < 1024; // lg breakpoint
 
-    // Debug: mostrar el ancho detectado por el Sidebar
-    console.log('Sidebar - Ancho detectado:', screenWidth, 'px, isMobile:', isMobile, 'isExpanded:', isExpanded);
+
 
     return {
       sidebarWidth: isMobile 

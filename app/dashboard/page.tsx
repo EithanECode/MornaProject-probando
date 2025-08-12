@@ -67,23 +67,13 @@ export default function DashboardPage() {
       const width = window.innerWidth;
       setScreenWidth(width);
       
-      // Debug: mostrar el ancho de pantalla
-      console.log('Ancho de pantalla:', width, 'px');
-      
       // Aplicar lógica de sidebar inmediatamente
       if (width >= 1024) {
-        console.log('Desktop detectado - Sidebar contraído');
         setSidebarExpanded(false); // Desktop: contraído
         setIsMobileMenuOpen(false);
       } else {
-        console.log('Mobile detectado - Sidebar expandido');
         setSidebarExpanded(true); // Mobile: expandido para mejor usabilidad
       }
-      
-      // Debug: verificar el estado después de establecerlo
-      setTimeout(() => {
-        console.log('Estado sidebarExpanded después de actualizar:', sidebarExpanded);
-      }, 100);
     };
 
     // Actualizar inmediatamente y con un pequeño delay para herramientas de desarrollo
