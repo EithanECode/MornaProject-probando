@@ -62,7 +62,7 @@ const StatCard = memo(({
   const Icon = config.icon;
   
   return (
-    <Card className={`bg-gradient-to-r ${config.gradient} text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
+    <Card className={`stats-card bg-gradient-to-r ${config.gradient} text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>
@@ -86,7 +86,17 @@ const StatCard = memo(({
 StatCard.displayName = 'StatCard';
 
 const StatsCards = memo(({ stats, animateStats }: StatsCardsProps) => {
-  // Manejar el caso cuando stats es null
+  // Usar datos por defecto si stats es null para evitar elementos invisibles
+  const defaultStats: OrderStats = {
+    total: 0,
+    pending: 0,
+    completed: 0,
+    inTransit: 0
+  };
+  
+  const displayStats = stats || defaultStats;
+  
+  // Manejar el caso cuando stats es null con skeleton loading
   if (!stats) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

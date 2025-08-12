@@ -204,8 +204,10 @@ export default function DashboardPage() {
         {/* Mostrar errores si existen */}
         {(statsError || ordersError) && errorContent}
 
-        {/* Contenido principal - StatsCards y RecentOrders manejan el estado null internamente */}
-        {mainContent}
+        {/* Contenido principal con fallback para evitar elementos invisibles */}
+        <div className="min-h-screen dashboard-content">
+          {mainContent}
+        </div>
       </main>
 
       <style jsx>{`
@@ -229,6 +231,24 @@ export default function DashboardPage() {
         }
         .animate-fadeIn {
           animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Prevenir elementos invisibles */
+        .dashboard-content {
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+        
+        /* Asegurar que el header siempre sea visible */
+        .dashboard-header {
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+        
+        /* Asegurar que las tarjetas siempre sean visibles */
+        .stats-card {
+          visibility: visible !important;
+          opacity: 1 !important;
         }
       `}</style>
     </div>
