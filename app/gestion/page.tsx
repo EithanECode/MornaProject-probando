@@ -63,7 +63,7 @@ interface BusinessConfig {
 
 export default function ConfiguracionPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [config, setConfig] = useState<BusinessConfig>({
     airShippingRate: 8.50,
@@ -126,7 +126,14 @@ export default function ConfiguracionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
+    <div
+      className={
+        `min-h-screen flex ` +
+        (mounted && theme === 'dark'
+          ? 'bg-slate-900'
+          : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50')
+      }
+    >
       <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
 
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
@@ -145,17 +152,7 @@ export default function ConfiguracionPage() {
                     Guardado: {lastSaved.toLocaleString('es-VE')}
                   </div>
                 )}
-                {/* Switch tema claro/oscuro */}
-                <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/60 border border-slate-200 opacity-60 cursor-not-allowed" aria-disabled>
-                  <Sun className={`w-4 h-4 ${mounted && theme === 'light' ? 'text-yellow-500' : 'text-slate-400'}`} />
-                  <Switch
-                    aria-label="Cambiar tema"
-                    checked={mounted ? theme === 'dark' : false}
-                    onCheckedChange={(checked: boolean) => setTheme(checked ? 'dark' : 'light')}
-                    disabled
-                  />
-                  <Moon className={`w-4 h-4 ${mounted && theme === 'dark' ? 'text-indigo-600' : 'text-slate-400'}`} />
-                </div>
+                {/* Switch tema claro/oscuro removido, el tema es global */}
                 <Button 
                   onClick={handleSave}
                   disabled={isLoading}
@@ -205,12 +202,12 @@ export default function ConfiguracionPage() {
                 {/* Envío Aéreo */}
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="flex items-center text-black">
                       <Plane className="w-5 h-5 mr-2 text-blue-600" />
-                      Envío Aéreo
+                      Envío Aéreo Express
                     </CardTitle>
-                    <CardDescription>
-                      Configuración para envíos por vía aérea
+                    <CardDescription className="text-black">
+                      Tarifas y tiempos para envíos rápidos por avión
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -286,12 +283,12 @@ export default function ConfiguracionPage() {
                 {/* Envío Marítimo */}
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="flex items-center text-black">
                       <Ship className="w-5 h-5 mr-2 text-teal-600" />
-                      Envío Marítimo
+                      Envío Marítimo Económico
                     </CardTitle>
-                    <CardDescription>
-                      Configuración para envíos por vía marítima
+                    <CardDescription className="text-black">
+                      Opciones y costos para envíos por barco
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -371,11 +368,11 @@ export default function ConfiguracionPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="flex items-center text-black">
                       <Globe className="w-5 h-5 mr-2 text-green-600" />
                       Tasa de Cambio
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-black">
                       Valor del dólar estadounidense
                     </CardDescription>
                   </CardHeader>
@@ -407,11 +404,11 @@ export default function ConfiguracionPage() {
 
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="flex items-center text-black">
                       <Percent className="w-5 h-5 mr-2 text-purple-600" />
                       Márgenes y Descuentos
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-black">
                       Configuración de rentabilidad
                     </CardDescription>
                   </CardHeader>
@@ -455,11 +452,11 @@ export default function ConfiguracionPage() {
             <TabsContent value="notifications" className="space-y-6">
               <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-black">
                     <Bell className="w-5 h-5 mr-2 text-red-600" />
                     Sistema de Notificaciones
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-black">
                     Configuración de alertas y comunicaciones
                   </CardDescription>
                 </CardHeader>
@@ -516,9 +513,9 @@ export default function ConfiguracionPage() {
           </Tabs>
 
           {/* Panel de Resumen */}
-          <Card className="shadow-lg border-0 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center">
+              <CardTitle className="flex items-center text-black">
                 <Calculator className="w-5 h-5 mr-2 text-blue-600" />
                 Resumen de Configuración Actual
               </CardTitle>
@@ -540,8 +537,8 @@ export default function ConfiguracionPage() {
                 <div className="text-center p-3 bg-white rounded-lg">
                   <p className="text-slate-600">Margen</p>
                   <p className="font-bold text-purple-600">{config.profitMargin}%</p>
+              </div>
             </div>
-          </div>
             </CardContent>
           </Card>
         </div>

@@ -36,19 +36,19 @@ const AlertCard: React.FC<AlertCardProps> = ({ alert, onResolve, onView }) => {
         <div className="flex justify-between items-start mb-2">
           <div className="flex items-center space-x-2">
             {getTypeIcon(alert.type)}
-            <h3 className="text-sm font-semibold text-gray-900">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
               {alert.title}
             </h3>
             {getPriorityBadge(alert.priority)}
-            {alert.category && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                {alert.category}
-              </span>
-            )}
+              {alert.category && (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                  {alert.category}
+                </span>
+              )}
           </div>
         </div>
-        <p className="text-gray-500 text-sm truncate mb-1">{alert.message}</p>
-        <div className="text-gray-500 text-xs flex items-center space-x-4">
+          <p className="text-gray-500 dark:text-gray-200 text-sm truncate mb-1">{alert.message}</p>
+          <div className="text-gray-500 dark:text-gray-300 text-xs flex items-center space-x-4">
           <span>{timeAgo}</span>
           <span>{alert.pedidoId}</span>
           <span>{alert.usuario}</span>

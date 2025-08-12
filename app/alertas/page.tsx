@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 // Importaciones directas de los componentes
 import Header from './Header';
@@ -26,7 +27,9 @@ const AlertasPage: React.FC = () => {
   const [alertTypeFilter, setAlertTypeFilter] = useState<string>('all');
   const [alertPriorityFilter, setAlertPriorityFilter] = useState<string>('all');
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
-
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
     generateSampleAlerts();
   }, []);
@@ -105,22 +108,27 @@ const AlertasPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex overflow-x-hidden">
+    <div
+      className={
+        `min-h-screen flex overflow-x-hidden ` +
+        (mounted && theme === 'dark'
+          ? 'bg-slate-900'
+          : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50')
+      }
+    >
       <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
 
-      <main className={`flex-1 transition-all duration-300 ${
-        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'
-      }`}>
+      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
         {/* Header sticky superior solo con el título */}
-        <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40">
+        <header className={mounted && theme === 'dark' ? 'bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-40' : 'bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40'}>
           <div className="px-6 py-4">
-            <h1 className="text-2xl font-bold text-slate-900">Alertas</h1>
-            <p className="text-sm text-slate-600">Notificaciones críticas para atención inmediata</p>
+            <h1 className={`text-2xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Alertas</h1>
+            <p className={mounted && theme === 'dark' ? 'text-sm text-slate-300' : 'text-sm text-slate-600'}>Notificaciones críticas para atención inmediata</p>
           </div>
         </header>
 
         {/* Dashboard avanzado de alertas */}
-        <div className="p-6 space-y-6">
+        <div className={mounted && theme === 'dark' ? 'p-6 space-y-6 bg-slate-900' : 'p-6 space-y-6'}>
           <StatsDashboard stats={stats} />
           <ControlPanel
             onGenerateNewAlert={() => setIsModalOpen(true)}

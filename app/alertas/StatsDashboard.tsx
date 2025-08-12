@@ -13,9 +13,9 @@ interface StatsDashboardProps {
 
 const colorGradients: Record<string, string> = {
   indigo: 'from-indigo-500 to-indigo-600',
-  red: 'from-red-500 to-red-600',
-  yellow: 'from-yellow-400 to-yellow-500',
-  green: 'from-green-500 to-green-600',
+  red: 'from-red-700 to-red-900',
+  yellow: 'from-yellow-600 to-yellow-800',
+  green: 'from-green-700 to-green-900',
 };
 
 const StatCard: React.FC<{ title: string; value: number; color: string; icon: React.ReactNode; delay?: number }> = ({ title, value, color, icon, delay = 0 }) => (

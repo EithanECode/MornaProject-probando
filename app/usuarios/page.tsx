@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -37,6 +38,9 @@ const ROLE_COLORS: Record<UserRole, string> = {
 
 export default function UsuariosPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const [users, setUsers] = useState<User[]>([
     { id: 'USR-001', fullName: 'María González', email: 'maria@empresa.com', role: 'Admin', status: 'activo', createdAt: '2024-04-01T10:00:00Z' },
@@ -117,7 +121,14 @@ export default function UsuariosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
+    <div
+      className={
+        `min-h-screen flex ` +
+        (mounted && theme === 'dark'
+          ? 'bg-slate-900'
+          : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50')
+      }
+    >
       <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
 
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
@@ -199,7 +210,7 @@ export default function UsuariosPage() {
         <div className="p-6 space-y-6">
           <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-xl">Listado de Usuarios</CardTitle>
+              <CardTitle className="text-xl flex items-center text-black">Listado de Usuarios</CardTitle>
               <CardDescription>Administra roles, estados y accesos de la plataforma</CardDescription>
             </CardHeader>
             <CardContent>
@@ -322,4 +333,3 @@ export default function UsuariosPage() {
     </div>
   );
 }
-

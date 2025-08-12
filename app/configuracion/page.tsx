@@ -32,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 
 interface BusinessConfig {
   // Parámetros de envío
@@ -148,12 +149,13 @@ export default function ConfiguracionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
+    <div className={cn(
+      "min-h-screen flex",
+      theme === 'dark'
+        ? 'bg-slate-900'
+        : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
+    )}>
       <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
-
-
-
-
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
         {/* Header */}
         <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40">
@@ -171,13 +173,12 @@ export default function ConfiguracionPage() {
                   </div>
                 )}
                 {/* Switch tema claro/oscuro */}
-                <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/60 border border-slate-200 opacity-60 cursor-not-allowed" aria-disabled>
+                <div className="sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/60 border border-slate-200">
                   <Sun className={`w-4 h-4 ${mounted && theme === 'light' ? 'text-yellow-500' : 'text-slate-400'}`} />
                   <Switch
                     aria-label="Cambiar tema"
                     checked={mounted ? theme === 'dark' : false}
                     onCheckedChange={(checked: boolean) => setTheme(checked ? 'dark' : 'light')}
-                    disabled
                   />
                   <Moon className={`w-4 h-4 ${mounted && theme === 'dark' ? 'text-indigo-600' : 'text-slate-400'}`} />
                 </div>
@@ -283,12 +284,12 @@ export default function ConfiguracionPage() {
                 {/* Envío Aéreo */}
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="flex items-center text-black">
                       <Plane className="w-5 h-5 mr-2 text-blue-600" />
-                      Envío Aéreo
+                      Envío Aéreo Express
                     </CardTitle>
-                    <CardDescription>
-                      Configuración para envíos por vía aérea
+                    <CardDescription className="text-black">
+                      Tarifas y tiempos para envíos rápidos por avión
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -364,12 +365,12 @@ export default function ConfiguracionPage() {
                 {/* Envío Marítimo */}
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="flex items-center text-black">
                       <Ship className="w-5 h-5 mr-2 text-teal-600" />
-                      Envío Marítimo
+                      Envío Marítimo Económico
                     </CardTitle>
-                    <CardDescription>
-                      Configuración para envíos por vía marítima
+                    <CardDescription className="text-black">
+                      Opciones y costos para envíos por barco
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -449,11 +450,11 @@ export default function ConfiguracionPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="flex items-center text-black">
                       <Globe className="w-5 h-5 mr-2 text-green-600" />
                       Tasa de Cambio
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-black">
                       Valor del dólar estadounidense
                     </CardDescription>
                   </CardHeader>
@@ -485,11 +486,11 @@ export default function ConfiguracionPage() {
 
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="flex items-center text-black">
                       <Percent className="w-5 h-5 mr-2 text-purple-600" />
                       Márgenes y Descuentos
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-black">
                       Configuración de rentabilidad
                     </CardDescription>
                   </CardHeader>
@@ -534,11 +535,11 @@ export default function ConfiguracionPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="flex items-center text-black">
                       <Users className="w-5 h-5 mr-2 text-blue-600" />
                       Límites por Cliente
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-black">
                       Restricciones para clientes nuevos
                     </CardDescription>
                   </CardHeader>
@@ -581,11 +582,11 @@ export default function ConfiguracionPage() {
 
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="flex items-center text-black">
                       <Clock className="w-5 h-5 mr-2 text-orange-600" />
                       Plazos y Tiempos
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-black">
                       Límites de tiempo para procesos
                     </CardDescription>
                   </CardHeader>
@@ -630,11 +631,11 @@ export default function ConfiguracionPage() {
             <TabsContent value="notifications" className="space-y-6">
               <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-black">
                     <Bell className="w-5 h-5 mr-2 text-red-600" />
                     Sistema de Notificaciones
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-black">
                     Configuración de alertas y comunicaciones
                   </CardDescription>
                 </CardHeader>
@@ -691,11 +692,11 @@ export default function ConfiguracionPage() {
             <TabsContent value="security" className="space-y-6">
               <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-black">
                     <Settings className="w-5 h-5 mr-2 text-gray-600" />
                     Configuración de Seguridad
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-black">
                     Parámetros de acceso y seguridad del sistema
                   </CardDescription>
                 </CardHeader>
@@ -738,7 +739,7 @@ export default function ConfiguracionPage() {
           {/* Panel de Resumen */}
           <Card className="shadow-lg border-0 bg-gradient-to-r from-blue-50 to-indigo-50">
             <CardHeader>
-              <CardTitle className="flex items-center">
+              <CardTitle className="flex items-center text-black">
                 <Calculator className="w-5 h-5 mr-2 text-blue-600" />
                 Resumen de Configuración Actual
               </CardTitle>

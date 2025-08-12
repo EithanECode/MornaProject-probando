@@ -178,7 +178,7 @@ export default function DashboardPage() {
   }, [statsStale, ordersStale]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex overflow-x-hidden">
+  <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:bg-slate-900 dark:bg-none flex overflow-x-hidden text-slate-900 dark:text-white">
       <Sidebar 
         isExpanded={sidebarExpanded} 
         setIsExpanded={setSidebarExpanded}
@@ -206,7 +206,9 @@ export default function DashboardPage() {
 
         {/* Contenido principal con fallback para evitar elementos invisibles */}
         <div className="min-h-screen dashboard-content">
-          {mainContent}
+          <div className="dashboard-content">
+            {mainContent}
+          </div>
         </div>
       </main>
 
