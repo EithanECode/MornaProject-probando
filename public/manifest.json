@@ -1,0 +1,17 @@
+{
+  "name": "Pita Express - Admin Panel",
+  "short_name": "Pita Express",
+  "description": "Sistema de administración para Pita Express",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e3a8a",
+  "icons": [
+    {
+      "src": "/pita_icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+} 
