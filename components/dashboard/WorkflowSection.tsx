@@ -29,18 +29,25 @@ export default function WorkflowSection({ workflowSteps }: WorkflowSectionProps)
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-          {workflowSteps.map((step, index) => (
-            <div key={step.id} className="relative">
-              <div className={`
-                p-4 rounded-xl border-2 transition-all duration-500 hover:shadow-lg cursor-pointer
-                ${step.status === 'completed' ? 'bg-green-50 border-green-200 shadow-sm' : ''}
-                ${step.status === 'active' ? 'bg-blue-50 border-blue-200 shadow-md ring-2 ring-blue-400 ring-opacity-50' : ''}
-                ${step.status === 'pending' ? 'bg-gray-50 border-gray-200' : ''}
-              `}>
-                <div className="text-center space-y-2">
+        {/* Contenedor principal */}
+        <div className="relative">
+          {/* Línea de conexión horizontal */}
+          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 transform -translate-y-1/2 z-0"></div>
+          
+          {/* Contenedor de pasos con scroll horizontal en móviles */}
+          <div className="flex flex-nowrap overflow-x-auto gap-4 lg:gap-6 pb-4 scrollbar-hide">
+            {workflowSteps.map((step, index) => (
+              <div key={step.id} className="relative flex-shrink-0 w-[140px] lg:w-auto lg:flex-1">
+                <div className={`
+                  p-4 rounded-xl border-2 transition-all duration-500 hover:shadow-lg cursor-pointer
+                  flex flex-col items-center justify-center min-h-[120px] relative z-10 bg-white
+                  ${step.status === 'completed' ? 'border-green-200 shadow-sm' : ''}
+                  ${step.status === 'active' ? 'border-blue-200 shadow-md ring-2 ring-blue-400 ring-opacity-50' : ''}
+                  ${step.status === 'pending' ? 'border-gray-200' : ''}
+                `}>
+                  {/* Icono */}
                   <div className={`
-                    w-12 h-12 mx-auto rounded-full flex items-center justify-center transition-all duration-300
+                    w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 mb-3
                     ${step.status === 'completed' ? 'bg-green-100' : ''}
                     ${step.status === 'active' ? 'bg-blue-100 animate-pulse' : ''}
                     ${step.status === 'pending' ? 'bg-gray-100' : ''}
@@ -49,20 +56,34 @@ export default function WorkflowSection({ workflowSteps }: WorkflowSectionProps)
                       step.status === 'active' ? 'animate-bounce' : ''
                     }`} />
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold text-slate-900">{step.title}</p>
-                    <p className="text-xs text-slate-500">{step.subtitle}</p>
+                  
+                  {/* Texto */}
+                  <div className="text-center space-y-1">
+                    <p className="text-sm font-semibold text-slate-900 leading-tight">{step.title}</p>
+                    <p className="text-xs text-slate-500 leading-tight">{step.subtitle}</p>
                   </div>
                 </div>
+                
+                {/* Flecha de conexión */}
+                {index < workflowSteps.length - 1 && (
+                  <div className="absolute top-1/2 -right-2 transform -translate-y-1/2 z-20">
+                    <div className="bg-white rounded-full p-1 shadow-sm border border-gray-200">
+                      <ArrowRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </div>
+                )}
               </div>
-              
-              {index < workflowSteps.length - 1 && (
-                <div className="hidden md:block absolute top-8 -right-2 w-4 h-4">
-                  <ArrowRight className="w-4 h-4 text-gray-300" />
-                </div>
-              )}
+            ))}
+          </div>
+          
+          {/* Indicador de scroll en móviles */}
+          <div className="flex justify-center mt-4 lg:hidden">
+            <div className="flex space-x-2">
+              {workflowSteps.map((_, index) => (
+                <div key={index} className="w-2 h-2 rounded-full bg-gray-300"></div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </CardContent>
     </Card>
