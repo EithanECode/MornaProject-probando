@@ -12,6 +12,8 @@ import QuickActions from '@/components/dashboard/QuickActions';
 import { OrderStats } from '@/lib/types/dashboard';
 import { INITIAL_STATS, WORKFLOW_STEPS, RECENT_ORDERS } from '@/lib/constants/dashboard';
 
+import {getSupabaseBrowserClient} from "@/lib/supabase/client";
+
 // ✅ Interfaz para los datos del modal de China
 interface FormDataChina {
   cliente: string
@@ -35,14 +37,105 @@ interface FormDataVzla {
   observaciones: string
 }
 
+//Backend de RecentOrders
+const STATE_LABELS = [
+  "", // 0 no se usa
+  "Pedido solicitado",
+  "Cotización China",
+  "Cotización Venezuela",
+  "Cliente paga",
+  "Re-empacado",
+  "En tránsito aéreo",
+  "En álmacen Venezuela",
+  "Entregado"
+];
+
 export default function Dashboard() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [stats, setStats] = useState<OrderStats>(INITIAL_STATS);
+  const [stats, setStats] = useState<OrderStats>({
+    total: 0,
+    pending: 0,
+    completed: 0,
+    inTransit: 0,
+  });
   const [notifications, setNotifications] = useState(3);
   const [animateStats, setAnimateStats] = useState(false);
 
+  const [recentOrders, setRecentOrders] = useState([]);
+
   useEffect(() => {
     setAnimateStats(true);
+
+  const fetchStats = async () => {
+    const supabase = getSupabaseBrowserClient();
+    const { data, error } = await supabase
+      .from("orders")
+      .select("state", { count: "exact", head: false });
+
+      if (error) {
+      console.error("Error fetching stats:", error);
+      return;
+    }
+
+    // Contar los estados
+    const total = data.length;
+    const pending = data.filter((order) => order.state >= 1 && order.state <= 5).length;
+    const inTransit = data.filter((order) => order.state === 6 || order.state === 7).length;
+    const completed = data.filter((order) => order.state === 8).length;
+
+    setStats({
+      total,
+      pending,
+      completed,
+      inTransit,
+    });
+  };
+
+  const fetchRecentOrders = async () => {
+    const supabase = getSupabaseBrowserClient();
+    // Consulta los últimos 5 pedidos
+    const { data: orders, error } = await supabase
+      .from("orders")
+      .select("id, state, client_id, created_at")
+      .order("created_at", { ascending: false })
+      .limit(5);
+
+    if (error) {
+      console.error("Error fetching orders:", error);
+      setRecentOrders([]);
+      return;
+    }
+
+    // Obtén los nombres de los clientes
+    const clientIds = orders.map(order => order.client_id);
+    const { data: clients, error: clientError } = await supabase
+      .from("clients")
+      .select("user_id, name")
+      .in("user_id", clientIds);
+
+    if (clientError) {
+      console.error("Error fetching clients:", clientError);
+      setRecentOrders([]);
+      return;
+    }
+
+    // Mapea el id del cliente al nombre
+    const clientMap = Object.fromEntries(clients.map(c => [c.user_id, c.name]));
+
+    // Transforma los datos para RecentOrders
+    const recentOrdersData = orders.map(order => ({
+      id: order.id,
+      client: clientMap[order.client_id] || "Desconocido",
+      status: STATE_LABELS[order.state] || "Desconocido",
+      progress: Math.round((order.state / 8) * 100),
+      eta: "", // Puedes calcular o mostrar vacío si no tienes ETA
+    }));
+
+    setRecentOrders(recentOrdersData);
+  };
+
+  fetchStats();
+  fetchRecentOrders();
   }, []);
 
   // ✅ Crea las funciones que el componente QuickActions necesita
@@ -68,7 +161,7 @@ export default function Dashboard() {
           <WorkflowSection workflowSteps={WORKFLOW_STEPS} />
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <RecentOrders orders={RECENT_ORDERS} />
+            <RecentOrders orders={recentOrders} />
             {/* ✅ Renderiza el componente QuickActions y pásale las dos funciones como props */}
             <QuickActions 
               onChinaSubmit={handleChinaSubmit} 
