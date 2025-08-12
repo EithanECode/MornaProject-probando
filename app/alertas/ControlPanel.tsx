@@ -32,7 +32,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             <SelectValue placeholder="Tipo (Todos)" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Tipo (Todos)</SelectItem>
+            <SelectItem value="all">Tipo (Todos)</SelectItem>
             <SelectItem value="critical">Críticas</SelectItem>
             <SelectItem value="warning">Advertencias</SelectItem>
             <SelectItem value="info">Informativas</SelectItem>
@@ -43,7 +43,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             <SelectValue placeholder="Prioridad (Todas)" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Prioridad (Todas)</SelectItem>
+            <SelectItem value="all">Prioridad (Todas)</SelectItem>
             <SelectItem value="urgente">Urgente</SelectItem>
             <SelectItem value="alta">Alta</SelectItem>
             <SelectItem value="media">Media</SelectItem>

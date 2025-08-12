@@ -23,8 +23,8 @@ const AlertasPage: React.FC = () => {
   const [resolvedToday, setResolvedToday] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [alertTypeFilter, setAlertTypeFilter] = useState<string>('');
-  const [alertPriorityFilter, setAlertPriorityFilter] = useState<string>('');
+  const [alertTypeFilter, setAlertTypeFilter] = useState<string>('all');
+  const [alertPriorityFilter, setAlertPriorityFilter] = useState<string>('all');
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
 
   useEffect(() => {
@@ -91,8 +91,8 @@ const AlertasPage: React.FC = () => {
 
   const filteredAlerts = alerts.filter(alert => {
     const matchesSearch = alert.title.toLowerCase().includes(searchQuery.toLowerCase()) || alert.message.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = !alertTypeFilter || alert.type === alertTypeFilter;
-    const matchesPriority = !alertPriorityFilter || alert.priority === alertPriorityFilter;
+    const matchesType = !alertTypeFilter || alertTypeFilter === 'all' || alert.type === alertTypeFilter;
+    const matchesPriority = !alertPriorityFilter || alertPriorityFilter === 'all' || alert.priority === alertPriorityFilter;
     return matchesSearch && matchesType && matchesPriority;
   });
 
