@@ -48,7 +48,7 @@ interface FormDataVzla {
 }
 
 export default function DashboardPage() {
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false); // Cambiado a false para desktop
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [screenWidth, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const [notifications, setNotifications] = useState(3);
@@ -68,7 +68,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (screenWidth >= 1024) {
       setIsMobileMenuOpen(false);
-      setSidebarExpanded(true); // En desktop, expandido por defecto
+      setSidebarExpanded(false); // En desktop, contraído por defecto
     } else {
       setSidebarExpanded(true); // En mobile, siempre expandido para mostrar nombres
     }
