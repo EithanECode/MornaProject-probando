@@ -32,6 +32,18 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
   const router = useRouter();
   const [activeItem, setActiveItem] = useState('dashboard');
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [screenWidth, setScreenWidth] = useState(0);
+
+  // Detectar el ancho de pantalla para ajustar el sidebar
+  useEffect(() => {
+    const updateScreenWidth = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    updateScreenWidth();
+    window.addEventListener('resize', updateScreenWidth);
+    return () => window.removeEventListener('resize', updateScreenWidth);
+  }, []);
 
   // Detectar la página actual
   useEffect(() => {
@@ -91,6 +103,55 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       router.push('/usuarios');
     } else if (itemId === 'settings') {
       router.push('/configuracion');
+    }
+  };
+
+  // Determinar tamaños responsivos
+  const getSidebarWidth = () => {
+    if (isExpanded) {
+      return screenWidth < 1440 ? 'w-64' : 'w-72'; // Más pequeño en pantallas menores
+    } else {
+      if (screenWidth < 1366) return 'w-16'; // 64px para pantallas pequeñas
+      if (screenWidth < 1600) return 'w-18'; // 72px para pantallas medianas
+      return 'w-20'; // 80px para pantallas grandes
+    }
+  };
+
+  const getIconSize = () => {
+    if (isExpanded) {
+      if (screenWidth < 1366) return 'w-4 h-4'; // Iconos más pequeños cuando está expandido en pantallas pequeñas
+      if (screenWidth < 1600) return 'w-4.5 h-4.5'; // Tamaño intermedio
+      return 'w-5 h-5'; // Tamaño normal
+    } else {
+      if (screenWidth < 1366) return 'w-4 h-4'; // Iconos más pequeños en pantallas pequeñas
+      if (screenWidth < 1600) return 'w-4.5 h-4.5'; // Tamaño intermedio
+      return 'w-5 h-5'; // Tamaño normal
+    }
+  };
+
+  const getLogoSize = () => {
+    if (isExpanded) return screenWidth < 1440 ? "sm" : "md";
+    if (screenWidth < 1366) return "sm";
+    if (screenWidth < 1600) return "md";
+    return "lg";
+  };
+
+  const getPadding = () => {
+    if (isExpanded) return 'p-4';
+    if (screenWidth < 1366) return 'p-2'; // Menos padding en pantallas pequeñas
+    if (screenWidth < 1600) return 'p-3';
+    return 'p-4';
+  };
+
+  const getButtonPadding = () => {
+    if (isExpanded) {
+      if (screenWidth < 1366) return 'px-3 py-2.5'; // Padding más compacto cuando está expandido en pantallas pequeñas
+      if (screenWidth < 1600) return 'px-3.5 py-2.5'; // Padding intermedio
+      return 'px-4 py-3'; // Padding normal
+    } else {
+      if (screenWidth < 1366) return 'p-2'; // Botones más compactos
+      if (screenWidth < 1600) return 'p-2.5';
+      return 'p-3';
     }
   };
 
@@ -161,29 +222,29 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
         fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 
         border-r border-slate-700/50 shadow-2xl backdrop-blur-sm z-50
         transition-all duration-200 ease-out flex flex-col
-        ${isExpanded ? 'w-72' : 'w-20'}
+        ${getSidebarWidth()}
       `}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Header */}
-      <div className="p-4 border-b border-slate-700/50 flex-shrink-0">
+      <div className={`${getPadding()} border-b border-slate-700/50 flex-shrink-0`}>
         <div className={`flex items-center ${isExpanded ? 'space-x-3' : 'justify-center'}`}>
-          <PitaLogo size={isExpanded ? "md" : "lg"} animated={true} />
+          <PitaLogo size={getLogoSize()} animated={true} />
           <div className={`
             transition-all duration-200 ease-out overflow-hidden
             ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
           `}>
             <div className="whitespace-nowrap">
-              <h1 className="text-xl font-bold text-white">Pita Express</h1>
-              <p className="text-xs text-slate-400">Admin Panel</p>
+              <h1 className={`font-bold text-white ${screenWidth < 1366 ? 'text-lg' : 'text-xl'}`}>Pita Express</h1>
+              <p className={`text-slate-400 ${screenWidth < 1366 ? 'text-[10px]' : 'text-xs'}`}>Admin Panel</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav className={`flex-1 ${getPadding()} space-y-2 overflow-y-auto`}>
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeItem === item.id;
@@ -193,7 +254,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               key={item.id}
               onClick={() => handleNavigation(item.id)}
               className={`
-                w-full flex items-center ${isExpanded ? 'space-x-3 px-4 py-3' : 'justify-center p-3'} rounded-xl
+                w-full flex items-center ${isExpanded ? 'space-x-3 px-4 py-3' : `justify-center ${getButtonPadding()}`} rounded-xl
                 transition-all duration-200 ease-out group relative
                 active:scale-95 active:shadow-inner
                 ${isActive 
@@ -209,9 +270,9 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                 ${isActive ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'}
               `} />
               
-              <div className={`${isExpanded ? 'w-8 h-8' : 'w-full h-full'} flex items-center justify-center rounded-lg`}>
+              <div className={`${isExpanded ? (screenWidth < 1366 ? 'w-6 h-6' : screenWidth < 1600 ? 'w-7 h-7' : 'w-8 h-8') : 'w-full h-full'} flex items-center justify-center rounded-lg`}>
                 <Icon 
-                  className={`w-5 h-5 ${item.color} transition-all duration-200 ease-out ${isActive ? 'scale-110 animate-bounce' : 'scale-100'}`}
+                  className={`${getIconSize()} ${item.color} transition-all duration-200 ease-out ${isActive ? 'scale-110 animate-bounce' : 'scale-100'}`}
                   style={isActive ? { animationDuration: '1.5s' } : undefined}
                 />
               </div>
@@ -221,9 +282,9 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                 ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
               `}>
                 <div className="flex items-center justify-between whitespace-nowrap">
-                  <span className="font-medium">{item.label}</span>
+                  <span className={`font-medium ${screenWidth < 1366 ? 'text-sm' : 'text-base'}`}>{item.label}</span>
                   {item.badge && (
-                    <Badge className="bg-red-500 text-white text-xs animate-pulse">
+                    <Badge className={`bg-red-500 text-white ${screenWidth < 1366 ? 'text-[10px]' : 'text-xs'} animate-pulse`}>
                       {item.badge}
                     </Badge>
                   )}
@@ -231,8 +292,8 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               </div>
               
               {!isExpanded && item.badge && (
-                <div className="absolute top-1 right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
-                  <span className="text-xs text-white font-bold">{item.badge}</span>
+                <div className={`absolute top-1 right-1 ${screenWidth < 1366 ? 'w-4 h-4' : 'w-5 h-5'} bg-red-500 rounded-full flex items-center justify-center animate-pulse`}>
+                  <span className={`${screenWidth < 1366 ? 'text-[10px]' : 'text-xs'} text-white font-bold`}>{item.badge}</span>
                 </div>
               )}
             </button>
@@ -241,10 +302,10 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
       </nav>
 
       {/* Bottom Section */}
-      <div className="p-4 border-t border-slate-700/50 space-y-4 flex-shrink-0">
+      <div className={`${getPadding()} border-t border-slate-700/50 space-y-4 flex-shrink-0`}>
         {/* User Profile */}
-        <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-200 ease-out">
-          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+        <div className={`flex items-center space-x-3 ${screenWidth < 1366 ? 'p-2' : 'p-3'} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-200 ease-out`}>
+          <div className={`${screenWidth < 1366 ? 'w-8 h-8' : 'w-10 h-10'} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center`}>
             <VenezuelaFlag size="sm" animated={true} />
           </div>
           <div className={`
@@ -252,8 +313,8 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
             ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
           `}>
             <div className="whitespace-nowrap">
-              <p className="text-sm font-medium text-white">Empleado Vzla</p>
-              <p className="text-xs text-slate-400">vzla@logidash.com</p>
+              <p className={`font-medium text-white ${screenWidth < 1366 ? 'text-xs' : 'text-sm'}`}>Empleado Vzla</p>
+              <p className={`text-slate-400 ${screenWidth < 1366 ? 'text-[10px]' : 'text-xs'}`}>vzla@logidash.com</p>
             </div>
           </div>
         </div>
@@ -268,8 +329,8 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
               onClick={() => handleNavigation(item.id)}
               className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-200 ease-out group"
             >
-              <div className="w-8 h-8 flex items-center justify-center rounded-lg group-hover:bg-slate-600/50">
-                <Icon className={`w-5 h-5 ${item.color}`} />
+              <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-slate-600/50`}>
+                <Icon className={`${getIconSize()} ${item.color}`} />
               </div>
               <div className={`
                 transition-all duration-200 ease-out overflow-hidden
@@ -283,8 +344,8 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
 
         {/* Logout */}
         <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 ease-out group border border-red-500/20">
-          <div className="w-8 h-8 flex items-center justify-center rounded-lg group-hover:bg-red-500/20">
-            <LogOut className="w-5 h-5" />
+          <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-red-500/20`}>
+            <LogOut className={getIconSize()} />
           </div>
           <div className={`
             transition-all duration-200 ease-out overflow-hidden

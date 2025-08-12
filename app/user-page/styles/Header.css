@@ -1,0 +1,297 @@
+/* Estilos generales del header */
+.header {
+    display: flex;
+    justify-content: space-between; /* Distribuye elementos: hamburguesa, logo, nav-buttons */
+    align-items: center;
+    position: relative; /* Para posicionar el logo absolutamente dentro */
+    padding: 15px 30px; /* Padding para el header */
+    background-color: #202841 ; /* Fondo blanco */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999; /* Asegura que el header esté por encima de otros elementos */
+
+}
+
+/* Estilos para el botón hamburguesa */
+.hamburger-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hamburger-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Contenedor del logo */
+.logo-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    z-index: 1; /* Asegura que esté por encima del botón hamburguesa */
+}
+
+.rocket-icon {
+    width: 40px; /* Tamaño del icono del cohete */
+    height: 40px;
+    margin-right: 10px;
+    color: var(--primary-blue); /* Asumiendo que puedes colorear el SVG */
+}
+
+/* Estilos para el nuevo logo */
+.logo-image {
+    height: 30px !important; /* Tamaño más pequeño del logo */
+    width: 30px !important; /* Asegura que el ancho sea igual al alto para formar un círculo */
+    border-radius: 50%; /* Hace que la imagen sea circular */
+    object-fit: cover; /* Recorta la imagen para que se ajuste al círculo */
+    margin-right: 15px; /* Espacio entre el logo y el texto */
+    background-color: #a5a4a4; /* Agrega un fondo gris claro */
+}
+
+.logo-button {
+    background: none; /* Fondo transparente */
+    border: none; /* Sin borde */
+    padding: 0; /* Sin padding */
+    margin: 0; /* Sin margen */
+    cursor: pointer; /* Cursor de mano */
+    display: flex; /* Para alinear la imagen */
+    align-items: center; /* Centrar verticalmente */
+    justify-content: center; /* Centrar horizontalmente */
+    width: 60px; /* Igual al ancho de .logo-image */
+    height: 60px; /* Igual al alto de .logo-image */
+    border-radius: 50%; /* Misma forma circular */
+}
+
+.logo-button:focus {
+    outline: none; /* Elimina el contorno al hacer foco */
+}
+
+.logo-image {
+    height: 100%; /* La imagen ocupa todo el alto del botón */
+    width: 100%; /* La imagen ocupa todo el ancho del botón */
+    object-fit: cover; /* Recorta la imagen para que se ajuste al círculo */
+    border-radius: 50%; /* Misma forma circular */
+    margin-right: 0; /* Elimina el margen, ya que el botón es el contenedor */
+    background-color: #a5a4a4; /* Agrega un fondo gris claro */
+}
+
+.logo-text {
+    font-size: 2.5rem !important; /* Tamaño más pequeño del texto */
+    font-weight: 700;
+    color: #ee3c23; /* Color principal azul */
+    margin-right: 8px; /* Espacio entre el texto principal y el subtítulo */
+}
+
+.logo-subtitle {
+    font-size: 0.9rem;
+    color: #ffff;
+    font-weight: 500;
+}
+
+/* Contenedor de los botones de navegación */
+.nav-buttons {
+    display: flex;
+    gap: 15px; /* Espacio entre los botones */
+}
+
+.nav-button.chat-button {
+    background-color: #f0f0f0 !important;
+    color: var(--primary-blue); /* Opcional: cambia el color del texto si lo necesitas */
+}
+/* Estilos base para los botones de navegación */
+.nav-button {
+    padding: 6px 12px;   /* Más pequeño que antes */
+    border: none;
+    border-radius: 18px; /* Opcional: más pequeño y redondeado */
+    font-size: 0.9rem;   /* Más pequeño que antes */
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex; /* Usamos flexbox para alinear el icono y el texto */
+    align-items: center; /* Centrar verticalmente */
+    justify-content: center; /* Centrar horizontalmente si solo hay un elemento */
+    white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+}
+
+.nav-button:hover {
+    transform: translateY(-2px); /* Efecto sutil al pasar el ratón */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos específicos para el botón de Chat Soporte */
+.chat-button {
+    background-color: var(--primary-blue); /* Color de fondo azul */
+    color: #202841 !important;
+}
+
+.chat-button .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #53b03a; /* Verde para el "online" */
+    border-radius: 50%;
+    margin-right: 8px; /* Espacio entre el punto y el texto */
+    animation: pulse 1.5s infinite ease-in-out; /* Animación de pulsación */
+}
+
+/* Estilos específicos para el botón de Tracking */
+.tracking-button {
+    background-color: #f0f0f0; /* Fondo gris claro */
+    color: #202841 !important; /* Texto azul */
+    border: 1px solid #ddd; /* Borde sutil */
+}
+
+/* Puedes añadir estilos adicionales si el Player necesita un contenedor específico o ajustes: */
+.tracking-button .lottie-player-container { /* Si envuelves el Player en un div, por ejemplo */
+    display: flex; /* Asegura que se comporte como flex item */
+    align-items: center; /* Para alineación vertical */
+    justify-content: center; /* Para alineación horizontal */
+    /* Otros estilos si es necesario, como margen */
+    margin-right: 8px; /* Ejemplo de margen, si no lo pones inline */
+}
+/* Animación para el punto del chat */
+@keyframes pulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.8);
+        opacity: 0.7;
+    }
+}
+
+/* Media Queries para Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: row; /* Mantiene la disposición horizontal */
+        align-items: center;
+        padding: 10px 20px;
+        justify-content: space-between;
+    }
+
+    .nav-buttons {
+        gap: 10px; /* Reduce el espacio entre botones */
+    }
+
+    .nav-button {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .logo-text {
+        font-size: 1.1rem;
+    }
+
+    .logo-subtitle {
+        font-size: 0.8rem;
+    }
+
+    .hamburger-button {
+        padding: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 10px 15px;
+    }
+
+    .logo-text {
+        font-size: 1rem;
+    }
+
+    .logo-subtitle {
+        display: none; /* Oculta el subtítulo en pantallas muy pequeñas */
+    }
+
+    .nav-buttons {
+        gap: 8px;
+    }
+    
+    .nav-button {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .rocket-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    .hamburger-button {
+        padding: 4px;
+    }
+}
+
+/* Estilos para la barra lateral */
+.sidebar {
+    position: fixed; /* Barra lateral fija */
+    top: 0;
+    left: -250px; /* Oculta la barra lateral inicialmente */
+    width: 250px;
+    height: 100%;
+    background-color: #f0f0f0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease; /* Animación suave */
+    z-index: 1000; /* Asegura que esté por encima de todo */
+    padding: 20px;
+    overflow-y: auto; /* Para contenido largo */
+}
+
+.sidebar.open {
+    left: 0; /* Muestra la barra lateral */
+}
+
+.close-sidebar-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* Estilos específicos para el botón de Chat Soporte */
+.chat-button {
+    background-color: #202841;
+    color: white;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+    padding: 8px 12px;
+    border-radius: 5px;
+}
+
+.sidebar a:hover {
+    background-color: #ddd;
+}
