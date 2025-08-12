@@ -1,0 +1,323 @@
+.order-tracking-card {
+    background-color: var(--card-background);
+    border-radius: 12px;
+    padding: 30px 40px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    width: 90%;
+    max-width: 900px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tracking-header-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(45deg, #202841, #23335b); /* Purple gradient from image */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(147, 112, 219, 0.3);
+}
+
+.tracking-icon {
+    font-size: 3.5rem;
+    color: white;
+}
+
+.tracking-title {
+    font-size: 1.8rem;
+    color: #202841;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.tracking-subtitle {
+    font-size: 1rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.tracking-steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Responsive grid */
+    gap: 25px;
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.tracking-step-box {
+    background-color: #fbfdff;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tracking-step-box.green {
+    border: 1px solid #8bc34a;
+    background-color: #e8f5e9; /* Very light green */
+}
+
+.tracking-step-box.blue {
+    border: 1px solid #64b5f6;
+    background-color: #e3f2fd; /* Very light blue */
+}
+
+.tracking-step-box.orange {
+    border: 1px solid #ffb74d;
+    background-color: #fff3e0; /* Very light orange */
+}
+
+.step-icon-circle {
+    width: 70px; /* Larger circle for the icon */
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for icon circle */
+}
+
+.tracking-step-box.green .step-icon-circle {
+    background: linear-gradient(45deg, #8BC34A, #AED581); /* Green gradient */
+}
+.tracking-step-box.blue .step-icon-circle {
+    background: linear-gradient(45deg, #2196F3, #64B5F6); /* Blue gradient */
+}
+.tracking-step-box.orange .step-icon-circle {
+    background: linear-gradient(45deg, #FF9800, #FFB74D); /* Orange gradient */
+}
+
+.step-icon {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.step-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #202841;
+    margin-bottom: 5px;
+}
+
+.step-date {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.current-status-section {
+    background-color: #fbfdff;
+    border-radius: 12px;
+    padding: 25px 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.current-status-section h3 {
+    font-size: 1.3rem;
+    color: #202841;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.progress-bar-container {
+    background-color: #e0e0e0; /* Light grey background for the bar track */
+    border-radius: 10px;
+    height: 15px;
+    width: 100%;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #2f80ed 0%, #a0c4ff 100%); /* Blue gradient for progress */
+    border-radius: 10px;
+    height: 100%;
+    transition: width 0.5s ease-in-out;
+}
+
+.progress-percentage {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #555;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-text {
+    font-size: 1rem;
+    color: #444;
+    text-align: center;
+    font-weight: 500;
+}
+
+.tracking-actions {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.action-button {
+    background-color: var(--primary-blue);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    flex: 1 1 auto; /* Allow buttons to grow and shrink */
+    max-width: 250px; /* Control max width for responsiveness */
+    justify-content: center;
+}
+
+.action-button:hover {
+    background-color: var(--button-hover-blue);
+    box-shadow: 0 4px 10px rgba(47, 128, 237, 0.3);
+}
+
+.action-button .button-icon {
+    font-size: 1.2rem;
+}
+
+.action-button.survey {
+    /* Background matches image's 'Encuesta' button color. */
+    background: linear-gradient(45deg, #202841, #23335b); 
+}
+.action-button.survey:hover {
+    background: linear-gradient(45deg, #202841 0%, #435b96 100%);
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .order-tracking-card {
+        padding: 25px 20px;
+        width: 95%;
+    }
+    .tracking-steps-grid {
+        grid-template-columns: 1fr; /* Stack on small screens */
+    }
+    .tracking-title {
+        font-size: 1.7rem;
+    }
+    .tracking-subtitle {
+        font-size: 0.9rem;
+    }
+    .tracking-step-box {
+        padding: 15px;
+    }
+    .step-icon-circle {
+        width: 60px;
+        height: 60px;
+    }
+    .step-icon {
+        font-size: 2rem;
+    }
+    .step-label {
+        font-size: 1rem;
+    }
+    .current-status-section {
+        padding: 20px;
+    }
+    .action-button {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+    }
+    .tracking-actions {
+        gap: 15px;
+    }
+}
+@media (max-width: 480px) {
+    .tracking-header-icon {
+        width: 60px;
+        height: 60px;
+    }
+    .tracking-icon {
+        font-size: 2.5rem;
+    }
+    .tracking-title {
+        font-size: 1.4rem;
+    }
+    .progress-percentage {
+        font-size: 0.75rem;
+        right: 5px;
+    }
+    .status-text {
+        font-size: 0.9rem;
+    }
+    .action-button {
+        width: 100%; /* Full width buttons on very small screens */
+    }
+}
+
+/* Estilos para el resumen del pedido */
+.order-summary {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    border-left: 4px solid #202841;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.order-summary h4 {
+    color: #202841;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.order-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.order-details p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+.order-details strong {
+    color: #202841;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .order-summary {
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .order-summary h4 {
+        font-size: 1.1rem;
+    }
+    
+    .order-details p {
+        font-size: 0.9rem;
+    }
+}
