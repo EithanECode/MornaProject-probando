@@ -73,7 +73,7 @@ export default function QuickActions({ onChinaSubmit, onVzlaSubmit }: QuickActio
           {/* ✅ Botón para abrir el modal de Venezuela */}
           <Button
             onClick={() => setIsVzlaModalOpen(true)}
-            className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
           >
             <Plus className="w-4 h-4 mr-2" />
             Nuevo Pedido (Vzla)

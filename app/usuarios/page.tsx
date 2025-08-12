@@ -125,8 +125,8 @@ export default function UsuariosPage() {
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Usuarios</h1>
-                <p className="text-sm text-slate-600">Gestión de empleados y accesos</p>
+                <h1 className="text-2xl font-bold text-slate-900">Seguridad y acceso</h1>
+                <p className="text-sm text-slate-600">Gestión de usuarios y accesos</p>
               </div>
               <div className="flex items-center space-x-2">
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

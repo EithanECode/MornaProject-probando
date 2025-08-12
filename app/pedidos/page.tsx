@@ -1,28 +1,28 @@
-// src/app/pedidos/page.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
-import {
-  Search,
-  Filter,
-  MoreVertical,
-  Eye,
-  Edit,
-  Trash2,
-  ChevronLeft,
+import { 
+  Search, 
+  Filter, 
+  MoreVertical, 
+  Eye, 
+  Edit, 
+  Trash2, 
+  ChevronLeft, 
   ChevronRight,
   Plus,
   Download,
+  RefreshCw,
   Calendar,
+  User,
   Package,
   Clock,
   CheckCircle,
   AlertCircle,
   Plane,
-  MapPin,
-  X,
-  Link,
+  Ship,
+  MapPin
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -42,7 +41,7 @@ interface Order {
   assignedTo: 'china' | 'vzla';
   daysElapsed: number;
   description: string;
-  documents?: { type: 'link' | 'image'; url: string; label: string }[];
+  priority: 'alta' | 'media' | 'baja';
 }
 
 const statusConfig = {
@@ -65,24 +64,20 @@ export default function PedidosPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
   const [animateStats, setAnimateStats] = useState(false);
-  
-  const [editFormData, setEditFormData] = useState<Order | null>(null);
 
-  const [orders, setOrders] = useState<Order[]>([
-    { id: 'PED-001', client: 'Ana Pérez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 197, description: 'Electrónicos varios', documents: [{ type: 'link', url: 'https://example.com/cotizacion-1', label: 'Cotización inicial' }] },
-    { id: 'PED-002', client: 'Carlos Ruiz', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 198, description: 'Herramientas industriales' },
-    { id: 'PED-003', client: 'Lucía Méndez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 199, description: 'Ropa deportiva', documents: [{ type: 'link', url: 'https://example.com/factura-3', label: 'Factura proforma' }] },
-    { id: 'PED-005', client: 'Empresa XYZ', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 202, description: 'Maquinaria pesada', documents: [{ type: 'image', url: 'https://via.placeholder.com/150', label: 'Foto de carga' }] },
-    { id: 'PED-006', client: 'Tiendas ABC', status: 'entregado', assignedTo: 'vzla', daysElapsed: 207, description: 'Productos de belleza' },
-    { id: 'PED-007', client: 'Juan Rodríguez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 0, description: 'Equipos médicos' },
-    { id: 'PED-008', client: 'María González', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 15, description: 'Materiales de construcción' },
-    { id: 'PED-009', client: 'Luis Martínez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 5, description: 'Juguetes educativos' },
-    { id: 'PED-010', client: 'Carmen López', status: 'entregado', assignedTo: 'vzla', daysElapsed: 45, description: 'Artículos de cocina' },
-    { id: 'PED-011', client: 'Roberto Silva', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 3, description: 'Equipos de oficina' }
-  ]);
+  const orders: Order[] = [
+    { id: 'PED-001', client: 'Ana Pérez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 197, description: 'Electrónicos varios', priority: 'alta' },
+    { id: 'PED-002', client: 'Carlos Ruiz', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 198, description: 'Herramientas industriales', priority: 'media' },
+    { id: 'PED-003', client: 'Lucía Méndez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 199, description: 'Ropa deportiva', priority: 'baja' },
+    { id: 'PED-005', client: 'Empresa XYZ', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 202, description: 'Maquinaria pesada', priority: 'alta' },
+    { id: 'PED-006', client: 'Tiendas ABC', status: 'entregado', assignedTo: 'vzla', daysElapsed: 207, description: 'Productos de belleza', priority: 'media' },
+    { id: 'PED-007', client: 'Juan Rodríguez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 0, description: 'Equipos médicos', priority: 'alta' },
+    { id: 'PED-008', client: 'María González', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 15, description: 'Materiales de construcción', priority: 'media' },
+    { id: 'PED-009', client: 'Luis Martínez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 5, description: 'Juguetes educativos', priority: 'baja' },
+    { id: 'PED-010', client: 'Carmen López', status: 'entregado', assignedTo: 'vzla', daysElapsed: 45, description: 'Artículos de cocina', priority: 'media' },
+    { id: 'PED-011', client: 'Roberto Silva', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 3, description: 'Equipos de oficina', priority: 'alta' }
+  ];
 
   useEffect(() => {
     setAnimateStats(true);
@@ -90,8 +85,8 @@ export default function PedidosPage() {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              order.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              order.description.toLowerCase().includes(searchTerm.toLowerCase());
+                          order.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          order.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -139,7 +134,7 @@ export default function PedidosPage() {
         order.description,
         statusConfig[order.status].label,
         assignedConfig[order.assignedTo].label,
-        `${order.daysElapsed} días`,
+        `${order.daysElapsed} días`
       ];
 
       rowData.forEach(text => {
@@ -179,34 +174,6 @@ export default function PedidosPage() {
     pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
     
     pdf.save("reporte_pedidos.pdf");
-  };
-
-  const handleOpenEditModal = (order: Order) => {
-    setEditFormData(order);
-    setIsEditModalOpen(true);
-    setSelectedOrder(null);
-  };
-
-  const handleUpdateOrder = () => {
-    if (editFormData) {
-      const updatedOrders = orders.map(order => 
-        order.id === editFormData.id ? editFormData : order
-      );
-      setOrders(updatedOrders);
-      
-      setSelectedOrder(editFormData);
-      
-      setIsEditModalOpen(false);
-      setEditFormData(null);
-    }
-  };
-
-  const handleDeleteOrder = () => {
-    if (window.confirm(`¿Estás seguro de que quieres eliminar el pedido ${selectedOrder?.id}?`)) {
-      const updatedOrders = orders.filter(order => order.id !== selectedOrder?.id);
-      setOrders(updatedOrders);
-      setSelectedOrder(null);
-    }
   };
 
   const itemsPerPage = 8;
@@ -427,6 +394,23 @@ export default function PedidosPage() {
                                 <Eye className="w-4 h-4 mr-1" />
                                 Ver
                               </Button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                                    <MoreVertical className="w-4 h-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem>
+                                    <Edit className="w-4 h-4 mr-2" />
+                                    Editar
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className="text-red-600">
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Eliminar
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </div>
                           </td>
                         </tr>
@@ -490,7 +474,7 @@ export default function PedidosPage() {
       </main>
 
       {/* Modal de Detalles del Pedido */}
-      <Dialog open={!!selectedOrder && !isEditModalOpen && !isDocumentsModalOpen} onOpenChange={() => setSelectedOrder(null)}>
+      <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
         {selectedOrder && (
           <DialogContent 
             className="sm:max-w-[700px] bg-white p-0 rounded-lg shadow-2xl animate-in fade-in-0 slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
@@ -585,144 +569,14 @@ export default function PedidosPage() {
                 </div>
 
                 <div className="mt-8 flex flex-col space-y-2">
-                  <Button 
-                    className="w-full bg-blue-600 text-white hover:bg-blue-700"
-                    onClick={() => handleOpenEditModal(selectedOrder)}
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    Actualizar
-                  </Button>
-                  <Button 
-                    className="w-full bg-red-600 text-white hover:bg-red-700"
-                    onClick={handleDeleteOrder}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Eliminar
-                  </Button>
                   <Button
-                    className="w-full bg-gray-200 text-gray-700 hover:bg-gray-300"
-                    onClick={() => setIsDocumentsModalOpen(true)}
+                    className="w-full bg-gray-200 text-gray-700 hover:bg-gray-300 mt-4"
+                    onClick={() => setSelectedOrder(null)}
                   >
-                    <Eye className="w-4 h-4 mr-2" />
-                    Ver Documentos
+                    Volver
                   </Button>
                 </div>
               </div>
-            </div>
-          </DialogContent>
-        )}
-      </Dialog>
-      
-      {/* Modal para Actualizar Pedido */}
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        {editFormData && (
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Actualizar Pedido: {editFormData.id}</DialogTitle>
-              <DialogDescription>
-                Modifica los detalles del pedido a continuación.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="client" className="text-right">Cliente</Label>
-                <Input 
-                  id="client" 
-                  value={editFormData.client}
-                  onChange={(e) => setEditFormData({ ...editFormData, client: e.target.value })}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">Descripción</Label>
-                <Input 
-                  id="description" 
-                  value={editFormData.description}
-                  onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="status" className="text-right">Estado</Label>
-                <Select 
-                  value={editFormData.status}
-                  onValueChange={(value) => setEditFormData({ ...editFormData, status: value as Order['status'] })}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Selecciona un estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(statusConfig).map(statusKey => (
-                      <SelectItem key={statusKey} value={statusKey}>{statusConfig[statusKey as Order['status']].label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="assignedTo" className="text-right">Asignado a</Label>
-                <Select 
-                  value={editFormData.assignedTo}
-                  onValueChange={(value) => setEditFormData({ ...editFormData, assignedTo: value as Order['assignedTo'] })}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Selecciona una ubicación" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(assignedConfig).map(assignedKey => (
-                      <SelectItem key={assignedKey} value={assignedKey}>{assignedConfig[assignedKey as Order['assignedTo']].label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="daysElapsed" className="text-right">Días Transcurridos</Label>
-                <Input 
-                  id="daysElapsed" 
-                  type="number"
-                  value={editFormData.daysElapsed}
-                  onChange={(e) => setEditFormData({ ...editFormData, daysElapsed: parseInt(e.target.value) || 0 })}
-                  className="col-span-3"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end">
-              <Button onClick={handleUpdateOrder}>Guardar cambios</Button>
-            </div>
-          </DialogContent>
-        )}
-      </Dialog>
-
-      {/* Modal para Ver Documentos */}
-      <Dialog open={isDocumentsModalOpen} onOpenChange={setIsDocumentsModalOpen}>
-        {selectedOrder && (
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Documentos del Pedido: {selectedOrder.id}</DialogTitle>
-              <DialogDescription>
-                Accede a las fotos y enlaces de este pedido.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              {selectedOrder.documents && selectedOrder.documents.length > 0 ? (
-                selectedOrder.documents.map((doc, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    {doc.type === 'image' && (
-                      <a href={doc.url} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-blue-600 hover:underline">
-                        <img src={doc.url} alt={doc.label} className="w-16 h-16 object-cover rounded-lg" />
-                        <span>{doc.label}</span>
-                      </a>
-                    )}
-                    {doc.type === 'link' && (
-                      <a href={doc.url} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-blue-600 hover:underline">
-                        <Link className="w-5 h-5" />
-                        <span>{doc.label}</span>
-                      </a>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500">No hay documentos para este pedido.</p>
-              )}
             </div>
           </DialogContent>
         )}

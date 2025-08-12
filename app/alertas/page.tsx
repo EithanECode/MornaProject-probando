@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -154,6 +153,7 @@ const AlertasPage: React.FC = () => {
 };
 
 export default AlertasPage;
+
 
 
 
