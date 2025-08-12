@@ -48,33 +48,58 @@ interface FormDataVzla {
 }
 
 export default function DashboardPage() {
-  const [sidebarExpanded, setSidebarExpanded] = useState(false); // Cambiado a false para desktop
+  const [sidebarExpanded, setSidebarExpanded] = useState(false); // Inicializar contraído por defecto
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [screenWidth, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const [screenWidth, setScreenWidth] = useState(0);
+  const [isClient, setIsClient] = useState(false);
   const [notifications, setNotifications] = useState(3);
   const [animateStats, setAnimateStats] = useState(false);
 
+  // Detectar si estamos en el cliente
   useEffect(() => {
-    const updateScreenWidth = () => {
-      setScreenWidth(window.innerWidth);
-    };
-
-    updateScreenWidth();
-    window.addEventListener('resize', updateScreenWidth);
-    return () => window.removeEventListener('resize', updateScreenWidth);
+    setIsClient(true);
   }, []);
 
-  // Reset mobile menu state when screen size changes
   useEffect(() => {
-    if (screenWidth >= 1024) {
-      setIsMobileMenuOpen(false);
-      setSidebarExpanded(false); // En desktop, contraído por defecto
-    } else {
-      setSidebarExpanded(true); // En mobile, siempre expandido para mostrar nombres
-    }
-  }, [screenWidth]);
+    if (!isClient) return;
 
-  const isMobile = screenWidth < 1024;
+    const updateScreenWidth = () => {
+      const width = window.innerWidth;
+      setScreenWidth(width);
+      
+      // Debug: mostrar el ancho de pantalla
+      console.log('Ancho de pantalla:', width, 'px');
+      
+      // Aplicar lógica de sidebar inmediatamente
+      if (width >= 1024) {
+        console.log('Desktop detectado - Sidebar contraído');
+        setSidebarExpanded(false); // Desktop: contraído
+        setIsMobileMenuOpen(false);
+      } else {
+        console.log('Mobile detectado - Sidebar expandido');
+        setSidebarExpanded(true); // Mobile: expandido para mejor usabilidad
+      }
+      
+      // Debug: verificar el estado después de establecerlo
+      setTimeout(() => {
+        console.log('Estado sidebarExpanded después de actualizar:', sidebarExpanded);
+      }, 100);
+    };
+
+    // Actualizar inmediatamente y con un pequeño delay para herramientas de desarrollo
+    updateScreenWidth();
+    
+    // Delay adicional para asegurar que funcione en herramientas de desarrollo
+    const timeoutId = setTimeout(updateScreenWidth, 100);
+    
+    window.addEventListener('resize', updateScreenWidth);
+    return () => {
+      window.removeEventListener('resize', updateScreenWidth);
+      clearTimeout(timeoutId);
+    };
+  }, [isClient]);
+
+  const isMobile = isClient && screenWidth < 1024;
 
   // Usar hooks optimizados
   const { 

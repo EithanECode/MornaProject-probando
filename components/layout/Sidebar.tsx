@@ -102,7 +102,7 @@ const BOTTOM_ITEMS = [
 
 // Hook personalizado para detectar el tamaño de pantalla
 const useScreenSize = () => {
-  const [screenWidth, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const [screenWidth, setScreenWidth] = useState(0); // Inicializar en 0 para evitar problemas de SSR
 
   useEffect(() => {
     const updateScreenWidth = () => {
@@ -141,9 +141,12 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     const isLargeScreen = screenWidth >= 1600;
     const isMobile = screenWidth < 1024; // lg breakpoint
 
+    // Debug: mostrar el ancho detectado por el Sidebar
+    console.log('Sidebar - Ancho detectado:', screenWidth, 'px, isMobile:', isMobile, 'isExpanded:', isExpanded);
+
     return {
       sidebarWidth: isMobile 
-        ? 'w-80' // Ancho fijo para móviles
+        ? (isExpanded ? 'w-80' : 'w-16') // Mobile: respeta el estado isExpanded
         : isExpanded 
           ? (screenWidth < 1440 ? 'w-64' : 'w-72')
           : (isSmallScreen ? 'w-16' : isMediumScreen ? 'w-18' : 'w-20'),
@@ -198,11 +201,11 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   }, [setIsExpanded, responsiveConfig.isMobile]);
 
   // Reset expanded state when switching to mobile
-  useEffect(() => {
-    if (responsiveConfig.isMobile) {
-      setIsExpanded(true); // En mobile, siempre expandido para mostrar nombres
-    }
-  }, [responsiveConfig.isMobile, setIsExpanded]);
+  // useEffect(() => {
+  //   if (responsiveConfig.isMobile) {
+  //     setIsExpanded(true); // En mobile, siempre expandido para mostrar nombres
+  //   }
+  // }, [responsiveConfig.isMobile, setIsExpanded]);
 
   // Optimizar la navegación
   const handleNavigation = useCallback((path: string) => {
