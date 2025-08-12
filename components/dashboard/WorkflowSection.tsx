@@ -39,28 +39,28 @@ export default function WorkflowSection({ workflowSteps }: WorkflowSectionProps)
             {workflowSteps.map((step, index) => (
               <div key={step.id} className="relative flex-shrink-0 w-[140px] lg:w-auto lg:flex-1">
                 <div className={`
-                  p-4 rounded-xl border-2 transition-all duration-500 hover:shadow-lg cursor-pointer
-                  flex flex-col items-center justify-center min-h-[120px] relative z-10 bg-white
+                  p-3 rounded-xl border-2 transition-all duration-500 hover:shadow-lg cursor-pointer
+                  flex flex-col items-center justify-start h-[160px] relative z-10 bg-white
                   ${step.status === 'completed' ? 'border-green-200 shadow-sm' : ''}
                   ${step.status === 'active' ? 'border-blue-200 shadow-md ring-2 ring-blue-400 ring-opacity-50' : ''}
                   ${step.status === 'pending' ? 'border-gray-200' : ''}
                 `}>
                   {/* Icono */}
                   <div className={`
-                    w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 mb-3
+                    w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 mb-2 flex-shrink-0
                     ${step.status === 'completed' ? 'bg-green-100' : ''}
                     ${step.status === 'active' ? 'bg-blue-100 animate-pulse' : ''}
                     ${step.status === 'pending' ? 'bg-gray-100' : ''}
                   `}>
-                    <step.icon className={`w-6 h-6 ${step.color} ${
+                    <step.icon className={`w-5 h-5 ${step.color} ${
                       step.status === 'active' ? 'animate-bounce' : ''
                     }`} />
                   </div>
                   
                   {/* Texto */}
-                  <div className="text-center space-y-1">
-                    <p className="text-sm font-semibold text-slate-900 leading-tight">{step.title}</p>
-                    <p className="text-xs text-slate-500 leading-tight">{step.subtitle}</p>
+                  <div className="text-center flex-1 flex flex-col justify-center space-y-1 px-1">
+                    <p className="text-xs font-semibold text-slate-900 leading-tight line-clamp-2">{step.title}</p>
+                    <p className="text-xs text-slate-500 leading-tight line-clamp-2">{step.subtitle}</p>
                   </div>
                 </div>
                 
