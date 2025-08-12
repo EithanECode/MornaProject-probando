@@ -143,7 +143,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
     return {
       sidebarWidth: isMobile 
-        ? (isMobileMenuOpen ? 'w-80' : 'w-0') // Ancho fijo para móviles cuando está abierto, 0 cuando cerrado
+        ? 'w-80' // Ancho fijo para móviles
         : isExpanded 
           ? (screenWidth < 1440 ? 'w-64' : 'w-72')
           : (isSmallScreen ? 'w-16' : isMediumScreen ? 'w-18' : 'w-20'),
@@ -196,6 +196,13 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     }, 300);
     setHoverTimeout(timeout);
   }, [setIsExpanded, responsiveConfig.isMobile]);
+
+  // Reset expanded state when switching to mobile
+  useEffect(() => {
+    if (responsiveConfig.isMobile) {
+      setIsExpanded(true); // En mobile, siempre expandido para mostrar nombres
+    }
+  }, [responsiveConfig.isMobile, setIsExpanded]);
 
   // Optimizar la navegación
   const handleNavigation = useCallback((path: string) => {
