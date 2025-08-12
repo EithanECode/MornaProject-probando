@@ -131,10 +131,12 @@ export default function Dashboard() {
   }, [statsStale, ordersStale]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex overflow-x-hidden">
       <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
       
-      <main className={`flex-1 transition-all duration-200 ease-out ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
+      <main className={`flex-1 transition-all duration-200 ease-out ${
+        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'
+      }`}>
         <Header notifications={notifications} />
         
         {/* Stale indicator */}
