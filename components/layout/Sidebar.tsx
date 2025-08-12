@@ -278,8 +278,8 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           }
         `}
         style={{
-          display: responsiveConfig.isMobile && !isMobileMenuOpen ? 'none' : 'flex',
-          transform: responsiveConfig.isMobile && !isMobileMenuOpen ? 'translateX(-100%)' : 'translateX(0)'
+          transform: responsiveConfig.isMobile && !isMobileMenuOpen ? 'translateX(-100%)' : 'translateX(0)',
+          visibility: responsiveConfig.isMobile && !isMobileMenuOpen ? 'hidden' : 'visible'
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
