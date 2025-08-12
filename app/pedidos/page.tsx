@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import Sidebar from '@/components/layout/Sidebar';
 import { 
   Search, 
@@ -34,6 +35,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
+// Lazy load components pesados
+const LazyExportButton = dynamic(() => Promise.resolve(({ onClick }: { onClick: () => void }) => (
+  <Button variant="outline" size="sm" onClick={onClick}>
+    <Download className="w-4 h-4 mr-2" />
+    Exportar a PDF
+  </Button>
+)), { ssr: false });
+
 interface Order {
   id: string;
   client: string;
@@ -44,54 +53,109 @@ interface Order {
   priority: 'alta' | 'media' | 'baja';
 }
 
-const statusConfig = {
+// Memoizar las configuraciones para evitar recreaciones
+const STATUS_CONFIG = {
   'pendiente-china': { label: 'Pendiente Cotización China', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
   'pendiente-vzla': { label: 'Pendiente Cotización Vzla', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
   'esperando-pago': { label: 'Esperando Pago Cliente', color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock },
   'en-transito': { label: 'En Tránsito a Vzla', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Plane },
   'entregado': { label: 'Entregado', color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle },
   'cancelado': { label: 'Cancelado', color: 'bg-red-100 text-red-800 border-red-200', icon: AlertCircle }
-};
+} as const;
 
-const assignedConfig = {
+const ASSIGNED_CONFIG = {
   'china': { label: 'China', color: 'bg-red-100 text-red-800 border-red-200' },
   'vzla': { label: 'Vzla', color: 'bg-blue-100 text-blue-800 border-blue-200' }
+} as const;
+
+// Memoizar los datos de pedidos
+const ORDERS_DATA: Order[] = [
+  { id: 'PED-001', client: 'Ana Pérez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 197, description: 'Electrónicos varios', priority: 'alta' },
+  { id: 'PED-002', client: 'Carlos Ruiz', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 198, description: 'Herramientas industriales', priority: 'media' },
+  { id: 'PED-003', client: 'Lucía Méndez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 199, description: 'Ropa deportiva', priority: 'baja' },
+  { id: 'PED-005', client: 'Empresa XYZ', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 202, description: 'Maquinaria pesada', priority: 'alta' },
+  { id: 'PED-006', client: 'Tiendas ABC', status: 'entregado', assignedTo: 'vzla', daysElapsed: 207, description: 'Productos de belleza', priority: 'media' },
+  { id: 'PED-007', client: 'Juan Rodríguez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 0, description: 'Equipos médicos', priority: 'alta' },
+  { id: 'PED-008', client: 'María González', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 15, description: 'Materiales de construcción', priority: 'media' },
+  { id: 'PED-009', client: 'Luis Martínez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 5, description: 'Juguetes educativos', priority: 'baja' },
+  { id: 'PED-010', client: 'Carmen López', status: 'entregado', assignedTo: 'vzla', daysElapsed: 45, description: 'Artículos de cocina', priority: 'media' },
+  { id: 'PED-011', client: 'Roberto Silva', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 3, description: 'Equipos de oficina', priority: 'alta' }
+];
+
+// Hook personalizado para manejar el filtrado y paginación
+const useOrdersFilter = (orders: Order[]) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => {
+      const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            order.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            order.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [orders, searchTerm, statusFilter]);
+
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedOrders = useMemo(() => {
+    return filteredOrders.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredOrders, startIndex, itemsPerPage]);
+
+  const stats = useMemo(() => ({
+    total: orders.length,
+    pendientes: orders.filter(o => o.status.includes('pendiente')).length,
+    enTransito: orders.filter(o => o.status === 'en-transito').length,
+    entregados: orders.filter(o => o.status === 'entregado').length
+  }), [orders]);
+
+  return {
+    searchTerm,
+    setSearchTerm,
+    statusFilter,
+    setStatusFilter,
+    currentPage,
+    setCurrentPage,
+    filteredOrders,
+    paginatedOrders,
+    totalPages,
+    startIndex,
+    stats
+  };
 };
 
 export default function PedidosPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [animateStats, setAnimateStats] = useState(false);
 
-  const orders: Order[] = [
-    { id: 'PED-001', client: 'Ana Pérez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 197, description: 'Electrónicos varios', priority: 'alta' },
-    { id: 'PED-002', client: 'Carlos Ruiz', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 198, description: 'Herramientas industriales', priority: 'media' },
-    { id: 'PED-003', client: 'Lucía Méndez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 199, description: 'Ropa deportiva', priority: 'baja' },
-    { id: 'PED-005', client: 'Empresa XYZ', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 202, description: 'Maquinaria pesada', priority: 'alta' },
-    { id: 'PED-006', client: 'Tiendas ABC', status: 'entregado', assignedTo: 'vzla', daysElapsed: 207, description: 'Productos de belleza', priority: 'media' },
-    { id: 'PED-007', client: 'Juan Rodríguez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 0, description: 'Equipos médicos', priority: 'alta' },
-    { id: 'PED-008', client: 'María González', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 15, description: 'Materiales de construcción', priority: 'media' },
-    { id: 'PED-009', client: 'Luis Martínez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 5, description: 'Juguetes educativos', priority: 'baja' },
-    { id: 'PED-010', client: 'Carmen López', status: 'entregado', assignedTo: 'vzla', daysElapsed: 45, description: 'Artículos de cocina', priority: 'media' },
-    { id: 'PED-011', client: 'Roberto Silva', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 3, description: 'Equipos de oficina', priority: 'alta' }
-  ];
+  // Usar el hook personalizado
+  const {
+    searchTerm,
+    setSearchTerm,
+    statusFilter,
+    setStatusFilter,
+    currentPage,
+    setCurrentPage,
+    filteredOrders,
+    paginatedOrders,
+    totalPages,
+    startIndex,
+    stats
+  } = useOrdersFilter(ORDERS_DATA);
 
   useEffect(() => {
-    setAnimateStats(true);
+    const timer = setTimeout(() => {
+      setAnimateStats(true);
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          order.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          order.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
-  const handleExport = async () => {
+  // Memoizar la función de exportación
+  const handleExport = useCallback(async () => {
     const pdfContent = document.createElement('div');
     pdfContent.style.width = '210mm';
     pdfContent.style.padding = '10mm';
@@ -132,8 +196,8 @@ export default function PedidosPage() {
         order.id,
         order.client,
         order.description,
-        statusConfig[order.status].label,
-        assignedConfig[order.assignedTo].label,
+        STATUS_CONFIG[order.status].label,
+        ASSIGNED_CONFIG[order.assignedTo].label,
         `${order.daysElapsed} días`
       ];
 
@@ -174,19 +238,154 @@ export default function PedidosPage() {
     pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
     
     pdf.save("reporte_pedidos.pdf");
-  };
+  }, [filteredOrders]);
 
-  const itemsPerPage = 8;
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedOrders = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
+  // Memoizar el renderizado de las tarjetas de estadísticas
+  const statsCards = useMemo(() => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-sm font-medium">Total Pedidos</p>
+              <p className={`text-3xl font-bold transition-all duration-1000 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+                {stats.total}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Package className="w-6 h-6 animate-bounce" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-  const stats = {
-    total: orders.length,
-    pendientes: orders.filter(o => o.status.includes('pendiente')).length,
-    enTransito: orders.filter(o => o.status === 'en-transito').length,
-    entregados: orders.filter(o => o.status === 'entregado').length
-  };
+      <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-orange-100 text-sm font-medium">Pendientes</p>
+              <p className={`text-3xl font-bold transition-all duration-1000 delay-200 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+                {stats.pendientes}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <AlertCircle className="w-6 h-6 animate-pulse" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-purple-100 text-sm font-medium">En Tránsito</p>
+              <p className={`text-3xl font-bold transition-all duration-1000 delay-400 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+                {stats.enTransito}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Plane className="w-6 h-6 animate-bounce" style={{ animationDuration: '2s' }} />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-sm font-medium">Entregados</p>
+              <p className={`text-3xl font-bold transition-all duration-1000 delay-600 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+                {stats.entregados}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 animate-pulse" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  ), [stats, animateStats]);
+
+  // Memoizar el renderizado de las filas de la tabla
+  const tableRows = useMemo(() => (
+    paginatedOrders.map((order) => {
+      const status = STATUS_CONFIG[order.status];
+      const assigned = ASSIGNED_CONFIG[order.assignedTo];
+      const StatusIcon = status.icon;
+      
+      return (
+        <tr 
+          key={order.id}
+          className="border-b border-slate-100 hover:bg-slate-50/50 transition-all duration-200 cursor-pointer"
+        >
+          <td className="py-4 px-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                <Package className="w-4 h-4 text-white" />
+              </div>
+              <span className="font-medium text-slate-900">{order.id}</span>
+            </div>
+          </td>
+          <td className="py-4 px-6">
+            <div>
+              <p className="font-medium text-slate-900">{order.client}</p>
+              <p className="text-sm text-slate-500">{order.description}</p>
+            </div>
+          </td>
+          <td className="py-4 px-6">
+            <Badge className={`${status.color} border`}>
+              <StatusIcon className="w-3 h-3 mr-1" />
+              {status.label}
+            </Badge>
+          </td>
+          <td className="py-4 px-6">
+            <Badge className={`${assigned.color} border`}>
+              {assigned.label}
+            </Badge>
+          </td>
+          <td className="py-4 px-6">
+            <div className="flex items-center space-x-2">
+              <Clock className="w-4 h-4 text-slate-400" />
+              <span className="text-slate-600">{order.daysElapsed} días</span>
+            </div>
+          </td>
+          <td className="py-4 px-6">
+            <div className="flex items-center space-x-2">
+              <Button 
+                size="sm" 
+                variant="outline"
+                className="bg-white/50 border-slate-200 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                onClick={() => setSelectedOrder(order)}
+              >
+                <Eye className="w-4 h-4 mr-1" />
+                Ver
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <Edit className="w-4 h-4 mr-2" />
+                    Editar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="text-red-600">
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Eliminar
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </td>
+        </tr>
+      );
+    })
+  ), [paginatedOrders]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
@@ -204,10 +403,7 @@ export default function PedidosPage() {
                 <p className="text-sm text-slate-600">Administra y da seguimiento a todos los pedidos</p>
               </div>
               <div className="flex items-center space-x-4">
-                <Button variant="outline" size="sm" onClick={handleExport}>
-                  <Download className="w-4 h-4 mr-2" />
-                  Exportar a PDF
-                </Button>
+                <LazyExportButton onClick={handleExport} />
                 <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
                   <Plus className="w-4 h-4 mr-2" />
                   Nuevo Pedido
@@ -219,71 +415,7 @@ export default function PedidosPage() {
 
         <div className="p-6 space-y-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-blue-100 text-sm font-medium">Total Pedidos</p>
-                    <p className={`text-3xl font-bold transition-all duration-1000 ${animateStats ? 'scale-100' : 'scale-0'}`}>
-                      {stats.total}
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <Package className="w-6 h-6 animate-bounce" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-orange-100 text-sm font-medium">Pendientes</p>
-                    <p className={`text-3xl font-bold transition-all duration-1000 delay-200 ${animateStats ? 'scale-100' : 'scale-0'}`}>
-                      {stats.pendientes}
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <AlertCircle className="w-6 h-6 animate-pulse" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-purple-100 text-sm font-medium">En Tránsito</p>
-                    <p className={`text-3xl font-bold transition-all duration-1000 delay-400 ${animateStats ? 'scale-100' : 'scale-0'}`}>
-                      {stats.enTransito}
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <Plane className="w-6 h-6 animate-bounce" style={{ animationDuration: '2s' }} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-green-100 text-sm font-medium">Entregados</p>
-                    <p className={`text-3xl font-bold transition-all duration-1000 delay-600 ${animateStats ? 'scale-100' : 'scale-0'}`}>
-                      {stats.entregados}
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-6 h-6 animate-pulse" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {statsCards}
 
           {/* Table Card */}
           <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
@@ -342,80 +474,7 @@ export default function PedidosPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedOrders.map((order, index) => {
-                      const status = statusConfig[order.status];
-                      const assigned = assignedConfig[order.assignedTo];
-                      const StatusIcon = status.icon;
-                      
-                      return (
-                        <tr 
-                          key={order.id}
-                          className="border-b border-slate-100 hover:bg-slate-50/50 transition-all duration-200 cursor-pointer"
-                        >
-                          <td className="py-4 px-6">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                                <Package className="w-4 h-4 text-white" />
-                              </div>
-                              <span className="font-medium text-slate-900">{order.id}</span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-6">
-                            <div>
-                              <p className="font-medium text-slate-900">{order.client}</p>
-                              <p className="text-sm text-slate-500">{order.description}</p>
-                            </div>
-                          </td>
-                          <td className="py-4 px-6">
-                            <Badge className={`${status.color} border`}>
-                              <StatusIcon className="w-3 h-3 mr-1" />
-                              {status.label}
-                            </Badge>
-                          </td>
-                          <td className="py-4 px-6">
-                            <Badge className={`${assigned.color} border`}>
-                              {assigned.label}
-                            </Badge>
-                          </td>
-                          <td className="py-4 px-6">
-                            <div className="flex items-center space-x-2">
-                              <Clock className="w-4 h-4 text-slate-400" />
-                              <span className="text-slate-600">{order.daysElapsed} días</span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-6">
-                            <div className="flex items-center space-x-2">
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                className="bg-white/50 border-slate-200 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
-                                onClick={() => setSelectedOrder(order)}
-                              >
-                                <Eye className="w-4 h-4 mr-1" />
-                                Ver
-                              </Button>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                                    <MoreVertical className="w-4 h-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>
-                                    <Edit className="w-4 h-4 mr-2" />
-                                    Editar
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-red-600">
-                                    <Trash2 className="w-4 h-4 mr-2" />
-                                    Eliminar
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                    {tableRows}
                   </tbody>
                 </table>
               </div>
@@ -424,7 +483,7 @@ export default function PedidosPage() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-6 pt-6 border-t border-slate-200">
                   <div className="text-sm text-slate-600">
-                    Mostrando {startIndex + 1} a {Math.min(startIndex + itemsPerPage, filteredOrders.length)} de {filteredOrders.length} resultados
+                    Mostrando {startIndex + 1} a {Math.min(startIndex + 8, filteredOrders.length)} de {filteredOrders.length} resultados
                   </div>
                   <div className="flex items-center space-x-2">
                     <Button
@@ -509,8 +568,8 @@ export default function PedidosPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-lg text-slate-900">Asignado a</p>
-                      <Badge className={`${assignedConfig[selectedOrder.assignedTo].color} border`}>
-                        {assignedConfig[selectedOrder.assignedTo].label}
+                      <Badge className={`${ASSIGNED_CONFIG[selectedOrder.assignedTo].color} border`}>
+                        {ASSIGNED_CONFIG[selectedOrder.assignedTo].label}
                       </Badge>
                     </div>
                   </div>
@@ -531,14 +590,14 @@ export default function PedidosPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-lg text-slate-900">Estado Actual</p>
-                      <Badge className={`${statusConfig[selectedOrder.status].color} border`}>
+                      <Badge className={`${STATUS_CONFIG[selectedOrder.status].color} border`}>
                         {
                           (() => {
-                            const StatusIcon = statusConfig[selectedOrder.status].icon;
+                            const StatusIcon = STATUS_CONFIG[selectedOrder.status].icon;
                             return <StatusIcon className="w-3 h-3 mr-1" />;
                           })()
                         }
-                        {statusConfig[selectedOrder.status].label}
+                        {STATUS_CONFIG[selectedOrder.status].label}
                       </Badge>
                     </div>
                   </div>

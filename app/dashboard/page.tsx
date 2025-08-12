@@ -1,18 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import StatsCards from '@/components/dashboard/StatsCards';
 import WorkflowSection from '@/components/dashboard/WorkflowSection';
 import RecentOrders from '@/components/dashboard/RecentOrders';
-
 import QuickActions from '@/components/dashboard/QuickActions';
 
 import { OrderStats } from '@/lib/types/dashboard';
-import { INITIAL_STATS, WORKFLOW_STEPS, RECENT_ORDERS } from '@/lib/constants/dashboard';
+import { INITIAL_STATS, WORKFLOW_STEPS } from '@/lib/constants/dashboard';
 
-import {getSupabaseBrowserClient} from "@/lib/supabase/client";
+// Importar hooks optimizados
+import { useStatsQuery, useRecentOrdersQuery } from '@/hooks/use-supabase-query';
+
+// Lazy load components that are not immediately visible
+const LazyWorkflowSection = dynamic(() => import('@/components/dashboard/WorkflowSection'), {
+  loading: () => <div className="h-64 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg animate-pulse" />
+});
+
+const LazyRecentOrders = dynamic(() => import('@/components/dashboard/RecentOrders'), {
+  loading: () => <div className="h-80 bg-white rounded-lg shadow-lg animate-pulse" />
+});
 
 // ✅ Interfaz para los datos del modal de China
 interface FormDataChina {
@@ -37,117 +47,88 @@ interface FormDataVzla {
   observaciones: string
 }
 
-//Backend de RecentOrders
-const STATE_LABELS = [
-  "", // 0 no se usa
-  "Pedido solicitado",
-  "Cotización China",
-  "Cotización Venezuela",
-  "Cliente paga",
-  "Re-empacado",
-  "En tránsito aéreo",
-  "En álmacen Venezuela",
-  "Entregado"
-];
-
 export default function Dashboard() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [stats, setStats] = useState<OrderStats>({
-    total: 0,
-    pending: 0,
-    completed: 0,
-    inTransit: 0,
-  });
   const [notifications, setNotifications] = useState(3);
   const [animateStats, setAnimateStats] = useState(false);
 
-  const [recentOrders, setRecentOrders] = useState([]);
+  // Usar hooks optimizados
+  const { 
+    data: stats, 
+    loading: statsLoading, 
+    error: statsError,
+    isStale: statsStale 
+  } = useStatsQuery();
+  
+  const { 
+    data: recentOrders, 
+    loading: ordersLoading, 
+    error: ordersError,
+    isStale: ordersStale 
+  } = useRecentOrdersQuery(5);
 
+  // Memoizar el estado de animación
   useEffect(() => {
-    setAnimateStats(true);
+    const timer = setTimeout(() => {
+      setAnimateStats(true);
+    }, 100); // Pequeño delay para mejorar la experiencia visual
 
-  const fetchStats = async () => {
-    const supabase = getSupabaseBrowserClient();
-    const { data, error } = await supabase
-      .from("orders")
-      .select("state", { count: "exact", head: false });
-
-      if (error) {
-      console.error("Error fetching stats:", error);
-      return;
-    }
-
-    // Contar los estados
-    const total = data.length;
-    const pending = data.filter((order) => order.state >= 1 && order.state <= 5).length;
-    const inTransit = data.filter((order) => order.state === 6 || order.state === 7).length;
-    const completed = data.filter((order) => order.state === 8).length;
-
-    setStats({
-      total,
-      pending,
-      completed,
-      inTransit,
-    });
-  };
-
-  const fetchRecentOrders = async () => {
-    const supabase = getSupabaseBrowserClient();
-    // Consulta los últimos 5 pedidos
-    const { data: orders, error } = await supabase
-      .from("orders")
-      .select("id, state, client_id, created_at")
-      .order("created_at", { ascending: false })
-      .limit(5);
-
-    if (error) {
-      console.error("Error fetching orders:", error);
-      setRecentOrders([]);
-      return;
-    }
-
-    // Obtén los nombres de los clientes
-    const clientIds = orders.map(order => order.client_id);
-    const { data: clients, error: clientError } = await supabase
-      .from("clients")
-      .select("user_id, name")
-      .in("user_id", clientIds);
-
-    if (clientError) {
-      console.error("Error fetching clients:", clientError);
-      setRecentOrders([]);
-      return;
-    }
-
-    // Mapea el id del cliente al nombre
-    const clientMap = Object.fromEntries(clients.map(c => [c.user_id, c.name]));
-
-    // Transforma los datos para RecentOrders
-    const recentOrdersData = orders.map(order => ({
-      id: order.id,
-      client: clientMap[order.client_id] || "Desconocido",
-      status: STATE_LABELS[order.state] || "Desconocido",
-      progress: Math.round((order.state / 8) * 100),
-      eta: "", // Puedes calcular o mostrar vacío si no tienes ETA
-    }));
-
-    setRecentOrders(recentOrdersData);
-  };
-
-  fetchStats();
-  fetchRecentOrders();
+    return () => clearTimeout(timer);
   }, []);
 
   // ✅ Crea las funciones que el componente QuickActions necesita
-  const handleChinaSubmit = (data: FormDataChina) => {
+  const handleChinaSubmit = useCallback((data: FormDataChina) => {
     console.log('Nuevo pedido de China creado:', data);
     // Aquí puedes agregar la lógica para guardar el pedido de China
-  };
+  }, []);
 
-  const handleVzlaSubmit = (data: FormDataVzla) => {
+  const handleVzlaSubmit = useCallback((data: FormDataVzla) => {
     console.log('Nuevo pedido de Venezuela creado:', data);
     // Aquí puedes agregar la lógica para guardar el pedido de Venezuela
-  };
+  }, []);
+
+  // Memoizar el contenido principal para evitar re-renders innecesarios
+  const mainContent = useMemo(() => (
+    <div className="p-6 space-y-8">
+      <StatsCards stats={stats} animateStats={animateStats} />
+      
+      {/* Lazy load components */}
+      <LazyWorkflowSection workflowSteps={WORKFLOW_STEPS} />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <LazyRecentOrders orders={recentOrders} />
+        <QuickActions 
+          onChinaSubmit={handleChinaSubmit} 
+          onVzlaSubmit={handleVzlaSubmit} 
+        />
+      </div>
+    </div>
+  ), [stats, animateStats, recentOrders, handleChinaSubmit, handleVzlaSubmit]);
+
+  // Memoizar el error state
+  const errorContent = useMemo(() => (
+    <div className="p-6">
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p className="text-red-800">
+          {statsError || ordersError}
+        </p>
+      </div>
+    </div>
+  ), [statsError, ordersError]);
+
+  // Memoizar el stale indicator
+  const staleIndicator = useMemo(() => {
+    if (statsStale || ordersStale) {
+      return (
+        <div className="fixed top-4 right-4 z-50">
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded-lg shadow-lg">
+            <p className="text-sm">Actualizando datos...</p>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }, [statsStale, ordersStale]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
@@ -156,19 +137,14 @@ export default function Dashboard() {
       <main className={`flex-1 transition-all duration-200 ease-out ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
         <Header notifications={notifications} />
         
-        <div className="p-6 space-y-8">
-          <StatsCards stats={stats} animateStats={animateStats} />
-          <WorkflowSection workflowSteps={WORKFLOW_STEPS} />
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <RecentOrders orders={recentOrders} />
-            {/* ✅ Renderiza el componente QuickActions y pásale las dos funciones como props */}
-            <QuickActions 
-              onChinaSubmit={handleChinaSubmit} 
-              onVzlaSubmit={handleVzlaSubmit} 
-            />
-          </div>
-        </div>
+        {/* Stale indicator */}
+        {staleIndicator}
+        
+        {/* Mostrar errores si existen */}
+        {(statsError || ordersError) && errorContent}
+
+        {/* Contenido principal - StatsCards y RecentOrders manejan el estado null internamente */}
+        {mainContent}
       </main>
 
       <style jsx>{`
