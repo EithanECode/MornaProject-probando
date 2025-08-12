@@ -44,9 +44,11 @@ const Reportes = () => {
       });
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex overflow-x-hidden">
       <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
-      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
+      <main className={`flex-1 transition-all duration-300 ${
+        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'
+      }`}>
         <div className="p-6">
           {/* Header */}
           <div className="mb-8">
@@ -70,7 +72,7 @@ const Reportes = () => {
                 {/* Filtro por tipo */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Reporte</label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {[
                       { key: 'mes', label: 'Por Mes', icon: Calendar },
                       { key: 'empleado', label: 'Por Empleado', icon: Users },
@@ -79,14 +81,14 @@ const Reportes = () => {
                       <button
                         key={key}
                         onClick={() => setActiveFilter(key)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all transform hover:scale-105 ${
+                        className={`flex items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-all transform hover:scale-105 flex-shrink-0 ${
                           activeFilter === key
                             ? 'bg-blue-600 text-white shadow-lg'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        <Icon size={16} />
-                        {label}
+                        <Icon size={14} />
+                        <span className="truncate">{label}</span>
                       </button>
                     ))}
                   </div>
