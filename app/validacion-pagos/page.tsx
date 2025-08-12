@@ -248,17 +248,17 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
       completado: {
         className: 'bg-green-100 text-green-800 border-green-200',
         text: 'Completado',
-  icon: <AnimatedIcon animation={["pulse","bounce"]}><CheckCircle size={12} /></AnimatedIcon>
+        icon: <AnimatedIcon animation={["pulse","bounce"]}><CheckCircle size={12} /></AnimatedIcon>
       },
       pendiente: {
         className: 'bg-orange-100 text-orange-800 border-orange-200',
         text: 'Pendiente',
-  icon: <AnimatedIcon animation={["pulse","spin"]}><Clock size={12} /></AnimatedIcon>
+        icon: <AnimatedIcon animation={["pulse","spin"]}><Clock size={12} /></AnimatedIcon>
       },
       rechazado: {
         className: 'bg-red-100 text-red-800 border-red-200',
         text: 'Rechazado',
-  icon: <AnimatedIcon animation={["pulse","shake"]}><X size={12} /></AnimatedIcon>
+        icon: <AnimatedIcon animation={["pulse","shake"]}><X size={12} /></AnimatedIcon>
       }
     };
     return configs[estado as keyof typeof configs] || configs.pendiente;
@@ -267,11 +267,11 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
   const config = getStatusConfig(status);
 
   return (
-    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border gap-1 transition-all duration-300 hover:scale-105 ${config.className}`}>
+    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border gap-1 transition-all duration-300 hover:scale-105 ${config.className}`}>
       <AnimatedIcon animation="pulse">
         {config.icon}
       </AnimatedIcon>
-      {config.text}
+      <span className="truncate">{config.text}</span>
     </span>
   );
 };
@@ -286,34 +286,34 @@ const PaymentActions: React.FC<{ payment: Payment; onApprove: (id: string) => vo
 }) => {
   if (payment.estado !== 'pendiente') {
     return (
-      <button className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200">
+      <button className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-blue-600 transition-colors duration-200">
         <AnimatedIcon animation="float">
-          <Eye size={14} />
+          <Eye size={12} />
         </AnimatedIcon>
-        Ver
+        <span className="truncate">Ver</span>
       </button>
     );
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1">
       <button 
         onClick={() => onApprove(payment.id)}
-        className="flex items-center gap-1 px-3 py-1.5 text-sm bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-all duration-200 transform hover:scale-105"
+        className="flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-all duration-200 transform hover:scale-105"
       >
         <AnimatedIcon animation="bounce">
-          <Check size={14} />
+          <Check size={12} />
         </AnimatedIcon>
-        Aprobar
+        <span className="truncate">Aprobar</span>
       </button>
       <button 
         onClick={() => onReject(payment.id)}
-        className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-all duration-200 transform hover:scale-105"
+        className="flex items-center gap-1 px-2 py-1 text-xs bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-all duration-200 transform hover:scale-105"
       >
         <AnimatedIcon animation="shake">
-          <X size={14} />
+          <X size={12} />
         </AnimatedIcon>
-        Rechazar
+        <span className="truncate">Rechazar</span>
       </button>
     </div>
   );
@@ -433,9 +433,11 @@ const PaymentValidationDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex overflow-x-hidden">
       <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
-      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
+      <main className={`flex-1 transition-all duration-300 ${
+        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'
+      }`}>
         <div className="p-6">
           {/* ================================ */}
           {/* HEADER */}
@@ -565,21 +567,21 @@ const PaymentValidationDashboard: React.FC = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     {[
-                      { label: 'ID Pedido', icon: <AnimatedIcon animation={["pulse","bounce"]}><Hash size={14} /></AnimatedIcon> },
-                      { label: 'Cliente', icon: <AnimatedIcon animation={["pulse","bounce"]}><User size={14} /></AnimatedIcon> },
-                      { label: 'Estado', icon: <AnimatedIcon animation={["pulse","bounce"]}><CheckCircle size={14} /></AnimatedIcon> },
-                      { label: 'Fecha', icon: <AnimatedIcon animation={["pulse","bounce"]}><Calendar size={14} /></AnimatedIcon> },
-                      { label: 'Monto', icon: <AnimatedIcon animation={["pulse","bounce"]}><DollarSign size={14} /></AnimatedIcon> },
-                      { label: 'Referencia', icon: <AnimatedIcon animation={["pulse","bounce"]}><Hash size={14} /></AnimatedIcon> },
-                      { label: 'Destino', icon: <AnimatedIcon animation={["pulse","bounce"]}><MapPin size={14} /></AnimatedIcon> },
-                      { label: 'Acciones', icon: <AnimatedIcon animation={["pulse","shake"]}><MoreHorizontal size={14} /></AnimatedIcon> }
+                      { label: 'ID Pedido', icon: <AnimatedIcon animation={["pulse","bounce"]}><Hash size={14} /></AnimatedIcon>, width: 'w-48' },
+                      { label: 'Cliente', icon: <AnimatedIcon animation={["pulse","bounce"]}><User size={14} /></AnimatedIcon>, width: 'w-40' },
+                      { label: 'Estado', icon: <AnimatedIcon animation={["pulse","bounce"]}><CheckCircle size={14} /></AnimatedIcon>, width: 'w-36' },
+                      { label: 'Fecha', icon: <AnimatedIcon animation={["pulse","bounce"]}><Calendar size={14} /></AnimatedIcon>, width: 'w-28' },
+                      { label: 'Monto', icon: <AnimatedIcon animation={["pulse","bounce"]}><DollarSign size={14} /></AnimatedIcon>, width: 'w-32' },
+                      { label: 'Referencia', icon: <AnimatedIcon animation={["pulse","bounce"]}><Hash size={14} /></AnimatedIcon>, width: 'w-40' },
+                      { label: 'Destino', icon: <AnimatedIcon animation={["pulse","bounce"]}><MapPin size={14} /></AnimatedIcon>, width: 'w-32' },
+                      { label: 'Acciones', icon: <AnimatedIcon animation={["pulse","shake"]}><MoreHorizontal size={14} /></AnimatedIcon>, width: 'w-24' }
                     ].map((header, index) => (
-                      <th key={index} className="px-6 py-4 text-left">
-                        <div className="flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th key={index} className={`px-3 py-3 text-left ${header.width}`}>
+                        <div className="flex items-center gap-1 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                           <AnimatedIcon animation="pulse">
                             {header.icon}
                           </AnimatedIcon>
-                          {header.label}
+                          <span className="truncate">{header.label}</span>
                         </div>
                       </th>
                     ))}
@@ -591,44 +593,51 @@ const PaymentValidationDashboard: React.FC = () => {
                       key={payment.id} 
                       className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent transition-all duration-200 group"
                     >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-blue-500 text-white rounded-lg flex items-center justify-center text-sm font-semibold">
+                      <td className="px-3 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0">
                             {payment.id.split('-')[1]}
                           </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{payment.id}</div>
-                            <div className="text-xs text-gray-500">{payment.descripcion}</div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm font-medium text-gray-900 truncate">{payment.id}</div>
+                            <div className="text-xs text-gray-500 truncate">{payment.descripcion}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <UserAvatar name={payment.usuario} id={payment.id} />
+                      <td className="px-3 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                            {payment.usuario.split(' ').map(n => n[0]).join('').toUpperCase()}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm font-medium text-gray-900 truncate">{payment.usuario}</div>
+                          </div>
+                        </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 py-3">
                         <StatusBadge status={payment.estado} />
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {formatDate(payment.fecha)}
+                      <td className="px-3 py-3 text-sm text-gray-900">
+                        <span className="truncate block">{formatDate(payment.fecha)}</span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm font-bold text-gray-900 group-hover:text-green-600 transition-colors duration-200">
+                      <td className="px-3 py-3">
+                        <span className="text-sm font-bold text-gray-900 group-hover:text-green-600 transition-colors duration-200 truncate block">
                           {formatCurrency(payment.monto)}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded">
+                      <td className="px-3 py-3">
+                        <span className="text-xs font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded truncate block">
                           {payment.referencia}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
+                      <td className="px-3 py-3">
+                        <div className="flex items-center gap-1">
                           {payment.destino === 'China' && (
                             <AnimatedIcon animation="pulse">
-                              <AlertTriangle size={14} className="text-orange-500" />
+                              <AlertTriangle size={12} className="text-orange-500 flex-shrink-0" />
                             </AnimatedIcon>
                           )}
-                          <span className={`text-sm px-2 py-1 rounded-full ${
+                          <span className={`text-xs px-2 py-1 rounded-full truncate ${
                             payment.destino === 'China' 
                               ? 'bg-red-100 text-red-800' 
                               : 'bg-blue-100 text-blue-800'
@@ -637,7 +646,7 @@ const PaymentValidationDashboard: React.FC = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 py-3">
                         <PaymentActions 
                           payment={payment} 
                           onApprove={handleApprove}
