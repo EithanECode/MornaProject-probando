@@ -9,6 +9,15 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      width: {
+        '18': '4.5rem', // 72px para el sidebar en pantallas medianas
+      },
+      height: {
+        '18': '4.5rem', // 72px para el sidebar en pantallas medianas
+      },
+      spacing: {
+        '4.5': '1.125rem', // 18px para padding intermedio
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
