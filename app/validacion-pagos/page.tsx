@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useMemo, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Search, 
   Filter, 
@@ -524,16 +525,17 @@ const PaymentValidationDashboard: React.FC = () => {
                 <AnimatedIcon animation="shake">
                   <Filter size={20} className="text-gray-500" />
                 </AnimatedIcon>
-                <select
-                  className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[180px]"
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                >
-                  <option value="todos">Todos los estados</option>
-                  <option value="completado">Completados</option>
-                  <option value="pendiente">Pendientes</option>
-                  <option value="rechazado">Rechazados</option>
-                </select>
+                <Select onValueChange={(value) => setFilterStatus(value)} defaultValue="todos">
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Todos los estados" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos los estados</SelectItem>
+                    <SelectItem value="completado">Completados</SelectItem>
+                    <SelectItem value="pendiente">Pendientes</SelectItem>
+                    <SelectItem value="rechazado">Rechazados</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>

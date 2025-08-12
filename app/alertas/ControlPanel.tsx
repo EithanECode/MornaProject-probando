@@ -1,4 +1,5 @@
 import React from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ControlPanelProps {
   onGenerateNewAlert: () => void;
@@ -26,19 +27,29 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full md:w-64 px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
         />
-        <select onChange={(e) => onTypeFilterChange(e.target.value)} className="px-4 py-2 border rounded-md">
-          <option value="">Tipo (Todos)</option>
-          <option value="critical">Críticas</option>
-          <option value="warning">Advertencias</option>
-          <option value="info">Informativas</option>
-        </select>
-        <select onChange={(e) => onPriorityFilterChange(e.target.value)} className="px-4 py-2 border rounded-md">
-          <option value="">Prioridad (Todas)</option>
-          <option value="urgente">Urgente</option>
-          <option value="alta">Alta</option>
-          <option value="media">Media</option>
-          <option value="baja">Baja</option>
-        </select>
+        <Select onValueChange={(value) => onTypeFilterChange(value)}>
+          <SelectTrigger className="w-[140px]">
+            <SelectValue placeholder="Tipo (Todos)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Tipo (Todos)</SelectItem>
+            <SelectItem value="critical">Críticas</SelectItem>
+            <SelectItem value="warning">Advertencias</SelectItem>
+            <SelectItem value="info">Informativas</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select onValueChange={(value) => onPriorityFilterChange(value)}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="Prioridad (Todas)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Prioridad (Todas)</SelectItem>
+            <SelectItem value="urgente">Urgente</SelectItem>
+            <SelectItem value="alta">Alta</SelectItem>
+            <SelectItem value="media">Media</SelectItem>
+            <SelectItem value="baja">Baja</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex space-x-2">
         <button

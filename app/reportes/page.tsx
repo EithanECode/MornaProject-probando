@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Calendar, Users, Package, Download, Filter, TrendingUp, Clock, CheckCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Reportes = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -96,29 +97,31 @@ const Reportes = () => {
                 {/* Filtro de fecha */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Período</label>
-                  <select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="2024-08">Agosto 2024</option>
-                    <option value="2024-07">Julio 2024</option>
-                    <option value="2024-06">Junio 2024</option>
-                  </select>
+                  <Select onValueChange={(value) => setSelectedMonth(value)} defaultValue="2024-08">
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Seleccionar mes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2024-08">Agosto 2024</SelectItem>
+                      <SelectItem value="2024-07">Julio 2024</SelectItem>
+                      <SelectItem value="2024-06">Junio 2024</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 {/* Filtro de empleado */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Empleado</label>
-                  <select
-                    value={selectedEmployee}
-                    onChange={(e) => setSelectedEmployee(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="todos">Todos los empleados</option>
-                    <option value="ana">Ana Pérez</option>
-                    <option value="carlos">Carlos Ruiz</option>
-                    <option value="lucia">Lucía Méndez</option>
-                  </select>
+                  <Select onValueChange={(value) => setSelectedEmployee(value)} defaultValue="todos">
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Seleccionar empleado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos los empleados</SelectItem>
+                      <SelectItem value="ana">Ana Pérez</SelectItem>
+                      <SelectItem value="carlos">Carlos Ruiz</SelectItem>
+                      <SelectItem value="lucia">Lucía Méndez</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
