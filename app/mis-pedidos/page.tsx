@@ -82,6 +82,23 @@ interface NewOrderData {
   estimatedBudget: string;
 }
 
+interface PaymentMethod {
+  id: string;
+  name: string;
+  icon: string;
+  currency: 'USD' | 'BS';
+  validation: 'automatic' | 'manual';
+  description: string;
+  details?: {
+    accountNumber?: string;
+    bankName?: string;
+    reference?: string;
+    phoneNumber?: string;
+    email?: string;
+    qrCode?: string;
+  };
+}
+
 // Datos mock
 const MOCK_ORDERS: Order[] = [
   {
@@ -132,9 +149,9 @@ const MOCK_ORDERS: Order[] = [
     product: 'Smartwatch Apple Watch Series 9',
     description: 'Reloj inteligente con monitor cardíaco',
     amount: '$899.00',
-    status: 'pending',
-    progress: 10,
-    tracking: 'Pendiente',
+    status: 'quoted',
+    progress: 25,
+    tracking: 'Cotizado',
     estimatedDelivery: '30 días',
     createdAt: '2024-01-25',
     category: 'Wearables'
@@ -183,6 +200,12 @@ export default function MisPedidosPage() {
   // Referencia al modal para scroll
   const modalRef = useRef<HTMLDivElement>(null);
 
+  // Estados para el modal de pago
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [paymentStep, setPaymentStep] = useState(1);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
+  const [selectedOrderForPayment, setSelectedOrderForPayment] = useState<Order | null>(null);
+
   // Inicialización
   useEffect(() => {
     setMounted(true);
@@ -211,6 +234,7 @@ export default function MisPedidosPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'quoted': return 'bg-green-100 text-green-800 border-green-200';
       case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'shipped': return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'delivered': return 'bg-green-100 text-green-800 border-green-200';
@@ -222,6 +246,7 @@ export default function MisPedidosPage() {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'pending': return 'Pendiente';
+      case 'quoted': return 'Cotizado';
       case 'processing': return 'Procesando';
       case 'shipped': return 'Enviado';
       case 'delivered': return 'Entregado';
@@ -237,10 +262,107 @@ export default function MisPedidosPage() {
     return 'bg-gray-300';
   };
 
+  // Métodos de pago disponibles
+  const paymentMethods: PaymentMethod[] = [
+    {
+      id: 'mobile',
+      name: 'Pago Móvil',
+      icon: '📱',
+      currency: 'BS',
+      validation: 'automatic',
+      description: 'Pago rápido y seguro',
+      details: {
+        phoneNumber: '0412-123-4567',
+        reference: 'PITA-001-2024'
+      }
+    },
+    {
+      id: 'transfer',
+      name: 'Transferencia',
+      icon: '🏦',
+      currency: 'BS',
+      validation: 'automatic',
+      description: 'Transferencia bancaria',
+      details: {
+        bankName: 'Banco de Venezuela',
+        accountNumber: '0102-1234-5678-9012',
+        reference: 'PITA-001-2024'
+      }
+    },
+    {
+      id: 'binance',
+      name: 'Binance USDT',
+      icon: '₿',
+      currency: 'USD',
+      validation: 'manual',
+      description: 'Pago con criptomonedas',
+      details: {
+        email: 'pita.venezuela@binance.com',
+        reference: 'PITA-001-2024'
+      }
+    },
+    {
+      id: 'zelle',
+      name: 'Zelle',
+      icon: '💵',
+      currency: 'USD',
+      validation: 'manual',
+      description: 'Transferencia rápida',
+      details: {
+        email: 'pita.venezuela@zelle.com',
+        reference: 'PITA-001-2024'
+      }
+    },
+    {
+      id: 'paypal',
+      name: 'PayPal',
+      icon: '💳',
+      currency: 'USD',
+      validation: 'manual',
+      description: 'Pago con PayPal',
+      details: {
+        email: 'pita.venezuela@paypal.com',
+        reference: 'PITA-001-2024'
+      }
+    }
+  ];
+
   // Handlers
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
     setIsDetailsModalOpen(true);
+  };
+
+  // Handlers para el modal de pago
+  const handlePaymentClick = (order: Order) => {
+    setSelectedOrderForPayment(order);
+    setPaymentStep(1);
+    setSelectedPaymentMethod(null);
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentMethodSelect = (method: PaymentMethod) => {
+    setSelectedPaymentMethod(method);
+    setPaymentStep(2);
+  };
+
+  const handlePaymentBack = () => {
+    if (paymentStep === 2) {
+      setPaymentStep(1);
+      setSelectedPaymentMethod(null);
+    } else {
+      setIsPaymentModalOpen(false);
+      setSelectedOrderForPayment(null);
+    }
+  };
+
+  const handlePaymentConfirm = () => {
+    // Aquí iría la lógica de confirmación del pago
+    console.log('Pago confirmado:', selectedOrderForPayment, selectedPaymentMethod);
+    setIsPaymentModalOpen(false);
+    setSelectedOrderForPayment(null);
+    setSelectedPaymentMethod(null);
+    setPaymentStep(1);
   };
 
   const handleNextStep = () => {
@@ -1047,6 +1169,16 @@ export default function MisPedidosPage() {
                       <div className="flex justify-between text-xs text-slate-600">
                         <span>Entrega estimada: {order.estimatedDelivery}</span>
                         <div className="flex gap-2">
+                          {order.status === 'quoted' && (
+                            <Button 
+                              size="sm" 
+                              className="h-6 px-3 bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => handlePaymentClick(order)}
+                            >
+                              <DollarSign className="h-3 w-3 mr-1" />
+                              Pagar
+                            </Button>
+                          )}
                           <Button 
                             variant="ghost" 
                             size="sm" 
@@ -1171,6 +1303,177 @@ export default function MisPedidosPage() {
             </DialogContent>
           )}
         </Dialog>
+
+        {/* Modal de Pago */}
+        <Dialog open={isPaymentModalOpen} onOpenChange={setIsPaymentModalOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-center">
+                💳 Realizar Pago
+              </DialogTitle>
+              <DialogDescription className="text-center">
+                {paymentStep === 1 ? 'Selecciona tu método de pago preferido' : 'Confirma los detalles de tu pago'}
+              </DialogDescription>
+            </DialogHeader>
+
+            {selectedOrderForPayment && (
+              <div className="space-y-6">
+                {/* Información del pedido */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl border border-blue-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-lg">{selectedOrderForPayment.product}</h3>
+                      <p className="text-sm text-slate-600">{selectedOrderForPayment.id}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-green-600">{selectedOrderForPayment.amount}</p>
+                      <p className="text-xs text-slate-500">Cotización válida hasta: 25/01/2024</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Paso 1: Selección de método de pago */}
+                {paymentStep === 1 && (
+                  <div className="space-y-4 payment-step-transition">
+                    <div className="grid grid-cols-1 gap-3">
+                      {paymentMethods.map((method) => (
+                        <div
+                          key={method.id}
+                          className="p-4 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-blue-300 hover:shadow-md payment-method-card group"
+                          onClick={() => handlePaymentMethodSelect(method)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="text-2xl">{method.icon}</div>
+                              <div>
+                                <h4 className="font-semibold">{method.name}</h4>
+                                <p className="text-sm text-slate-600">{method.description}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <Badge className={`${
+                                method.validation === 'automatic' 
+                                  ? 'bg-green-100 text-green-800 border-green-200' 
+                                  : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                              }`}>
+                                {method.validation === 'automatic' ? '⚡ Automático' : ' Manual'}
+                              </Badge>
+                              <p className="text-xs text-slate-500 mt-1">{method.currency}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Paso 2: Detalles del método seleccionado */}
+                {paymentStep === 2 && selectedPaymentMethod && (
+                  <div className="space-y-6 payment-step-transition">
+                    {/* Método seleccionado */}
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
+                      <div className="flex items-center gap-3">
+                        <div className="text-2xl">{selectedPaymentMethod.icon}</div>
+                        <div>
+                          <h4 className="font-semibold">{selectedPaymentMethod.name}</h4>
+                          <p className="text-sm text-slate-600">{selectedPaymentMethod.description}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Información de pago */}
+                    <div className="space-y-4 payment-info-card">
+                      <h4 className="font-semibold text-lg">📋 Información de Pago</h4>
+                      
+                      {selectedPaymentMethod.id === 'mobile' && (
+                        <div className="space-y-3">
+                          <div className="p-4 bg-slate-50 rounded-lg">
+                            <p className="text-sm font-medium text-slate-700">Número de Teléfono:</p>
+                            <p className="text-lg font-mono font-bold text-blue-600">{selectedPaymentMethod.details?.phoneNumber}</p>
+                          </div>
+                          <div className="p-4 bg-slate-50 rounded-lg">
+                            <p className="text-sm font-medium text-slate-700">Referencia:</p>
+                            <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.reference}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedPaymentMethod.id === 'transfer' && (
+                        <div className="space-y-3">
+                          <div className="p-4 bg-slate-50 rounded-lg">
+                            <p className="text-sm font-medium text-slate-700">Banco:</p>
+                            <p className="text-lg font-bold text-blue-600">{selectedPaymentMethod.details?.bankName}</p>
+                          </div>
+                          <div className="p-4 bg-slate-50 rounded-lg">
+                            <p className="text-sm font-medium text-slate-700">Número de Cuenta:</p>
+                            <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.accountNumber}</p>
+                          </div>
+                          <div className="p-4 bg-slate-50 rounded-lg">
+                            <p className="text-sm font-medium text-slate-700">Referencia:</p>
+                            <p className="text-lg font-mono font-bold text-purple-600">{selectedPaymentMethod.details?.reference}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {(selectedPaymentMethod.id === 'binance' || selectedPaymentMethod.id === 'zelle' || selectedPaymentMethod.id === 'paypal') && (
+                        <div className="space-y-3">
+                          <div className="p-4 bg-slate-50 rounded-lg">
+                            <p className="text-sm font-medium text-slate-700">Email:</p>
+                            <p className="text-lg font-mono font-bold text-blue-600">{selectedPaymentMethod.details?.email}</p>
+                          </div>
+                          <div className="p-4 bg-slate-50 rounded-lg">
+                            <p className="text-sm font-medium text-slate-700">Referencia:</p>
+                            <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.reference}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Instrucciones */}
+                      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <div className="flex items-start gap-2">
+                          <div className="text-yellow-600 mt-0.5">⚠️</div>
+                          <div>
+                            <p className="font-medium text-yellow-800">Instrucciones importantes:</p>
+                            <ul className="text-sm text-yellow-700 mt-1 space-y-1">
+                              <li>• Realiza el pago con la referencia exacta</li>
+                              <li>• Guarda el comprobante de pago</li>
+                              <li>• El proceso puede tomar hasta 24 horas</li>
+                              {selectedPaymentMethod.validation === 'manual' && (
+                                <li>• Nuestro equipo validará tu pago manualmente</li>
+                              )}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Botones de navegación */}
+                <div className="flex gap-3 pt-4 border-t">
+                  <Button 
+                    variant="outline" 
+                    onClick={handlePaymentBack}
+                    className="flex-1"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    {paymentStep === 1 ? 'Cancelar' : 'Volver'}
+                  </Button>
+                  
+                  {paymentStep === 2 && (
+                    <Button 
+                      onClick={handlePaymentConfirm}
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                    >
+                      <Check className="h-4 w-4 mr-2" />
+                      Confirmar Pago
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
       
       <style jsx>{`
@@ -1221,6 +1524,45 @@ export default function MisPedidosPage() {
         
         .animate-fade-in-up {
           animation: fadeInUp 0.4s ease-out;
+        }
+        
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        
+        @keyframes slideInFromBottom {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .payment-method-card {
+          transition: all 0.2s ease-in-out;
+        }
+        
+        .payment-method-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .payment-step-transition {
+          animation: scaleIn 0.3s ease-out;
+        }
+        
+        .payment-info-card {
+          animation: slideInFromBottom 0.4s ease-out;
         }
       `}</style>
     </div>
