@@ -8,7 +8,17 @@ import {
   MessageCircle, 
   Settings, 
   LogOut,
-  User
+  User,
+  MapPin,
+  Users,
+  AlertTriangle,
+  BarChart3,
+  FileText,
+  Calculator,
+  Truck,
+  Flag,
+  CreditCard,
+  Shield
 } from 'lucide-react';
 import VenezuelaFlag from '@/components/ui/common/VenezuelaFlag';
 import PitaLogo from '@/components/ui/common/PitaLogo';
@@ -19,9 +29,10 @@ interface SidebarProps {
   setIsExpanded: (expanded: boolean) => void;
   isMobileMenuOpen?: boolean;
   onMobileMenuClose?: () => void;
+  userRole?: 'client' | 'venezuela' | 'china' | 'pagos' | 'admin';
 }
 
-// Menú específico para el cliente
+// Menús específicos para cada rol
 const CLIENT_MENU_ITEMS = [
   {
     id: 'dashboard',
@@ -40,12 +51,200 @@ const CLIENT_MENU_ITEMS = [
     path: '/mis-pedidos'
   },
   {
+    id: 'tracking',
+    label: 'Tracking',
+    icon: MapPin,
+    badge: null,
+    color: 'text-purple-500',
+    path: '/tracking'
+  },
+  {
     id: 'soporte',
     label: 'Soporte',
     icon: MessageCircle,
     badge: null,
     color: 'text-green-500',
     path: '/soporte'
+  }
+];
+
+const VENEZUELA_MENU_ITEMS = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: LayoutDashboard,
+    badge: null,
+    color: 'text-blue-500',
+    path: '/venezuela'
+  },
+  {
+    id: 'pedidos',
+    label: 'Revisar Pedidos',
+    icon: Package,
+    badge: 5,
+    color: 'text-orange-500',
+    path: '/venezuela/pedidos'
+  },
+  {
+    id: 'soporte',
+    label: 'Soporte',
+    icon: MessageCircle,
+    badge: 3,
+    color: 'text-green-500',
+    path: '/venezuela/soporte'
+  },
+  {
+    id: 'tracking',
+    label: 'Tracking',
+    icon: MapPin,
+    badge: 2,
+    color: 'text-purple-500',
+    path: '/venezuela/tracking'
+  },
+  {
+    id: 'cotizaciones',
+    label: 'Cotizaciones',
+    icon: Calculator,
+    badge: 8,
+    color: 'text-yellow-500',
+    path: '/venezuela/cotizaciones'
+  }
+];
+
+const CHINA_MENU_ITEMS = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: LayoutDashboard,
+    badge: null,
+    color: 'text-blue-500',
+    path: '/china'
+  },
+  {
+    id: 'pedidos',
+    label: 'Pedidos',
+    icon: Package,
+    badge: 12,
+    color: 'text-orange-500',
+    path: '/china/pedidos'
+  },
+  {
+    id: 'cotizaciones',
+    label: 'Cotizaciones',
+    icon: Calculator,
+    badge: 15,
+    color: 'text-yellow-500',
+    path: '/china/cotizaciones'
+  },
+  {
+    id: 'logistica',
+    label: 'Logística',
+    icon: Truck,
+    badge: 7,
+    color: 'text-purple-500',
+    path: '/china/logistica'
+  },
+  {
+    id: 'proveedores',
+    label: 'Proveedores',
+    icon: Users,
+    badge: null,
+    color: 'text-green-500',
+    path: '/china/proveedores'
+  },
+  {
+    id: 'pagos',
+    label: 'Pagos',
+    icon: CreditCard,
+    badge: 4,
+    color: 'text-red-500',
+    path: '/china/pagos'
+  }
+];
+
+const PAGOS_MENU_ITEMS = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: LayoutDashboard,
+    badge: null,
+    color: 'text-blue-500',
+    path: '/pagos'
+  },
+  {
+    id: 'validacion',
+    label: 'Validación',
+    icon: Shield,
+    badge: 15,
+    color: 'text-green-500',
+    path: '/validacion-pagos'
+  },
+  {
+    id: 'transacciones',
+    label: 'Transacciones',
+    icon: CreditCard,
+    badge: null,
+    color: 'text-purple-500',
+    path: '/pagos/transacciones'
+  },
+  {
+    id: 'reportes',
+    label: 'Reportes',
+    icon: BarChart3,
+    badge: null,
+    color: 'text-orange-500',
+    path: '/pagos/reportes'
+  }
+];
+
+const ADMIN_MENU_ITEMS = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: LayoutDashboard,
+    badge: null,
+    color: 'text-blue-500',
+    path: '/admin'
+  },
+  {
+    id: 'usuarios',
+    label: 'Usuarios',
+    icon: Users,
+    badge: null,
+    color: 'text-green-500',
+    path: '/usuarios'
+  },
+  {
+    id: 'pedidos',
+    label: 'Pedidos',
+    icon: Package,
+    badge: null,
+    color: 'text-orange-500',
+    path: '/pedidos'
+  },
+  {
+    id: 'reportes',
+    label: 'Reportes',
+    icon: BarChart3,
+    badge: null,
+    color: 'text-purple-500',
+    path: '/reportes'
+  },
+  {
+    id: 'alertas',
+    label: 'Alertas',
+    icon: AlertTriangle,
+    badge: 5,
+    color: 'text-red-500',
+    path: '/alertas'
+  },
+  {
+    id: 'gestion',
+    label: 'Gestión',
+    icon: Settings,
+    badge: null,
+    color: 'text-gray-500',
+    path: '/gestion'
   }
 ];
 
@@ -58,6 +257,58 @@ const BOTTOM_ITEMS = [
     path: '/configuracion'
   }
 ];
+
+// Función para obtener el menú según el rol
+const getMenuItemsByRole = (role?: string) => {
+  switch (role) {
+    case 'venezuela':
+      return VENEZUELA_MENU_ITEMS;
+    case 'china':
+      return CHINA_MENU_ITEMS;
+    case 'pagos':
+      return PAGOS_MENU_ITEMS;
+    case 'admin':
+      return ADMIN_MENU_ITEMS;
+    default:
+      return CLIENT_MENU_ITEMS;
+  }
+};
+
+// Función para obtener información del usuario según el rol
+const getUserInfoByRole = (role?: string) => {
+  switch (role) {
+    case 'venezuela':
+      return {
+        name: 'Empleado Venezuela',
+        email: 'venezuela@morna.com',
+        flag: '🇻🇪'
+      };
+    case 'china':
+      return {
+        name: 'Empleado China',
+        email: 'china@morna.com',
+        flag: '🇨🇳'
+      };
+    case 'pagos':
+      return {
+        name: 'Validador Pagos',
+        email: 'pagos@morna.com',
+        flag: '💳'
+      };
+    case 'admin':
+      return {
+        name: 'Administrador',
+        email: 'admin@morna.com',
+        flag: '👑'
+      };
+    default:
+      return {
+        name: 'Cliente',
+        email: 'cliente@morna.com',
+        flag: '🇻🇪'
+      };
+  }
+};
 
 // Hook personalizado para detectar el tamaño de pantalla
 const useScreenSize = () => {
@@ -87,11 +338,14 @@ const useActivePage = (menuItems: any[]) => {
   }, [pathname, menuItems]);
 };
 
-export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = false, onMobileMenuClose }: SidebarProps) {
+export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = false, onMobileMenuClose, userRole = 'client' }: SidebarProps) {
   const router = useRouter();
   const screenWidth = useScreenSize();
   
-  const activeItem = useActivePage(CLIENT_MENU_ITEMS);
+  const menuItems = getMenuItemsByRole(userRole);
+  const userInfo = getUserInfoByRole(userRole);
+  
+  const activeItem = useActivePage(menuItems);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Memoizar los cálculos responsivos
@@ -163,7 +417,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   }, [router]);
 
   // Memoizar el renderizado de los elementos del menú
-  const renderMenuItem = useCallback((item: typeof CLIENT_MENU_ITEMS[0]) => {
+  const renderMenuItem = useCallback((item: typeof menuItems[0]) => {
     const Icon = item.icon;
     const isActive = activeItem === item.id;
     
@@ -254,7 +508,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
             `}>
               <div className="whitespace-nowrap">
                 <h1 className={`font-bold text-white ${responsiveConfig.titleSize}`}>Pita Express</h1>
-                <p className={`text-slate-400 ${responsiveConfig.subtitleSize}`}>Cliente</p>
+                <p className={`text-slate-400 ${responsiveConfig.subtitleSize}`}>{userInfo.name}</p>
               </div>
             </div>
           </div>
@@ -262,7 +516,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
         {/* Navigation */}
         <nav className={`flex-1 ${responsiveConfig.padding} space-y-2 overflow-y-auto sidebar-scrollbar`}>
-          {CLIENT_MENU_ITEMS.map(renderMenuItem)}
+          {menuItems.map(renderMenuItem)}
         </nav>
 
         {/* Bottom Section */}
@@ -270,7 +524,11 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           {/* User Profile */}
           <div className={`flex items-center space-x-3 ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
             <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center`}>
-              <VenezuelaFlag size="sm" animated={true} />
+              {userRole === 'client' ? (
+                <VenezuelaFlag size="sm" animated={true} />
+              ) : (
+                <span className="text-lg">{userInfo.flag}</span>
+              )}
             </div>
             <div className={`
               transition-all duration-150 ease-out overflow-hidden
@@ -278,10 +536,10 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
             `}>
               <div className="whitespace-nowrap">
                 <p className={`font-medium text-white ${responsiveConfig.userTextSize}`}>
-                  Cliente
+                  {userInfo.name}
                 </p>
                 <p className={`text-slate-400 ${responsiveConfig.userSubtextSize}`}>
-                  cliente@morna.com
+                  {userInfo.email}
                 </p>
               </div>
             </div>
