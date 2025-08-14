@@ -110,12 +110,12 @@ const VENEZUELA_MENU_ITEMS = [
     path: '/venezuela/tracking'
   },
   {
-    id: 'cotizaciones',
-    label: 'Cotizaciones',
-    icon: Calculator,
-    badge: 8,
-    color: 'text-yellow-500',
-    path: '/venezuela/cotizaciones'
+    id: 'reportes',
+    label: 'Reportes',
+    icon: BarChart3,
+    badge: null,
+    color: 'text-pink-500',
+    path: '/venezuela/reportes'
   }
 ];
 
