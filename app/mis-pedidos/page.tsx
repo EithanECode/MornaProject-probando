@@ -207,10 +207,6 @@ export default function MisPedidosPage() {
               <h1 className={`text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Mis Pedidos</h1>
               <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Gestiona y sigue el estado de tus pedidos</p>
             </div>
-            <Badge variant="outline" className="flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              {stats.total} Pedidos
-            </Badge>
           </div>
 
           {/* Estadísticas */}
@@ -349,21 +345,21 @@ export default function MisPedidosPage() {
                       </div>
                       <div className="flex justify-between text-xs text-slate-600">
                         <span>Entrega estimada: {order.estimatedDelivery}</span>
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-6 px-2"
-                            onClick={() => handleViewDetails(order)}
-                          >
-                            <Eye className="h-3 w-3 mr-1" />
-                            Ver detalles
-                          </Button>
-                          <Button variant="ghost" size="sm" className="h-6 px-2">
-                            <MessageSquare className="h-3 w-3 mr-1" />
-                            Soporte
-                          </Button>
-                        </div>
+                                                 <div className="flex gap-2">
+                           <Button 
+                             variant="ghost" 
+                             size="sm" 
+                             className="h-6 px-2"
+                             onClick={() => handleViewDetails(order)}
+                           >
+                             <Eye className="h-3 w-3 mr-1" />
+                             Ver detalles
+                           </Button>
+                           <Button variant="ghost" size="sm" className="h-6 px-2">
+                             <MessageSquare className="h-3 w-3 mr-1" />
+                             Soporte
+                           </Button>
+                         </div>
                       </div>
                     </div>
                   </div>

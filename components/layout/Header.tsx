@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, MessageCircle, Menu } from 'lucide-react';
+import { Bell, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -56,16 +56,7 @@ export default function Header({ notifications, onMenuToggle }: HeaderProps) {
               )}
             </Button>
             
-            {/* Botón de chat de soporte para desktop */}
-            <Button variant="outline" size="sm" className="hidden md:flex">
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Chat Soporte
-            </Button>
-            
-            {/* Botón de chat de soporte compacto para móviles */}
-            <Button variant="outline" size="sm" className="md:hidden">
-              <MessageCircle className="w-4 h-4" />
-            </Button>
+
           </div>
         </div>
       </div>
