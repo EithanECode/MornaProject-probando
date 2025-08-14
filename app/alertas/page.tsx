@@ -3,18 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
-// Importaciones directas de los componentes
-import Header from './Header';
-import StatsDashboard from './StatsDashboard';
-import ControlPanel from './ControlPanel';
-import AlertsList from './AlertsList';
-import AlertDetailsModal from './AlertDetailsModal';
-import AlertCard from './AlertCard';
-import EmptyState from './EmptyState';
-import Modal from './Modal';
-// Las rutas a carpetas anidadas se mantienen
-import { alertTemplates, sampleUsers } from './data/alertsData';
-import { Alert, AlertFormData } from './interfaces/Alerts';
+// Importaciones de componentes desde la nueva ubicación
+import Header from '@/components/alertas/Header';
+import StatsDashboard from '@/components/alertas/StatsDashboard';
+import ControlPanel from '@/components/alertas/ControlPanel';
+import AlertsList from '@/components/alertas/AlertsList';
+import AlertDetailsModal from '@/components/alertas/AlertDetailsModal';
+import AlertCard from '@/components/alertas/AlertCard';
+import EmptyState from '@/components/alertas/EmptyState';
+import Modal from '@/components/alertas/Modal';
+// Importaciones de datos e interfaces desde la nueva ubicación
+import { alertTemplates, sampleUsers } from '@/lib/alertsData';
+import { Alert, AlertFormData } from '@/lib/types/Alerts';
 
 const generateId = (): string => 'ALERT-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
 
