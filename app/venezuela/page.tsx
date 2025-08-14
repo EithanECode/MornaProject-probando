@@ -313,152 +313,216 @@ export default function VenezuelaDashboard() {
           subtitle="Revisión de pedidos, soporte al cliente y tracking"
         />
         
-        <div className="p-6 space-y-6">
-          {/* Header del Dashboard */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">
-                Panel de Venezuela
-              </h1>
-              <p className="text-sm text-slate-600">
-                Revisión de pedidos, soporte al cliente y tracking
-              </p>
+        <div className="p-6 space-y-8">
+          {/* Header del Dashboard con Bienvenida */}
+          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-8 text-white relative overflow-hidden">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
+                  <p className="text-blue-100 text-lg">Panel de Control - Empleado Venezuela</p>
+                  <p className="text-blue-200 mt-2">Gestiona pedidos, soporte y tracking desde un solo lugar</p>
+                </div>
+                <div className="hidden lg:flex items-center space-x-6">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold">{stats.pendingOrders + stats.activeChats}</div>
+                    <p className="text-blue-100">Tareas Pendientes</p>
+                  </div>
+                  <div className="w-px h-16 bg-white/20"></div>
+                  <div className="text-center">
+                    <div className="text-4xl font-bold">98%</div>
+                    <p className="text-blue-100">Eficiencia</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <Badge variant="outline" className="flex items-center gap-2">
-              <Flag className="h-4 w-4" />
-              Empleado Venezuela
-            </Badge>
           </div>
 
-                    {/* Dashboard Principal */}
-          <div className="space-y-6">
-              {/* Estadísticas Principales */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pedidos Pendientes</CardTitle>
-                <Package className="h-4 w-4 text-blue-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.pendingOrders}</div>
-                <p className="text-xs text-slate-600">Esperando revisión</p>
-              </CardContent>
-            </Card>
-
-                <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Chats Activos</CardTitle>
-                    <MessageSquare className="h-4 w-4 text-green-600" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{stats.activeChats}</div>
-                    <p className="text-xs text-slate-600">Clientes en línea</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Actualizaciones Tracking</CardTitle>
-                    <MapPin className="h-4 w-4 text-purple-600" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{stats.trackingUpdates}</div>
-                    <p className="text-xs text-slate-600">Pendientes</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Satisfacción</CardTitle>
-                    <Star className="h-4 w-4 text-orange-600" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{stats.averageRating}/5</div>
-                    <p className="text-xs text-slate-600">{stats.satisfactionRate} satisfechos</p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Acciones Rápidas */}
-              <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-                <CardHeader>
-                  <CardTitle>Acciones Rápidas</CardTitle>
+          {/* Dashboard Principal */}
+          <div className="space-y-8">
+            {/* Estadísticas Principales */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-blue-800">Pedidos Pendientes</CardTitle>
+                  <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Package className="h-4 w-4 text-white" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <Button variant="outline" className="h-20 flex flex-col gap-2">
-                  <Package className="h-6 w-6" />
-                  <span className="text-sm">Revisar Pedido</span>
-                </Button>
-                    <Button variant="outline" className="h-20 flex flex-col gap-2">
-                      <MessageSquare className="h-6 w-6" />
-                      <span className="text-sm">Chat Soporte</span>
-                    </Button>
-                    <Button variant="outline" className="h-20 flex flex-col gap-2">
-                      <MapPin className="h-6 w-6" />
-                      <span className="text-sm">Actualizar Tracking</span>
-                    </Button>
-                    <Button variant="outline" className="h-20 flex flex-col gap-2">
-                      <Phone className="h-6 w-6" />
-                      <span className="text-sm">Llamar Cliente</span>
-                    </Button>
+                  <div className="text-3xl font-bold text-blue-900">{stats.pendingOrders}</div>
+                  <p className="text-xs text-blue-700">Esperando revisión</p>
+                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.pendingOrders / 10) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Métricas de Rendimiento */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-                  <CardHeader>
-                    <CardTitle>Métricas de Rendimiento</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm">Satisfacción del cliente</span>
-                        <span className="font-medium">{stats.averageRating}/5</span>
-                      </div>
-                      <div className="w-full bg-slate-200 rounded-full h-2">
-                        <div className="bg-green-600 h-2 rounded-full" style={{ width: `${(stats.averageRating/5)*100}%` }}></div>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm">Tiempo promedio de respuesta</span>
-                        <span className="font-medium">{stats.responseTime}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm">Tasa de satisfacción</span>
-                        <span className="font-medium">{stats.satisfactionRate}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-                  <CardHeader>
-                    <CardTitle>Próximas Acciones</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                                        <div className="flex items-center gap-3 p-2 rounded-lg bg-red-50">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                    <span className="text-sm">{stats.pendingOrders} pedidos requieren revisión</span>
+              <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-green-800">Chats Activos</CardTitle>
+                  <div className="p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <MessageSquare className="h-4 w-4 text-white" />
                   </div>
-                      <div className="flex items-center gap-3 p-2 rounded-lg bg-blue-50">
-                        <MessageSquare className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm">{stats.activeChats} chats requieren atención</span>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-green-900">{stats.activeChats}</div>
+                  <p className="text-xs text-green-700">Clientes en línea</p>
+                  <div className="mt-2 w-full bg-green-200 rounded-full h-2">
+                    <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.activeChats / 5) * 100}%`}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-purple-800">Tracking Activo</CardTitle>
+                  <div className="p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <MapPin className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-purple-900">{stats.trackingUpdates}</div>
+                  <p className="text-xs text-purple-700">Pendientes</p>
+                  <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
+                    <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(stats.trackingUpdates / 8) * 100}%`}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-orange-800">Satisfacción</CardTitle>
+                  <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Star className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-orange-900">{stats.averageRating}/5</div>
+                  <p className="text-xs text-orange-700">{stats.satisfactionRate} satisfechos</p>
+                  <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
+                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(stats.averageRating / 5) * 100}%`}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Acciones Rápidas */}
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold">Acciones Rápidas</CardTitle>
+                <p className="text-sm text-slate-600">Accede rápidamente a las funciones más utilizadas</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group">
+                    <div className="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                      <Package className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <span className="text-sm font-medium">Revisar Pedido</span>
+                  </Button>
+                  <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group">
+                    <div className="p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                      <MessageSquare className="h-8 w-8 text-green-600" />
+                    </div>
+                    <span className="text-sm font-medium">Chat Soporte</span>
+                  </Button>
+                  <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group">
+                    <div className="p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+                      <MapPin className="h-8 w-8 text-purple-600" />
+                    </div>
+                    <span className="text-sm font-medium">Actualizar Tracking</span>
+                  </Button>
+                  <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group">
+                    <div className="p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
+                      <Phone className="h-8 w-8 text-red-600" />
+                    </div>
+                    <span className="text-sm font-medium">Llamar Cliente</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Métricas de Rendimiento y Próximas Acciones */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-xl font-semibold">Métricas de Rendimiento</CardTitle>
+                  <p className="text-sm text-slate-600">Tu desempeño en tiempo real</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Satisfacción del cliente</span>
+                        <span className="font-bold text-lg">{stats.averageRating}/5</span>
                       </div>
-                      <div className="flex items-center gap-3 p-2 rounded-lg bg-green-50">
-                        <Truck className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">{stats.trackingUpdates} actualizaciones pendientes</span>
-                      </div>
-                      <div className="flex items-center gap-3 p-2 rounded-lg bg-purple-50">
-                        <Users className="h-4 w-4 text-purple-600" />
-                        <span className="text-sm">12 clientes nuevos esta semana</span>
+                      <div className="w-full bg-slate-200 rounded-full h-3">
+                        <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style={{ width: `${(stats.averageRating/5)*100}%` }}></div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-4 bg-blue-50 rounded-xl">
+                        <div className="text-2xl font-bold text-blue-600">{stats.responseTime}</div>
+                        <p className="text-sm text-blue-700">Tiempo de respuesta</p>
+                      </div>
+                      <div className="text-center p-4 bg-green-50 rounded-xl">
+                        <div className="text-2xl font-bold text-green-600">{stats.satisfactionRate}</div>
+                        <p className="text-sm text-green-700">Tasa de satisfacción</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-xl font-semibold">Próximas Acciones</CardTitle>
+                  <p className="text-sm text-slate-600">Tareas que requieren tu atención</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-red-50 to-red-100 border border-red-200">
+                      <div className="p-2 bg-red-500 rounded-lg">
+                        <AlertTriangle className="h-4 w-4 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-red-800">{stats.pendingOrders} pedidos requieren revisión</p>
+                        <p className="text-xs text-red-600">Prioridad alta</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
+                      <div className="p-2 bg-blue-500 rounded-lg">
+                        <MessageSquare className="h-4 w-4 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-blue-800">{stats.activeChats} chats requieren atención</p>
+                        <p className="text-xs text-blue-600">Clientes esperando</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-green-50 to-green-100 border border-green-200">
+                      <div className="p-2 bg-green-500 rounded-lg">
+                        <Truck className="h-4 w-4 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-green-800">{stats.trackingUpdates} actualizaciones pendientes</p>
+                        <p className="text-xs text-green-600">Tracking activo</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200">
+                      <div className="p-2 bg-purple-500 rounded-lg">
+                        <Users className="h-4 w-4 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-purple-800">12 clientes nuevos esta semana</p>
+                        <p className="text-xs text-purple-600">Crecimiento</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </main>
