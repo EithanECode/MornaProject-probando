@@ -23,6 +23,8 @@ import {
   CheckCircle,
   AlertCircle,
   Plane,
+  X,
+  Link,
   Ship,
   MapPin
 } from 'lucide-react';
@@ -33,6 +35,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -52,6 +55,7 @@ interface Order {
   daysElapsed: number;
   description: string;
   priority: 'alta' | 'media' | 'baja';
+  documents?: { type: 'link' | 'image'; url: string; label: string }[];
 }
 
 // Memoizar las configuraciones para evitar recreaciones
@@ -69,19 +73,20 @@ const ASSIGNED_CONFIG = {
   'vzla': { label: 'Vzla', color: 'bg-blue-800 border-blue-900' }
 } as const;
 
-// Memoizar los datos de pedidos
-const ORDERS_DATA: Order[] = [
-  { id: 'PED-001', client: 'Ana Pérez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 197, description: 'Electrónicos varios', priority: 'alta' },
-  { id: 'PED-002', client: 'Carlos Ruiz', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 198, description: 'Herramientas industriales', priority: 'media' },
-  { id: 'PED-003', client: 'Lucía Méndez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 199, description: 'Ropa deportiva', priority: 'baja' },
-  { id: 'PED-005', client: 'Empresa XYZ', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 202, description: 'Maquinaria pesada', priority: 'alta' },
-  { id: 'PED-006', client: 'Tiendas ABC', status: 'entregado', assignedTo: 'vzla', daysElapsed: 207, description: 'Productos de belleza', priority: 'media' },
-  { id: 'PED-007', client: 'Juan Rodríguez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 0, description: 'Equipos médicos', priority: 'alta' },
-  { id: 'PED-008', client: 'María González', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 15, description: 'Materiales de construcción', priority: 'media' },
-  { id: 'PED-009', client: 'Luis Martínez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 5, description: 'Juguetes educativos', priority: 'baja' },
-  { id: 'PED-010', client: 'Carmen López', status: 'entregado', assignedTo: 'vzla', daysElapsed: 45, description: 'Artículos de cocina', priority: 'media' },
-  { id: 'PED-011', client: 'Roberto Silva', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 3, description: 'Equipos de oficina', priority: 'alta' }
-];
+// Light theme colors
+const STATUS_CONFIG_LIGHT = {
+  'pendiente-china': { label: 'Pendiente Cotización China', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
+  'pendiente-vzla': { label: 'Pendiente Cotización Vzla', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
+  'esperando-pago': { label: 'Esperando Pago Cliente', color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock },
+  'en-transito': { label: 'En Tránsito a Vzla', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Plane },
+  'entregado': { label: 'Entregado', color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle },
+  'cancelado': { label: 'Cancelado', color: 'bg-red-100 text-red-800 border-red-200', icon: AlertCircle }
+} as const;
+
+const ASSIGNED_CONFIG_LIGHT = {
+  'china': { label: 'China', color: 'bg-red-100 text-red-800 border-red-200' },
+  'vzla': { label: 'Vzla', color: 'bg-blue-100 text-blue-800 border-blue-200' }
+} as const;
 
 // Hook personalizado para manejar el filtrado y paginación
 const useOrdersFilter = (orders: Order[]) => {
@@ -128,13 +133,30 @@ const useOrdersFilter = (orders: Order[]) => {
   };
 };
 
-
 export default function PedidosPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState<Order | null>(null);
   const [animateStats, setAnimateStats] = useState(false);
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  // Initial orders data
+  const [orders, setOrders] = useState<Order[]>([
+    { id: 'PED-001', client: 'Ana Pérez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 197, description: 'Electrónicos varios', priority: 'alta', documents: [{ type: 'link', url: 'https://example.com/cotizacion-1', label: 'Cotización inicial' }] },
+    { id: 'PED-002', client: 'Carlos Ruiz', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 198, description: 'Herramientas industriales', priority: 'media' },
+    { id: 'PED-003', client: 'Lucía Méndez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 199, description: 'Ropa deportiva', priority: 'baja', documents: [{ type: 'link', url: 'https://example.com/factura-3', label: 'Factura proforma' }] },
+    { id: 'PED-005', client: 'Empresa XYZ', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 202, description: 'Maquinaria pesada', priority: 'alta', documents: [{ type: 'image', url: 'https://via.placeholder.com/150', label: 'Foto de carga' }] },
+    { id: 'PED-006', client: 'Tiendas ABC', status: 'entregado', assignedTo: 'vzla', daysElapsed: 207, description: 'Productos de belleza', priority: 'media' },
+    { id: 'PED-007', client: 'Juan Rodríguez', status: 'pendiente-china', assignedTo: 'china', daysElapsed: 0, description: 'Equipos médicos', priority: 'alta' },
+    { id: 'PED-008', client: 'María González', status: 'en-transito', assignedTo: 'vzla', daysElapsed: 15, description: 'Materiales de construcción', priority: 'media' },
+    { id: 'PED-009', client: 'Luis Martínez', status: 'esperando-pago', assignedTo: 'china', daysElapsed: 5, description: 'Juguetes educativos', priority: 'baja' },
+    { id: 'PED-010', client: 'Carmen López', status: 'entregado', assignedTo: 'vzla', daysElapsed: 45, description: 'Artículos de cocina', priority: 'media' },
+    { id: 'PED-011', client: 'Roberto Silva', status: 'pendiente-vzla', assignedTo: 'vzla', daysElapsed: 3, description: 'Equipos de oficina', priority: 'alta' }
+  ]);
+
   useEffect(() => { setMounted(true); }, []);
 
   // Usar el hook personalizado
@@ -150,7 +172,7 @@ export default function PedidosPage() {
     totalPages,
     startIndex,
     stats
-  } = useOrdersFilter(ORDERS_DATA);
+  } = useOrdersFilter(orders);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -245,7 +267,40 @@ export default function PedidosPage() {
     pdf.save("reporte_pedidos.pdf");
   }, [filteredOrders]);
 
-  // Memoizar el renderizado de las tarjetas de estadísticas
+  // Funciones para manejo de modales y datos
+  const handleOpenEditModal = (order: Order) => {
+    setEditFormData(order);
+    setIsEditModalOpen(true);
+    setSelectedOrder(null);
+  };
+
+  const handleUpdateOrder = () => {
+    if (editFormData) {
+      const updatedOrders = orders.map(order => 
+        order.id === editFormData.id ? editFormData : order
+      );
+      setOrders(updatedOrders);
+      
+      setSelectedOrder(editFormData);
+      
+      setIsEditModalOpen(false);
+      setEditFormData(null);
+    }
+  };
+
+  const handleDeleteOrder = () => {
+    if (window.confirm(`¿Estás seguro de que quieres eliminar el pedido ${selectedOrder?.id}?`)) {
+      const updatedOrders = orders.filter(order => order.id !== selectedOrder?.id);
+      setOrders(updatedOrders);
+      setSelectedOrder(null);
+    }
+  };
+
+  // Determinar qué configuración de colores usar
+  const statusConfig = mounted && theme === 'dark' ? STATUS_CONFIG : STATUS_CONFIG_LIGHT;
+  const assignedConfig = mounted && theme === 'dark' ? ASSIGNED_CONFIG : ASSIGNED_CONFIG_LIGHT;
+
+  // Memoizar las tarjetas de estadísticas
   const statsCards = useMemo(() => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -317,8 +372,8 @@ export default function PedidosPage() {
   // Memoizar el renderizado de las filas de la tabla
   const tableRows = useMemo(() => (
     paginatedOrders.map((order) => {
-      const status = STATUS_CONFIG[order.status];
-      const assigned = ASSIGNED_CONFIG[order.assignedTo];
+      const status = statusConfig[order.status];
+      const assigned = assignedConfig[order.assignedTo];
       const StatusIcon = status.icon;
       
       return (
@@ -368,29 +423,12 @@ export default function PedidosPage() {
                 <Eye className="w-4 h-4 mr-1" />
                 Ver
               </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <Edit className="w-4 h-4 mr-2" />
-                    Editar
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-red-600">
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Eliminar
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </td>
         </tr>
       );
     })
-  ), [paginatedOrders]);
+  ), [paginatedOrders, statusConfig, assignedConfig]);
 
   return (
     <div
@@ -475,10 +513,6 @@ export default function PedidosPage() {
                 <table className={mounted && theme === 'dark' ? 'w-full bg-slate-800' : 'w-full'}>
                   <thead>
                     <tr className={mounted && theme === 'dark' ? 'border-b border-slate-700' : 'border-b border-slate-200'}>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>ID Pedido</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Cliente</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Estado</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Asignado a</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Tiempo Transcurrido</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Acciones</th>
                     </tr>
@@ -539,7 +573,7 @@ export default function PedidosPage() {
       </main>
 
       {/* Modal de Detalles del Pedido */}
-      <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
+      <Dialog open={!!selectedOrder && !isEditModalOpen && !isDocumentsModalOpen} onOpenChange={() => setSelectedOrder(null)}>
         {selectedOrder && (
           <DialogContent
             className={mounted && theme === 'dark' ? 'sm:max-w-[700px] bg-slate-900 p-0 rounded-lg shadow-2xl animate-in fade-in-0 slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95' : 'sm:max-w-[700px] bg-white p-0 rounded-lg shadow-2xl animate-in fade-in-0 slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95'}
@@ -574,8 +608,8 @@ export default function PedidosPage() {
                     </div>
                     <div>
                       <p className={mounted && theme === 'dark' ? 'font-semibold text-lg text-white' : 'font-semibold text-lg text-slate-900'}>Asignado a</p>
-                      <Badge className={`${ASSIGNED_CONFIG[selectedOrder.assignedTo].color} border`}>
-                        {ASSIGNED_CONFIG[selectedOrder.assignedTo].label}
+                      <Badge className={`${assignedConfig[selectedOrder.assignedTo].color} border`}>
+                        {assignedConfig[selectedOrder.assignedTo].label}
                       </Badge>
                     </div>
                   </div>
@@ -596,14 +630,14 @@ export default function PedidosPage() {
                     </div>
                     <div>
                       <p className={mounted && theme === 'dark' ? 'font-semibold text-lg text-white' : 'font-semibold text-lg text-slate-900'}>Estado Actual</p>
-                      <Badge className={`${STATUS_CONFIG[selectedOrder.status].color} border`}>
+                      <Badge className={`${statusConfig[selectedOrder.status].color} border`}>
                         {
                           (() => {
-                            const StatusIcon = STATUS_CONFIG[selectedOrder.status].icon;
+                            const StatusIcon = statusConfig[selectedOrder.status].icon;
                             return <StatusIcon className="w-3 h-3 mr-1" />;
                           })()
                         }
-                        {STATUS_CONFIG[selectedOrder.status].label}
+                        {statusConfig[selectedOrder.status].label}
                       </Badge>
                     </div>
                   </div>
@@ -623,25 +657,154 @@ export default function PedidosPage() {
                     {/* Placeholder para el historial */}
                     <div className={mounted && theme === 'dark' ? 'flex items-center' : 'flex items-center'}>
                       <div className={mounted && theme === 'dark' ? 'w-2 h-2 rounded-full bg-blue-400 mr-4' : 'w-2 h-2 rounded-full bg-blue-500 mr-4'}></div>
-                      <span className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}>Creado por Ana Pérez (2 días)</span>
+                      <span className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}>Creado por {selectedOrder.client} ({selectedOrder.daysElapsed} días)</span>
                     </div>
                     <div className={mounted && theme === 'dark' ? 'flex items-center' : 'flex items-center'}>
                       <div className={mounted && theme === 'dark' ? 'w-2 h-2 rounded-full bg-yellow-400 mr-4' : 'w-2 h-2 rounded-full bg-yellow-500 mr-4'}></div>
                       <span className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}>En espera de cotización</span>
                     </div>
-                    {/* Más pasos del historial */}
                   </div>
                 </div>
 
                 <div className="mt-8 flex flex-col space-y-2">
-                  <Button
-                    className={mounted && theme === 'dark' ? 'w-full bg-slate-700 text-slate-200 hover:bg-slate-600 mt-4' : 'w-full bg-gray-200 text-gray-700 hover:bg-gray-300 mt-4'}
-                    onClick={() => setSelectedOrder(null)}
+                  <Button 
+                    className={mounted && theme === 'dark' ? 'w-full bg-blue-600 text-white hover:bg-blue-700' : 'w-full bg-blue-600 text-white hover:bg-blue-700'}
+                    onClick={() => handleOpenEditModal(selectedOrder)}
                   >
-                    Volver
+                    <Edit className="w-4 h-4 mr-2" />
+                    Actualizar
+                  </Button>
+                  <Button 
+                    className={mounted && theme === 'dark' ? 'w-full bg-red-600 text-white hover:bg-red-700' : 'w-full bg-red-600 text-white hover:bg-red-700'}
+                    onClick={handleDeleteOrder}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Eliminar
+                  </Button>
+                  <Button
+                    className={mounted && theme === 'dark' ? 'w-full bg-slate-700 text-slate-200 hover:bg-slate-600' : 'w-full bg-gray-200 text-gray-700 hover:bg-gray-300'}
+                    onClick={() => setIsDocumentsModalOpen(true)}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    Ver Documentos
                   </Button>
                 </div>
               </div>
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
+      
+      {/* Modal para Actualizar Pedido */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        {editFormData && (
+          <DialogContent className={mounted && theme === 'dark' ? 'sm:max-w-[500px] bg-slate-900 border-slate-700' : 'sm:max-w-[500px]'}>
+            <DialogHeader>
+              <DialogTitle className={mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}>Actualizar Pedido: {editFormData.id}</DialogTitle>
+              <DialogDescription className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-500'}>
+                Modifica los detalles del pedido a continuación.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="client" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>Cliente</Label>
+                <Input 
+                  id="client" 
+                  value={editFormData.client}
+                  onChange={(e) => setEditFormData({ ...editFormData, client: e.target.value })}
+                  className={`col-span-3 ${mounted && theme === 'dark' ? 'bg-slate-800 border-slate-600 text-slate-100' : ''}`}
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="description" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>Descripción</Label>
+                <Input 
+                  id="description" 
+                  value={editFormData.description}
+                  onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                  className={`col-span-3 ${mounted && theme === 'dark' ? 'bg-slate-800 border-slate-600 text-slate-100' : ''}`}
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>Estado</Label>
+                <Select 
+                  value={editFormData.status}
+                  onValueChange={(value) => setEditFormData({ ...editFormData, status: value as Order['status'] })}
+                >
+                  <SelectTrigger className={`col-span-3 ${mounted && theme === 'dark' ? 'bg-slate-800 border-slate-600 text-slate-100' : ''}`}>
+                    <SelectValue placeholder="Selecciona un estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(statusConfig).map(statusKey => (
+                      <SelectItem key={statusKey} value={statusKey}>{statusConfig[statusKey as Order['status']].label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="assignedTo" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>Asignado a</Label>
+                <Select 
+                  value={editFormData.assignedTo}
+                  onValueChange={(value) => setEditFormData({ ...editFormData, assignedTo: value as Order['assignedTo'] })}
+                >
+                  <SelectTrigger className={`col-span-3 ${mounted && theme === 'dark' ? 'bg-slate-800 border-slate-600 text-slate-100' : ''}`}>
+                    <SelectValue placeholder="Selecciona una ubicación" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(assignedConfig).map(assignedKey => (
+                      <SelectItem key={assignedKey} value={assignedKey}>{assignedConfig[assignedKey as Order['assignedTo']].label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="daysElapsed" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>Días Transcurridos</Label>
+                <Input 
+                  id="daysElapsed" 
+                  type="number"
+                  value={editFormData.daysElapsed}
+                  onChange={(e) => setEditFormData({ ...editFormData, daysElapsed: parseInt(e.target.value) || 0 })}
+                  className={`col-span-3 ${mounted && theme === 'dark' ? 'bg-slate-800 border-slate-600 text-slate-100' : ''}`}
+                />
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={handleUpdateOrder}>Guardar cambios</Button>
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
+
+      {/* Modal para Ver Documentos */}
+      <Dialog open={isDocumentsModalOpen} onOpenChange={setIsDocumentsModalOpen}>
+        {selectedOrder && (
+          <DialogContent className={mounted && theme === 'dark' ? 'sm:max-w-[500px] bg-slate-900 border-slate-700' : 'sm:max-w-[500px]'}>
+            <DialogHeader>
+              <DialogTitle className={mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}>Documentos del Pedido: {selectedOrder.id}</DialogTitle>
+              <DialogDescription className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-500'}>
+                Accede a las fotos y enlaces de este pedido.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              {selectedOrder.documents && selectedOrder.documents.length > 0 ? (
+                selectedOrder.documents.map((doc, index) => (
+                  <div key={index} className="flex items-center space-x-3">
+                    {doc.type === 'image' && (
+                      <a href={doc.url} target="_blank" rel="noopener noreferrer" className={`flex items-center space-x-2 hover:underline ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>
+                        <img src={doc.url} alt={doc.label} className="w-16 h-16 object-cover rounded-lg" />
+                        <span>{doc.label}</span>
+                      </a>
+                    )}
+                    {doc.type === 'link' && (
+                      <a href={doc.url} target="_blank" rel="noopener noreferrer" className={`flex items-center space-x-2 hover:underline ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>
+                        <Link className="w-5 h-5" />
+                        <span>{doc.label}</span>
+                      </a>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-gray-500'}>No hay documentos para este pedido.</p>
+              )}
             </div>
           </DialogContent>
         )}
