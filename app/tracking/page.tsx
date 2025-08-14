@@ -8,7 +8,7 @@ export default function TrackingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
-      <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
+      <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="venezuela" />
 
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
         <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40">

@@ -184,6 +184,7 @@ export default function DashboardPage() {
         setIsExpanded={setSidebarExpanded}
         isMobileMenuOpen={isMobileMenuOpen}
         onMobileMenuClose={handleMobileMenuClose}
+        userRole="admin"
       />
       
       <main 

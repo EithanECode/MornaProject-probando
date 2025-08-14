@@ -440,7 +440,7 @@ export default function PedidosPage() {
       }
     >
       {/* Sidebar */}
-      <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} />
+      <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="admin" />
 
       {/* Main Content */}
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
