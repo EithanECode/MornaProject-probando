@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   MessageSquare, 
   Truck, 
@@ -237,7 +236,6 @@ export default function VenezuelaDashboard() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
-  const [activeTab, setActiveTab] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -332,29 +330,8 @@ export default function VenezuelaDashboard() {
             </Badge>
           </div>
 
-          {/* Tabs de navegación */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                          <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="dashboard" className="flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4" />
-                  Dashboard
-                </TabsTrigger>
-                <TabsTrigger value="orders" className="flex items-center gap-2">
-                  <Package className="h-4 w-4" />
-                  Revisar Pedidos ({stats.pendingOrders})
-                </TabsTrigger>
-                <TabsTrigger value="support" className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4" />
-                  Soporte ({stats.activeChats})
-                </TabsTrigger>
-                <TabsTrigger value="tracking" className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Tracking ({stats.trackingUpdates})
-                </TabsTrigger>
-              </TabsList>
-
-            {/* Dashboard Tab */}
-            <TabsContent value="dashboard" className="space-y-6">
+                    {/* Dashboard Principal */}
+          <div className="space-y-6">
               {/* Estadísticas Principales */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
@@ -482,234 +459,7 @@ export default function VenezuelaDashboard() {
                   </CardContent>
                 </Card>
               </div>
-            </TabsContent>
-
-            {/* Pedidos Tab */}
-            <TabsContent value="orders" className="space-y-6">
-              {/* Filtros */}
-              <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-                <CardContent className="p-4">
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                        <Input
-                          placeholder="Buscar por cliente, producto o ID..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="w-48">
-                          <Filter className="w-4 h-4 mr-2" />
-                          <SelectValue placeholder="Filtrar por estado" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">Todos los estados</SelectItem>
-                          <SelectItem value="pending">Pendiente</SelectItem>
-                          <SelectItem value="reviewing">Revisando</SelectItem>
-                          <SelectItem value="quoted">Cotizado</SelectItem>
-                          <SelectItem value="sent">Enviado</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button variant="outline" className="flex items-center gap-2">
-                        <RefreshCw className="w-4 h-4" />
-                        Actualizar
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Lista de Pedidos */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {PENDING_ORDERS.map((order) => (
-                  <Card key={order.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="text-lg">{order.product}</CardTitle>
-                          <p className="text-sm text-slate-600">{order.id} - {order.clientName}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Badge className={getPriorityColor(order.priority)}>
-                            {order.priority === 'high' ? 'Alta' : order.priority === 'medium' ? 'Media' : 'Baja'}
-                          </Badge>
-                          <Badge className={getStatusColor(order.status)}>
-                            {getStatusText(order.status)}
-                          </Badge>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <p className="text-sm text-slate-600">{order.description}</p>
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Cantidad:</span>
-                          <span className="font-medium">{order.quantity}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Recibido de China:</span>
-                          <span className="font-medium">{order.receivedFromChina}</span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Opciones de Envío:</p>
-                        <div className="flex gap-2">
-                          {order.shippingOptions.map((option, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {option}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Opciones de Entrega:</p>
-                        <div className="flex gap-2">
-                          {order.deliveryOptions.map((option, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {option}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1">
-                          <Eye className="w-4 h-4 mr-2" />
-                          Ver Detalles
-                        </Button>
-                        <Button size="sm" className="flex-1">
-                          <Package className="w-4 h-4 mr-2" />
-                          Enviar a China
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-
-            {/* Soporte Tab */}
-            <TabsContent value="support" className="space-y-6">
-              {/* Lista de Chats */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {CHAT_SUPPORT.map((chat) => (
-                  <Card key={chat.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="text-lg">{chat.clientName}</CardTitle>
-                          <p className="text-sm text-slate-600">{chat.clientId}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Badge className={getPriorityColor(chat.priority)}>
-                            {chat.priority === 'high' ? 'Alta' : chat.priority === 'medium' ? 'Media' : 'Baja'}
-                          </Badge>
-                          <Badge className={getStatusColor(chat.status)}>
-                            {getStatusText(chat.status)}
-                          </Badge>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <p className="text-sm text-slate-600">{chat.lastMessage}</p>
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Último mensaje:</span>
-                          <span className="font-medium">{chat.lastMessageTime}</span>
-                        </div>
-                        {chat.unreadMessages > 0 && (
-                          <div className="flex items-center justify-between text-sm">
-                            <span>Mensajes sin leer:</span>
-                            <Badge className="bg-red-100 text-red-800">
-                              {chat.unreadMessages}
-                            </Badge>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1">
-                          <MessageSquare className="w-4 h-4 mr-2" />
-                          Abrir Chat
-                        </Button>
-                        {chat.orderId && (
-                          <Button variant="outline" size="sm">
-                            <Package className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-
-            {/* Tracking Tab */}
-            <TabsContent value="tracking" className="space-y-6">
-              {/* Lista de Tracking */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {TRACKING_UPDATES.map((tracking) => (
-                  <Card key={tracking.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="text-lg">{tracking.product}</CardTitle>
-                          <p className="text-sm text-slate-600">{tracking.orderId} - {tracking.clientName}</p>
-                        </div>
-                        {tracking.needsUpdate && (
-                          <Badge className="bg-red-100 text-red-800 border-red-200">
-                            Necesita Actualización
-                          </Badge>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Estado Actual:</span>
-                          <span className="font-medium">{tracking.currentStatus}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Ubicación:</span>
-                          <span className="font-medium">{tracking.location}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Última Actualización:</span>
-                          <span className="font-medium">{tracking.lastUpdate}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Próximo Paso:</span>
-                          <span className="font-medium">{tracking.nextStep}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Llegada Estimada:</span>
-                          <span className="font-medium">{tracking.estimatedArrival}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1">
-                          <Eye className="w-4 h-4 mr-2" />
-                          Ver Detalles
-                        </Button>
-                        <Button size="sm" className="flex-1">
-                          <Edit className="w-4 h-4 mr-2" />
-                          Actualizar
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+          </div>
         </div>
       </main>
     </div>
