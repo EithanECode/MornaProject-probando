@@ -32,7 +32,13 @@ import {
   Camera,
   Link,
   Upload,
-  Check
+  Check,
+  FileText,
+  Hash,
+  Settings,
+  Image,
+  Target,
+  X
 } from 'lucide-react';
 
 // Importar animaciones de Lottie
@@ -169,6 +175,10 @@ export default function MisPedidosPage() {
   const [isFolderHovered, setIsFolderHovered] = useState(false);
   const [isCameraHovered, setIsCameraHovered] = useState(false);
   const [isLinkHovered, setIsLinkHovered] = useState(false);
+  
+  // Estados para transiciones suaves
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [stepDirection, setStepDirection] = useState<'next' | 'prev'>('next');
 
   // Inicialización
   useEffect(() => {
@@ -231,14 +241,26 @@ export default function MisPedidosPage() {
   };
 
   const handleNextStep = () => {
-    if (currentStep < 3) {
-      setCurrentStep(currentStep + 1);
+    if (currentStep < 3 && !isTransitioning) {
+      setStepDirection('next');
+      setIsTransitioning(true);
+      
+      setTimeout(() => {
+        setCurrentStep(currentStep + 1);
+        setIsTransitioning(false);
+      }, 300);
     }
   };
 
   const handlePrevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+    if (currentStep > 1 && !isTransitioning) {
+      setStepDirection('prev');
+      setIsTransitioning(true);
+      
+      setTimeout(() => {
+        setCurrentStep(currentStep - 1);
+        setIsTransitioning(false);
+      }, 300);
     }
   };
 
@@ -335,153 +357,244 @@ export default function MisPedidosPage() {
                   Nuevo Pedido
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Crear Nuevo Pedido
-                  </DialogTitle>
-                  <DialogDescription>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+                <DialogHeader className="text-center pb-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-xl opacity-20 animate-pulse"></div>
+                    <DialogTitle className="relative text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent animate-fade-in-up">
+                      ✨ Crear Nuevo Pedido
+                    </DialogTitle>
+                  </div>
+                  <DialogDescription className="text-lg text-slate-600 mt-2">
                     Sigue los pasos para crear tu solicitud de importación
                   </DialogDescription>
                 </DialogHeader>
 
-                {/* Progress Bar */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between text-sm text-slate-600">
-                    <span>Paso {currentStep} de 3</span>
-                    <span>{Math.round((currentStep / 3) * 100)}% completado</span>
+                {/* Enhanced Progress Bar */}
+                <div className={`space-y-4 mb-8 transition-all duration-300 ${
+                  isTransitioning ? 'opacity-75' : 'opacity-100'
+                }`}>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium text-slate-700">Paso {currentStep} de 3</span>
+                    <span className="font-bold text-blue-600">{Math.round((currentStep / 3) * 100)}% completado</span>
                   </div>
-                  <Progress value={(currentStep / 3) * 100} className="h-2" />
+                  <div className="relative">
+                    <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500 ease-out relative"
+                        style={{ width: `${(currentStep / 3) * 100}%` }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+                      </div>
+                    </div>
+                    {/* Step Indicators */}
+                    <div className="flex justify-between mt-2">
+                      {[1, 2, 3].map((step) => (
+                        <div key={step} className="flex flex-col items-center">
+                          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                            step <= currentStep 
+                              ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg scale-110' 
+                              : 'bg-slate-300 text-slate-600'
+                          }`}>
+                            {step < currentStep ? '✓' : step}
+                          </div>
+                          <span className={`text-xs mt-1 transition-colors duration-300 ${
+                            step <= currentStep ? 'text-blue-600 font-medium' : 'text-slate-500'
+                          }`}>
+                            {step === 1 ? 'Producto' : step === 2 ? 'Envío' : 'Resumen'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Step Content */}
-                <div className="space-y-6">
-                  {/* Animación de éxito */}
+                                  {/* Step Content with Smooth Transitions */}
+                  <div className={`space-y-6 transition-all duration-300 ${
+                    isTransitioning 
+                      ? stepDirection === 'next' 
+                        ? 'opacity-0 transform translate-x-4' 
+                        : 'opacity-0 transform -translate-x-4'
+                      : 'opacity-100 transform translate-x-0'
+                  }`}>
+                  {/* Enhanced Success Animation */}
                   {showSuccessAnimation && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                      <div className="bg-white rounded-lg p-8 text-center space-y-4">
-                        <div className="w-24 h-24 mx-auto">
-                          <Player
-                            src={confettiLottie}
-                            className="w-full h-full"
-                            loop={true}
-                            autoplay={true}
-                          />
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in-up">
+                      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-12 text-center space-y-6 shadow-2xl border border-slate-200/50 max-w-md mx-4 transform animate-fade-in-up">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                          <div className="relative w-32 h-32 mx-auto bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                            <Player
+                              src={confettiLottie}
+                              className="w-20 h-20"
+                              loop={true}
+                              autoplay={true}
+                            />
+                          </div>
                         </div>
-                        <h3 className="text-2xl font-bold text-green-600">¡Pedido Creado!</h3>
-                        <p className="text-slate-600">Tu solicitud ha sido enviada exitosamente</p>
+                        <div className="space-y-2">
+                          <h3 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                            ¡Pedido Creado!
+                          </h3>
+                          <p className="text-slate-600 text-lg">Tu solicitud ha sido enviada exitosamente</p>
+                        </div>
+                        <div className="pt-4">
+                          <Button
+                            onClick={() => setShowSuccessAnimation(false)}
+                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all duration-300 transform hover:scale-105 shadow-lg"
+                          >
+                            <Check className="w-4 h-4 mr-2" />
+                            ¡Perfecto!
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   )}
 
-                  {/* Step Header */}
-                  <div className="text-center space-y-2">
-                    <h3 className="text-xl font-semibold">{getStepTitle(currentStep)}</h3>
-                    <p className="text-sm text-slate-600">{getStepDescription(currentStep)}</p>
+                  {/* Enhanced Step Header */}
+                  <div className={`text-center space-y-4 mb-8 transition-all duration-300 ${
+                    isTransitioning ? 'opacity-50 scale-95' : 'opacity-100 scale-100'
+                  }`}>
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg blur-lg opacity-10 animate-pulse"></div>
+                      <div className="relative bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-slate-200/50">
+                        <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                          {getStepTitle(currentStep)}
+                        </h3>
+                        <p className="text-slate-600">{getStepDescription(currentStep)}</p>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Step 1: Información del Producto */}
                   {currentStep === 1 && (
-                    <div className="space-y-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="productName">Nombre del Producto</Label>
-                        <Input
-                          id="productName"
-                          value={newOrderData.productName}
-                          onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })}
-                          placeholder="Ej: iPhone 15 Pro Max"
-                          className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
-                        />
+                    <div className="space-y-8">
+                      <div className="space-y-3">
+                        <Label htmlFor="productName" className="text-sm font-semibold text-slate-700 flex items-center">
+                          <Package className="w-4 h-4 mr-2 text-blue-600" />
+                          Nombre del Producto
+                        </Label>
+                        <div className="relative group">
+                          <Input
+                            id="productName"
+                            value={newOrderData.productName}
+                            onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })}
+                            placeholder="Ej: iPhone 15 Pro Max"
+                            className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="description">Descripción del Producto</Label>
-                        <Textarea
-                          id="description"
-                          value={newOrderData.description}
-                          onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value })}
-                          placeholder="Describe detalladamente el producto que deseas importar..."
-                          rows={4}
-                          className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
-                        />
+                      <div className="space-y-3">
+                        <Label htmlFor="description" className="text-sm font-semibold text-slate-700 flex items-center">
+                          <FileText className="w-4 h-4 mr-2 text-blue-600" />
+                          Descripción del Producto
+                        </Label>
+                        <div className="relative group">
+                          <Textarea
+                            id="description"
+                            value={newOrderData.description}
+                            onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value })}
+                            placeholder="Describe detalladamente el producto que deseas importar..."
+                            rows={4}
+                            className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="quantity">Cantidad</Label>
-                        <Input
-                          id="quantity"
-                          type="number"
-                          min="1"
-                          value={newOrderData.quantity}
-                          onChange={(e) => setNewOrderData({ ...newOrderData, quantity: parseInt(e.target.value) || 1 })}
-                          className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
-                        />
+                      <div className="space-y-3">
+                        <Label htmlFor="quantity" className="text-sm font-semibold text-slate-700 flex items-center">
+                          <Hash className="w-4 h-4 mr-2 text-blue-600" />
+                          Cantidad
+                        </Label>
+                        <div className="relative group">
+                          <Input
+                            id="quantity"
+                            type="number"
+                            min="1"
+                            value={newOrderData.quantity}
+                            onChange={(e) => setNewOrderData({ ...newOrderData, quantity: parseInt(e.target.value) || 1 })}
+                            className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="specifications">Especificaciones Técnicas</Label>
-                        <Textarea
-                          id="specifications"
-                          value={newOrderData.specifications}
-                          onChange={(e) => setNewOrderData({ ...newOrderData, specifications: e.target.value })}
-                          placeholder="Color, talla, modelo, características específicas, etc."
-                          rows={3}
-                          className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
-                        />
+                      <div className="space-y-3">
+                        <Label htmlFor="specifications" className="text-sm font-semibold text-slate-700 flex items-center">
+                          <Settings className="w-4 h-4 mr-2 text-blue-600" />
+                          Especificaciones Técnicas
+                        </Label>
+                        <div className="relative group">
+                          <Textarea
+                            id="specifications"
+                            value={newOrderData.specifications}
+                            onChange={(e) => setNewOrderData({ ...newOrderData, specifications: e.target.value })}
+                            placeholder="Color, talla, modelo, características específicas, etc."
+                            rows={3}
+                            className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
                       </div>
 
                       {/* Tipo de Solicitud */}
                       <div className="space-y-4">
-                        <Label>Tipo de Solicitud</Label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Label className="text-sm font-semibold text-slate-700 flex items-center">
+                          <Target className="w-4 h-4 mr-2 text-blue-600" />
+                          Tipo de Solicitud
+                        </Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div
-                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                            className={`p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
                               newOrderData.requestType === 'link'
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-slate-200 hover:border-slate-300'
+                                ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg'
+                                : 'border-slate-200 hover:border-blue-300 bg-white/80 backdrop-blur-sm hover:shadow-md'
                             }`}
                             onClick={() => setNewOrderData({ ...newOrderData, requestType: 'link' })}
                             onMouseEnter={() => setIsLinkHovered(true)}
                             onMouseLeave={() => setIsLinkHovered(false)}
                           >
-                            <div className="flex items-center space-x-3">
-                              <div className="w-6 h-6">
+                            <div className="flex items-center space-x-4">
+                              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                                 <Player
                                   key={isLinkHovered ? 'link-active' : 'link-inactive'}
                                   src={linkLottie}
-                                  className="w-full h-full"
+                                  className="w-5 h-5"
                                   loop={false}
                                   autoplay={isLinkHovered}
                                 />
                               </div>
                               <div>
-                                <p className="font-medium">Link del Producto</p>
+                                <p className="font-semibold text-slate-800">Link del Producto</p>
                                 <p className="text-sm text-slate-600">Pega el enlace de la tienda</p>
                               </div>
                             </div>
                           </div>
                           <div
-                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                            className={`p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
                               newOrderData.requestType === 'photo'
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-slate-200 hover:border-slate-300'
+                                ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg'
+                                : 'border-slate-200 hover:border-blue-300 bg-white/80 backdrop-blur-sm hover:shadow-md'
                             }`}
                             onClick={() => setNewOrderData({ ...newOrderData, requestType: 'photo' })}
                             onMouseEnter={() => setIsCameraHovered(true)}
                             onMouseLeave={() => setIsCameraHovered(false)}
                           >
-                            <div className="flex items-center space-x-3">
-                              <div className="w-6 h-6">
+                            <div className="flex items-center space-x-4">
+                              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                                 <Player
                                   key={isCameraHovered ? 'camera-active' : 'camera-inactive'}
                                   src={cameraLottie}
-                                  className="w-full h-full"
+                                  className="w-5 h-5"
                                   loop={false}
                                   autoplay={isCameraHovered}
                                 />
                               </div>
                               <div>
-                                <p className="font-medium">Foto + Descripción</p>
+                                <p className="font-semibold text-slate-800">Foto + Descripción</p>
                                 <p className="text-sm text-slate-600">Sube una imagen del producto</p>
                               </div>
                             </div>
@@ -503,29 +616,34 @@ export default function MisPedidosPage() {
                         )}
 
                         {newOrderData.requestType === 'photo' && (
-                          <div className="space-y-2">
-                            <Label>Imagen del Producto</Label>
+                          <div className="space-y-3">
+                            <Label className="text-sm font-semibold text-slate-700 flex items-center">
+                              <Image className="w-4 h-4 mr-2 text-blue-600" />
+                              Imagen del Producto
+                            </Label>
                             <div 
-                              className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors duration-200"
+                              className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-blue-400 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:shadow-lg group"
                               onMouseEnter={() => setIsFolderHovered(true)}
                               onMouseLeave={() => setIsFolderHovered(false)}
                             >
-                              <div className="w-8 h-8 mx-auto mb-2">
+                              <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                                 <Player
                                   key={isFolderHovered ? 'folder-active' : 'folder-inactive'}
                                   src={folderLottie}
-                                  className="w-full h-full"
+                                  className="w-6 h-6"
                                   loop={false}
                                   autoplay={isFolderHovered}
                                 />
                               </div>
-                              <p className="text-sm text-slate-600 mb-2">
+                              <p className="text-sm text-slate-600 mb-4 font-medium">
                                 {newOrderData.productImage ? newOrderData.productImage.name : 'Haz clic para subir una imagen'}
                               </p>
                               <Button
                                 variant="outline"
                                 onClick={() => document.getElementById('imageUpload')?.click()}
+                                className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
                               >
+                                <Upload className="w-4 h-4 mr-2" />
                                 Seleccionar Imagen
                               </Button>
                               <input
@@ -707,39 +825,59 @@ export default function MisPedidosPage() {
                   )}
                 </div>
 
-                {/* Navigation Buttons */}
-                <div className="flex justify-between pt-6 border-t">
+                {/* Enhanced Navigation Buttons */}
+                <div className="flex justify-between pt-8 border-t border-slate-200/50">
                   <Button
                     variant="outline"
                     onClick={handlePrevStep}
-                    disabled={currentStep === 1}
-                    className="transition-all duration-200"
+                    disabled={currentStep === 1 || isTransitioning}
+                    className="transition-all duration-300 hover:bg-slate-50 hover:shadow-md transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Anterior
+                    {isTransitioning ? (
+                      <div className="flex items-center">
+                        <div className="w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Transicionando...
+                      </div>
+                    ) : (
+                      <>
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Anterior
+                      </>
+                    )}
                   </Button>
                   
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-3">
                     <Button
                       variant="outline"
                       onClick={() => setIsNewOrderModalOpen(false)}
+                      className="transition-all duration-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600 transform hover:scale-105"
                     >
+                      <X className="w-4 h-4 mr-2" />
                       Cancelar
                     </Button>
                     
                     {currentStep < 3 ? (
                       <Button
                         onClick={handleNextStep}
-                        disabled={!canProceedToNext()}
-                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                        disabled={!canProceedToNext() || isTransitioning}
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Siguiente
-                        <ArrowRight className="w-4 h-4 ml-2" />
+                        {isTransitioning ? (
+                          <div className="flex items-center">
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                            Transicionando...
+                          </div>
+                        ) : (
+                          <>
+                            Siguiente
+                            <ArrowRight className="w-4 h-4 ml-2" />
+                          </>
+                        )}
                       </Button>
                     ) : (
                       <Button
                         onClick={handleSubmitOrder}
-                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-200"
+                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         <Check className="w-4 h-4 mr-2" />
                         Crear Pedido
@@ -1010,6 +1148,57 @@ export default function MisPedidosPage() {
           )}
         </Dialog>
       </main>
+      
+      <style jsx>{`
+        @keyframes slideInFromRight {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes slideInFromLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .step-transition-enter {
+          animation: slideInFromRight 0.3s ease-out;
+        }
+        
+        .step-transition-enter-prev {
+          animation: slideInFromLeft 0.3s ease-out;
+        }
+        
+        .step-transition-exit {
+          animation: fadeInUp 0.3s ease-out reverse;
+        }
+        
+        .animate-fade-in-up {
+          animation: fadeInUp 0.4s ease-out;
+        }
+      `}</style>
     </div>
   );
 } 
