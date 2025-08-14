@@ -1,129 +1,107 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import dynamic from 'next/dynamic';
+import { useState, useEffect, useMemo } from 'react';
+import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
-import StatsCards from '@/components/dashboard/StatsCards';
-import WorkflowSection from '@/components/dashboard/WorkflowSection';
-import RecentOrders from '@/components/dashboard/RecentOrders';
-import QuickActions from '@/components/dashboard/QuickActions';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { 
+  Package, 
+  Truck, 
+  CheckCircle, 
+  Clock, 
+  DollarSign, 
+  Star,
+  ShoppingCart,
+  MessageSquare,
+  ArrowRight
+} from 'lucide-react';
 
-import { OrderStats } from '@/lib/types/dashboard';
-import { INITIAL_STATS, WORKFLOW_STEPS } from '@/lib/constants/dashboard';
+// Datos mock para el cliente
+const CLIENT_STATS = {
+  totalOrders: 12,
+  pendingOrders: 3,
+  completedOrders: 8,
+  totalSpent: 4850,
+  averageRating: 4.8,
+  activeShipments: 2
+};
 
-// Importar hooks optimizados
-import { useStatsQuery, useRecentOrdersQuery } from '@/hooks/use-supabase-query';
+const QUICK_ACTIONS = [
+  {
+    id: 'new_order',
+    title: 'Crear Nuevo Pedido',
+    description: 'Solicita la importación de un producto',
+    icon: ShoppingCart,
+    color: 'bg-blue-500',
+    href: '/mis-pedidos'
+  },
+  {
+    id: 'track_order',
+    title: 'Seguir Pedido',
+    description: 'Consulta el estado de tus envíos',
+    icon: Truck,
+    color: 'bg-green-500',
+    href: '/tracking'
+  },
+  {
+    id: 'support',
+    title: 'Contactar Soporte',
+    description: 'Obtén ayuda cuando la necesites',
+    icon: MessageSquare,
+    color: 'bg-purple-500',
+    href: '/soporte'
+  }
+];
 
-// Lazy load components that are not immediately visible
-const LazyWorkflowSection = dynamic(() => import('@/components/dashboard/WorkflowSection'), {
-  loading: () => <div className="h-64 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg animate-pulse" />
-});
+const RECENT_ORDERS = [
+  {
+    id: 'ORD-2024-001',
+    productName: 'IPHONE 15 PRO MAX',
+    status: 'EN TRANSITO',
+    progress: 75,
+    estimatedDelivery: '2024-01-20',
+    price: 1319,
+    trackingNumber: 'TRK-123456789',
+    statusColor: 'bg-orange-100 text-orange-600',
+    progressColor: 'bg-orange-500'
+  },
+  {
+    id: 'ORD-2024-002',
+    productName: 'MACBOOK AIR M2',
+    status: 'PROCESANDO',
+    progress: 45,
+    estimatedDelivery: '2024-01-25',
+    price: 1199,
+    trackingNumber: 'TRK-987654321',
+    statusColor: 'bg-blue-100 text-blue-600',
+    progressColor: 'bg-blue-500'
+  },
+  {
+    id: 'ORD-2024-003',
+    productName: 'AIRPODS PRO',
+    status: 'ENTREGADO',
+    progress: 100,
+    estimatedDelivery: '2024-01-15',
+    price: 249,
+    trackingNumber: 'TRK-456789123',
+    statusColor: 'bg-green-100 text-green-600',
+    progressColor: 'bg-green-500'
+  }
+];
 
-const LazyRecentOrders = dynamic(() => import('@/components/dashboard/RecentOrders'), {
-  loading: () => <div className="h-80 bg-white rounded-lg shadow-lg animate-pulse" />
-});
-
-// ✅ Interfaz para los datos del modal de China
-interface FormDataChina {
-  cliente: string
-  telefono: string
-  producto: string
-  cantidad: number | null
-  precioUnitario: number | null
-  direccionEntrega: string
-}
-
-// ✅ Interfaz para los datos del modal de Venezuela
-interface FormDataVzla {
-  empresa: string
-  rif: string
-  contacto: string
-  telefono: string
-  categoria: string
-  cantidadLotes: number | null
-  precioPorLote: number | null
-  almacenDestino: string
-  observaciones: string
-}
 
 export default function DashboardPage() {
-  const [sidebarExpanded, setSidebarExpanded] = useState(false); // Inicializar contraído por defecto
+  const [mounted, setMounted] = useState(false);
+  const { theme } = useTheme();
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [screenWidth, setScreenWidth] = useState(0);
-  const [isClient, setIsClient] = useState(false);
-  const [notifications, setNotifications] = useState(3);
-  const [animateStats, setAnimateStats] = useState(false);
-
-  // Detectar si estamos en el cliente
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   useEffect(() => {
-    if (!isClient) return;
-
-    const updateScreenWidth = () => {
-      const width = window.innerWidth;
-      setScreenWidth(width);
-      
-      // Aplicar lógica de sidebar inmediatamente
-      if (width >= 1024) {
-        setSidebarExpanded(false); // Desktop: contraído
-        setIsMobileMenuOpen(false);
-      } else {
-        setSidebarExpanded(true); // Mobile: expandido para mejor usabilidad
-      }
-    };
-
-    // Actualizar inmediatamente y con un pequeño delay para herramientas de desarrollo
-    updateScreenWidth();
-    
-    // Delay adicional para asegurar que funcione en herramientas de desarrollo
-    const timeoutId = setTimeout(updateScreenWidth, 100);
-    
-    window.addEventListener('resize', updateScreenWidth);
-    return () => {
-      window.removeEventListener('resize', updateScreenWidth);
-      clearTimeout(timeoutId);
-    };
-  }, [isClient]);
-
-  const isMobile = isClient && screenWidth < 1024;
-
-  // Usar hooks optimizados
-  const { 
-    data: stats, 
-    loading: statsLoading, 
-    error: statsError,
-    isStale: statsStale 
-  } = useStatsQuery();
-  
-  const { 
-    data: recentOrders, 
-    loading: ordersLoading, 
-    error: ordersError,
-    isStale: ordersStale 
-  } = useRecentOrdersQuery(5);
-
-  // Memoizar el estado de animación
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnimateStats(true);
-    }, 100); // Pequeño delay para mejorar la experiencia visual
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // ✅ Crea las funciones que el componente QuickActions necesita
-  const handleChinaSubmit = useCallback((data: FormDataChina) => {
-    console.log('Nuevo pedido de China creado:', data);
-    // Aquí puedes agregar la lógica para guardar el pedido de China
-  }, []);
-
-  const handleVzlaSubmit = useCallback((data: FormDataVzla) => {
-    console.log('Nuevo pedido de Venezuela creado:', data);
-    // Aquí puedes agregar la lógica para guardar el pedido de Venezuela
+    setMounted(true);
   }, []);
 
   const handleMobileMenuToggle = () => {
@@ -134,126 +112,185 @@ export default function DashboardPage() {
     setIsMobileMenuOpen(false);
   };
 
-  // Memoizar el contenido principal para evitar re-renders innecesarios
-  const mainContent = useMemo(() => (
-    <div className="p-4 sm:p-6 space-y-6 sm:space-y-8">
-      <StatsCards stats={stats} animateStats={animateStats} />
-      
-      {/* Lazy load components */}
-      <LazyWorkflowSection workflowSteps={WORKFLOW_STEPS} />
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-        <LazyRecentOrders orders={recentOrders} />
-        <QuickActions 
-          onChinaSubmit={handleChinaSubmit} 
-          onVzlaSubmit={handleVzlaSubmit} 
-        />
-      </div>
-    </div>
-  ), [stats, animateStats, recentOrders, handleChinaSubmit, handleVzlaSubmit]);
 
-  // Memoizar el error state
-  const errorContent = useMemo(() => (
-    <div className="p-4 sm:p-6">
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-800">
-          {statsError || ordersError}
-        </p>
-      </div>
-    </div>
-  ), [statsError, ordersError]);
 
-  // Memoizar el stale indicator
-  const staleIndicator = useMemo(() => {
-    if (statsStale || ordersStale) {
-      return (
-        <div className="fixed top-4 right-4 z-50">
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded-lg shadow-lg">
-            <p className="text-sm">Actualizando datos...</p>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  }, [statsStale, ordersStale]);
+  if (!mounted) return null;
 
   return (
-  <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:bg-slate-900 dark:bg-none flex overflow-x-hidden text-slate-900 dark:text-white">
+    <div className={`min-h-screen flex overflow-x-hidden ${theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
       <Sidebar 
         isExpanded={sidebarExpanded} 
         setIsExpanded={setSidebarExpanded}
         isMobileMenuOpen={isMobileMenuOpen}
         onMobileMenuClose={handleMobileMenuClose}
-        userRole="admin"
       />
       
-      <main 
-        className="flex-1 transition-all duration-200 ease-out"
-        style={{
-          marginLeft: isMobile ? '0' : (sidebarExpanded ? '18rem' : '5rem'),
-          width: isMobile ? '100%' : (sidebarExpanded ? 'calc(100% - 18rem)' : 'calc(100% - 5rem)')
-        }}
-      >
+      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
         <Header 
-          notifications={notifications} 
+          notifications={CLIENT_STATS.pendingOrders} 
           onMenuToggle={handleMobileMenuToggle}
+          title="Dashboard"
+          subtitle="Bienvenido de vuelta, aquí tienes un resumen de tu actividad"
         />
         
-        {/* Stale indicator */}
-        {staleIndicator}
-        
-        {/* Mostrar errores si existen */}
-        {(statsError || ordersError) && errorContent}
+        <div className="p-6 space-y-6">
+          {/* Header de bienvenida */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
+            <div>
+              <h1 className="text-2xl font-bold">¡Bienvenido de vuelta!</h1>
+              <p className="text-blue-100 mt-1">Aquí tienes un resumen de tu actividad reciente</p>
+            </div>
+          </div>
 
-        {/* Contenido principal con fallback para evitar elementos invisibles */}
-        <div className="min-h-screen dashboard-content">
-          <div className="dashboard-content">
-            {mainContent}
+          {/* Estadísticas principales */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-600">Total Pedidos</p>
+                    <p className="text-2xl font-bold">{CLIENT_STATS.totalOrders}</p>
+                  </div>
+                  <Package className="h-8 w-8 text-blue-600" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-600">Pendientes</p>
+                    <p className="text-2xl font-bold text-yellow-600">{CLIENT_STATS.pendingOrders}</p>
+                  </div>
+                  <Clock className="h-8 w-8 text-yellow-600" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-600">En Tránsito</p>
+                    <p className="text-2xl font-bold text-blue-600">{CLIENT_STATS.activeShipments}</p>
+                  </div>
+                  <Truck className="h-8 w-8 text-blue-600" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-600">Total Gastado</p>
+                    <p className="text-2xl font-bold text-green-600">${CLIENT_STATS.totalSpent.toLocaleString()}</p>
+                  </div>
+                  <DollarSign className="h-8 w-8 text-green-600" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+
+
+          {/* Acciones rápidas */}
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
+            <CardHeader>
+              <CardTitle className="text-lg">Acciones Rápidas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {QUICK_ACTIONS.map((action) => {
+                  const Icon = action.icon;
+                  return (
+                    <Button
+                      key={action.id}
+                      variant="outline"
+                      className="h-auto p-4 flex flex-col items-start space-y-2 hover:shadow-md transition-all duration-200"
+                      onClick={() => window.location.href = action.href}
+                    >
+                      <div className={`p-2 rounded-lg ${action.color} text-white`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">{action.title}</p>
+                        <p className="text-sm text-slate-600">{action.description}</p>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-slate-400 ml-auto" />
+                    </Button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* MIS PEDIDOS */}
+          <div className="grid grid-cols-1 gap-6">
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
+              <CardHeader>
+                <CardTitle className="text-lg">MIS PEDIDOS</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {RECENT_ORDERS.map((order) => (
+                    <div key={order.id} className="border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <p className="font-bold text-sm text-slate-800">{order.id}</p>
+                          <p className="font-semibold text-lg">{order.productName}</p>
+                        </div>
+                        <Badge className={`${order.statusColor} font-medium`}>
+                          {order.status}
+                        </Badge>
+                      </div>
+                      
+                      <div className="mb-3">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-medium text-slate-600">PROGRESO</span>
+                          <span className="text-sm font-bold">{order.progress}%</span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${order.progressColor}`}
+                            style={{ width: `${order.progress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
+                        <div>
+                          <p className="text-slate-600">ENTREGA ESTIMADA:</p>
+                          <p className="font-medium">{order.estimatedDelivery}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-slate-600">PRECIO:</p>
+                          <p className="font-bold text-green-600">${order.price.toLocaleString()}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-3">
+                        <p className="text-sm text-slate-600">TRACKING: <span className="font-mono font-medium">{order.trackingNumber}</span></p>
+                      </div>
+                      
+                      <Button 
+                        variant="outline" 
+                        className="w-full hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                        onClick={() => window.location.href = '/mis-pedidos'}
+                      >
+                        VER DETALLES
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+
           </div>
         </div>
       </main>
-
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateX(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-        
-        /* Prevenir elementos invisibles */
-        .dashboard-content {
-          visibility: visible !important;
-          opacity: 1 !important;
-        }
-        
-        /* Asegurar que el header siempre sea visible */
-        .dashboard-header {
-          visibility: visible !important;
-          opacity: 1 !important;
-        }
-        
-        /* Asegurar que las tarjetas siempre sean visibles */
-        .stats-card {
-          visibility: visible !important;
-          opacity: 1 !important;
-        }
-      `}</style>
     </div>
   );
 }

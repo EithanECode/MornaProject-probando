@@ -7,36 +7,51 @@ import { Badge } from '@/components/ui/badge';
 interface HeaderProps {
   notifications: number;
   onMenuToggle?: () => void;
+  title?: string;
+  subtitle?: string;
 }
 
-export default function Header({ notifications, onMenuToggle }: HeaderProps) {
+export default function Header({ 
+  notifications, 
+  onMenuToggle, 
+  title = "Dashboard", 
+  subtitle = "Resumen de la operación" 
+}: HeaderProps) {
   const handleMenuToggle = () => {
     onMenuToggle?.();
   };
 
   return (
-    <header className="dashboard-header bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40">
+    <header className="bg-white/90 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40 shadow-sm">
       <div className="px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
+          {/* Left Section */}
           <div className="flex items-center gap-4">
-            {/* Botón de menú hamburguesa - solo visible en móviles y tablets */}
+            {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="sm"
               onClick={handleMenuToggle}
-              className="lg:hidden p-2 hover:bg-slate-100"
+              className="lg:hidden p-2 hover:bg-slate-100 transition-colors"
             >
               <Menu className="w-5 h-5" />
             </Button>
             
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Dashboard</h1>
-              <p className="text-xs sm:text-sm text-slate-600">Resumen de la operación</p>
+            {/* Title Section */}
+            <div className="hidden sm:block">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{title}</h1>
+              <p className="text-xs sm:text-sm text-slate-600">{subtitle}</p>
             </div>
           </div>
           
+          {/* Right Section */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Button variant="outline" size="sm" className="relative hidden sm:flex">
+            {/* Desktop Notifications */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="relative hidden sm:flex hover:bg-slate-50 transition-colors"
+            >
               <Bell className="w-4 h-4 mr-2" />
               <span className="hidden md:inline">Notificaciones</span>
               {notifications > 0 && (
@@ -46,8 +61,12 @@ export default function Header({ notifications, onMenuToggle }: HeaderProps) {
               )}
             </Button>
             
-            {/* Botón de notificaciones compacto para móviles */}
-            <Button variant="outline" size="sm" className="relative sm:hidden">
+            {/* Mobile Notifications */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="relative sm:hidden hover:bg-slate-50 transition-colors"
+            >
               <Bell className="w-4 h-4" />
               {notifications > 0 && (
                 <Badge className="absolute -top-2 -right-2 w-5 h-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
@@ -55,8 +74,6 @@ export default function Header({ notifications, onMenuToggle }: HeaderProps) {
                 </Badge>
               )}
             </Button>
-            
-
           </div>
         </div>
       </div>

@@ -6,18 +6,9 @@ import {
   LayoutDashboard, 
   Package, 
   MessageCircle, 
-  BarChart3, 
   Settings, 
-  Bell,
-  Users,
-  ChartNoAxesGantt,
-  Truck,
-  LockKeyhole,
-  FileText,
   LogOut,
-  User,
-  Globe,
-  BadgeDollarSign
+  User
 } from 'lucide-react';
 import VenezuelaFlag from '@/components/ui/common/VenezuelaFlag';
 import PitaLogo from '@/components/ui/common/PitaLogo';
@@ -28,222 +19,35 @@ interface SidebarProps {
   setIsExpanded: (expanded: boolean) => void;
   isMobileMenuOpen?: boolean;
   onMobileMenuClose?: () => void;
-  userRole?: 'admin' | 'china' | 'venezuela' | 'pagos' | 'client';
 }
 
-// Configuraciones de menú por rol
-const getMenuItemsByRole = (userRole?: string) => {
-  const baseItems = [
-    {
-      id: 'dashboard',
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-      badge: null,
-      color: 'text-blue-500',
-      path: '/dashboard'
-    }
-  ];
-
-  switch (userRole) {
-    case 'admin':
-      return [
-        ...baseItems,
-        {
-          id: 'pedidos',
-          label: 'Pedidos',
-          icon: Package,
-          badge: 23,
-          color: 'text-orange-500',
-          path: '/pedidos'
-        },
-        {
-          id: 'alertas',
-          label: 'Alertas',
-          icon: Bell,
-          badge: 3,
-          color: 'text-red-500',
-          path: '/alertas'
-        },
-        {
-          id: 'validacion-pagos',
-          label: 'Validación de Pagos',
-          icon: BadgeDollarSign,
-          badge: null,
-          color: 'text-emerald-500',
-          path: '/validacion-pagos'
-        },
-        {
-          id: 'reportes',
-          label: 'Reportes',
-          icon: BarChart3,
-          badge: null,
-          color: 'text-indigo-500',
-          path: '/reportes'
-        },
-        {
-          id: 'usuarios',
-          label: 'Usuarios',
-          icon: Users,
-          badge: null,
-          color: 'text-teal-500',
-          path: '/usuarios'
-        },
-        {
-          id: 'tracking',
-          label: 'Tracking',
-          icon: Truck,
-          badge: null,
-          color: 'text-purple-500',
-          path: '/tracking'
-        }
-      ];
-
-    case 'china':
-      return [
-        ...baseItems,
-        {
-          id: 'pedidos',
-          label: 'Pedidos China',
-          icon: Package,
-          badge: 15,
-          color: 'text-orange-500',
-          path: '/pedidos'
-        },
-        {
-          id: 'tracking',
-          label: 'Tracking',
-          icon: Truck,
-          badge: null,
-          color: 'text-purple-500',
-          path: '/tracking'
-        },
-        {
-          id: 'documentos',
-          label: 'Documentos',
-          icon: FileText,
-          badge: null,
-          color: 'text-emerald-500',
-          path: '/documentos'
-        }
-      ];
-
-    case 'venezuela':
-      return [
-        ...baseItems,
-        {
-          id: 'pedidos',
-          label: 'Pedidos Vzla',
-          icon: Package,
-          badge: 8,
-          color: 'text-orange-500',
-          path: '/pedidos'
-        },
-        {
-          id: 'alertas',
-          label: 'Alertas',
-          icon: Bell,
-          badge: 2,
-          color: 'text-red-500',
-          path: '/alertas'
-        },
-        {
-          id: 'tracking',
-          label: 'Tracking',
-          icon: Truck,
-          badge: null,
-          color: 'text-purple-500',
-          path: '/tracking'
-        },
-        {
-          id: 'reportes',
-          label: 'Reportes',
-          icon: BarChart3,
-          badge: null,
-          color: 'text-indigo-500',
-          path: '/reportes'
-        },
-        {
-          id: 'chat',
-          label: 'Chat Soporte',
-          icon: MessageCircle,
-          badge: 5,
-          color: 'text-green-500',
-          path: '/chat'
-        }
-      ];
-
-    case 'pagos':
-      return [
-        ...baseItems,
-        {
-          id: 'validacion-pagos',
-          label: 'Validación de Pagos',
-          icon: BadgeDollarSign,
-          badge: 12,
-          color: 'text-emerald-500',
-          path: '/validacion-pagos'
-        },
-        {
-          id: 'reportes',
-          label: 'Reportes Financieros',
-          icon: BarChart3,
-          badge: null,
-          color: 'text-indigo-500',
-          path: '/reportes'
-        },
-        {
-          id: 'auditoria',
-          label: 'Auditoría',
-          icon: LockKeyhole,
-          badge: null,
-          color: 'text-teal-500',
-          path: '/auditoria'
-        }
-      ];
-
-    case 'client':
-      return [
-        ...baseItems,
-        {
-          id: 'mis-pedidos',
-          label: 'Mis Pedidos',
-          icon: Package,
-          badge: 3,
-          color: 'text-orange-500',
-          path: '/mis-pedidos'
-        },
-        {
-          id: 'tracking',
-          label: 'Tracking',
-          icon: Truck,
-          badge: null,
-          color: 'text-purple-500',
-          path: '/tracking'
-        },
-        {
-          id: 'soporte',
-          label: 'Soporte',
-          icon: MessageCircle,
-          badge: null,
-          color: 'text-green-500',
-          path: '/soporte'
-        },
-        {
-          id: 'favoritos',
-          label: 'Favoritos',
-          icon: User,
-          badge: null,
-          color: 'text-pink-500',
-          path: '/favoritos'
-        }
-      ];
-
-    default:
-      return baseItems;
+// Menú específico para el cliente
+const CLIENT_MENU_ITEMS = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: LayoutDashboard,
+    badge: null,
+    color: 'text-blue-500',
+    path: '/dashboard'
+  },
+  {
+    id: 'mis-pedidos',
+    label: 'Mis Pedidos',
+    icon: Package,
+    badge: 3,
+    color: 'text-orange-500',
+    path: '/mis-pedidos'
+  },
+  {
+    id: 'soporte',
+    label: 'Soporte',
+    icon: MessageCircle,
+    badge: null,
+    color: 'text-green-500',
+    path: '/soporte'
   }
-};
-
-
+];
 
 const BOTTOM_ITEMS = [
   {
@@ -257,7 +61,7 @@ const BOTTOM_ITEMS = [
 
 // Hook personalizado para detectar el tamaño de pantalla
 const useScreenSize = () => {
-  const [screenWidth, setScreenWidth] = useState(0); // Inicializar en 0 para evitar problemas de SSR
+  const [screenWidth, setScreenWidth] = useState(0);
 
   useEffect(() => {
     const updateScreenWidth = () => {
@@ -283,14 +87,11 @@ const useActivePage = (menuItems: any[]) => {
   }, [pathname, menuItems]);
 };
 
-export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = false, onMobileMenuClose, userRole }: SidebarProps) {
+export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = false, onMobileMenuClose }: SidebarProps) {
   const router = useRouter();
   const screenWidth = useScreenSize();
   
-  // Obtener elementos del menú según el rol del usuario
-  const menuItems = useMemo(() => getMenuItemsByRole(userRole), [userRole]);
-  
-  const activeItem = useActivePage(menuItems);
+  const activeItem = useActivePage(CLIENT_MENU_ITEMS);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Memoizar los cálculos responsivos
@@ -299,8 +100,6 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     const isMediumScreen = screenWidth < 1600;
     const isLargeScreen = screenWidth >= 1600;
     const isMobile = screenWidth < 1024; // lg breakpoint
-
-
 
     return {
       sidebarWidth: isMobile 
@@ -358,20 +157,13 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     setHoverTimeout(timeout);
   }, [setIsExpanded, responsiveConfig.isMobile]);
 
-  // Reset expanded state when switching to mobile
-  // useEffect(() => {
-  //   if (responsiveConfig.isMobile) {
-  //     setIsExpanded(true); // En mobile, siempre expandido para mostrar nombres
-  //   }
-  // }, [responsiveConfig.isMobile, setIsExpanded]);
-
   // Optimizar la navegación
   const handleNavigation = useCallback((path: string) => {
     router.push(path);
   }, [router]);
 
   // Memoizar el renderizado de los elementos del menú
-  const renderMenuItem = useCallback((item: typeof menuItems[0]) => {
+  const renderMenuItem = useCallback((item: typeof CLIENT_MENU_ITEMS[0]) => {
     const Icon = item.icon;
     const isActive = activeItem === item.id;
     
@@ -462,7 +254,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
             `}>
               <div className="whitespace-nowrap">
                 <h1 className={`font-bold text-white ${responsiveConfig.titleSize}`}>Pita Express</h1>
-                <p className={`text-slate-400 ${responsiveConfig.subtitleSize}`}>Admin Panel</p>
+                <p className={`text-slate-400 ${responsiveConfig.subtitleSize}`}>Cliente</p>
               </div>
             </div>
           </div>
@@ -470,7 +262,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
         {/* Navigation */}
         <nav className={`flex-1 ${responsiveConfig.padding} space-y-2 overflow-y-auto sidebar-scrollbar`}>
-          {menuItems.map(renderMenuItem)}
+          {CLIENT_MENU_ITEMS.map(renderMenuItem)}
         </nav>
 
         {/* Bottom Section */}
@@ -486,20 +278,10 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
             `}>
               <div className="whitespace-nowrap">
                 <p className={`font-medium text-white ${responsiveConfig.userTextSize}`}>
-                  {userRole === 'admin' && 'Master Admin'}
-                  {userRole === 'china' && 'Empleado China'}
-                  {userRole === 'venezuela' && 'Empleado Vzla'}
-                  {userRole === 'pagos' && 'Validador Pagos'}
-                  {userRole === 'client' && 'Cliente'}
-                  {!userRole && 'Usuario'}
+                  Cliente
                 </p>
                 <p className={`text-slate-400 ${responsiveConfig.userSubtextSize}`}>
-                  {userRole === 'admin' && 'admin@morna.com'}
-                  {userRole === 'china' && 'china@morna.com'}
-                  {userRole === 'venezuela' && 'vzla@morna.com'}
-                  {userRole === 'pagos' && 'pagos@morna.com'}
-                  {userRole === 'client' && 'cliente@morna.com'}
-                  {!userRole && 'usuario@morna.com'}
+                  cliente@morna.com
                 </p>
               </div>
             </div>

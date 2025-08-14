@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
@@ -25,13 +24,6 @@ import {
   MessageSquare, 
   Eye, 
   Search, 
-  Filter,
-  Calendar,
-  FileText,
-  AlertTriangle,
-  Star,
-  Heart,
-  Download,
   Plus,
   ArrowLeft,
   ArrowRight,
@@ -40,21 +32,19 @@ import {
   Camera,
   Link,
   Upload,
-  Check,
-  X
+  Check
 } from 'lucide-react';
 
 // Importar animaciones de Lottie
 import airPlaneLottie from '/public/animations/FTQoLAnxbj.json';
 import cargoShipLottie from '/public/animations/wired-flat-1337-cargo-ship-hover-pinch.json';
-import woodenBoxLottie from '/public/animations/wired-flat-1356-wooden-box-hover-pinch.json';
+import truckLottie from '/public/animations/wired-flat-18-delivery-truck.json';
 import cameraLottie from '/public/animations/wired-flat-61-camera-hover-flash.json';
 import folderLottie from '/public/animations/wired-flat-120-folder-hover-adding-files.json';
 import linkLottie from '/public/animations/wired-flat-11-link-unlink-hover-bounce.json';
-import successLottie from '/public/animations/Success.json';
 import confettiLottie from '/public/animations/wired-flat-1103-confetti-hover-pinch.json';
-import truckLottie from '/public/animations/wired-flat-18-delivery-truck.json';
 
+// Tipos
 interface Order {
   id: string;
   product: string;
@@ -86,18 +76,83 @@ interface NewOrderData {
   estimatedBudget: string;
 }
 
+// Datos mock
+const MOCK_ORDERS: Order[] = [
+  {
+    id: 'ORD-2024-001',
+    product: 'Smartphone Samsung Galaxy S24',
+    description: 'Teléfono inteligente de última generación con cámara de 200MP',
+    amount: '$1,250.00',
+    status: 'shipped',
+    progress: 75,
+    tracking: 'TRK-789456123',
+    estimatedDelivery: '15 días',
+    createdAt: '2024-01-15',
+    category: 'Electrónicos',
+    documents: [
+      { type: 'image', url: '/images/products/samsung-s24.jpg', label: 'Foto del producto' },
+      { type: 'link', url: 'https://tracking.example.com/TRK-789456123', label: 'Seguimiento en línea' }
+    ]
+  },
+  {
+    id: 'ORD-2024-002',
+    product: 'Laptop Dell Inspiron 15',
+    description: 'Computadora portátil para trabajo y gaming',
+    amount: '$2,450.00',
+    status: 'processing',
+    progress: 45,
+    tracking: 'TRK-456789321',
+    estimatedDelivery: '25 días',
+    createdAt: '2024-01-20',
+    category: 'Computadoras',
+    documents: [
+      { type: 'image', url: '/images/products/dell-inspiron.jpg', label: 'Foto del producto' }
+    ]
+  },
+  {
+    id: 'ORD-2024-003',
+    product: 'Auriculares Sony WH-1000XM5',
+    description: 'Auriculares inalámbricos con cancelación de ruido',
+    amount: '$350.00',
+    status: 'delivered',
+    progress: 100,
+    tracking: 'TRK-123456789',
+    estimatedDelivery: 'Completado',
+    createdAt: '2024-01-10',
+    category: 'Audio'
+  },
+  {
+    id: 'ORD-2024-004',
+    product: 'Smartwatch Apple Watch Series 9',
+    description: 'Reloj inteligente con monitor cardíaco',
+    amount: '$899.00',
+    status: 'pending',
+    progress: 10,
+    tracking: 'Pendiente',
+    estimatedDelivery: '30 días',
+    createdAt: '2024-01-25',
+    category: 'Wearables'
+  }
+];
+
 export default function MisPedidosPage() {
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  // Estados básicos
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Estados de la página
+  const [orders] = useState<Order[]>(MOCK_ORDERS);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-  
-  // Modal de nuevo pedido
+
+  // Estados del modal de nuevo pedido
   const [isNewOrderModalOpen, setIsNewOrderModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [newOrderData, setNewOrderData] = useState<NewOrderData>({
     productName: '',
     description: '',
@@ -109,75 +164,37 @@ export default function MisPedidosPage() {
     estimatedBudget: ''
   });
 
-  // Estados para controlar las animaciones de Lottie
+  // Estados para animaciones de Lottie
   const [hoveredDeliveryOption, setHoveredDeliveryOption] = useState<string | null>(null);
-  const [hoveredRequestType, setHoveredRequestType] = useState<string | null>(null);
-  const [isFolderHovered, setIsFolderHovered] = useState<boolean>(false);
-  const [isCameraHovered, setIsCameraHovered] = useState<boolean>(false);
-  const [isLinkHovered, setIsLinkHovered] = useState<boolean>(false);
-  const [showSuccessAnimation, setShowSuccessAnimation] = useState<boolean>(false);
+  const [isFolderHovered, setIsFolderHovered] = useState(false);
+  const [isCameraHovered, setIsCameraHovered] = useState(false);
+  const [isLinkHovered, setIsLinkHovered] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  // Inicialización
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  // Datos mock de pedidos del cliente
-  const [orders] = useState<Order[]>([
-    {
-      id: 'ORD-2024-001',
-      product: 'Smartphone Samsung Galaxy S24',
-      description: 'Teléfono inteligente de última generación con cámara de 200MP',
-      amount: '$1,250.00',
-      status: 'shipped',
-      progress: 75,
-      tracking: 'TRK-789456123',
-      estimatedDelivery: '15 días',
-      createdAt: '2024-01-15',
-      category: 'Electrónicos',
-      documents: [
-        { type: 'image', url: '/images/products/samsung-s24.jpg', label: 'Foto del producto' },
-        { type: 'link', url: 'https://tracking.example.com/TRK-789456123', label: 'Seguimiento en línea' }
-      ]
-    },
-    {
-      id: 'ORD-2024-002',
-      product: 'Laptop Dell Inspiron 15',
-      description: 'Computadora portátil para trabajo y gaming',
-      amount: '$2,450.00',
-      status: 'processing',
-      progress: 45,
-      tracking: 'TRK-456789321',
-      estimatedDelivery: '25 días',
-      createdAt: '2024-01-20',
-      category: 'Computadoras',
-      documents: [
-        { type: 'image', url: '/images/products/dell-inspiron.jpg', label: 'Foto del producto' }
-      ]
-    },
-    {
-      id: 'ORD-2024-003',
-      product: 'Auriculares Sony WH-1000XM5',
-      description: 'Auriculares inalámbricos con cancelación de ruido',
-      amount: '$350.00',
-      status: 'delivered',
-      progress: 100,
-      tracking: 'TRK-123456789',
-      estimatedDelivery: 'Completado',
-      createdAt: '2024-01-10',
-      category: 'Audio'
-    },
-    {
-      id: 'ORD-2024-004',
-      product: 'Smartwatch Apple Watch Series 9',
-      description: 'Reloj inteligente con monitor cardíaco',
-      amount: '$899.00',
-      status: 'pending',
-      progress: 10,
-      tracking: 'Pendiente',
-      estimatedDelivery: '30 días',
-      createdAt: '2024-01-25',
-      category: 'Wearables'
-    }
-  ]);
+  // Cálculos derivados
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = 
+      order.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.tracking.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
+  const stats = {
+    total: orders.length,
+    pending: orders.filter(o => o.status === 'pending').length,
+    processing: orders.filter(o => o.status === 'processing').length,
+    shipped: orders.filter(o => o.status === 'shipped').length,
+    delivered: orders.filter(o => o.status === 'delivered').length,
+    totalSpent: orders.reduce((sum, order) => sum + parseFloat(order.amount.replace('$', '').replace(',', '')), 0)
+  };
+
+  // Funciones helper
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
@@ -207,32 +224,12 @@ export default function MisPedidosPage() {
     return 'bg-gray-300';
   };
 
-
-
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = 
-      order.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.tracking.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
-  const stats = {
-    total: orders.length,
-    pending: orders.filter(o => o.status === 'pending').length,
-    processing: orders.filter(o => o.status === 'processing').length,
-    shipped: orders.filter(o => o.status === 'shipped').length,
-    delivered: orders.filter(o => o.status === 'delivered').length,
-    totalSpent: orders.reduce((sum, order) => sum + parseFloat(order.amount.replace('$', '').replace(',', '')), 0)
-  };
-
+  // Handlers
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
     setIsDetailsModalOpen(true);
   };
 
-  // Funciones del modal de nuevo pedido
   const handleNextStep = () => {
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
@@ -246,13 +243,9 @@ export default function MisPedidosPage() {
   };
 
   const handleSubmitOrder = () => {
-    // Aquí se procesaría la creación del pedido
     console.log('Nuevo pedido:', newOrderData);
-    
-    // Mostrar animación de éxito
     setShowSuccessAnimation(true);
     
-    // Cerrar modal después de mostrar la animación
     setTimeout(() => {
       setShowSuccessAnimation(false);
       setIsNewOrderModalOpen(false);
@@ -267,7 +260,7 @@ export default function MisPedidosPage() {
         deliveryVenezuela: '',
         estimatedBudget: ''
       });
-    }, 3000); // Esperar 3 segundos para mostrar la animación completa
+    }, 3000);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -307,49 +300,31 @@ export default function MisPedidosPage() {
     }
   };
 
+  if (!mounted) return null;
+
   return (
-    <div className={`min-h-screen flex overflow-x-hidden ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
-      <style jsx>{`
-        .lottie-container {
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .lottie-container:hover {
-          transform: scale(1.05);
-        }
-        .success-overlay {
-          animation: fadeIn 0.3s ease-in-out;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        .step-transition {
-          animation: slideIn 0.4s ease-out;
-        }
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateX(20px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        .lottie-player {
-          width: 100% !important;
-          height: 100% !important;
-        }
-      `}</style>
-      
-      <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="client" />
+    <div className={`min-h-screen flex overflow-x-hidden ${theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
+      <Sidebar 
+        isExpanded={sidebarExpanded} 
+        setIsExpanded={setSidebarExpanded}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onMobileMenuClose={() => setIsMobileMenuOpen(false)}
+      />
       
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
-        <Header notifications={stats.pending} onMenuToggle={() => setSidebarExpanded(!sidebarExpanded)} />
+        <Header 
+          notifications={stats.pending} 
+          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          title="Mis Pedidos"
+          subtitle="Gestiona y sigue el estado de tus pedidos"
+        />
         
         <div className="p-6 space-y-6">
-          {/* Header */}
+          {/* Header de la página */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className={`text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Mis Pedidos</h1>
-              <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Gestiona y sigue el estado de tus pedidos</p>
+              <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Mis Pedidos</h1>
+              <p className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Gestiona y sigue el estado de tus pedidos</p>
             </div>
             
             {/* Botón Nuevo Pedido */}
@@ -384,11 +359,11 @@ export default function MisPedidosPage() {
                   {/* Animación de éxito */}
                   {showSuccessAnimation && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                      <div className="bg-white rounded-lg p-8 text-center space-y-4 success-overlay">
+                      <div className="bg-white rounded-lg p-8 text-center space-y-4">
                         <div className="w-24 h-24 mx-auto">
                           <Player
                             src={confettiLottie}
-                            className="w-full h-full lottie-player"
+                            className="w-full h-full"
                             loop={true}
                             autoplay={true}
                           />
@@ -407,7 +382,7 @@ export default function MisPedidosPage() {
 
                   {/* Step 1: Información del Producto */}
                   {currentStep === 1 && (
-                    <div className="space-y-6 step-transition">
+                    <div className="space-y-6">
                       <div className="space-y-2">
                         <Label htmlFor="productName">Nombre del Producto</Label>
                         <Input
@@ -455,63 +430,63 @@ export default function MisPedidosPage() {
                         />
                       </div>
 
-                                              {/* Tipo de Solicitud */}
-                        <div className="space-y-4">
-                          <Label>Tipo de Solicitud</Label>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div
-                              className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                                newOrderData.requestType === 'link'
-                                  ? 'border-blue-500 bg-blue-50'
-                                  : 'border-slate-200 hover:border-slate-300'
-                              }`}
-                              onClick={() => setNewOrderData({ ...newOrderData, requestType: 'link' })}
-                              onMouseEnter={() => setIsLinkHovered(true)}
-                              onMouseLeave={() => setIsLinkHovered(false)}
-                            >
-                              <div className="flex items-center space-x-3">
-                                <div className="w-6 h-6 lottie-container">
-                                  <Player
-                                    key={isLinkHovered ? 'link-active' : 'link-inactive'}
-                                    src={linkLottie}
-                                    className="w-full h-full lottie-player"
-                                    loop={false}
-                                    autoplay={isLinkHovered}
-                                  />
-                                </div>
-                                <div>
-                                  <p className="font-medium">Link del Producto</p>
-                                  <p className="text-sm text-slate-600">Pega el enlace de la tienda</p>
-                                </div>
+                      {/* Tipo de Solicitud */}
+                      <div className="space-y-4">
+                        <Label>Tipo de Solicitud</Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div
+                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                              newOrderData.requestType === 'link'
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-slate-200 hover:border-slate-300'
+                            }`}
+                            onClick={() => setNewOrderData({ ...newOrderData, requestType: 'link' })}
+                            onMouseEnter={() => setIsLinkHovered(true)}
+                            onMouseLeave={() => setIsLinkHovered(false)}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className="w-6 h-6">
+                                <Player
+                                  key={isLinkHovered ? 'link-active' : 'link-inactive'}
+                                  src={linkLottie}
+                                  className="w-full h-full"
+                                  loop={false}
+                                  autoplay={isLinkHovered}
+                                />
                               </div>
-                            </div>
-                            <div
-                              className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                                newOrderData.requestType === 'photo'
-                                  ? 'border-blue-500 bg-blue-50'
-                                  : 'border-slate-200 hover:border-slate-300'
-                              }`}
-                              onClick={() => setNewOrderData({ ...newOrderData, requestType: 'photo' })}
-                              onMouseEnter={() => setIsCameraHovered(true)}
-                              onMouseLeave={() => setIsCameraHovered(false)}
-                            >
-                              <div className="flex items-center space-x-3">
-                                <div className="w-6 h-6 lottie-container">
-                                  <Player
-                                    key={isCameraHovered ? 'camera-active' : 'camera-inactive'}
-                                    src={cameraLottie}
-                                    className="w-full h-full lottie-player"
-                                    loop={false}
-                                    autoplay={isCameraHovered}
-                                  />
-                                </div>
-                                <div>
-                                  <p className="font-medium">Foto + Descripción</p>
-                                  <p className="text-sm text-slate-600">Sube una imagen del producto</p>
-                                </div>
+                              <div>
+                                <p className="font-medium">Link del Producto</p>
+                                <p className="text-sm text-slate-600">Pega el enlace de la tienda</p>
                               </div>
                             </div>
                           </div>
+                          <div
+                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                              newOrderData.requestType === 'photo'
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-slate-200 hover:border-slate-300'
+                            }`}
+                            onClick={() => setNewOrderData({ ...newOrderData, requestType: 'photo' })}
+                            onMouseEnter={() => setIsCameraHovered(true)}
+                            onMouseLeave={() => setIsCameraHovered(false)}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className="w-6 h-6">
+                                <Player
+                                  key={isCameraHovered ? 'camera-active' : 'camera-inactive'}
+                                  src={cameraLottie}
+                                  className="w-full h-full"
+                                  loop={false}
+                                  autoplay={isCameraHovered}
+                                />
+                              </div>
+                              <div>
+                                <p className="font-medium">Foto + Descripción</p>
+                                <p className="text-sm text-slate-600">Sube una imagen del producto</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
 
                         {newOrderData.requestType === 'link' && (
                           <div className="space-y-2">
@@ -535,11 +510,11 @@ export default function MisPedidosPage() {
                               onMouseEnter={() => setIsFolderHovered(true)}
                               onMouseLeave={() => setIsFolderHovered(false)}
                             >
-                              <div className="w-8 h-8 mx-auto mb-2 lottie-container">
+                              <div className="w-8 h-8 mx-auto mb-2">
                                 <Player
                                   key={isFolderHovered ? 'folder-active' : 'folder-inactive'}
                                   src={folderLottie}
-                                  className="w-full h-full lottie-player"
+                                  className="w-full h-full"
                                   loop={false}
                                   autoplay={isFolderHovered}
                                 />
@@ -569,7 +544,7 @@ export default function MisPedidosPage() {
 
                   {/* Step 2: Detalles del Envío */}
                   {currentStep === 2 && (
-                    <div className="space-y-6 step-transition">
+                    <div className="space-y-6">
                       <div className="space-y-4">
                         <Label>Tipo de Envío</Label>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -584,11 +559,11 @@ export default function MisPedidosPage() {
                             onMouseLeave={() => setHoveredDeliveryOption(null)}
                           >
                             <div className="text-center space-y-2">
-                              <div className="w-8 h-8 mx-auto lottie-container">
+                              <div className="w-8 h-8 mx-auto">
                                 <Player
                                   key={hoveredDeliveryOption === 'doorToDoor' ? 'truck-active' : 'truck-inactive'}
                                   src={truckLottie}
-                                  className="w-full h-full lottie-player"
+                                  className="w-full h-full"
                                   loop={false}
                                   autoplay={hoveredDeliveryOption === 'doorToDoor'}
                                 />
@@ -608,11 +583,11 @@ export default function MisPedidosPage() {
                             onMouseLeave={() => setHoveredDeliveryOption(null)}
                           >
                             <div className="text-center space-y-2">
-                              <div className="w-8 h-8 mx-auto lottie-container">
+                              <div className="w-8 h-8 mx-auto">
                                 <Player
                                   key={hoveredDeliveryOption === 'air' ? 'airplane-active' : 'airplane-inactive'}
                                   src={airPlaneLottie}
-                                  className="w-full h-full lottie-player"
+                                  className="w-full h-full"
                                   loop={false}
                                   autoplay={hoveredDeliveryOption === 'air'}
                                 />
@@ -632,11 +607,11 @@ export default function MisPedidosPage() {
                             onMouseLeave={() => setHoveredDeliveryOption(null)}
                           >
                             <div className="text-center space-y-2">
-                              <div className="w-8 h-8 mx-auto lottie-container">
+                              <div className="w-8 h-8 mx-auto">
                                 <Player
                                   key={hoveredDeliveryOption === 'maritime' ? 'ship-active' : 'ship-inactive'}
                                   src={cargoShipLottie}
-                                  className="w-full h-full lottie-player"
+                                  className="w-full h-full"
                                   loop={false}
                                   autoplay={hoveredDeliveryOption === 'maritime'}
                                 />
@@ -677,32 +652,32 @@ export default function MisPedidosPage() {
 
                   {/* Step 3: Resumen y Confirmación */}
                   {currentStep === 3 && (
-                    <div className="space-y-6 step-transition">
+                    <div className="space-y-6">
                       <div className="bg-slate-50 rounded-lg p-6 space-y-4">
                         <h4 className="font-semibold text-lg">Resumen de tu Solicitud</h4>
                         
-                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                           <div className="space-y-2">
-                             <p className="text-sm font-medium text-slate-600">Producto</p>
-                             <p className="font-medium">{newOrderData.productName}</p>
-                           </div>
-                           <div className="space-y-2">
-                             <p className="text-sm font-medium text-slate-600">Cantidad</p>
-                             <p className="font-medium">{newOrderData.quantity}</p>
-                           </div>
-                           <div className="space-y-2">
-                             <p className="text-sm font-medium text-slate-600">Tipo de Envío</p>
-                             <p className="font-medium">
-                               {newOrderData.deliveryType === 'doorToDoor' && 'Puerta a Puerta'}
-                               {newOrderData.deliveryType === 'air' && 'Envío Aéreo'}
-                               {newOrderData.deliveryType === 'maritime' && 'Envío Marítimo'}
-                             </p>
-                           </div>
-                           <div className="space-y-2">
-                             <p className="text-sm font-medium text-slate-600">Presupuesto Estimado</p>
-                             <p className="font-medium">${newOrderData.estimatedBudget}</p>
-                           </div>
-                         </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium text-slate-600">Producto</p>
+                            <p className="font-medium">{newOrderData.productName}</p>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium text-slate-600">Cantidad</p>
+                            <p className="font-medium">{newOrderData.quantity}</p>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium text-slate-600">Tipo de Envío</p>
+                            <p className="font-medium">
+                              {newOrderData.deliveryType === 'doorToDoor' && 'Puerta a Puerta'}
+                              {newOrderData.deliveryType === 'air' && 'Envío Aéreo'}
+                              {newOrderData.deliveryType === 'maritime' && 'Envío Marítimo'}
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium text-slate-600">Presupuesto Estimado</p>
+                            <p className="font-medium">${newOrderData.estimatedBudget}</p>
+                          </div>
+                        </div>
 
                         <div className="space-y-2">
                           <p className="text-sm font-medium text-slate-600">Descripción</p>
@@ -881,15 +856,15 @@ export default function MisPedidosPage() {
                 {filteredOrders.map((order) => (
                   <div key={order.id} className="p-4 rounded-lg bg-slate-50 border border-slate-200">
                     <div className="flex items-center justify-between mb-4">
-                                              <div className="flex items-center gap-4">
-                          <div className="flex flex-col">
-                            <p className="font-medium text-sm">{order.id}</p>
-                            <p className="text-xs text-slate-600">{order.product}</p>
-                          </div>
-                          <Badge className={getStatusColor(order.status)}>
-                            {getStatusText(order.status)}
-                          </Badge>
+                      <div className="flex items-center gap-4">
+                        <div className="flex flex-col">
+                          <p className="font-medium text-sm">{order.id}</p>
+                          <p className="text-xs text-slate-600">{order.product}</p>
                         </div>
+                        <Badge className={getStatusColor(order.status)}>
+                          {getStatusText(order.status)}
+                        </Badge>
+                      </div>
                       <div className="text-right">
                         <p className="font-medium text-lg">{order.amount}</p>
                         <p className="text-xs text-slate-600">Tracking: {order.tracking}</p>
@@ -1007,11 +982,9 @@ export default function MisPedidosPage() {
                     <div className="space-y-2">
                       {selectedOrder.documents.map((doc, index) => (
                         <div key={index} className="flex items-center gap-2 p-2 bg-slate-50 rounded">
-                          {doc.type === 'image' ? (
-                            <FileText className="h-4 w-4 text-blue-600" />
-                          ) : (
-                            <Download className="h-4 w-4 text-green-600" />
-                          )}
+                          <div className="w-4 h-4 text-blue-600">
+                            {doc.type === 'image' ? '📷' : '🔗'}
+                          </div>
                           <span className="text-sm">{doc.label}</span>
                           <Button variant="ghost" size="sm" className="h-6 px-2 ml-auto">
                             Ver
@@ -1029,7 +1002,6 @@ export default function MisPedidosPage() {
                     Contactar Soporte
                   </Button>
                   <Button variant="outline" className="flex-1">
-                    <Download className="h-4 w-4 mr-2" />
                     Descargar Factura
                   </Button>
                 </div>
