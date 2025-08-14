@@ -51,6 +51,14 @@ const CLIENT_MENU_ITEMS = [
     path: '/mis-pedidos'
   },
   {
+    id: 'pagos',
+    label: 'Pagos',
+    icon: CreditCard,
+    badge: 2,
+    color: 'text-red-500',
+    path: '/pagos'
+  },
+  {
     id: 'tracking',
     label: 'Tracking',
     icon: MapPin,
