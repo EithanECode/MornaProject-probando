@@ -18,7 +18,8 @@ import {
   Truck,
   Flag,
   CreditCard,
-  Shield
+  Shield,
+  BadgeDollarSign
 } from 'lucide-react';
 import VenezuelaFlag from '@/components/ui/common/VenezuelaFlag';
 import PitaLogo from '@/components/ui/common/PitaLogo';
@@ -110,11 +111,19 @@ const VENEZUELA_MENU_ITEMS = [
     path: '/venezuela/tracking'
   },
   {
+    id: 'validacion-pagos',
+    label: 'Validación de Pagos',
+    icon: BadgeDollarSign,
+    badge: null,
+    color: 'text-emerald-500',
+    path: '/venezuela/validacion-pagos'
+  },
+  {
     id: 'reportes',
     label: 'Reportes',
     icon: BarChart3,
     badge: null,
-    color: 'text-pink-500',
+    color: 'text-indigo-500',
     path: '/venezuela/reportes'
   }
 ];
@@ -374,9 +383,15 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         ? (isSmallScreen ? 'w-4 h-4' : isMediumScreen ? 'w-4.5 h-4.5' : 'w-5 h-5')
         : (isSmallScreen ? 'w-4 h-4' : isMediumScreen ? 'w-4.5 h-4.5' : 'w-5 h-5'),
       
-      logoSize: isExpanded 
-        ? (screenWidth < 1440 ? "sm" : "md")
-        : (isSmallScreen ? "sm" : isMediumScreen ? "md" : "lg"),
+      logoSize: ((): 'sm' | 'md' | 'lg' | 'xl' => {
+        if (isExpanded) {
+          return screenWidth < 1440 ? 'sm' : 'md';
+        } else {
+          if (isSmallScreen) return 'sm';
+          if (isMediumScreen) return 'md';
+          return 'lg';
+        }
+      })(),
       
       padding: isExpanded 
         ? 'p-4' 
