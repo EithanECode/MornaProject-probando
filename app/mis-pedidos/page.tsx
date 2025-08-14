@@ -66,7 +66,6 @@ interface Order {
   estimatedDelivery: string;
   createdAt: string;
   category: string;
-  priority: 'low' | 'medium' | 'high';
   documents?: Array<{
     type: 'image' | 'link';
     url: string;
@@ -77,7 +76,6 @@ interface Order {
 interface NewOrderData {
   productName: string;
   description: string;
-  category: string;
   quantity: number;
   specifications: string;
   requestType: 'link' | 'photo';
@@ -85,7 +83,6 @@ interface NewOrderData {
   productImage?: File;
   deliveryType: 'doorToDoor' | 'air' | 'maritime';
   deliveryVenezuela: string;
-  priority: 'low' | 'medium' | 'high';
   estimatedBudget: string;
 }
 
@@ -104,13 +101,11 @@ export default function MisPedidosPage() {
   const [newOrderData, setNewOrderData] = useState<NewOrderData>({
     productName: '',
     description: '',
-    category: '',
     quantity: 1,
     specifications: '',
     requestType: 'link',
     deliveryType: 'doorToDoor',
     deliveryVenezuela: '',
-    priority: 'medium',
     estimatedBudget: ''
   });
 
@@ -137,7 +132,6 @@ export default function MisPedidosPage() {
       estimatedDelivery: '15 días',
       createdAt: '2024-01-15',
       category: 'Electrónicos',
-      priority: 'high',
       documents: [
         { type: 'image', url: '/images/products/samsung-s24.jpg', label: 'Foto del producto' },
         { type: 'link', url: 'https://tracking.example.com/TRK-789456123', label: 'Seguimiento en línea' }
@@ -154,7 +148,6 @@ export default function MisPedidosPage() {
       estimatedDelivery: '25 días',
       createdAt: '2024-01-20',
       category: 'Computadoras',
-      priority: 'medium',
       documents: [
         { type: 'image', url: '/images/products/dell-inspiron.jpg', label: 'Foto del producto' }
       ]
@@ -169,8 +162,7 @@ export default function MisPedidosPage() {
       tracking: 'TRK-123456789',
       estimatedDelivery: 'Completado',
       createdAt: '2024-01-10',
-      category: 'Audio',
-      priority: 'low'
+      category: 'Audio'
     },
     {
       id: 'ORD-2024-004',
@@ -182,8 +174,7 @@ export default function MisPedidosPage() {
       tracking: 'Pendiente',
       estimatedDelivery: '30 días',
       createdAt: '2024-01-25',
-      category: 'Wearables',
-      priority: 'high'
+      category: 'Wearables'
     }
   ]);
 
@@ -216,23 +207,7 @@ export default function MisPedidosPage() {
     return 'bg-gray-300';
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
 
-  const getPriorityText = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'Alta';
-      case 'medium': return 'Media';
-      case 'low': return 'Baja';
-      default: return 'Normal';
-    }
-  };
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
@@ -285,13 +260,11 @@ export default function MisPedidosPage() {
       setNewOrderData({
         productName: '',
         description: '',
-        category: '',
         quantity: 1,
         specifications: '',
         requestType: 'link',
         deliveryType: 'doorToDoor',
         deliveryVenezuela: '',
-        priority: 'medium',
         estimatedBudget: ''
       });
     }, 3000); // Esperar 3 segundos para mostrar la animación completa
@@ -306,7 +279,7 @@ export default function MisPedidosPage() {
   const canProceedToNext = () => {
     switch (currentStep) {
       case 1:
-        return newOrderData.productName && newOrderData.description && newOrderData.category;
+        return newOrderData.productName && newOrderData.description;
       case 2:
         return newOrderData.deliveryType && newOrderData.deliveryVenezuela;
       case 3:
@@ -442,34 +415,15 @@ export default function MisPedidosPage() {
                   {/* Step 1: Información del Producto */}
                   {currentStep === 1 && (
                     <div className="space-y-6 step-transition">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="productName">Nombre del Producto</Label>
-                          <Input
-                            id="productName"
-                            value={newOrderData.productName}
-                            onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })}
-                            placeholder="Ej: iPhone 15 Pro Max"
-                            className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="category">Categoría</Label>
-                          <Select value={newOrderData.category} onValueChange={(value) => setNewOrderData({ ...newOrderData, category: value })}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecciona una categoría" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Electrónicos">Electrónicos</SelectItem>
-                              <SelectItem value="Computadoras">Computadoras</SelectItem>
-                              <SelectItem value="Audio">Audio</SelectItem>
-                              <SelectItem value="Wearables">Wearables</SelectItem>
-                              <SelectItem value="Ropa">Ropa</SelectItem>
-                              <SelectItem value="Hogar">Hogar</SelectItem>
-                              <SelectItem value="Otros">Otros</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="productName">Nombre del Producto</Label>
+                        <Input
+                          id="productName"
+                          value={newOrderData.productName}
+                          onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })}
+                          placeholder="Ej: iPhone 15 Pro Max"
+                          className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
+                        />
                       </div>
 
                       <div className="space-y-2">
@@ -484,31 +438,16 @@ export default function MisPedidosPage() {
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="quantity">Cantidad</Label>
-                          <Input
-                            id="quantity"
-                            type="number"
-                            min="1"
-                            value={newOrderData.quantity}
-                            onChange={(e) => setNewOrderData({ ...newOrderData, quantity: parseInt(e.target.value) || 1 })}
-                            className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="priority">Prioridad</Label>
-                          <Select value={newOrderData.priority} onValueChange={(value: 'low' | 'medium' | 'high') => setNewOrderData({ ...newOrderData, priority: value })}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecciona la prioridad" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="low">Baja</SelectItem>
-                              <SelectItem value="medium">Media</SelectItem>
-                              <SelectItem value="high">Alta</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="quantity">Cantidad</Label>
+                        <Input
+                          id="quantity"
+                          type="number"
+                          min="1"
+                          value={newOrderData.quantity}
+                          onChange={(e) => setNewOrderData({ ...newOrderData, quantity: parseInt(e.target.value) || 1 })}
+                          className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
+                        />
                       </div>
 
                       <div className="space-y-2">
@@ -749,38 +688,28 @@ export default function MisPedidosPage() {
                       <div className="bg-slate-50 rounded-lg p-6 space-y-4">
                         <h4 className="font-semibold text-lg">Resumen de tu Solicitud</h4>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">Producto</p>
-                            <p className="font-medium">{newOrderData.productName}</p>
-                          </div>
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">Categoría</p>
-                            <p className="font-medium">{newOrderData.category}</p>
-                          </div>
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">Cantidad</p>
-                            <p className="font-medium">{newOrderData.quantity}</p>
-                          </div>
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">Prioridad</p>
-                            <Badge className={getPriorityColor(newOrderData.priority)}>
-                              {getPriorityText(newOrderData.priority)}
-                            </Badge>
-                          </div>
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">Tipo de Envío</p>
-                            <p className="font-medium">
-                              {newOrderData.deliveryType === 'doorToDoor' && 'Puerta a Puerta'}
-                              {newOrderData.deliveryType === 'air' && 'Envío Aéreo'}
-                              {newOrderData.deliveryType === 'maritime' && 'Envío Marítimo'}
-                            </p>
-                          </div>
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">Presupuesto Estimado</p>
-                            <p className="font-medium">${newOrderData.estimatedBudget}</p>
-                          </div>
-                        </div>
+                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div className="space-y-2">
+                             <p className="text-sm font-medium text-slate-600">Producto</p>
+                             <p className="font-medium">{newOrderData.productName}</p>
+                           </div>
+                           <div className="space-y-2">
+                             <p className="text-sm font-medium text-slate-600">Cantidad</p>
+                             <p className="font-medium">{newOrderData.quantity}</p>
+                           </div>
+                           <div className="space-y-2">
+                             <p className="text-sm font-medium text-slate-600">Tipo de Envío</p>
+                             <p className="font-medium">
+                               {newOrderData.deliveryType === 'doorToDoor' && 'Puerta a Puerta'}
+                               {newOrderData.deliveryType === 'air' && 'Envío Aéreo'}
+                               {newOrderData.deliveryType === 'maritime' && 'Envío Marítimo'}
+                             </p>
+                           </div>
+                           <div className="space-y-2">
+                             <p className="text-sm font-medium text-slate-600">Presupuesto Estimado</p>
+                             <p className="font-medium">${newOrderData.estimatedBudget}</p>
+                           </div>
+                         </div>
 
                         <div className="space-y-2">
                           <p className="text-sm font-medium text-slate-600">Descripción</p>
@@ -959,18 +888,15 @@ export default function MisPedidosPage() {
                 {filteredOrders.map((order) => (
                   <div key={order.id} className="p-4 rounded-lg bg-slate-50 border border-slate-200">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex flex-col">
-                          <p className="font-medium text-sm">{order.id}</p>
-                          <p className="text-xs text-slate-600">{order.product}</p>
+                                              <div className="flex items-center gap-4">
+                          <div className="flex flex-col">
+                            <p className="font-medium text-sm">{order.id}</p>
+                            <p className="text-xs text-slate-600">{order.product}</p>
+                          </div>
+                          <Badge className={getStatusColor(order.status)}>
+                            {getStatusText(order.status)}
+                          </Badge>
                         </div>
-                        <Badge className={getStatusColor(order.status)}>
-                          {getStatusText(order.status)}
-                        </Badge>
-                        <Badge className={getPriorityColor(order.priority)}>
-                          {getPriorityText(order.priority)}
-                        </Badge>
-                      </div>
                       <div className="text-right">
                         <p className="font-medium text-lg">{order.amount}</p>
                         <p className="text-xs text-slate-600">Tracking: {order.tracking}</p>
