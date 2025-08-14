@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { Player } from '@lottiefiles/react-lottie-player';
 import Sidebar from '@/components/layout/Sidebar';
@@ -179,6 +179,9 @@ export default function MisPedidosPage() {
   // Estados para transiciones suaves
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [stepDirection, setStepDirection] = useState<'next' | 'prev'>('next');
+  
+  // Referencia al modal para scroll
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // Inicialización
   useEffect(() => {
@@ -245,6 +248,16 @@ export default function MisPedidosPage() {
       setStepDirection('next');
       setIsTransitioning(true);
       
+      // Scroll suave hacia arriba del modal con delay para mejor UX
+      setTimeout(() => {
+        if (modalRef.current) {
+          modalRef.current.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        }
+      }, 150);
+      
       setTimeout(() => {
         setCurrentStep(currentStep + 1);
         setIsTransitioning(false);
@@ -256,6 +269,16 @@ export default function MisPedidosPage() {
     if (currentStep > 1 && !isTransitioning) {
       setStepDirection('prev');
       setIsTransitioning(true);
+      
+      // Scroll suave hacia arriba del modal con delay para mejor UX
+      setTimeout(() => {
+        if (modalRef.current) {
+          modalRef.current.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        }
+      }, 150);
       
       setTimeout(() => {
         setCurrentStep(currentStep - 1);
@@ -357,7 +380,7 @@ export default function MisPedidosPage() {
                   Nuevo Pedido
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+              <DialogContent ref={modalRef} className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
                 <DialogHeader className="text-center pb-6">
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-xl opacity-20 animate-pulse"></div>
