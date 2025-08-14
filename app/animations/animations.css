@@ -1,0 +1,21 @@
+/* Animaciones para las cards */
+
+@keyframes cardLiftBounce {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.04);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.14);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+}
+
+.card-animate-liftbounce:hover {
+  animation: cardLiftBounce 0.5s cubic-bezier(.4,0,.2,1);
+}
+
