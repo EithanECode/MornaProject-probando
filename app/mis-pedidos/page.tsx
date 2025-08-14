@@ -356,14 +356,7 @@ export default function MisPedidosPage() {
             <Dialog open={isNewOrderModalOpen} onOpenChange={setIsNewOrderModalOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                  <div className="w-4 h-4 mr-2">
-                    <Player
-                      src={successLottie}
-                      className="w-full h-full lottie-player"
-                      loop={true}
-                      autoplay={true}
-                    />
-                  </div>
+                  <Plus className="w-4 h-4 mr-2" />
                   Nuevo Pedido
                 </Button>
               </DialogTrigger>
