@@ -420,19 +420,19 @@ const Reportes = () => {
                   { key: 'pedido', label: 'Por Pedido', icon: ShoppingCart, color: 'bg-green-500' },
                   { key: 'satisfaccion', label: 'Satisfacción Cliente', icon: Heart, color: 'bg-purple-500' }
                 ].map(({ key, label, icon: Icon, color }) => (
-                  <button
-                    key={key}
-                    onClick={() => setActiveFilter(key)}
+                      <button
+                        key={key}
+                        onClick={() => setActiveFilter(key)}
                     className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all transform hover:scale-105 ${
-                      activeFilter === key
+                          activeFilter === key
                         ? `${color} text-white shadow-lg`
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                    }`}
-                  >
+                        }`}
+                      >
                     <Icon size={18} />
                     <span>{label}</span>
-                  </button>
-                ))}
+                      </button>
+                    ))}
               </div>
             </CardContent>
           </Card>
@@ -452,9 +452,9 @@ const Reportes = () => {
                 <ResponsiveContainer width="100%" height={300}>
                   {activeFilter === 'mes' ? (
                     <LineChart data={datosGraficos.mes}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="mes" stroke="#666" />
-                      <YAxis stroke="#666" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis dataKey="mes" stroke="#666" />
+                    <YAxis stroke="#666" />
                       <Tooltip />
                       <Line 
                         type="monotone" 
@@ -471,7 +471,7 @@ const Reportes = () => {
                       <YAxis stroke="#666" />
                       <Tooltip />
                       <Bar dataKey="cantidad" fill="#fbbf24" radius={[4, 4, 0, 0]} />
-                    </BarChart>
+                  </BarChart>
                   )}
                 </ResponsiveContainer>
               </CardContent>
@@ -551,7 +551,7 @@ const Reportes = () => {
                         {activeFilter === 'mes' && <Calendar className="text-blue-600" size={20} />}
                         {activeFilter === 'pedido' && <ShoppingCart className="text-green-600" size={20} />}
                         {activeFilter === 'satisfaccion' && <Heart className="text-purple-600" size={20} />}
-                      </div>
+                            </div>
                       <div>
                         <h4 className="font-medium text-gray-900 dark:text-white">
                           {activeFilter === 'mes' && 'mes' in reporte && reporte.mes}
@@ -563,8 +563,8 @@ const Reportes = () => {
                           {activeFilter === 'pedido' && 'numeroPedido' in reporte && `${reporte.cliente} • ${reporte.estado} • ${reporte.valor} • ${reporte.satisfaccion > 0 ? `${reporte.satisfaccion}/5 ⭐` : 'Sin calificar'}`}
                           {activeFilter === 'satisfaccion' && 'periodo' in reporte && `${reporte.promedioGeneral}/5 ⭐ • ${reporte.totalReseñas} reseñas`}
                         </p>
-                      </div>
-                    </div>
+                          </div>
+                            </div>
                     <button
                       onClick={() => abrirModal(reporte)}
                       className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
@@ -572,8 +572,8 @@ const Reportes = () => {
                       <Eye size={16} />
                       Ver Detalles
                     </button>
-                  </div>
-                ))}
+                          </div>
+                    ))}
               </div>
             </CardContent>
           </Card>

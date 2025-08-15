@@ -41,7 +41,7 @@ const CLIENT_MENU_ITEMS = [
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
-    path: '/dashboard'
+    path: '/cliente'
   },
   {
     id: 'mis-pedidos',
@@ -49,7 +49,7 @@ const CLIENT_MENU_ITEMS = [
     icon: Package,
     badge: 3,
     color: 'text-orange-500',
-    path: '/mis-pedidos'
+    path: '/cliente/mis-pedidos'
   },
   {
     id: 'pagos',
@@ -57,7 +57,7 @@ const CLIENT_MENU_ITEMS = [
     icon: CreditCard,
     badge: 2,
     color: 'text-red-500',
-    path: '/pagos'
+    path: '/cliente/pagos'
   },
   {
     id: 'tracking',
@@ -65,7 +65,7 @@ const CLIENT_MENU_ITEMS = [
     icon: MapPin,
     badge: null,
     color: 'text-purple-500',
-    path: '/tracking'
+    path: '/cliente/tracking'
   },
   {
     id: 'soporte',
@@ -73,7 +73,7 @@ const CLIENT_MENU_ITEMS = [
     icon: MessageCircle,
     badge: null,
     color: 'text-green-500',
-    path: '/soporte'
+    path: '/cliente/soporte'
   }
 ];
 
@@ -229,7 +229,7 @@ const ADMIN_MENU_ITEMS = [
     icon: Users,
     badge: null,
     color: 'text-green-500',
-    path: '/usuarios'
+    path: '/admin/usuarios'
   },
   {
     id: 'pedidos',
@@ -237,7 +237,7 @@ const ADMIN_MENU_ITEMS = [
     icon: Package,
     badge: null,
     color: 'text-orange-500',
-    path: '/pedidos'
+    path: '/admin/pedidos'
   },
   {
     id: 'reportes',
@@ -245,7 +245,7 @@ const ADMIN_MENU_ITEMS = [
     icon: BarChart3,
     badge: null,
     color: 'text-purple-500',
-    path: '/reportes'
+    path: '/admin/reportes'
   },
   {
     id: 'alertas',
@@ -253,7 +253,7 @@ const ADMIN_MENU_ITEMS = [
     icon: AlertTriangle,
     badge: 5,
     color: 'text-red-500',
-    path: '/alertas'
+    path: '/admin/alertas'
   },
   {
     id: 'gestion',
@@ -261,7 +261,7 @@ const ADMIN_MENU_ITEMS = [
     icon: Settings,
     badge: null,
     color: 'text-gray-500',
-    path: '/gestion'
+    path: '/admin/gestion'
   }
 ];
 
@@ -271,7 +271,7 @@ const BOTTOM_ITEMS = [
     label: 'Configuración',
     icon: Settings,
     color: 'text-gray-500',
-    path: '/configuracion'
+    path: '/admin/configuracion'
   }
 ];
 
