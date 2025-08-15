@@ -463,12 +463,6 @@ const PaymentValidationDashboard: React.FC = () => {
                 </AnimatedIcon>
                 Exportar
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg">
-                <AnimatedIcon animation="bounce">
-                  <Plus size={16} />
-                </AnimatedIcon>
-                Nuevo Pedido
-              </button>
             </div>
           </div>
 
