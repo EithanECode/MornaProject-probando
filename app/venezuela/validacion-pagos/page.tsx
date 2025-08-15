@@ -280,69 +280,86 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
 };
 
 // ================================
-// COMPONENTE: ACCIONES DE PAGO PENDIENTE
+// COMPONENTE: MODAL DE DETALLES DE PAGO
 // ================================
-const PaymentActions: React.FC<{ payment: Payment; onApprove: (id: string) => void; onReject: (id: string) => void }> = ({ 
-  payment, 
-  onApprove, 
-  onReject 
-}) => {
-  if (payment.estado !== 'pendiente') {
-    return (
-      <button className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-blue-600 transition-colors duration-200">
-        <AnimatedIcon animation="float">
-          <Eye size={10} />
-        </AnimatedIcon>
-        <span className="truncate">Ver</span>
-      </button>
-    );
-  }
+const PaymentDetailsModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  payment: Payment | null;
+}> = ({ isOpen, onClose, payment }) => {
+  if (!isOpen || !payment) return null;
 
   return (
-    <div className="flex items-center gap-1">
-      <button 
-        onClick={() => onApprove(payment.id)}
-        className="flex items-center gap-1 px-1.5 py-1 text-xs bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-all duration-200 transform hover:scale-105"
-      >
-        <Check size={10} />
-      </button>
-      <button 
-        onClick={() => onReject(payment.id)}
-        className="flex items-center gap-1 px-1.5 py-1 text-xs bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-all duration-200 transform hover:scale-105"
-      >
-        <X size={10} />
-      </button>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-2xl w-full shadow-xl">
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">Detalles del Pago</h3>
+            <p className="text-sm text-gray-500">{payment.id}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X size={24} />
+          </button>
+        </div>
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-semibold text-gray-800 mb-2">Información del Cliente</h4>
+            <p><span className="font-medium">Usuario:</span> {payment.usuario}</p>
+            <p><span className="font-medium">ID Producto:</span> {payment.idProducto}</p>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-semibold text-gray-800 mb-2">Información del Pago</h4>
+            <p><span className="font-medium">Monto:</span> ${payment.monto.toLocaleString()}</p>
+            <p><span className="font-medium">Fecha:</span> {new Date(payment.fecha).toLocaleDateString('es-ES')}</p>
+            <p><span className="font-medium">Referencia:</span> {payment.referencia}</p>
+            <p><span className="font-medium">Método:</span> {payment.metodo}</p>
+          </div>
+          <div className="md:col-span-2 bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-semibold text-gray-800 mb-2">Detalles Adicionales</h4>
+            <p><span className="font-medium">Destino:</span> {payment.destino}</p>
+            <p><span className="font-medium">Descripción:</span> {payment.descripcion}</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 // ================================
-// COMPONENTE: AVATAR DE USUARIO
+// COMPONENTE: DIÁLOGO DE CONFIRMACIÓN
 // ================================
-const UserAvatar: React.FC<{ name: string; id: string }> = ({ name, id }) => {
-  const getInitials = (fullName: string) => {
-    return fullName
-      .split(' ')
-      .map(name => name[0])
-      .join('')
-      .toUpperCase();
-  };
+const ConfirmationDialog: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  message: string;
+}> = ({ isOpen, onClose, onConfirm, title, message }) => {
+  if (!isOpen) return null;
 
   return (
-    <div className="flex items-center group">
-      <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mr-3 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
-        <AnimatedIcon animation="pulse">
-          <span className="text-white font-bold text-sm">
-            {getInitials(name)}
-          </span>
-        </AnimatedIcon>
-      </div>
-      <div>
-        <div className="text-sm font-black text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
-          {name}
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-xl">
+        <div className="flex items-center">
+          <div className="bg-red-100 p-2 rounded-full">
+            <AlertTriangle className="h-6 w-6 text-red-600" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 ml-4">{title}</h3>
         </div>
-        <div className="text-xs text-gray-500 font-mono">
-          {id}
+        <p className="mt-4 text-sm text-gray-600">{message}</p>
+        <div className="mt-6 flex justify-end space-x-2">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+          >
+            Confirmar Rechazo
+          </button>
         </div>
       </div>
     </div>
@@ -358,6 +375,8 @@ const PaymentValidationDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('todos');
   const [selectedTab, setSelectedTab] = useState<'todos' | 'pendientes'>('todos');
+  const [rejectionConfirmation, setRejectionConfirmation] = useState<{ isOpen: boolean; paymentId: string | null }>({ isOpen: false, paymentId: null });
+  const [detailsModal, setDetailsModal] = useState<{ isOpen: boolean; payment: Payment | null }>({ isOpen: false, payment: null });
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -413,6 +432,23 @@ const PaymentValidationDashboard: React.FC = () => {
     setPayments(prev => prev.map(p => 
       p.id === id ? { ...p, estado: 'rechazado' as const } : p
     ));
+    setRejectionConfirmation({ isOpen: false, paymentId: null });
+  };
+
+  const openRejectionConfirmation = (id: string) => {
+    setRejectionConfirmation({ isOpen: true, paymentId: id });
+  };
+
+  const closeRejectionConfirmation = () => {
+    setRejectionConfirmation({ isOpen: false, paymentId: null });
+  };
+
+  const openDetailsModal = (payment: Payment) => {
+    setDetailsModal({ isOpen: true, payment });
+  };
+
+  const closeDetailsModal = () => {
+    setDetailsModal({ isOpen: false, payment: null });
   };
 
   const formatDate = (dateString: string) => {
@@ -449,14 +485,31 @@ const PaymentValidationDashboard: React.FC = () => {
   };
 
   return (
-    <div
-      className={
-        `min-h-screen flex overflow-x-hidden ` +
-        (mounted && theme === 'dark'
-          ? 'bg-slate-900'
-          : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50')
-      }
-    >
+    <>
+      <PaymentDetailsModal
+        isOpen={detailsModal.isOpen}
+        onClose={closeDetailsModal}
+        payment={detailsModal.payment}
+      />
+      <ConfirmationDialog
+        isOpen={rejectionConfirmation.isOpen}
+        onClose={closeRejectionConfirmation}
+        onConfirm={() => {
+          if (rejectionConfirmation.paymentId) {
+            handleReject(rejectionConfirmation.paymentId);
+          }
+        }}
+        title="Confirmar Rechazo"
+        message="¿Estás seguro de que quieres rechazar este pago? Esta acción no se puede deshacer."
+      />
+      <div
+        className={
+          `min-h-screen flex overflow-x-hidden ` +
+          (mounted && theme === 'dark'
+            ? 'bg-slate-900'
+            : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50')
+        }
+      >
   <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="venezuela" />
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
       <header className={
@@ -670,7 +723,8 @@ const PaymentValidationDashboard: React.FC = () => {
                         <PaymentActions 
                           payment={payment} 
                           onApprove={handleApprove}
-                          onReject={handleReject}
+                          onReject={openRejectionConfirmation}
+                          onViewDetails={openDetailsModal}
                         />
                       </td>
                     </tr>
@@ -696,6 +750,71 @@ const PaymentValidationDashboard: React.FC = () => {
           </div>
         </div>
       </main>
+    </div>
+    </>
+  );
+};
+
+// ================================
+// COMPONENTE: ACCIONES DE PAGO PENDIENTE
+// ================================
+const PaymentActions: React.FC<{ 
+  payment: Payment; 
+  onApprove: (id: string) => void; 
+  onReject: (id: string) => void;
+  onViewDetails: (payment: Payment) => void;
+}> = ({ 
+  payment, 
+  onApprove, 
+  onReject,
+  onViewDetails
+}) => {
+  if (payment.estado !== 'pendiente') {
+    return (
+      <button 
+        onClick={() => onViewDetails(payment)}
+        className="flex items-center gap-1 px-2 py-1 text-xs text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-200"
+      >
+        <AnimatedIcon animation="float">
+          <Eye size={10} />
+        </AnimatedIcon>
+        <span className="truncate">Ver</span>
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <button 
+        onClick={() => onApprove(payment.id)}
+        className="flex items-center p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 transform hover:scale-110 shadow-sm hover:shadow-md"
+      >
+        <Check size={14} />
+      </button>
+      <button 
+        onClick={() => onReject(payment.id)}
+        className="flex items-center p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 transform hover:scale-110 shadow-sm hover:shadow-md"
+      >
+        <X size={14} />
+      </button>
+      <button 
+        onClick={() => onViewDetails(payment)}
+        className="flex items-center p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 transform hover:scale-110 shadow-sm hover:shadow-md"
+      >
+        <Eye size={14} />
+      </button>
+    </div>
+  );
+};
+
+// ================================
+// COMPONENTE: AVATAR DE USUARIO
+// ================================
+const UserAvatar: React.FC<{ name: string; id: string }> = ({ name, id }) => {
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
+  return (
+    <div className="w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0">
+      {initials}
     </div>
   );
 };

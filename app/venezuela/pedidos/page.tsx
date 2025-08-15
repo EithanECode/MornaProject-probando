@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
+import '../../animations/animations.css';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -285,9 +286,8 @@ export default function VenezuelaPedidosPage() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Eye className="w-4 h-4 mr-2" />
-                      Ver Detalles
+                    <Button className="bg-blue-600 gap-x-1 text-white hover:bg-blue-700 hover:text-white card-animate-liftbounce flex-1" variant="outline" size="sm">
+                      <Eye className="w-4 h-4" /> Ver
                     </Button>
                     <Button size="sm" className="flex-1">
                       <Send className="w-4 h-4 mr-2" />
