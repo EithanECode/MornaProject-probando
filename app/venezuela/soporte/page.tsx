@@ -296,7 +296,10 @@ export default function VenezuelaSoportePage() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button 
+                      size="sm" 
+                      className="flex-1 bg-[#202841]/90 text-white hover:bg-[#202841]"
+                    >
                       <MessageSquare className="w-4 h-4 mr-2" />
                       Abrir Chat
                     </Button>

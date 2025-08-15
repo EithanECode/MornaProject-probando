@@ -527,7 +527,7 @@ const PaymentValidationDashboard: React.FC = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={exportarGeneral}
-                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 bg-[#202841] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
               >
                 <Download size={20} />
                 Exportar

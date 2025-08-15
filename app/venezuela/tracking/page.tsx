@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
+import '../../animations/animations.css';
 import { 
   MapPin, 
   Truck,
@@ -427,9 +428,8 @@ export default function VenezuelaTrackingPage() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Eye className="w-4 h-4 mr-2" />
-                      Ver Detalles
+                    <Button className="bg-blue-600 gap-x-1 text-white hover:bg-blue-700 hover:text-white card-animate-liftbounce flex-1" variant="outline" size="sm">
+                      <Eye className="w-4 h-4" /> Ver
                     </Button>
                     <Button size="sm" className="flex-1">
                       <Edit className="w-4 h-4 mr-2" />

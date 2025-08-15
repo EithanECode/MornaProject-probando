@@ -55,7 +55,7 @@ export default function Header({
               <Bell className="w-4 h-4 mr-2" />
               <span className="hidden md:inline">Notificaciones</span>
               {notifications > 0 && (
-                <Badge className="absolute -top-2 -right-2 w-5 h-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
+                <Badge className="absolute -top-2 -right-2 w-5 h-5 p-0 flex items-center justify-center bg-[#202841] text-white text-xs">
                   {notifications}
                 </Badge>
               )}
@@ -69,7 +69,7 @@ export default function Header({
             >
               <Bell className="w-4 h-4" />
               {notifications > 0 && (
-                <Badge className="absolute -top-2 -right-2 w-5 h-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
+                <Badge className="absolute -top-2 -right-2 w-5 h-5 p-0 flex items-center justify-center bg-[#202841] text-white text-xs">
                   {notifications}
                 </Badge>
               )}
