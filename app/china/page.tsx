@@ -95,14 +95,25 @@ export default function ChinaDashboard() {
     }
   };
 
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={`min-h-screen flex overflow-x-hidden ${
-        mounted && theme === "dark"
-          ? "bg-slate-900"
-          : "bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50"
-      }`}
-    >
+         <div
+       className={`min-h-screen flex overflow-x-hidden ${
+         theme === "dark"
+           ? "bg-slate-900"
+           : "bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50"
+       }`}
+     >
       <Sidebar
         isExpanded={sidebarExpanded}
         setIsExpanded={setSidebarExpanded}
@@ -125,20 +136,20 @@ export default function ChinaDashboard() {
           {/* Header del Dashboard */}
           <div className="flex items-center justify-between">
             <div>
-              <h1
-                className={`text-3xl font-bold ${
-                  mounted && theme === "dark" ? "text-white" : "text-slate-900"
-                }`}
-              >
-                Panel de China
-              </h1>
-              <p
-                className={`text-sm ${
-                  mounted && theme === "dark"
-                    ? "text-slate-300"
-                    : "text-slate-600"
-                }`}
-              >
+                             <h1
+                 className={`text-3xl font-bold ${
+                   theme === "dark" ? "text-white" : "text-slate-900"
+                 }`}
+               >
+                 Panel de China
+               </h1>
+               <p
+                 className={`text-sm ${
+                   theme === "dark"
+                     ? "text-slate-300"
+                     : "text-slate-600"
+                 }`}
+               >
                 Gestión de pedidos al detal y logística
               </p>
             </div>
