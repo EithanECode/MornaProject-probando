@@ -44,6 +44,7 @@ import {
   ArrowLeft,
   Zap
 } from 'lucide-react';
+import Link from 'next/link';
 
 // Tipos
 interface PendingOrder {
@@ -416,24 +417,30 @@ export default function VenezuelaDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group">
-                    <div className="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                      <Package className="h-8 w-8 text-blue-600" />
-                    </div>
-                    <span className="text-sm font-medium">Revisar Pedido</span>
-                  </Button>
-                  <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group">
-                    <div className="p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
-                      <MessageSquare className="h-8 w-8 text-green-600" />
-                    </div>
-                    <span className="text-sm font-medium">Chat Soporte</span>
-                  </Button>
-                  <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group">
-                    <div className="p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
-                      <MapPin className="h-8 w-8 text-purple-600" />
-                    </div>
-                    <span className="text-sm font-medium">Actualizar Tracking</span>
-                  </Button>
+                  <Link href="/venezuela/pedidos">
+                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
+                      <div className="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                        <Package className="h-8 w-8 text-blue-600" />
+                      </div>
+                      <span className="text-sm font-medium">Revisar Pedido</span>
+                    </Button>
+                  </Link>
+                  <Link href="/venezuela/soporte">
+                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group w-full">
+                      <div className="p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                        <MessageSquare className="h-8 w-8 text-green-600" />
+                      </div>
+                      <span className="text-sm font-medium">Chat Soporte</span>
+                    </Button>
+                  </Link>
+                  <Link href="/venezuela/tracking">
+                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
+                      <div className="p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+                        <MapPin className="h-8 w-8 text-purple-600" />
+                      </div>
+                      <span className="text-sm font-medium">Actualizar Tracking</span>
+                    </Button>
+                  </Link>
                   <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group">
                     <div className="p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
                       <Phone className="h-8 w-8 text-red-600" />
