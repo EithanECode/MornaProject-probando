@@ -1,13 +1,20 @@
-import './shared/globals.css';
+import './globals.css';
+import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { ThemeProvider } from '@/components/theme-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
-  title: 'Morna - Sistema de Logística Internacional',
-  description: 'Plataforma integral de gestión de logística y compras internacionales',
+export const metadata: Metadata = {
+  title: 'Pita Express - Admin Panel',
+  description: 'Sistema de administración para Pita Express',
+  icons: {
+    icon: '/pita_icon.svg',
+    shortcut: '/pita_icon.svg',
+    apple: '/pita_icon.svg',
+  },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
@@ -16,18 +23,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="en">
+      <head>
+        <link rel="icon" href="/pita_icon.svg" type="image/svg+xml" />
+        <link rel="shortcut icon" href="/pita_icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/pita_icon.svg" />
+      </head>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider>
           {children}
           <Toaster />
         </ThemeProvider>
       </body>
     </html>
   );
-} 
+}
