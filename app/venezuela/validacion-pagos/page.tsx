@@ -3,6 +3,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import * as XLSX from 'xlsx';
 import { 
   Search, 
   Filter, 
@@ -356,7 +357,7 @@ const PaymentValidationDashboard: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>(mockPayments);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('todos');
-  const [selectedTab, setSelectedTab] = useState<'todos' | 'pendientes' | 'auditoria'>('todos');
+  const [selectedTab, setSelectedTab] = useState<'todos' | 'pendientes'>('todos');
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -381,8 +382,6 @@ const PaymentValidationDashboard: React.FC = () => {
     // Filtro por pestaña
     if (selectedTab === 'pendientes') {
       filtered = filtered.filter(p => p.estado === 'pendiente');
-    } else if (selectedTab === 'auditoria') {
-      filtered = filtered.filter(p => p.destino === 'China');
     }
 
     // Filtro por búsqueda
@@ -431,6 +430,24 @@ const PaymentValidationDashboard: React.FC = () => {
     })}`;
   };
 
+  const exportarGeneral = () => {
+    const data = filteredPayments.map(payment => ({
+      'ID Pedido': payment.id,
+      'Cliente': payment.usuario,
+      'Estado': payment.estado,
+      'Fecha': payment.fecha,
+      'Monto': payment.monto,
+      'Referencia': payment.referencia,
+      'Destino': payment.destino,
+      'Descripción': payment.descripcion
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Pagos");
+    XLSX.writeFile(workbook, "pagos_validacion.xlsx");
+  };
+
   return (
     <div
       className={
@@ -442,29 +459,31 @@ const PaymentValidationDashboard: React.FC = () => {
     >
   <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="venezuela" />
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
-        <div className="p-6">
-          {/* ================================ */}
-          {/* HEADER */}
-          {/* ================================ */}
-          <div className="flex justify-between items-center mb-8">
+      <header className={
+          `sticky top-0 z-40 border-b border-slate-200 backdrop-blur-sm transition-colors duration-300 ` +
+          (mounted && theme === 'dark' ? 'bg-slate-900/80' : 'bg-white/80')
+        }>
+          <div className="px-6 py-4 flex items-center justify-between">
             <div>
-              <h1 className={`text-3xl font-bold flex items-center gap-3 ${mounted && theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <AnimatedIcon animation="bounce">
-                  <DollarSign className="text-blue-600" size={32} />
-                </AnimatedIcon>
+              <h1 className={`text-2xl font-bold flex items-center gap-3 ${mounted && theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <DollarSign className="text-blue-600" size={24} />
                 Validación de Pagos
               </h1>
-              <p className={mounted && theme === 'dark' ? 'text-slate-300 mt-1' : 'text-gray-600 mt-1'}>Administra y da seguimiento a todos los pedidos</p>
+              <p className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>Administra y da seguimiento a todos los pedidos</p>
             </div>
             <div className="flex items-center gap-3">
-              <button className={`flex items-center gap-2 px-4 py-2 ${mounted && theme === 'dark' ? 'text-slate-200 bg-slate-800 border-slate-700 hover:bg-slate-700' : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'} rounded-lg transition-all duration-200 transform hover:scale-105`}>
-                <AnimatedIcon animation="float">
-                  <Download size={16} />
-                </AnimatedIcon>
+              <button
+                onClick={exportarGeneral}
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Download size={20} />
                 Exportar
               </button>
             </div>
           </div>
+        </header>
+        <div className="p-6">
+          
 
           {/* ================================ */}
           {/* TARJETAS DE ESTADÍSTICAS */}
@@ -480,7 +499,6 @@ const PaymentValidationDashboard: React.FC = () => {
                 {[
                   { id: 'todos', label: 'Lista de Pedidos', count: payments.length },
                   { id: 'pendientes', label: 'Pagos Pendientes', count: stats.pendientes },
-                  { id: 'auditoria', label: 'Auditoría China', count: payments.filter(p => p.destino === 'China').length }
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -557,7 +575,6 @@ const PaymentValidationDashboard: React.FC = () => {
                   <Package size={24} className="text-blue-500" />
                 </AnimatedIcon>
                 {selectedTab === 'pendientes' ? 'Pagos Pendientes de Aprobación' :
-                 selectedTab === 'auditoria' ? 'Pagos hacia China - Vista de Auditoría' :
                  'Lista de Pedidos'}
               </h2>
               <p className={mounted && theme === 'dark' ? 'text-slate-300 text-sm mt-1' : 'text-gray-600 text-sm mt-1'}>
