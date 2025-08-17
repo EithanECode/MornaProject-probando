@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
+  BarChart3,
   DollarSign,
   MapPin,
   FileText,
@@ -33,7 +34,7 @@ export default function ChinaDashboard() {
   const stats = {
     pendingOrders: 23,
     processingOrders: 15,
-    shippedOrders: 8,
+    shippedOrders: 2450,
     totalProducts: 156,
     averageProcessingTime: "2.3 días",
     warehouseCapacity: "85%",
@@ -141,17 +142,8 @@ export default function ChinaDashboard() {
                    theme === "dark" ? "text-white" : "text-slate-900"
                  }`}
                >
-                 Panel de China
-               </h1>
-               <p
-                 className={`text-sm ${
-                   theme === "dark"
-                     ? "text-slate-300"
-                     : "text-slate-600"
-                 }`}
-               >
                 Gestión de pedidos al detal y logística
-              </p>
+               </h1>
             </div>
             <Badge variant="outline" className="flex items-center gap-2">
               <Flag className="h-4 w-4" />
@@ -159,63 +151,52 @@ export default function ChinaDashboard() {
             </Badge>
           </div>
 
-          {/* Estadísticas Principales */}
+
+
+            {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg shadow p-6 card-animate-liftbounce">
-              <CardHeader className="flex flex-row items-center justify-center gap-x-3 space-y-0 pb-2">
-                <Clock className="h-7 w-7 text-yellow-300" />
-                <CardTitle className="text-xl font-bold text-white">
-                  Pendientes
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col justify-center items-center">
-                <div className="text-2xl font-bold text-white">
-                  {stats.pendingOrders}
+            <Card className="flex items-center bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg shadow p-6 card-animate-liftbounce">
+              <div className="flex items-center">
+                <Clock className="h-6 w-6 text-yellow-300" />
+                <div className="ml-4">
+      <p className="text-lg font-bold text-white">Pendientes</p>
+      <p className="text-2xl font-bold text-white">{stats.pendingOrders}</p>
                 </div>
-              </CardContent>
+              </div>
             </Card>
-
-            <Card className=" bg-gradient-to-r from-orange-500 to-orange-700 rounded-lg shadow p-6 card-animate-liftbounce">
-              <CardHeader className="flex flex-row items-center justify-center gap-x-3 space-y-0 pb-2">
-                <Package className="h-7 w-7 text-blue-300" />
-                <CardTitle className="text-xl font-bold text-white">
-                  En Procesamiento
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col justify-center items-center ">
-                <div className="text-2xl font-bold text-white">
-                  {stats.processingOrders}
+            <Card className="flex items-center bg-gradient-to-r from-orange-500 to-orange-700 rounded-lg shadow p-6 card-animate-liftbounce">
+              <div className="flex items-center">
+                <CheckCircle className="h-6 w-6 text-blue-300" />
+                <div className="ml-4">
+      <p className="text-lg font-bold text-white">Procesadas</p>
+      <p className="text-2xl font-bold text-white">{stats.processingOrders}</p>
                 </div>
-              </CardContent>
+              </div>
             </Card>
-            <Card className="bg-gradient-to-r from-purple-500 to-purple-700 rounded-lg shadow p-6 card-animate-liftbounce">
-              <CardHeader className="flex flex-row items-center justify-center gap-x-3 space-y-0 pb-2">
-                <Truck className="h-7 w-7 text-green-300" />
-                <CardTitle className="text-xl font-bold text-white">
-                  Enviados
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col justify-center items-center ">
-                <div className="text-2xl text-white font-bold">
-                  {stats.shippedOrders}
+            <Card className="flex items-center bg-gradient-to-r from-purple-500 to-purple-700 rounded-lg shadow p-6 card-animate-liftbounce">
+              <div className="flex items-center">
+                <DollarSign className="h-6 w-6 text-blue-300" />
+                <div className="ml-4">
+      <p className="text-lg font-bold text-white">Ganancia Total</p>
+      <p className="text-2xl font-bold text-white">${stats.shippedOrders}</p>
                 </div>
-              </CardContent>
+              </div>
             </Card>
-
-            <Card className="bg-gradient-to-r from-green-500 to-green-700 rounded-lg shadow p-6 card-animate-liftbounce">
-              <CardHeader className="flex flex-row items-center justify-center gap-x-3 space-y-0 pb-2">
-                <ShoppingCart className="h-7 w-7 text-yellow-300" />
-                <CardTitle className="text-xl font-bold text-white">
-                  Totales
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col justify-center items-center">
-                <div className="text-2xl text-white font-bold">
-                  {stats.totalProducts}
+  <Card className="bg-gradient-to-r from-green-500 to-green-700 rounded-lg shadow p-6 card-animate-liftbounce">
+              <div className="flex items-center">
+                <div className="flex items-center">
+                  <Truck className="h-6 w-6 text-yellow-300"  />
                 </div>
-              </CardContent>
+                <div className="ml-4">
+      <p className="text-lg font-bold text-white">Almacen</p>
+      <p className="text-2xl font-bold text-white">{stats.totalProducts}</p>
+                </div>
+              </div>
             </Card>
           </div>
+
+
+
 
           {/* Acciones Rápidas */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
@@ -327,7 +308,7 @@ export default function ChinaDashboard() {
                     <span className="text-sm">
                       Tiempo promedio de procesamiento
                     </span>
-                    <span className="font-medium">
+                    <span className="font-medium text-orange-500">
                       {stats.averageProcessingTime}
                     </span>
                   </div>
@@ -342,7 +323,7 @@ export default function ChinaDashboard() {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 p-2 rounded-lg bg-yellow-50">
-                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                    <AlertTriangle className="h-4 w-4 text-yellow-700" />
                     <span className="text-sm">
                       3 pedidos requieren atención urgente
                     </span>
