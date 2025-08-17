@@ -454,17 +454,17 @@ export default function MisPedidosPage() {
 
       // Datos para la tabla
       const pedidoTable = [
-  ['ID Pedido', `${numeroPedido}`],
-  ['Cliente', `${newOrderData.client_id || '-'}`],
-  ['Fecha', `${fechaPedidoLegible}`],
-  ['Tipo de Envío', `${newOrderData.deliveryType}`],
-  ['Entrega en Venezuela', `${newOrderData.deliveryVenezuela}`],
-  ['Producto', `${newOrderData.productName}`],
-  ['Cantidad', `${newOrderData.quantity}`],
-  ['Presupuesto Estimado', `$${newOrderData.estimatedBudget}`],
-  ['Descripción', newOrderData.description || '-'],
-  ['Especificaciones', newOrderData.specifications || '-'],
-      ];
+    ['ID Pedido', `${numeroPedido}`],
+    ['Cliente ID', 'fc3f575f-f625-4902-8cbf-d60b9aeb7ee7'],
+    ['Fecha', `${fechaPedidoLegible}`],
+    ['Tipo de Envío', `${newOrderData.deliveryType}`],
+    ['Entrega en Venezuela', `${newOrderData.deliveryVenezuela}`],
+    ['Producto', `${newOrderData.productName}`],
+    ['Cantidad', `${newOrderData.quantity}`],
+    ['Presupuesto Estimado', `$${newOrderData.estimatedBudget}`],
+    ['Descripción', newOrderData.description || '-'],
+    ['Especificaciones', newOrderData.specifications || '-'],
+        ];
       if (newOrderData.requestType === 'link') {
         pedidoTable.push(['URL', newOrderData.productUrl || '-']);
       }
@@ -615,69 +615,124 @@ export default function MisPedidosPage() {
           upsert: true,
           contentType: 'application/pdf',
         })
-        .then(({ error }: { error: any }) => {
+        .then(async ({ error }: { error: any }) => {
           if (error) {
             alert('Error al subir el PDF al bucket.');
           } else {
-            setShowSuccessAnimation(true);
-            setTimeout(() => {
-              setIsNewOrderModalOpen(false);
-              setCurrentStep(1);
-              setNewOrderData({
-                productName: '',
-                description: '',
-                quantity: 1,
-                specifications: '',
-                requestType: 'link',
-                deliveryType: 'doorToDoor',
-                deliveryVenezuela: '',
-                estimatedBudget: '',
-                client_id: ''
-              });
-            }, 1500); // 1.5 segundos para mostrar el mensaje
-            // Agregar el nuevo pedido a la lista local
-            const nuevoPedido: Order = {
-              id: numeroPedido.toString(),
-              product: newOrderData.productName,
-              description: newOrderData.description,
-              amount: newOrderData.estimatedBudget ? `$${newOrderData.estimatedBudget}` : '$0',
-              status: 'pending',
-              progress: 0,
-              tracking: '',
-              estimatedDelivery: '',
-              createdAt: new Date().toISOString(),
-              category: '',
-              documents: [
-                newOrderData.requestType === 'link' && newOrderData.productUrl ? {
-                  type: 'link',
-                  url: newOrderData.productUrl,
-                  label: 'URL del producto'
-                } : null,
-                newOrderData.requestType === 'photo' && newOrderData.productImage ? {
-                  type: 'image',
-                  url: '', // Aquí deberías poner la URL si subes la imagen a Supabase
-                  label: newOrderData.productImage.name
-                } : null
-              ].filter(Boolean) as Array<{ type: 'image' | 'link'; url: string; label: string }>
-            };
-            setOrders(prev => [...prev, nuevoPedido]);
+            // Obtener la URL pública del PDF
+            const pdfUrl = supabase.storage.from('orders').getPublicUrl(`${folder}/${nombrePDF}`).publicUrl;
+
+            // Insertar pedido en la tabla 'orders'
+                const { error: dbError } = await supabase
+                  .from('orders')
+                  .insert([
+                    {
+                      client_id: 'fc3f575f-f625-4902-8cbf-d60b9aeb7ee7',
+                      asignedEChina: '822e0db7-ce0a-49ce-b060-c0991078815e',
+                      productName: newOrderData.productName,
+                      estimatedBudget: Number(newOrderData.estimatedBudget),
+                      deliveryType: newOrderData.deliveryType,
+                      shippingType: newOrderData.deliveryVenezuela,
+                      imgs: pdfUrl ? [pdfUrl] : [],
+                      links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
+                      state: 1,
+                      order_origin: 'vzla',
+                      elapsed_time: null,
+                      asignedEVzla: null
+                    }
+                  ]);
+            if (dbError) {
+              alert('Error al guardar el pedido en la base de datos.');
+            } else {
+              setShowSuccessAnimation(true);
+              setTimeout(() => {
+                setIsNewOrderModalOpen(false);
+                setCurrentStep(1);
+                setNewOrderData({
+                  productName: '',
+                  description: '',
+                  quantity: 1,
+                  specifications: '',
+                  requestType: 'link',
+                  deliveryType: 'doorToDoor',
+                  deliveryVenezuela: '',
+                  estimatedBudget: '',
+                  client_id: ''
+                });
+              }, 1500);
+              // Agregar el nuevo pedido a la lista local
+              const nuevoPedido: Order = {
+                id: numeroPedido.toString(),
+                product: newOrderData.productName,
+                description: newOrderData.description,
+                amount: newOrderData.estimatedBudget ? `$${newOrderData.estimatedBudget}` : '$0',
+                status: 'pending',
+                progress: 0,
+                tracking: '',
+                estimatedDelivery: '',
+                createdAt: new Date().toISOString(),
+                category: '',
+                documents: [
+                  newOrderData.requestType === 'link' && newOrderData.productUrl ? {
+                    type: 'link',
+                    url: newOrderData.productUrl,
+                    label: 'URL del producto'
+                  } : null,
+                  newOrderData.requestType === 'photo' && newOrderData.productImage ? {
+                    type: 'image',
+                    url: pdfUrl,
+                    label: newOrderData.productImage.name
+                  } : null
+                ].filter(Boolean) as Array<{ type: 'image' | 'link'; url: string; label: string }>
+              };
+              setOrders(prev => [...prev, nuevoPedido]);
+            }
           }
         });
     })();
   };
 
+  // Validación de imagen
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setNewOrderData({ ...newOrderData, productImage: e.target.files[0] });
+      const file = e.target.files[0];
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
+        return;
+      }
+      setNewOrderData({ ...newOrderData, productImage: file });
     }
   };
 
+  // Validaciones de campos
+  const isValidQuantity = (value: any) => {
+    return /^[0-9]+$/.test(String(value)) && Number(value) > 0;
+  };
+  const isValidBudget = (value: any) => {
+    return /^[0-9]+(\.[0-9]{1,2})?$/.test(String(value)) && Number(value) > 0;
+  };
+  const isValidUrl = (value: string) => {
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  };
   const canProceedToNext = () => {
     switch (currentStep) {
       case 1:
-        return newOrderData.productName && newOrderData.description;
+        if (!newOrderData.productName || !newOrderData.description) return false;
+        if (!isValidQuantity(newOrderData.quantity)) return false;
+        if (newOrderData.requestType === 'link' && newOrderData.productUrl) {
+          if (!isValidUrl(newOrderData.productUrl)) return false;
+        }
+        return true;
       case 2:
-        return newOrderData.deliveryType && newOrderData.deliveryVenezuela;
+        if (!newOrderData.deliveryType || !newOrderData.deliveryVenezuela) return false;
+        if (!isValidBudget(newOrderData.estimatedBudget)) return false;
+        return true;
       case 3:
         return true;
       default:
@@ -885,10 +940,20 @@ export default function MisPedidosPage() {
                             id="quantity"
                             type="number"
                             min="1"
-                            value={newOrderData.quantity}
-                            onChange={(e) => setNewOrderData({ ...newOrderData, quantity: parseInt(e.target.value) || 1 })}
+                            value={newOrderData.quantity === 0 ? '' : newOrderData.quantity}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              if (val === '') {
+                                setNewOrderData({ ...newOrderData, quantity: 0 });
+                              } else if (/^[0-9]+$/.test(val)) {
+                                setNewOrderData({ ...newOrderData, quantity: parseInt(val) });
+                              }
+                            }}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
+                          {newOrderData.quantity <= 0 && (
+                            <p className="text-xs text-red-500 mt-1">La cantidad debe ser un número mayor que cero.</p>
+                          )}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
@@ -983,6 +1048,9 @@ export default function MisPedidosPage() {
                               placeholder="https://ejemplo.com/producto"
                               className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                             />
+                            {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (
+                              <p className="text-xs text-red-500 mt-1">La URL no es válida.</p>
+                            )}
                           </div>
                         )}
 
@@ -1130,11 +1198,21 @@ export default function MisPedidosPage() {
                         <Label htmlFor="estimatedBudget">Presupuesto Estimado (USD)</Label>
                         <Input
                           id="estimatedBudget"
+                          type="number"
+                          min="0"
                           value={newOrderData.estimatedBudget}
-                          onChange={(e) => setNewOrderData({ ...newOrderData, estimatedBudget: e.target.value })}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (/^[0-9]*\.?[0-9]{0,2}$/.test(val)) {
+                              setNewOrderData({ ...newOrderData, estimatedBudget: val });
+                            }
+                          }}
                           placeholder="Ej: 500"
                           className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                         />
+                        {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
+                          <p className="text-xs text-red-500 mt-1">El presupuesto estimado debe ser un monto válido.</p>
+                        )}
                       </div>
                     </div>
                   )}
