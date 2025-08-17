@@ -8,6 +8,7 @@ import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { createClient } from '@supabase/supabase-js';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -56,7 +57,7 @@ interface Order {
   product: string;
   description: string;
   amount: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'quoted';
   progress: number;
   tracking: string;
   estimatedDelivery: string;
@@ -80,6 +81,7 @@ interface NewOrderData {
   deliveryType: 'doorToDoor' | 'air' | 'maritime';
   deliveryVenezuela: string;
   estimatedBudget: string;
+  client_id: string;
 }
 
 interface PaymentMethod {
@@ -159,6 +161,17 @@ const MOCK_ORDERS: Order[] = [
 ];
 
 export default function MisPedidosPage() {
+
+  // Supabase client
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Supabase environment variables are missing');
+  }
+  const supabase = require('@supabase/supabase-js').createClient(
+    supabaseUrl,
+    supabaseAnonKey
+  );
   // Estados básicos
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
@@ -166,7 +179,7 @@ export default function MisPedidosPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Estados de la página
-  const [orders] = useState<Order[]>(MOCK_ORDERS);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -177,14 +190,15 @@ export default function MisPedidosPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [newOrderData, setNewOrderData] = useState<NewOrderData>({
-    productName: '',
-    description: '',
-    quantity: 1,
-    specifications: '',
-    requestType: 'link',
-    deliveryType: 'doorToDoor',
-    deliveryVenezuela: '',
-    estimatedBudget: ''
+  productName: '',
+  description: '',
+  quantity: 1,
+  specifications: '',
+  requestType: 'link',
+  deliveryType: 'doorToDoor',
+  deliveryVenezuela: '',
+  estimatedBudget: '',
+  client_id: ''
   });
 
   // Estados para animaciones de Lottie
@@ -211,7 +225,6 @@ export default function MisPedidosPage() {
     setMounted(true);
   }, []);
 
-  // Cálculos derivados
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
       order.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -410,24 +423,247 @@ export default function MisPedidosPage() {
   };
 
   const handleSubmitOrder = () => {
-    console.log('Nuevo pedido:', newOrderData);
-    setShowSuccessAnimation(true);
-    
-    setTimeout(() => {
-      setShowSuccessAnimation(false);
-      setIsNewOrderModalOpen(false);
-      setCurrentStep(1);
-      setNewOrderData({
-        productName: '',
-        description: '',
-        quantity: 1,
-        specifications: '',
-        requestType: 'link',
-        deliveryType: 'doorToDoor',
-        deliveryVenezuela: '',
-        estimatedBudget: ''
-      });
-    }, 3000);
+  // ...existing code...
+  console.log('handleSubmitOrder called', newOrderData);
+    // Generar nombre del PDF con fecha legible dd-mm-yyyy
+    const fechaObj = new Date();
+    const dd = String(fechaObj.getDate()).padStart(2, '0');
+    const mm = String(fechaObj.getMonth() + 1).padStart(2, '0');
+    const yyyy = fechaObj.getFullYear();
+    const fechaPedidoLegible = `${dd}-${mm}-${yyyy}`;
+    const numeroPedido = Date.now();
+    const nombrePDF = `${newOrderData.productName}_${fechaPedidoLegible}_${numeroPedido}_fc3f575f-f625-4902-8cbf-d60b9aeb7ee7_${newOrderData.deliveryVenezuela}.pdf`;
+
+    // PDF profesional con layout corporativo y SSR compatible
+    (async () => {
+      const { jsPDF } = await import('jspdf');
+      const autoTable = (await import('jspdf-autotable')).default;
+      const doc = new jsPDF();
+
+      // Layout y colores
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.height;
+      const margin = 15;
+      const colors = {
+        primary: [22, 120, 187] as [number, number, number],
+        secondary: [44, 62, 80] as [number, number, number],
+        light: [245, 248, 255] as [number, number, number],
+        border: [180, 200, 220] as [number, number, number],
+        text: [33, 37, 41] as [number, number, number]
+      };
+
+      // Datos para la tabla
+      const pedidoTable = [
+  ['ID Pedido', `${numeroPedido}`],
+  ['Cliente', `${newOrderData.client_id || '-'}`],
+  ['Fecha', `${fechaPedidoLegible}`],
+  ['Tipo de Envío', `${newOrderData.deliveryType}`],
+  ['Entrega en Venezuela', `${newOrderData.deliveryVenezuela}`],
+  ['Producto', `${newOrderData.productName}`],
+  ['Cantidad', `${newOrderData.quantity}`],
+  ['Presupuesto Estimado', `$${newOrderData.estimatedBudget}`],
+  ['Descripción', newOrderData.description || '-'],
+  ['Especificaciones', newOrderData.specifications || '-'],
+      ];
+      if (newOrderData.requestType === 'link') {
+        pedidoTable.push(['URL', newOrderData.productUrl || '-']);
+      }
+
+      // === ENCABEZADO PROFESIONAL ===
+  doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  doc.rect(0, 0, pageWidth, 35, 'F');
+  doc.setFontSize(12);
+  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
+  doc.text('PITA', margin + 10, 20, { align: 'center' });
+  doc.setFontSize(24);
+  doc.setTextColor(255, 255, 255);
+  doc.text('RESUMEN DE PEDIDO', pageWidth / 2, 22, { align: 'center' });
+  doc.setFontSize(10);
+  doc.setTextColor(255, 255, 255);
+  doc.text(`Pedido: #${numeroPedido}`, pageWidth - margin, 15, { align: 'right' });
+  doc.text(`Fecha: ${fechaPedidoLegible}`, pageWidth - margin, 21, { align: 'right' });
+
+      let currentY = 50;
+
+      // === MANEJO POR TIPO DE PEDIDO ===
+      if (newOrderData.requestType === 'photo' && newOrderData.productImage) {
+        // Imagen y tabla lado a lado
+        const imgWidth = 80;
+        const imgHeight = 80;
+        const imgX = margin;
+  doc.setFillColor(240, 240, 240);
+  doc.roundedRect(imgX - 2, currentY - 2, imgWidth + 4, imgHeight + 4, 3, 3, 'F');
+  doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+  doc.setLineWidth(1);
+  doc.roundedRect(imgX, currentY, imgWidth, imgHeight, 2, 2, 'D');
+        const imgData = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.readAsDataURL(newOrderData.productImage as Blob);
+        });
+        doc.addImage(imgData, 'JPEG', imgX, currentY, imgWidth, imgHeight);
+  // Se elimina el texto "Imagen del Producto" para un diseño más limpio
+        const tableStartX = imgX + imgWidth + 15;
+        const tableWidth = pageWidth - tableStartX - margin;
+        autoTable(doc, {
+          head: [['Campo', 'Valor']],
+          body: pedidoTable,
+          startY: currentY,
+          margin: { left: tableStartX, right: margin },
+          tableWidth: tableWidth,
+          theme: 'grid',
+          headStyles: {
+            fillColor: colors.primary,
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 12,
+            halign: 'center',
+            cellPadding: 3
+          },
+          bodyStyles: {
+            fontSize: 10,
+            cellPadding: 3,
+            textColor: colors.text
+          },
+          alternateRowStyles: {
+            fillColor: colors.light
+          },
+          columnStyles: {
+            0: { cellWidth: 50, fontStyle: 'bold', textColor: colors.secondary },
+            1: { cellWidth: tableWidth - 50 }
+          }
+        });
+      } else if (newOrderData.requestType === 'link') {
+        // Tabla ocupando todo el ancho
+        doc.setFillColor(...colors.light);
+  doc.setFillColor(colors.light[0], colors.light[1], colors.light[2]);
+  doc.rect(margin, currentY, pageWidth - (margin * 2), 12, 'F');
+  doc.setFontSize(14);
+  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.text('DETALLES DEL PEDIDO', margin + 5, currentY + 8);
+        currentY += 20;
+        autoTable(doc, {
+          head: [['Campo', 'Información']],
+          body: pedidoTable,
+          startY: currentY,
+          margin: { left: margin, right: margin },
+          theme: 'striped',
+          headStyles: {
+            fillColor: colors.primary,
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 12,
+            halign: 'center',
+            cellPadding: 4
+          },
+          bodyStyles: {
+            fontSize: 11,
+            cellPadding: 4,
+            textColor: colors.text
+          },
+          alternateRowStyles: {
+            fillColor: colors.light
+          },
+          columnStyles: {
+            0: { cellWidth: 60, fontStyle: 'bold', textColor: colors.secondary },
+            1: { cellWidth: pageWidth - (margin * 2) - 60 }
+          }
+        });
+        // Destacar la URL si existe
+        if (newOrderData.productUrl) {
+          // Mejorar la sección de URL para que se vea integrada y profesional
+          // @ts-ignore
+          const finalY = (doc as any).lastAutoTable?.finalY + 12;
+          doc.setFontSize(10);
+          doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+          doc.text('URL del Producto:', margin, finalY + 6);
+          doc.setFontSize(10);
+          doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+          const urlText = doc.splitTextToSize(newOrderData.productUrl, pageWidth - (margin * 2));
+          doc.text(urlText, margin, finalY + 14);
+        }
+      }
+
+      // === FOOTER PROFESIONAL ===
+      const footerY = pageHeight - 25;
+  // Footer profesional, compacto y alineado
+  doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+  doc.setLineWidth(0.5);
+  doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+  doc.setFontSize(9);
+  doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+  doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
+  doc.setFontSize(8);
+  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
+  doc.setFontSize(7);
+  doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+  doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+  doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+
+      // Subir PDF a Supabase Storage
+      const pdfBlob = doc.output('blob');
+      let folder: string = String(newOrderData.deliveryType);
+      if (folder === 'doorToDoor') folder = 'door-to-door';
+      supabase.storage
+        .from('orders')
+        .upload(`${folder}/${nombrePDF}`, pdfBlob, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: 'application/pdf',
+        })
+        .then(({ error }: { error: any }) => {
+          if (error) {
+            alert('Error al subir el PDF al bucket.');
+          } else {
+            setShowSuccessAnimation(true);
+            setTimeout(() => {
+              setIsNewOrderModalOpen(false);
+              setCurrentStep(1);
+              setNewOrderData({
+                productName: '',
+                description: '',
+                quantity: 1,
+                specifications: '',
+                requestType: 'link',
+                deliveryType: 'doorToDoor',
+                deliveryVenezuela: '',
+                estimatedBudget: '',
+                client_id: ''
+              });
+            }, 1500); // 1.5 segundos para mostrar el mensaje
+            // Agregar el nuevo pedido a la lista local
+            const nuevoPedido: Order = {
+              id: numeroPedido.toString(),
+              product: newOrderData.productName,
+              description: newOrderData.description,
+              amount: newOrderData.estimatedBudget ? `$${newOrderData.estimatedBudget}` : '$0',
+              status: 'pending',
+              progress: 0,
+              tracking: '',
+              estimatedDelivery: '',
+              createdAt: new Date().toISOString(),
+              category: '',
+              documents: [
+                newOrderData.requestType === 'link' && newOrderData.productUrl ? {
+                  type: 'link',
+                  url: newOrderData.productUrl,
+                  label: 'URL del producto'
+                } : null,
+                newOrderData.requestType === 'photo' && newOrderData.productImage ? {
+                  type: 'image',
+                  url: '', // Aquí deberías poner la URL si subes la imagen a Supabase
+                  label: newOrderData.productImage.name
+                } : null
+              ].filter(Boolean) as Array<{ type: 'image' | 'link'; url: string; label: string }>
+            };
+            setOrders(prev => [...prev, nuevoPedido]);
+          }
+        });
+    })();
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -567,29 +803,18 @@ export default function MisPedidosPage() {
                   {showSuccessAnimation && (
                     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in-up">
                       <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-12 text-center space-y-6 shadow-2xl border border-slate-200/50 max-w-md mx-4 transform animate-fade-in-up">
-                        <div className="relative">
-                          <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
-                          <div className="relative w-32 h-32 mx-auto bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
-                            <Player
-                              src={confettiLottie}
-                              className="w-20 h-20"
-                              loop={true}
-                              autoplay={true}
-                            />
+                        <div className="flex flex-col items-center space-y-4">
+                          <div className="bg-green-500 rounded-full w-20 h-20 flex items-center justify-center shadow-lg">
+                            <Check className="w-12 h-12 text-white" />
                           </div>
-                        </div>
-                        <div className="space-y-2">
                           <h3 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                             ¡Pedido Creado!
                           </h3>
                           <p className="text-slate-600 text-lg">Tu solicitud ha sido enviada exitosamente</p>
-                        </div>
-                        <div className="pt-4">
                           <Button
                             onClick={() => setShowSuccessAnimation(false)}
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all duration-300 transform hover:scale-105 shadow-lg"
+                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all duration-300 transform hover:scale-105 shadow-lg mt-4"
                           >
-                            <Check className="w-4 h-4 mr-2" />
                             ¡Perfecto!
                           </Button>
                         </div>
@@ -1192,6 +1417,14 @@ export default function MisPedidosPage() {
                             <MessageSquare className="h-3 w-3 mr-1" />
                             Soporte
                           </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="h-6 px-2 bg-red-500 text-white hover:bg-red-600"
+                            onClick={() => setOrders(orders.filter(o => o.id !== order.id))}
+                          >
+                            Eliminar
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -1327,7 +1560,7 @@ export default function MisPedidosPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-bold text-green-600">{selectedOrderForPayment.amount}</p>
-                      <p className="text-xs text-slate-500">Cotización válida hasta: 25/01/2024</p>
+                      <p className="text-xs text-slate-500 mt-1">Cotización válida hasta: 25/01/2024</p>
                     </div>
                   </div>
                 </div>
@@ -1567,4 +1800,4 @@ export default function MisPedidosPage() {
       `}</style>
     </div>
   );
-} 
+}
