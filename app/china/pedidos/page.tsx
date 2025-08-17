@@ -85,11 +85,26 @@ export default function PedidosChina() {
     setModalCotizar({open: false});
   };
 
+  // Estado local y persistencia para el sidebar
+  const [sidebarExpanded, setSidebarExpanded] = React.useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('sidebarExpandedChina');
+      return saved ? JSON.parse(saved) : true;
+    }
+    return true;
+  });
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebarExpandedChina', JSON.stringify(sidebarExpanded));
+    }
+  }, [sidebarExpanded]);
+
   return (
     <div className="min-h-screen flex overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <Sidebar isExpanded={true} setIsExpanded={() => {}} userRole="china" />
-      <main className="flex-1 ml-72 w-[calc(100%-18rem)]">
-        <Header notifications={stats.pendientes} onMenuToggle={() => {}} />
+      <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="china" />
+      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}> 
+        <Header notifications={stats.pendientes} onMenuToggle={() => setSidebarExpanded(!sidebarExpanded)} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Título y badge */}
           <div className="flex items-center justify-between mb-8">
@@ -159,7 +174,7 @@ export default function PedidosChina() {
             </div>
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">Buscar Cliente</label>
-              <input type="text" value={filtroCliente} onChange={e => setFiltroCliente(e.target.value)} placeholder="Buscar por cliente..." className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <input type="text" value={filtroCliente} onChange={e => setFiltroCliente(e.target.value)} placeholder="Buscar por cliente..." className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-1 focus:ring-orange-600 focus:border-orange-600" />
             </div>
           </div>
 
