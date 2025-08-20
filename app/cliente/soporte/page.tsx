@@ -105,7 +105,6 @@ export default function ClienteSoporte() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Estados del FAQ
-  const [showFaq, setShowFaq] = useState(false);
   const [openFaqId, setOpenFaqId] = useState<number | undefined>(undefined);
   const [faqSearch, setFaqSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -256,8 +255,8 @@ export default function ClienteSoporte() {
               </div>
             </div>
 
-            {/* Canales de Soporte con animaciones */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        {/* Canales de Soporte con animaciones */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer" onClick={openChat}>
                 <CardHeader className="text-center">
                   <div className="mx-auto p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
@@ -274,176 +273,46 @@ export default function ClienteSoporte() {
                 </CardContent>
               </Card>
 
-                             <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
-                 <CardHeader className="text-center">
-                   <div className="mx-auto p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
-                     <Phone className="h-8 w-8 text-white" />
-                   </div>
-                   <CardTitle className="group-hover:text-blue-600 transition-colors">Teléfono</CardTitle>
-                 </CardHeader>
-                 <CardContent className="text-center">
-                   <p className="text-sm text-slate-600 mb-4">Llámanos directamente para atención inmediata</p>
-                   <Button 
-                     variant="outline" 
-                     className="w-full group-hover:border-blue-300 group-hover:text-blue-600 transition-colors"
-                     onClick={() => window.open('https://wa.me/584121234567', '_blank')}
-                   >
-                     <Phone className="w-4 h-4 mr-2" />
-                     +58 412-123-4567
-                   </Button>
-                 </CardContent>
-               </Card>
-
-                             <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
-                 <CardHeader className="text-center">
-                   <div className="mx-auto p-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
-                     <Mail className="h-8 w-8 text-white" />
-                   </div>
-                   <CardTitle className="group-hover:text-purple-600 transition-colors">Email</CardTitle>
-                 </CardHeader>
-                 <CardContent className="text-center">
-                   <p className="text-sm text-slate-600 mb-4">Envíanos un email y te responderemos en 24 horas</p>
-                   <Button 
-                     variant="outline" 
-                     className="w-full group-hover:border-purple-300 group-hover:text-purple-600 transition-colors"
-                     onClick={() => window.open('mailto:soporte@morna.com?subject=Soporte Morna&body=Hola, necesito ayuda con...', '_blank')}
-                   >
-                     <Mail className="w-4 h-4 mr-2" />
-                     soporte@morna.com
-                   </Button>
-                 </CardContent>
-               </Card>
-
-              <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer" onClick={() => setShowFaq(!showFaq)}>
+              <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
-                  <div className="mx-auto p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
-                    <HelpCircle className="h-8 w-8 text-white" />
+                  <div className="mx-auto p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                    <Phone className="h-8 w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-orange-600 transition-colors">Ayuda Rápida</CardTitle>
+                  <CardTitle className="group-hover:text-blue-600 transition-colors">Teléfono</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-sm text-slate-600 mb-4">Consulta las preguntas frecuentes y resuelve tus dudas al instante</p>
-                  <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors">
-                    <Zap className="w-3 h-3 mr-1" />
-                    Instantáneo
-                  </Badge>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* FAQ Interactivo */}
-            {showFaq && (
-              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 animate-in slide-in-from-bottom-4 duration-500">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <HelpCircle className="h-5 w-5 text-orange-600" />
-                    Preguntas Frecuentes
-                  </CardTitle>
-                  <p className="text-sm text-slate-600">Encuentra respuestas rápidas a las preguntas más comunes</p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Búsqueda y filtros */}
-                  <div className="space-y-3">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                      <Input
-                        placeholder="Buscar en preguntas frecuentes..."
-                        value={faqSearch}
-                        onChange={(e) => setFaqSearch(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                    
-                    {/* Filtros por categoría */}
-                    <div className="flex flex-wrap gap-2">
-                      {categories.map(category => (
-                        <Badge
-                          key={category}
-                          variant={selectedCategory === category ? "default" : "outline"}
-                          className="cursor-pointer hover:bg-slate-100 transition-colors"
-                          onClick={() => setSelectedCategory(category)}
-                        >
-                          {category === 'all' ? 'Todas' : category}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Lista de FAQ */}
-                  <div className="space-y-3">
-                    {filteredFaq.length > 0 ? (
-                      filteredFaq.map(faq => (
-                        <div
-                          key={faq.id}
-                          className="border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:shadow-md transition-all duration-200"
-                          onClick={() => setOpenFaqId(openFaqId === faq.id ? undefined : faq.id)}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Badge variant="secondary" className="text-xs">
-                                  {faq.category}
-                                </Badge>
-                              </div>
-                              <h4 className="font-medium text-gray-900">{faq.question}</h4>
-                            </div>
-                            <div className="ml-4 transition-transform duration-200">
-                              {openFaqId === faq.id ? (
-                                <ChevronUp className="w-5 h-5 text-slate-400" />
-                              ) : (
-                                <ChevronDown className="w-5 h-5 text-slate-400" />
-                              )}
-                            </div>
-                          </div>
-                          
-                          <div 
-                            className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                              openFaqId === faq.id 
-                                ? 'max-h-96 opacity-100 mt-4' 
-                                : 'max-h-0 opacity-0'
-                            }`}
-                          >
-                            <div className="text-gray-700 whitespace-pre-line border-t pt-4">
-                              {faq.answer}
-                            </div>
-                            <div className="flex flex-wrap gap-1 mt-3">
-                              {faq.tags.map(tag => (
-                                <Badge key={tag} variant="outline" className="text-xs">
-                                  #{tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-8">
-                        <HelpCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                        <p className="text-slate-600">No se encontraron preguntas que coincidan con tu búsqueda.</p>
-                        <Button 
-                          variant="outline" 
-                          className="mt-2"
-                          onClick={() => {
-                            setFaqSearch('');
-                            setSelectedCategory('all');
-                          }}
-                        >
-                          Limpiar filtros
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                  
+                  <p className="text-sm text-slate-600 mb-4">Llámanos directamente para atención inmediata</p>
                   <Button 
                     variant="outline" 
-                    className="w-full mt-4"
-                    onClick={() => setShowFaq(false)}
+                    className="w-full group-hover:border-blue-300 group-hover:text-blue-600 transition-colors"
+                    onClick={() => window.open('https://wa.me/584121234567', '_blank')}
                   >
-                    Cerrar Preguntas Frecuentes
+                    <Phone className="w-4 h-4 mr-2" />
+                    +58 412-123-4567
                   </Button>
                 </CardContent>
               </Card>
-            )}
+
+              <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <CardHeader className="text-center">
+                  <div className="mx-auto p-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                    <Mail className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-purple-600 transition-colors">Email</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-sm text-slate-600 mb-4">Envíanos un email y te responderemos en 24 horas</p>
+                  <Button 
+                    variant="outline" 
+                    className="w-full group-hover:border-purple-300 group-hover:text-purple-600 transition-colors"
+                    onClick={() => window.open('mailto:soporte@morna.com?subject=Soporte Morna&body=Hola, necesito ayuda con...', '_blank')}
+                  >
+                    <Mail className="w-4 h-4 mr-2" />
+                    soporte@morna.com
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Horarios de Atención */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
@@ -487,6 +356,110 @@ export default function ClienteSoporte() {
                       <Badge className="bg-purple-100 text-purple-800">Disponible</Badge>
                     </div>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* FAQ Interactivo - Siempre visible */}
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <HelpCircle className="h-5 w-5 text-orange-600" />
+                  Preguntas Frecuentes
+                </CardTitle>
+                <p className="text-sm text-slate-600">Encuentra respuestas rápidas a las preguntas más comunes</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Búsqueda y filtros */}
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <Input
+                      placeholder="Buscar en preguntas frecuentes..."
+                      value={faqSearch}
+                      onChange={(e) => setFaqSearch(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  
+                  {/* Filtros por categoría */}
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map(category => (
+                      <Badge
+                        key={category}
+                        variant={selectedCategory === category ? "default" : "outline"}
+                        className="cursor-pointer hover:bg-slate-100 transition-colors"
+                        onClick={() => setSelectedCategory(category)}
+                      >
+                        {category === 'all' ? 'Todas' : category}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Lista de FAQ */}
+                <div className="space-y-3">
+                  {filteredFaq.length > 0 ? (
+                    filteredFaq.map(faq => (
+                      <div
+                        key={faq.id}
+                        className="border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:shadow-md transition-all duration-200"
+                        onClick={() => setOpenFaqId(openFaqId === faq.id ? undefined : faq.id)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="secondary" className="text-xs">
+                                {faq.category}
+                              </Badge>
+                            </div>
+                            <h4 className="font-medium text-gray-900">{faq.question}</h4>
+                          </div>
+                          <div className="ml-4 transition-transform duration-200">
+                            {openFaqId === faq.id ? (
+                              <ChevronUp className="w-5 h-5 text-slate-400" />
+                            ) : (
+                              <ChevronDown className="w-5 h-5 text-slate-400" />
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div 
+                          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                            openFaqId === faq.id 
+                              ? 'max-h-96 opacity-100 mt-4' 
+                              : 'max-h-0 opacity-0'
+                          }`}
+                        >
+                          <div className="text-gray-700 whitespace-pre-line border-t pt-4">
+                            {faq.answer}
+                          </div>
+                          <div className="flex flex-wrap gap-1 mt-3">
+                            {faq.tags.map(tag => (
+                              <Badge key={tag} variant="outline" className="text-xs">
+                                #{tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <HelpCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                      <p className="text-slate-600">No se encontraron preguntas que coincidan con tu búsqueda.</p>
+                      <Button 
+                        variant="outline" 
+                        className="mt-2"
+                        onClick={() => {
+                          setFaqSearch('');
+                          setSelectedCategory('all');
+                        }}
+                      >
+                        Limpiar filtros
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
