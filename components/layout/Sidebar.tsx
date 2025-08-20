@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { 
   LayoutDashboard, 
   Package, 
@@ -333,56 +334,42 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   const activeItem = useActivePage(menuItems);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  // Memoizar los cálculos responsivos
+  // Memoizar los cálculos responsivos con optimización
   const responsiveConfig = useMemo(() => {
     const isSmallScreen = screenWidth < 1366;
     const isMediumScreen = screenWidth < 1600;
-    const isLargeScreen = screenWidth >= 1600;
-    const isMobile = screenWidth < 1024; // lg breakpoint
+    const isMobile = screenWidth < 1024;
 
+    // Simplificar cálculos
+    const sidebarWidth = isMobile 
+      ? (isExpanded ? 'w-80' : 'w-16')
+      : isExpanded 
+        ? (screenWidth < 1440 ? 'w-64' : 'w-72')
+        : 'w-20';
+    
+    const iconSize = 'w-4 h-4';
+    const logoSize = isExpanded ? (screenWidth < 1440 ? 'sm' : 'md') : 'md';
+    const padding = isExpanded ? 'p-4' : 'p-2';
+    const buttonPadding = isExpanded ? 'px-4 py-3' : 'p-2';
+    
     return {
-      sidebarWidth: isMobile 
-        ? (isExpanded ? 'w-80' : 'w-16') // Mobile: respeta el estado isExpanded
-        : isExpanded 
-          ? (screenWidth < 1440 ? 'w-64' : 'w-72')
-          : (isSmallScreen ? 'w-16' : isMediumScreen ? 'w-18' : 'w-20'),
-      
-      iconSize: isExpanded
-        ? (isSmallScreen ? 'w-4 h-4' : isMediumScreen ? 'w-4.5 h-4.5' : 'w-5 h-5')
-        : (isSmallScreen ? 'w-4 h-4' : isMediumScreen ? 'w-4.5 h-4.5' : 'w-5 h-5'),
-      
-      logoSize: ((): 'sm' | 'md' | 'lg' | 'xl' => {
-        if (isExpanded) {
-          return screenWidth < 1440 ? 'sm' : 'md';
-        } else {
-          if (isSmallScreen) return 'sm';
-          if (isMediumScreen) return 'md';
-          return 'lg';
-        }
-      })(),
-      
-      padding: isExpanded 
-        ? 'p-4' 
-        : (isSmallScreen ? 'p-2' : isMediumScreen ? 'p-3' : 'p-4'),
-      
-      buttonPadding: isExpanded
-        ? (isSmallScreen ? 'px-3 py-2.5' : isMediumScreen ? 'px-3.5 py-2.5' : 'px-4 py-3')
-        : (isSmallScreen ? 'p-2' : isMediumScreen ? 'p-2.5' : 'p-3'),
-      
+      sidebarWidth,
+      iconSize,
+      logoSize,
+      padding,
+      buttonPadding,
       textSize: isSmallScreen ? 'text-sm' : 'text-base',
       titleSize: isSmallScreen ? 'text-lg' : 'text-xl',
-      subtitleSize: isSmallScreen ? 'text-[10px]' : 'text-xs',
-      badgeSize: isSmallScreen ? 'text-[10px]' : 'text-xs',
-      iconContainerSize: isExpanded 
-        ? (isSmallScreen ? 'w-6 h-6' : isMediumScreen ? 'w-7 h-7' : 'w-8 h-8')
-        : 'w-full h-full',
+      subtitleSize: 'text-xs',
+      badgeSize: 'text-xs',
+      iconContainerSize: isExpanded ? 'w-8 h-8' : 'w-full h-full',
       userContainerSize: isSmallScreen ? 'w-8 h-8' : 'w-10 h-10',
       userTextSize: isSmallScreen ? 'text-xs' : 'text-sm',
-      userSubtextSize: isSmallScreen ? 'text-[10px]' : 'text-xs',
+      userSubtextSize: 'text-xs',
       userPadding: isSmallScreen ? 'p-2' : 'p-3',
       isMobile
     };
-  }, [isExpanded, screenWidth, isMobileMenuOpen]);
+  }, [screenWidth, isExpanded]);
 
   // Optimizar el manejo del hover (solo en desktop)
   const handleMouseEnter = useCallback(() => {
@@ -402,10 +389,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     setHoverTimeout(timeout);
   }, [setIsExpanded, responsiveConfig.isMobile]);
 
-  // Optimizar la navegación
-  const handleNavigation = useCallback((path: string) => {
-    router.push(path);
-  }, [router]);
+
 
   // Memoizar el renderizado de los elementos del menú
   const renderMenuItem = useCallback((item: typeof menuItems[0]) => {
@@ -413,19 +397,20 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     const isActive = activeItem === item.id;
     
     return (
-      <button
-        key={item.id}
-        onClick={() => handleNavigation(item.path)}
-        className={`
-          w-full flex items-center ${isExpanded ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`} rounded-xl
-          transition-all duration-150 ease-out group relative
-          active:scale-95
-          ${isActive 
-            ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-white shadow-lg border border-blue-500/30' 
-            : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
-          }
-        `}
-      >
+      <div key={item.id}>
+        <Link
+          href={item.path}
+          prefetch={true}
+          className={`
+            w-full flex items-center ${isExpanded ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`} rounded-xl
+            transition-all duration-100 ease-out group relative
+            active:scale-95
+            ${isActive 
+              ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-white shadow-lg border border-blue-500/30' 
+              : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+            }
+          `}
+        >
         {/* Active indicator */}
         <div className={`
           absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-indigo-500 rounded-r-full
@@ -458,9 +443,10 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
             <span className={`${responsiveConfig.badgeSize} text-white font-bold`}>{item.badge}</span>
           </div>
         )}
-      </button>
-    );
-  }, [isExpanded, activeItem, responsiveConfig, handleNavigation, screenWidth]);
+      </Link>
+    </div>
+  );
+}, [isExpanded, activeItem, responsiveConfig, screenWidth]);
 
   return (
     <>
@@ -476,7 +462,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         className={`
           fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 
           border-r border-slate-700/50 shadow-2xl backdrop-blur-sm z-50
-          transition-all duration-300 ease-out flex flex-col
+          transition-all duration-200 ease-out flex flex-col
           ${responsiveConfig.isMobile 
             ? 'w-80' 
             : responsiveConfig.sidebarWidth
@@ -541,21 +527,23 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
             const Icon = item.icon;
             
             return (
-              <button
-                key={item.id}
-                onClick={() => handleNavigation(item.path)}
-                className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-150 ease-out group"
-              >
-                <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-slate-600/50`}>
-                  <Icon className={`${responsiveConfig.iconSize} ${item.color}`} />
-                </div>
-                <div className={`
-                  transition-all duration-150 ease-out overflow-hidden
-                  ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
-                `}>
-                  <span className="font-medium whitespace-nowrap">{item.label}</span>
-                </div>
-              </button>
+              <div key={item.id}>
+                <Link
+                  href={item.path}
+                  prefetch={true}
+                  className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-150 ease-out group"
+                >
+                  <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-slate-600/50`}>
+                    <Icon className={`${responsiveConfig.iconSize} ${item.color}`} />
+                  </div>
+                  <div className={`
+                    transition-all duration-150 ease-out overflow-hidden
+                    ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+                  `}>
+                    <span className="font-medium whitespace-nowrap">{item.label}</span>
+                  </div>
+                </Link>
+              </div>
             );
           })}
 
