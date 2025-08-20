@@ -6,30 +6,109 @@ import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { 
+  MessageSquare, 
+  Phone, 
+  Mail, 
+  Clock, 
+  HelpCircle, 
+  Search,
+  ChevronDown,
+  ChevronUp,
+  Send,
+  X,
+  Bot,
+  User,
+  Sparkles,
+  Zap,
+  Shield,
+  Headphones
+} from "lucide-react";
 
-import { MessageSquare, Phone, Mail, Clock, HelpCircle } from "lucide-react";
-
-// Preguntas frecuentes
+// Preguntas frecuentes expandidas
 const faqData = [
-  { id: 1, question: '¿Cómo puedo rastrear mi paquete?', answer: 'Puedes rastrear tu paquete de varias formas:\n\n1. Ingresa el número de seguimiento en nuestra página de rastreo\n2. Haz clic en el enlace que recibiste por email\n3. Usa nuestra app móvil\n4. Pregunta en el chat en vivo\n\nEl número de seguimiento tiene formato TRK123456789 y lo recibes dentro de las 24 horas posteriores al envío. Si no lo encuentras, revisa tu carpeta de spam.' },
-  { id: 2, question: '¿Cuánto tiempo tarda la entrega?', answer: 'Los tiempos de entrega varían según el destino y el tipo de envío:\n\nEnvíos Nacionales: 24-48h\nInternacionales: 3-10 días hábiles.' },
-  { id: 3, question: '¿Qué métodos de pago aceptan?', answer: 'Tarjetas, PayPal, transferencias y pago contra reembolso.' },
-  { id: 4, question: '¿Cómo devuelvo un producto?', answer: 'Ve a "Mis Pedidos", selecciona el producto y sigue los pasos para devolución.' },
+  {
+    id: 1,
+    category: "Tracking",
+    question: '¿Cómo puedo rastrear mi paquete?',
+    answer: 'Puedes rastrear tu paquete de varias formas:\n\n1. Ingresa el número de seguimiento en nuestra página de rastreo\n2. Haz clic en el enlace que recibiste por email\n3. Usa nuestra app móvil\n4. Pregunta en el chat en vivo\n\nEl número de seguimiento tiene formato TRK123456789 y lo recibes dentro de las 24 horas posteriores al envío. Si no lo encuentras, revisa tu carpeta de spam.',
+    tags: ['tracking', 'envío', 'seguimiento']
+  },
+  {
+    id: 2,
+    category: "Envíos",
+    question: '¿Cuánto tiempo tarda la entrega?',
+    answer: 'Los tiempos de entrega varían según el destino y el tipo de envío:\n\n• Envíos Nacionales: 24-48h\n• Internacionales: 3-10 días hábiles\n• Express: 1-3 días hábiles\n• Económico: 5-15 días hábiles\n\nLos tiempos pueden variar por factores como aduanas, clima o eventos especiales.',
+    tags: ['entrega', 'tiempo', 'envío']
+  },
+  {
+    id: 3,
+    category: "Pagos",
+    question: '¿Qué métodos de pago aceptan?',
+    answer: 'Aceptamos múltiples métodos de pago para tu comodidad:\n\n• Tarjetas de crédito/débito (Visa, MasterCard, American Express)\n• PayPal\n• Transferencias bancarias\n• Pago Móvil\n• Criptomonedas (Bitcoin, Ethereum)\n• Pago contra reembolso (solo envíos nacionales)\n\nTodos los pagos son procesados de forma segura con encriptación SSL.',
+    tags: ['pago', 'tarjeta', 'paypal', 'transferencia']
+  },
+  {
+    id: 4,
+    category: "Devoluciones",
+    question: '¿Cómo devuelvo un producto?',
+    answer: 'Para devolver un producto sigue estos pasos:\n\n1. Ve a "Mis Pedidos" en tu cuenta\n2. Selecciona el producto que deseas devolver\n3. Haz clic en "Solicitar Devolución"\n4. Completa el formulario con el motivo\n5. Imprime la etiqueta de devolución\n6. Envía el producto en 7 días\n\nLas devoluciones son gratuitas si el producto llegó dañado o es diferente al solicitado.',
+    tags: ['devolución', 'reembolso', 'producto']
+  },
+  {
+    id: 5,
+    category: "Cuenta",
+    question: '¿Cómo cambio mi contraseña?',
+    answer: 'Para cambiar tu contraseña:\n\n1. Inicia sesión en tu cuenta\n2. Ve a "Configuración" → "Seguridad"\n3. Haz clic en "Cambiar Contraseña"\n4. Ingresa tu contraseña actual\n5. Escribe la nueva contraseña\n6. Confirma la nueva contraseña\n7. Haz clic en "Guardar Cambios"\n\nRecibirás un email de confirmación cuando el cambio sea exitoso.',
+    tags: ['contraseña', 'cuenta', 'seguridad']
+  },
+  {
+    id: 6,
+    category: "Facturación",
+    question: '¿Cómo obtengo mi factura?',
+    answer: 'Para obtener tu factura:\n\n1. Ve a "Mis Pedidos"\n2. Selecciona el pedido específico\n3. Haz clic en "Descargar Factura"\n4. La factura se descargará en formato PDF\n\nTambién puedes solicitar facturas por email enviando tu número de pedido a facturacion@morna.com\n\nLas facturas están disponibles 24 horas después de la confirmación del pago.',
+    tags: ['factura', 'facturación', 'pdf']
+  }
+];
+
+// Respuestas automáticas del chat
+const autoResponses = [
+  "¡Hola! Soy Carlos, tu agente de soporte. ¿En qué puedo ayudarte hoy?",
+  "Entiendo tu consulta. Déjame revisar esa información para ti...",
+  "Perfecto, puedo ayudarte con eso. Te explico paso a paso:",
+  "Excelente pregunta. Según nuestros registros:",
+  "Gracias por contactarnos. Te ayudo a resolver esto:",
+  "¡Por supuesto! Aquí tienes la información que necesitas:",
+  "Me alegra poder ayudarte. La respuesta es:",
+  "Entiendo perfectamente tu situación. Te recomiendo:"
 ];
 
 export default function ClienteSoporte() {
-  // Estado para animación de cierre
-  const [isClosing, setIsClosing] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
 
-  // Estados y lógica centralizados para el chat
+  // Estados del chat
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState<{ sender: string; message: string; time: Date }[]>([]);
+  const [chatMessages, setChatMessages] = useState<{ 
+    id: string; 
+    sender: 'user' | 'agent'; 
+    message: string; 
+    time: Date;
+    isTyping?: boolean;
+  }[]>([]);
   const [isAgentTyping, setIsAgentTyping] = useState(false);
+  const [chatInput, setChatInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Estados del FAQ
+  const [showFaq, setShowFaq] = useState(false);
+  const [openFaqId, setOpenFaqId] = useState<number | undefined>(undefined);
+  const [faqSearch, setFaqSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   useEffect(() => {
     setMounted(true);
@@ -39,302 +118,482 @@ export default function ClienteSoporte() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages, isAgentTyping]);
 
-  // Funciones para el chat
+  // Funciones del chat
   const openChat = () => {
     setIsChatOpen(true);
-    setIsClosing(false);
-  };
-  const closeChat = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsChatOpen(false);
-      setIsClosing(false);
-    }, 300); // Duración de la animación
-  };
-  const sendMessage = (message: string) => {
-    if (!message.trim()) return;
-    setChatMessages([...chatMessages, { sender: "user", message, time: new Date() }]);
-    setIsAgentTyping(true);
-    setTimeout(() => {
-      setChatMessages((prev) => [
-        ...prev,
-        { sender: "agent", message: "¡Gracias por tu mensaje! Pronto te ayudaremos.", time: new Date() },
-      ]);
-      setIsAgentTyping(false);
-    }, 1500);
+    // Mensaje de bienvenida automático
+    if (chatMessages.length === 0) {
+      setTimeout(() => {
+        setChatMessages([{
+          id: '1',
+          sender: 'agent',
+          message: '¡Hola! Soy Carlos, tu agente de soporte. ¿En qué puedo ayudarte hoy? 😊',
+          time: new Date()
+        }]);
+      }, 500);
+    }
   };
 
-  // Solo el renderizado inicial depende de mounted
-  const [showFaq, setShowFaq] = useState(false);
-  const [openFaqId, setOpenFaqId] = useState<number | undefined>(undefined);
+  const closeChat = () => {
+    setIsChatOpen(false);
+  };
+
+  const sendMessage = (message: string) => {
+    if (!message.trim()) return;
+
+    const userMessage = {
+      id: Date.now().toString(),
+      sender: 'user' as const,
+      message: message.trim(),
+      time: new Date()
+    };
+
+    setChatMessages(prev => [...prev, userMessage]);
+    setChatInput('');
+    setIsAgentTyping(true);
+
+    // Simular respuesta del agente
+    setTimeout(() => {
+      const randomResponse = autoResponses[Math.floor(Math.random() * autoResponses.length)];
+      const agentMessage = {
+        id: (Date.now() + 1).toString(),
+        sender: 'agent' as const,
+        message: `${randomResponse}\n\n${getResponseForMessage(message)}`,
+        time: new Date()
+      };
+      setChatMessages(prev => [...prev, agentMessage]);
+      setIsAgentTyping(false);
+    }, 1500 + Math.random() * 1000);
+  };
+
+  const getResponseForMessage = (message: string): string => {
+    const lowerMessage = message.toLowerCase();
+    
+    if (lowerMessage.includes('tracking') || lowerMessage.includes('rastreo') || lowerMessage.includes('seguimiento')) {
+      return 'Para rastrear tu pedido, ve a la sección "Tracking" en el menú lateral. Ingresa tu número de seguimiento (formato TRK123456789) y podrás ver el estado en tiempo real.';
+    }
+    
+    if (lowerMessage.includes('tiempo') || lowerMessage.includes('entrega') || lowerMessage.includes('días')) {
+      return 'Los tiempos de entrega varían: Nacional 24-48h, Internacional 3-10 días, Express 1-3 días. Puedes ver el tiempo estimado en tu pedido específico.';
+    }
+    
+    if (lowerMessage.includes('pago') || lowerMessage.includes('tarjeta') || lowerMessage.includes('paypal')) {
+      return 'Aceptamos tarjetas, PayPal, transferencias, Pago Móvil y criptomonedas. Todos los pagos son seguros con encriptación SSL.';
+    }
+    
+    if (lowerMessage.includes('devolución') || lowerMessage.includes('reembolso')) {
+      return 'Para devoluciones, ve a "Mis Pedidos", selecciona el producto y solicita la devolución. Es gratis si llegó dañado o es diferente al solicitado.';
+    }
+    
+    return 'Si necesitas ayuda más específica, puedes contactarnos por teléfono al +58 412-123-4567 o por email a soporte@morna.com.';
+  };
+
+  // Filtrar FAQ
+  const filteredFaq = faqData.filter(faq => {
+    const matchesSearch = faq.question.toLowerCase().includes(faqSearch.toLowerCase()) ||
+                         faq.answer.toLowerCase().includes(faqSearch.toLowerCase()) ||
+                         faq.tags.some(tag => tag.toLowerCase().includes(faqSearch.toLowerCase()));
+    const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const categories = ['all', ...Array.from(new Set(faqData.map(faq => faq.category)))];
+
   if (!mounted) return null;
 
   return (
-    <div className={`min-h-screen flex overflow-x-hidden ${
-      theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
-    }`}>
-      <Sidebar 
-        isExpanded={sidebarExpanded} 
-        setIsExpanded={setSidebarExpanded}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onMobileMenuClose={() => setIsMobileMenuOpen(false)}
-        userRole="client"
-      />
-      
-      <main className={`flex-1 transition-all duration-300 ${
-        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'
+    <>
+      <div className={`min-h-screen flex overflow-x-hidden ${
+        theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
       }`}>
-        <Header 
-          notifications={0}
-          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Soporte"
-          subtitle="¿Necesitas ayuda? Estamos aquí para ti"
+        <Sidebar 
+          isExpanded={sidebarExpanded} 
+          setIsExpanded={setSidebarExpanded}
+          isMobileMenuOpen={isMobileMenuOpen}
+          onMobileMenuClose={() => setIsMobileMenuOpen(false)}
+          userRole="client"
         />
         
-        <div className="p-6 space-y-6">
-          {/* Header de la página */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold">Soporte al Cliente</h1>
-                <p className="text-blue-100 mt-1">¿Tienes alguna pregunta? Nuestro equipo está listo para ayudarte</p>
+        <main className={`flex-1 transition-all duration-300 ${
+          sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'
+        }`}>
+          <Header 
+            notifications={0}
+            onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            title="Soporte"
+            subtitle="¿Necesitas ayuda? Estamos aquí para ti"
+          />
+          
+          <div className="p-6 space-y-6">
+            {/* Header de la página con animación */}
+            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-6 text-white relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 animate-pulse"></div>
+              <div className="relative flex items-center justify-between">
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-bold">Soporte al Cliente</h1>
+                  <p className="text-blue-100 text-lg">¿Tienes alguna pregunta? Nuestro equipo está listo para ayudarte</p>
+                  <div className="flex items-center space-x-4 text-sm">
+                    <div className="flex items-center space-x-1">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      <span>En línea ahora</span>
+                    </div>
+                                         <div className="flex items-center space-x-1">
+                       <Clock className="w-4 h-4" />
+                       <span>Tiempo de respuesta: &lt; 2 min</span>
+                     </div>
+                  </div>
+                </div>
+                <div className="hidden md:flex items-center space-x-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">24/7</div>
+                    <div className="text-sm text-blue-100">Soporte</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">98%</div>
+                    <div className="text-sm text-blue-100">Satisfacción</div>
+                  </div>
+                </div>
               </div>
-              <HelpCircle className="h-12 w-12 text-blue-200" />
             </div>
-          </div>
 
-          {/* Canales de Soporte */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-              <CardHeader className="text-center">
-                <div className="mx-auto p-3 bg-green-100 rounded-full w-fit">
-                  <MessageSquare className="h-8 w-8 text-green-600" />
-                </div>
-                <CardTitle>Chat en Línea</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-sm text-slate-600 mb-4">Chatea con nuestro equipo de soporte en tiempo real</p>
-                <Button className="w-full bg-green-600 hover:bg-green-700" onClick={openChat}>
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Iniciar Chat
-                </Button>
-              </CardContent>
-            </Card>
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-              <CardHeader className="text-center">
-                <div className="mx-auto p-3 bg-blue-100 rounded-full w-fit">
-                  <Phone className="h-8 w-8 text-blue-600" />
-                </div>
-                <CardTitle>Teléfono</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-sm text-slate-600 mb-4">Llámanos directamente para atención inmediata</p>
-                <Button variant="outline" className="w-full">
-                  <Phone className="w-4 h-4 mr-2" />
-                  +58 412-123-4567
-                </Button>
-              </CardContent>
-            </Card>
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-              <CardHeader className="text-center">
-                <div className="mx-auto p-3 bg-purple-100 rounded-full w-fit">
-                  <Mail className="h-8 w-8 text-purple-600" />
-                </div>
-                <CardTitle>Email</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-sm text-slate-600 mb-4">Envíanos un email y te responderemos en 24 horas</p>
-                <Button variant="outline" className="w-full">
-                  <Mail className="w-4 h-4 mr-2" />
-                  soporte@morna.com
-                </Button>
-              </CardContent>
-            </Card>
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-              <CardHeader className="text-center">
-                <div className="mx-auto p-3 bg-yellow-100 rounded-full w-fit">
-                  <HelpCircle className="h-8 w-8 text-yellow-600" />
-                </div>
-                <CardTitle>Ayuda Rápida</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-sm text-slate-600 mb-4">Consulta las preguntas frecuentes y resuelve tus dudas al instante</p>
-                <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white" onClick={() => setShowFaq(!showFaq)}>Ver Preguntas</Button>
-              </CardContent>
-            </Card>
-          </div>
+            {/* Canales de Soporte con animaciones */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer" onClick={openChat}>
+                <CardHeader className="text-center">
+                  <div className="mx-auto p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                    <MessageSquare className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-green-600 transition-colors">Chat en Línea</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-sm text-slate-600 mb-4">Chatea con nuestro equipo de soporte en tiempo real</p>
+                  <Badge className="bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                    Disponible
+                  </Badge>
+                </CardContent>
+              </Card>
 
-          {/* Horarios de Atención */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                Horarios de Atención
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-semibold text-slate-800">Lunes a Viernes</h4>
-                  <p className="text-slate-600">8:00 AM - 6:00 PM (GMT-4)</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-slate-800">Sábados</h4>
-                  <p className="text-slate-600">9:00 AM - 2:00 PM (GMT-4)</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                             <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                 <CardHeader className="text-center">
+                   <div className="mx-auto p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                     <Phone className="h-8 w-8 text-white" />
+                   </div>
+                   <CardTitle className="group-hover:text-blue-600 transition-colors">Teléfono</CardTitle>
+                 </CardHeader>
+                 <CardContent className="text-center">
+                   <p className="text-sm text-slate-600 mb-4">Llámanos directamente para atención inmediata</p>
+                   <Button 
+                     variant="outline" 
+                     className="w-full group-hover:border-blue-300 group-hover:text-blue-600 transition-colors"
+                     onClick={() => window.open('https://wa.me/584121234567', '_blank')}
+                   >
+                     <Phone className="w-4 h-4 mr-2" />
+                     +58 412-123-4567
+                   </Button>
+                 </CardContent>
+               </Card>
 
-          {/* Preguntas frecuentes debajo del horario */}
-          {showFaq && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 mt-2">
+                             <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                 <CardHeader className="text-center">
+                   <div className="mx-auto p-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                     <Mail className="h-8 w-8 text-white" />
+                   </div>
+                   <CardTitle className="group-hover:text-purple-600 transition-colors">Email</CardTitle>
+                 </CardHeader>
+                 <CardContent className="text-center">
+                   <p className="text-sm text-slate-600 mb-4">Envíanos un email y te responderemos en 24 horas</p>
+                   <Button 
+                     variant="outline" 
+                     className="w-full group-hover:border-purple-300 group-hover:text-purple-600 transition-colors"
+                     onClick={() => window.open('mailto:soporte@morna.com?subject=Soporte Morna&body=Hola, necesito ayuda con...', '_blank')}
+                   >
+                     <Mail className="w-4 h-4 mr-2" />
+                     soporte@morna.com
+                   </Button>
+                 </CardContent>
+               </Card>
+
+              <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer" onClick={() => setShowFaq(!showFaq)}>
+                <CardHeader className="text-center">
+                  <div className="mx-auto p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                    <HelpCircle className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="group-hover:text-orange-600 transition-colors">Ayuda Rápida</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-sm text-slate-600 mb-4">Consulta las preguntas frecuentes y resuelve tus dudas al instante</p>
+                  <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors">
+                    <Zap className="w-3 h-3 mr-1" />
+                    Instantáneo
+                  </Badge>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* FAQ Interactivo */}
+            {showFaq && (
+              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 animate-in slide-in-from-bottom-4 duration-500">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <HelpCircle className="h-5 w-5 text-orange-600" />
+                    Preguntas Frecuentes
+                  </CardTitle>
+                  <p className="text-sm text-slate-600">Encuentra respuestas rápidas a las preguntas más comunes</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Búsqueda y filtros */}
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                      <Input
+                        placeholder="Buscar en preguntas frecuentes..."
+                        value={faqSearch}
+                        onChange={(e) => setFaqSearch(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    
+                    {/* Filtros por categoría */}
+                    <div className="flex flex-wrap gap-2">
+                      {categories.map(category => (
+                        <Badge
+                          key={category}
+                          variant={selectedCategory === category ? "default" : "outline"}
+                          className="cursor-pointer hover:bg-slate-100 transition-colors"
+                          onClick={() => setSelectedCategory(category)}
+                        >
+                          {category === 'all' ? 'Todas' : category}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Lista de FAQ */}
+                  <div className="space-y-3">
+                    {filteredFaq.length > 0 ? (
+                      filteredFaq.map(faq => (
+                        <div
+                          key={faq.id}
+                          className="border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:shadow-md transition-all duration-200"
+                          onClick={() => setOpenFaqId(openFaqId === faq.id ? undefined : faq.id)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Badge variant="secondary" className="text-xs">
+                                  {faq.category}
+                                </Badge>
+                              </div>
+                              <h4 className="font-medium text-gray-900">{faq.question}</h4>
+                            </div>
+                            <div className="ml-4 transition-transform duration-200">
+                              {openFaqId === faq.id ? (
+                                <ChevronUp className="w-5 h-5 text-slate-400" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-slate-400" />
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div 
+                            className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                              openFaqId === faq.id 
+                                ? 'max-h-96 opacity-100 mt-4' 
+                                : 'max-h-0 opacity-0'
+                            }`}
+                          >
+                            <div className="text-gray-700 whitespace-pre-line border-t pt-4">
+                              {faq.answer}
+                            </div>
+                            <div className="flex flex-wrap gap-1 mt-3">
+                              {faq.tags.map(tag => (
+                                <Badge key={tag} variant="outline" className="text-xs">
+                                  #{tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8">
+                        <HelpCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                        <p className="text-slate-600">No se encontraron preguntas que coincidan con tu búsqueda.</p>
+                        <Button 
+                          variant="outline" 
+                          className="mt-2"
+                          onClick={() => {
+                            setFaqSearch('');
+                            setSelectedCategory('all');
+                          }}
+                        >
+                          Limpiar filtros
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-4"
+                    onClick={() => setShowFaq(false)}
+                  >
+                    Cerrar Preguntas Frecuentes
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Horarios de Atención */}
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <HelpCircle className="h-5 w-5 text-yellow-600" />
-                  Preguntas Frecuentes
+                  <Clock className="h-5 w-5 text-blue-600" />
+                  Horarios de Atención
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <style jsx>{`
-                  .faq-answer {
-                    max-height: 0;
-                    opacity: 0;
-                    transform: translateY(-8px);
-                    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-                    overflow: hidden;
-                  }
-                  .faq-answer.expanded {
-                    max-height: 500px;
-                    opacity: 1;
-                    transform: translateY(0);
-                  }
-                `}</style>
-                <div className="space-y-3">
-                  {faqData.map(faq => (
-                    <div
-                      key={faq.id}
-                      className="border rounded-lg p-3 bg-white shadow-sm cursor-pointer"
-                      onClick={() => setOpenFaqId(openFaqId === faq.id ? undefined : faq.id)}
-                    >
-                      <span className="font-medium text-gray-900">{faq.question}</span>
-                      <div className={`faq-answer${openFaqId === faq.id ? ' expanded' : ''} mt-2 text-gray-700 whitespace-pre-line`}>
-                        {openFaqId === faq.id && faq.answer}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-slate-800">Lunes a Viernes</h4>
+                        <p className="text-slate-600">8:00 AM - 6:00 PM (GMT-4)</p>
                       </div>
+                      <Badge className="bg-green-100 text-green-800">Abierto</Badge>
                     </div>
-                  ))}
+                    <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-slate-800">Sábados</h4>
+                        <p className="text-slate-600">9:00 AM - 2:00 PM (GMT-4)</p>
+                      </div>
+                      <Badge className="bg-orange-100 text-orange-800">Limitado</Badge>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-slate-800">Domingos</h4>
+                        <p className="text-slate-600">Cerrado</p>
+                      </div>
+                      <Badge className="bg-red-100 text-red-800">Cerrado</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-slate-800">Chat 24/7</h4>
+                        <p className="text-slate-600">Soporte automático</p>
+                      </div>
+                      <Badge className="bg-purple-100 text-purple-800">Disponible</Badge>
+                    </div>
+                  </div>
                 </div>
-                <Button className="mt-4 w-full bg-yellow-500 hover:bg-yellow-600 text-white" onClick={() => setShowFaq(false)}>Cerrar Preguntas</Button>
               </CardContent>
             </Card>
-          )}
+          </div>
+        </main>
+      </div>
 
-          {/* Mensaje de Estado */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-            <CardContent className="p-12 text-center">
-              <HelpCircle className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">Soporte en Desarrollo</h3>
-              <p className="text-slate-600">Esta sección está siendo desarrollada. Pronto tendrás acceso completo a nuestro sistema de soporte.</p>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-      {/* Modal de chat integrado */}
-      {(isChatOpen || isClosing) && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div
-            className={`bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 flex flex-col ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`}
-            style={{
-              minHeight: '520px',
-              transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s cubic-bezier(0.4,0,0.2,1)',
-              transform: 'scale(1)',
-              opacity: 1
-            }}
-          >
-            <style jsx global>{`
-              @keyframes fade-in {
-                0% {
-                  opacity: 0;
-                  transform: scale(0.95);
-                }
-                100% {
-                  opacity: 1;
-                  transform: scale(1);
-                }
-              }
-              @keyframes fade-out {
-                0% {
-                  opacity: 1;
-                  transform: scale(1);
-                }
-                100% {
-                  opacity: 0;
-                  transform: scale(0.95);
-                }
-              }
-              .animate-fade-in {
-                animation: fade-in 0.3s ease;
-              }
-              .animate-fade-out {
-                animation: fade-out 0.3s ease;
-              }
-            `}</style>
-            <div className="p-4 border-b flex justify-between items-center bg-green-50 rounded-t-2xl">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm">👨‍💼</span>
+      {/* Chat Modal Moderno */}
+      {isChatOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-end justify-end p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full flex flex-col h-[600px] animate-in slide-in-from-bottom-4 duration-300">
+            {/* Header del chat */}
+            <div className="p-4 border-b bg-gradient-to-r from-green-500 to-green-600 rounded-t-2xl text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <Bot className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Chat con Soporte</h3>
+                    <p className="text-sm text-green-100 flex items-center">
+                      <div className="w-2 h-2 bg-green-300 rounded-full mr-2 animate-pulse"></div>
+                      Carlos - En línea
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Chat con Soporte</h3>
-                  <p className="text-xs text-green-600">● Carlos - Agente disponible</p>
-                </div>
+                <button 
+                  onClick={closeChat}
+                  className="text-white/80 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button type="button" onClick={closeChat} className="text-gray-400 hover:text-gray-600">✕</button>
             </div>
-            <div className="p-4 space-y-3 flex-1 overflow-y-auto" id="chatMessages">
-              {chatMessages.map((msg, index) => (
-                <div key={index} className={`chat-message flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-xs px-4 py-2 rounded-lg ${msg.sender === "user" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-900"}`}>
+
+            {/* Mensajes */}
+            <div className="flex-1 p-4 space-y-4 overflow-y-auto bg-gray-50">
+              {chatMessages.map((msg) => (
+                <div 
+                  key={msg.id} 
+                  className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div className={`max-w-xs px-4 py-3 rounded-2xl ${
+                    msg.sender === "user" 
+                      ? "bg-green-600 text-white rounded-br-md" 
+                      : "bg-white text-gray-900 rounded-bl-md shadow-sm"
+                  }`}>
                     <p className="text-sm">{msg.message}</p>
-                    <p className={`text-xs ${msg.sender === "user" ? "text-green-100" : "text-gray-500"} mt-1`}>
+                    <p className={`text-xs mt-1 ${
+                      msg.sender === "user" ? "text-green-100" : "text-gray-500"
+                    }`}>
                       {msg.time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </p>
                   </div>
                 </div>
               ))}
+              
               {isAgentTyping && (
-                <div className="text-xs text-gray-500 typing-indicator">Carlos está escribiendo...</div>
+                <div className="flex justify-start">
+                  <div className="bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm px-4 py-3">
+                    <div className="flex items-center space-x-1">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      </div>
+                      <span className="text-xs text-gray-500 ml-2">Carlos está escribiendo...</span>
+                    </div>
+                  </div>
+                </div>
               )}
+              
               <div ref={messagesEndRef} />
             </div>
-            <div className="p-4 border-t bg-gray-50">
+
+            {/* Input del chat */}
+            <div className="p-4 border-t bg-white rounded-b-2xl">
               <form
-                onSubmit={e => {
+                onSubmit={(e) => {
                   e.preventDefault();
-                  const input = e.currentTarget.elements.namedItem('chatInput') as HTMLInputElement;
-                  if (input && input.value.trim()) {
-                    sendMessage(input.value);
-                    input.value = '';
+                  if (chatInput.trim()) {
+                    sendMessage(chatInput);
                   }
                 }}
                 className="flex space-x-2"
-                autoComplete="off"
               >
-                <input
+                <Input
                   type="text"
-                  id="chatInput"
-                  name="chatInput"
                   placeholder="Escribe tu mensaje..."
-                  className="flex-1 px-3 py-2 border rounded-full focus:ring-2 focus:ring-green-500"
-                  autoComplete="off"
-                  spellCheck={false}
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  className="flex-1"
+                  disabled={isAgentTyping}
                 />
-                <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">📤</button>
+                <Button 
+                  type="submit" 
+                  size="sm"
+                  disabled={!chatInput.trim() || isAgentTyping}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
               </form>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
