@@ -251,7 +251,10 @@ export default function TrackingPage() {
 
   const openModal = (order: TrackingOrder) => {
     setSelectedOrder(order);
-    setIsModalOpen(true);
+    // Pequeño delay para que se vea la animación de entrada
+    setTimeout(() => {
+      setIsModalOpen(true);
+    }, 10);
   };
 
   const closeModal = () => {
@@ -473,7 +476,7 @@ export default function TrackingPage() {
           className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 transition-all duration-300 ease-out ${
             isModalOpen 
               ? 'bg-black/50 backdrop-blur-sm opacity-100' 
-              : 'bg-black/0 backdrop-blur-none opacity-0 pointer-events-none'
+              : 'bg-black/0 backdrop-blur-none opacity-0'
           }`}
           onClick={closeModal}
         >
