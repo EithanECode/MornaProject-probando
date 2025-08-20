@@ -93,6 +93,7 @@ export default function ClienteSoporte() {
 
   // Estados del chat
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isChatClosing, setIsChatClosing] = useState(false);
   const [chatMessages, setChatMessages] = useState<{ 
     id: string; 
     sender: 'user' | 'agent'; 
@@ -119,22 +120,28 @@ export default function ClienteSoporte() {
 
   // Funciones del chat
   const openChat = () => {
+    setIsChatClosing(false);
     setIsChatOpen(true);
-    // Mensaje de bienvenida automático
-    if (chatMessages.length === 0) {
-      setTimeout(() => {
+    // Pequeño delay para que se vea la animación de entrada
+    setTimeout(() => {
+      // Mensaje de bienvenida automático
+      if (chatMessages.length === 0) {
         setChatMessages([{
           id: '1',
           sender: 'agent',
           message: '¡Hola! Soy Carlos, tu agente de soporte. ¿En qué puedo ayudarte hoy? 😊',
           time: new Date()
         }]);
-      }, 500);
-    }
+      }
+    }, 300);
   };
 
   const closeChat = () => {
-    setIsChatOpen(false);
+    setIsChatClosing(true);
+    setTimeout(() => {
+      setIsChatOpen(false);
+      setIsChatClosing(false);
+    }, 300);
   };
 
   const sendMessage = (message: string) => {
@@ -470,7 +477,11 @@ export default function ClienteSoporte() {
       {/* Chat Modal Moderno */}
       {isChatOpen && (
         <div className="fixed inset-0 z-[9999] flex items-end justify-end p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full flex flex-col h-[600px] animate-in slide-in-from-bottom-4 duration-300">
+          <div className={`bg-white rounded-2xl shadow-2xl max-w-md w-full flex flex-col h-[600px] transition-all duration-300 ease-out ${
+            isChatClosing 
+              ? 'translate-y-full scale-95 opacity-0' 
+              : 'animate-in slide-in-from-bottom-4 duration-500 ease-out scale-in-95'
+          }`}>
             {/* Header del chat */}
             <div className="p-4 border-b bg-gradient-to-r from-green-500 to-green-600 rounded-t-2xl text-white">
               <div className="flex items-center justify-between">
