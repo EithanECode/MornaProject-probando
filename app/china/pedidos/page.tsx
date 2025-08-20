@@ -7,6 +7,7 @@ import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import {
   Calculator,
@@ -120,10 +121,13 @@ export default function PedidosChina() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [mounted, setMounted] = useState(false);
 
+  // Estados para animaciones de salida
+  const [isModalCotizarClosing, setIsModalCotizarClosing] = useState(false);
+  const [isModalDetalleClosing, setIsModalDetalleClosing] = useState(false);
+
   // Filtros
-  const [filtroEstado, setFiltroEstado] = useState('');
+  const [filtroEstado, setFiltroEstado] = useState('todos');
   const [filtroCliente, setFiltroCliente] = useState('');
-  const [filtroPrioridad, setFiltroPrioridad] = useState('');
 
   // Refs para cerrar modales
   const modalCotizarRef = useRef<HTMLDivElement>(null);
@@ -137,16 +141,33 @@ export default function PedidosChina() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalCotizar.open && modalCotizarRef.current && !modalCotizarRef.current.contains(event.target as Node)) {
-        setModalCotizar({open: false});
+        closeModalCotizar();
       }
       if (modalDetalle.open && modalDetalleRef.current && !modalDetalleRef.current.contains(event.target as Node)) {
-        setModalDetalle({open: false});
+        closeModalDetalle();
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [modalCotizar.open, modalDetalle.open]);
+
+  // Funciones para cerrar modales con animación
+  const closeModalCotizar = () => {
+    setIsModalCotizarClosing(true);
+    setTimeout(() => {
+      setModalCotizar({open: false});
+      setIsModalCotizarClosing(false);
+    }, 300);
+  };
+
+  const closeModalDetalle = () => {
+    setIsModalDetalleClosing(true);
+    setTimeout(() => {
+      setModalDetalle({open: false});
+      setIsModalDetalleClosing(false);
+    }, 300);
+  };
 
   // Stats
   const stats = {
@@ -159,10 +180,9 @@ export default function PedidosChina() {
   };
 
   const pedidosFiltrados = pedidos.filter(p => {
-    const estadoOk = !filtroEstado || p.estado === filtroEstado;
+    const estadoOk = filtroEstado === 'todos' || p.estado === filtroEstado;
     const clienteOk = !filtroCliente || p.cliente.toLowerCase().includes(filtroCliente.toLowerCase());
-    const prioridadOk = !filtroPrioridad || p.prioridad === filtroPrioridad;
-    return estadoOk && clienteOk && prioridadOk;
+    return estadoOk && clienteOk;
   });
 
   // Cotizar pedido
@@ -191,23 +211,7 @@ export default function PedidosChina() {
     }
   };
 
-  const getPriorityColor = (prioridad: string) => {
-    switch (prioridad) {
-      case 'alta': return 'bg-red-100 text-red-800 border-red-200';
-      case 'media': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'baja': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
 
-  const getPriorityText = (prioridad: string) => {
-    switch (prioridad) {
-      case 'alta': return 'Alta';
-      case 'media': return 'Media';
-      case 'baja': return 'Baja';
-      default: return 'Desconocida';
-    }
-  };
 
   if (!mounted) {
     return (
@@ -340,33 +344,21 @@ export default function PedidosChina() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="space-y-2">
                    <label className="text-sm font-medium text-slate-700">Estado</label>
-                   <select 
-                     value={filtroEstado} 
-                     onChange={(e) => setFiltroEstado(e.target.value)}
-                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                   >
-                     <option value="">Todos los estados</option>
-                     <option value="pendiente">Pendientes</option>
-                     <option value="cotizado">Cotizados</option>
-                     <option value="procesando">Procesando</option>
-                     <option value="enviado">Enviados</option>
-                   </select>
-                 </div>
-                 <div className="space-y-2">
-                   <label className="text-sm font-medium text-slate-700">Prioridad</label>
-                   <select 
-                     value={filtroPrioridad} 
-                     onChange={(e) => setFiltroPrioridad(e.target.value)}
-                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                   >
-                     <option value="">Todas las prioridades</option>
-                     <option value="alta">Alta</option>
-                     <option value="media">Media</option>
-                     <option value="baja">Baja</option>
-                   </select>
+                                       <Select value={filtroEstado} onValueChange={setFiltroEstado}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todos los estados" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="todos">Todos</SelectItem>
+                        <SelectItem value="pendiente">Pendientes</SelectItem>
+                        <SelectItem value="cotizado">Cotizados</SelectItem>
+                        <SelectItem value="procesando">Procesando</SelectItem>
+                        <SelectItem value="enviado">Enviados</SelectItem>
+                      </SelectContent>
+                    </Select>
                  </div>
                  <div className="space-y-2">
                    <label className="text-sm font-medium text-slate-700">Buscar Cliente</label>
@@ -414,12 +406,9 @@ export default function PedidosChina() {
                         <Package className="h-5 w-5 text-blue-600" />
                       </div>
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-slate-900">#{pedido.id}</h3>
-                          <Badge className={`${getPriorityColor(pedido.prioridad)} border`}>
-                            {getPriorityText(pedido.prioridad)}
-                          </Badge>
-                        </div>
+                                                 <div className="flex items-center gap-2">
+                           <h3 className="font-semibold text-slate-900">#{pedido.id}</h3>
+                         </div>
                         <p className="text-sm text-slate-600">{pedido.producto}</p>
                         <div className="flex items-center gap-4 text-xs text-slate-500">
                           <span className="flex items-center gap-1">
@@ -493,23 +482,27 @@ export default function PedidosChina() {
           </Card>
         </div>
 
-        {/* Modal Cotizar */}
-        {modalCotizar.open && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
-            <div 
-              ref={modalCotizarRef}
-              className="bg-white rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-300"
-            >
+                 {/* Modal Cotizar */}
+         {modalCotizar.open && (
+           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
+             <div 
+               ref={modalCotizarRef}
+               className={`bg-white rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ${
+                 isModalCotizarClosing 
+                   ? 'translate-y-full scale-95 opacity-0' 
+                   : 'animate-in slide-in-from-bottom-4 duration-300'
+               }`}
+             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-slate-900">Cotizar Pedido</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setModalCotizar({open: false})}
-                  className="h-8 w-8 p-0"
-                >
-                  <span className="text-2xl">×</span>
-                </Button>
+                                 <Button
+                   variant="ghost"
+                   size="sm"
+                   onClick={closeModalCotizar}
+                   className="h-8 w-8 p-0"
+                 >
+                   <span className="text-2xl">×</span>
+                 </Button>
               </div>
               <form onSubmit={e => {
                 e.preventDefault();
@@ -568,13 +561,13 @@ export default function PedidosChina() {
                   </div>
                 </div>
                 <div className="flex justify-end space-x-3 pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setModalCotizar({open: false})}
-                  >
-                    Cancelar
-                  </Button>
+                                     <Button
+                     type="button"
+                     variant="outline"
+                     onClick={closeModalCotizar}
+                   >
+                     Cancelar
+                   </Button>
                   <Button
                     type="submit"
                     className="bg-blue-600 hover:bg-blue-700"
@@ -587,23 +580,27 @@ export default function PedidosChina() {
           </div>
         )}
 
-        {/* Modal Detalle */}
-        {modalDetalle.open && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
-            <div 
-              ref={modalDetalleRef}
-              className="bg-white rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-300"
-            >
+                 {/* Modal Detalle */}
+         {modalDetalle.open && (
+           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
+             <div 
+               ref={modalDetalleRef}
+               className={`bg-white rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ${
+                 isModalDetalleClosing 
+                   ? 'translate-y-full scale-95 opacity-0' 
+                   : 'animate-in slide-in-from-bottom-4 duration-300'
+               }`}
+             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-slate-900">Detalles del Pedido</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setModalDetalle({open: false})}
-                  className="h-8 w-8 p-0"
-                >
-                  <span className="text-2xl">×</span>
-                </Button>
+                                 <Button
+                   variant="ghost"
+                   size="sm"
+                   onClick={closeModalDetalle}
+                   className="h-8 w-8 p-0"
+                 >
+                   <span className="text-2xl">×</span>
+                 </Button>
               </div>
               <div className="space-y-6">
                 <div className="bg-gradient-to-r from-slate-50 to-blue-50 p-4 rounded-lg border border-slate-200">
@@ -638,12 +635,7 @@ export default function PedidosChina() {
                         {getStatusText(modalDetalle.pedido?.estado || '')}
                       </Badge>
                     </div>
-                    <div>
-                      <p className="font-medium text-slate-700">Prioridad:</p>
-                      <Badge className={`${getPriorityColor(modalDetalle.pedido?.prioridad || '')} border`}>
-                        {getPriorityText(modalDetalle.pedido?.prioridad || '')}
-                      </Badge>
-                    </div>
+                    
                     <div>
                       <p className="font-medium text-slate-700">Especificaciones:</p>
                       <p className="text-slate-600">{modalDetalle.pedido?.especificaciones || 'N/A'}</p>
