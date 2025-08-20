@@ -258,7 +258,7 @@ export default function TrackingPage() {
     setIsModalOpen(false);
     setTimeout(() => {
       setSelectedOrder(null);
-    }, 200);
+    }, 300); // Aumentado para que coincida con la duración de la transición
   };
 
   const getStatusColor = (status: string) => {
@@ -311,251 +311,253 @@ export default function TrackingPage() {
   if (!mounted) return null;
 
   return (
-    <div className={`min-h-screen flex overflow-x-hidden ${theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
-      <Sidebar 
-        isExpanded={sidebarExpanded} 
-        setIsExpanded={setSidebarExpanded}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onMobileMenuClose={() => setIsMobileMenuOpen(false)}
-        userRole="client"
-      />
-      
-      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'}`}>
-        <Header 
-          notifications={stats.inTransit} 
-          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Tracking"
-          subtitle="Sigue el estado de tus pedidos en tiempo real"
+    <>
+      <div className={`min-h-screen flex overflow-x-hidden ${theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
+        <Sidebar 
+          isExpanded={sidebarExpanded} 
+          setIsExpanded={setSidebarExpanded}
+          isMobileMenuOpen={isMobileMenuOpen}
+          onMobileMenuClose={() => setIsMobileMenuOpen(false)}
+          userRole="client"
         />
         
-        <div className="p-6 space-y-6">
-          {/* Header de la página */}
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold">Tracking de Pedidos</h1>
-                <p className="text-purple-100 mt-1">Sigue el estado de tus pedidos en tiempo real</p>
-              </div>
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold">{stats.total}</p>
-                  <p className="text-sm text-purple-100">Total Pedidos</p>
+        <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'}`}>
+          <Header 
+            notifications={stats.inTransit} 
+            onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            title="Tracking"
+            subtitle="Sigue el estado de tus pedidos en tiempo real"
+          />
+          
+          <div className="p-6 space-y-6">
+            {/* Header de la página */}
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold">Tracking de Pedidos</h1>
+                  <p className="text-purple-100 mt-1">Sigue el estado de tus pedidos en tiempo real</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold">{stats.inTransit}</p>
-                  <p className="text-sm text-purple-100">En Tránsito</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold">{stats.delivered}</p>
-                  <p className="text-sm text-purple-100">Entregados</p>
+                <div className="hidden md:flex items-center space-x-4">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">{stats.total}</p>
+                    <p className="text-sm text-purple-100">Total Pedidos</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">{stats.inTransit}</p>
+                    <p className="text-sm text-purple-100">En Tránsito</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">{stats.delivered}</p>
+                    <p className="text-sm text-purple-100">Entregados</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Filtros y búsqueda */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-            <CardContent className="p-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                    <Input
-                      placeholder="Buscar por número de tracking, producto o ID..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-48">
-                      <Filter className="w-4 h-4 mr-2" />
-                      <SelectValue placeholder="Filtrar por estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos los estados</SelectItem>
-                      <SelectItem value="pending">Pendiente</SelectItem>
-                      <SelectItem value="processing">Procesando</SelectItem>
-                      <SelectItem value="shipped">Enviado</SelectItem>
-                      <SelectItem value="in-transit">En Tránsito</SelectItem>
-                      <SelectItem value="delivered">Entregado</SelectItem>
-                      <SelectItem value="cancelled">Cancelado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <RefreshCw className="w-4 h-4" />
-                    Actualizar
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Lista de pedidos */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredOrders.map((order) => (
-              <Card key={order.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{order.product}</CardTitle>
-                      <p className="text-sm text-slate-600">{order.id}</p>
-                    </div>
-                    <Badge className={getStatusColor(order.status)}>
-                      {getStatusText(order.status)}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Información de tracking */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">Número de Tracking:</span>
-                      <span className="font-mono font-medium">{order.trackingNumber}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">Transportista:</span>
-                      <span className="font-medium">{order.carrier}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">Entrega Estimada:</span>
-                      <span className="font-medium">{order.estimatedDelivery}</span>
+            {/* Filtros y búsqueda */}
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
+              <CardContent className="p-4">
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                      <Input
+                        placeholder="Buscar por número de tracking, producto o ID..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                      />
                     </div>
                   </div>
-
-                  {/* Progreso */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">Progreso</span>
-                      <span className="font-bold">{order.progress}%</span>
-                    </div>
-                    <Progress value={order.progress} className="h-2" />
-                  </div>
-
-                  {/* Ubicación actual */}
-                  <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
-                    <MapPin className="w-4 h-4 text-blue-600" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{order.currentLocation}</p>
-                      <p className="text-xs text-slate-500">{order.lastUpdate}</p>
-                    </div>
-                  </div>
-
-                  {/* Acciones */}
                   <div className="flex gap-2">
-                                         <Button 
-                       variant="outline" 
-                       size="sm" 
-                       className="flex-1"
-                       onClick={() => openModal(order)}
-                     >
-                      <Eye className="w-4 h-4 mr-2" />
-                      Ver Detalles
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Share2 className="w-4 h-4" />
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-48">
+                        <Filter className="w-4 h-4 mr-2" />
+                        <SelectValue placeholder="Filtrar por estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos los estados</SelectItem>
+                        <SelectItem value="pending">Pendiente</SelectItem>
+                        <SelectItem value="processing">Procesando</SelectItem>
+                        <SelectItem value="shipped">Enviado</SelectItem>
+                        <SelectItem value="in-transit">En Tránsito</SelectItem>
+                        <SelectItem value="delivered">Entregado</SelectItem>
+                        <SelectItem value="cancelled">Cancelado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <RefreshCw className="w-4 h-4" />
+                      Actualizar
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+              </CardContent>
+            </Card>
 
-                     {/* Modal de detalles */}
-           {selectedOrder && (
-             <div 
-               className={`fixed inset-0 flex items-center justify-center z-50 p-4 transition-all duration-300 ${
-                 isModalOpen 
-                   ? 'bg-black/50 backdrop-blur-sm' 
-                   : 'bg-black/0 pointer-events-none'
-               }`}
-               onClick={closeModal}
-             >
-               <div 
-                 className={`bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transition-all duration-300 transform ${
-                   isModalOpen 
-                     ? 'scale-100 opacity-100 translate-y-0' 
-                     : 'scale-95 opacity-0 translate-y-4'
-                 }`}
-                 onClick={(e) => e.stopPropagation()}
-               >
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h2 className="text-2xl font-bold">{selectedOrder.product}</h2>
-                      <p className="text-slate-600">{selectedOrder.id}</p>
-                    </div>
-                                         <Button 
-                       variant="outline" 
-                       size="sm"
-                       onClick={closeModal}
-                     >
-                       ✕
-                     </Button>
-                  </div>
-
-                  {/* Información del tracking */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div className="space-y-2">
-                      <p className="text-sm text-slate-600">Número de Tracking</p>
-                      <p className="font-mono font-medium">{selectedOrder.trackingNumber}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-slate-600">Transportista</p>
-                      <p className="font-medium">{selectedOrder.carrier}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-slate-600">Entrega Estimada</p>
-                      <p className="font-medium">{selectedOrder.estimatedDelivery}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-slate-600">Estado Actual</p>
-                      <Badge className={getStatusColor(selectedOrder.status)}>
-                        {getStatusText(selectedOrder.status)}
+            {/* Lista de pedidos */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {filteredOrders.map((order) => (
+                <Card key={order.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-lg">{order.product}</CardTitle>
+                        <p className="text-sm text-slate-600">{order.id}</p>
+                      </div>
+                      <Badge className={getStatusColor(order.status)}>
+                        {getStatusText(order.status)}
                       </Badge>
                     </div>
-                  </div>
-
-                  {/* Timeline */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Historial de Seguimiento</h3>
-                    <div className="space-y-4">
-                      {selectedOrder.timeline.map((step, index) => (
-                        <div key={step.id} className="flex items-start space-x-4">
-                          <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                            step.completed 
-                              ? 'bg-green-500 text-white' 
-                              : 'bg-slate-200 text-slate-600'
-                          }`}>
-                            {step.completed ? (
-                              <CheckCircle className="w-4 h-4" />
-                            ) : (
-                              <span className="text-xs font-bold">{index + 1}</span>
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium">{step.status}</p>
-                            <p className="text-sm text-slate-600">{step.description}</p>
-                            <div className="flex items-center space-x-2 mt-1">
-                              <MapPin className="w-3 h-3 text-slate-400" />
-                              <span className="text-xs text-slate-500">{step.location}</span>
-                              <span className="text-xs text-slate-400">•</span>
-                              <span className="text-xs text-slate-500">{step.timestamp}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Información de tracking */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-slate-600">Número de Tracking:</span>
+                        <span className="font-mono font-medium">{order.trackingNumber}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-slate-600">Transportista:</span>
+                        <span className="font-medium">{order.carrier}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-slate-600">Entrega Estimada:</span>
+                        <span className="font-medium">{order.estimatedDelivery}</span>
+                      </div>
                     </div>
-                  </div>
+
+                    {/* Progreso */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-slate-600">Progreso</span>
+                        <span className="font-bold">{order.progress}%</span>
+                      </div>
+                      <Progress value={order.progress} className="h-2" />
+                    </div>
+
+                    {/* Ubicación actual */}
+                    <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
+                      <MapPin className="w-4 h-4 text-blue-600" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">{order.currentLocation}</p>
+                        <p className="text-xs text-slate-500">{order.lastUpdate}</p>
+                      </div>
+                    </div>
+
+                    {/* Acciones */}
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => openModal(order)}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        Ver Detalles
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Share2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </main>
+      </div>
+
+      {/* Modal de detalles - Fuera del layout principal */}
+      {selectedOrder && (
+        <div 
+          className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 transition-all duration-300 ease-out ${
+            isModalOpen 
+              ? 'bg-black/50 backdrop-blur-sm opacity-100' 
+              : 'bg-black/0 backdrop-blur-none opacity-0 pointer-events-none'
+          }`}
+          onClick={closeModal}
+        >
+          <div 
+            className={`bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ease-out transform ${
+              isModalOpen 
+                ? 'scale-100 opacity-100 translate-y-0' 
+                : 'scale-95 opacity-0 translate-y-8'
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold">{selectedOrder.product}</h2>
+                  <p className="text-slate-600">{selectedOrder.id}</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={closeModal}
+                >
+                  ✕
+                </Button>
+              </div>
+
+              {/* Información del tracking */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="space-y-2">
+                  <p className="text-sm text-slate-600">Número de Tracking</p>
+                  <p className="font-mono font-medium">{selectedOrder.trackingNumber}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm text-slate-600">Transportista</p>
+                  <p className="font-medium">{selectedOrder.carrier}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm text-slate-600">Entrega Estimada</p>
+                  <p className="font-medium">{selectedOrder.estimatedDelivery}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm text-slate-600">Estado Actual</p>
+                  <Badge className={getStatusColor(selectedOrder.status)}>
+                    {getStatusText(selectedOrder.status)}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Historial de Seguimiento</h3>
+                <div className="space-y-4">
+                  {selectedOrder.timeline.map((step, index) => (
+                    <div key={step.id} className="flex items-start space-x-4">
+                      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                        step.completed 
+                          ? 'bg-green-500 text-white' 
+                          : 'bg-slate-200 text-slate-600'
+                      }`}>
+                        {step.completed ? (
+                          <CheckCircle className="w-4 h-4" />
+                        ) : (
+                          <span className="text-xs font-bold">{index + 1}</span>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">{step.status}</p>
+                        <p className="text-sm text-slate-600">{step.description}</p>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <MapPin className="w-3 h-3 text-slate-400" />
+                          <span className="text-xs text-slate-500">{step.location}</span>
+                          <span className="text-xs text-slate-400">•</span>
+                          <span className="text-xs text-slate-500">{step.timestamp}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </main>
-    </div>
+      )}
+    </>
   );
 }
 

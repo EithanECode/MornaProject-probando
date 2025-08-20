@@ -24,7 +24,15 @@ import {
   FileText,
   Banknote,
   Wallet,
-  Zap
+  Zap,
+  Calendar,
+  TrendingUp,
+  TrendingDown,
+  Receipt,
+  ArrowRight,
+  CalendarDays,
+  Smartphone,
+  Globe
 } from 'lucide-react';
 
 // Tipos
@@ -34,39 +42,45 @@ interface Payment {
   product: string;
   amount: number;
   currency: 'USD' | 'BS';
-  status: 'pending' | 'paid' | 'failed' | 'refunded';
-  paymentMethod: 'transfer' | 'card' | 'cash' | 'crypto';
+  status: 'pending' | 'paid' | 'failed' | 'refunded' | 'processing';
+  paymentMethod: 'pago_movil' | 'transfer' | 'binance' | 'zelle' | 'paypal' | 'card';
   dueDate: string;
   createdAt: string;
+  paidAt?: string;
   description: string;
   paymentDetails?: {
     accountNumber?: string;
     bankName?: string;
     reference?: string;
+    phoneNumber?: string;
+    walletAddress?: string;
+    email?: string;
   };
+  receiptUrl?: string;
 }
 
-// Datos mock
+// Datos mock mejorados
 const PAYMENTS: Payment[] = [
   {
-    id: 'PAY-001',
+    id: 'PAY-2024-001',
     orderId: 'ORD-2024-001',
     product: 'iPhone 15 Pro Max',
     amount: 1350,
     currency: 'USD',
-    status: 'pending',
-    paymentMethod: 'transfer',
+    status: 'paid',
+    paymentMethod: 'pago_movil',
     dueDate: '2024-01-25',
     createdAt: '2024-01-15 10:30',
+    paidAt: '2024-01-15 14:45',
     description: 'Pago inicial - 50% del total',
     paymentDetails: {
-      accountNumber: '0102-1234-5678-9012',
-      bankName: 'Banco de Venezuela',
+      phoneNumber: '0412-123-4567',
       reference: 'PITA-001-2024'
-    }
+    },
+    receiptUrl: '/receipts/pay-001.pdf'
   },
   {
-    id: 'PAY-002',
+    id: 'PAY-2024-002',
     orderId: 'ORD-2024-002',
     product: 'MacBook Air M2',
     amount: 1250,
@@ -75,40 +89,114 @@ const PAYMENTS: Payment[] = [
     paymentMethod: 'transfer',
     dueDate: '2024-01-20',
     createdAt: '2024-01-16 14:20',
+    paidAt: '2024-01-16 16:30',
     description: 'Pago completo',
     paymentDetails: {
       accountNumber: '0102-1234-5678-9012',
       bankName: 'Banco de Venezuela',
       reference: 'PITA-002-2024'
-    }
+    },
+    receiptUrl: '/receipts/pay-002.pdf'
   },
   {
-    id: 'PAY-003',
+    id: 'PAY-2024-003',
     orderId: 'ORD-2024-003',
     product: 'AirPods Pro',
     amount: 450,
     currency: 'USD',
     status: 'paid',
-    paymentMethod: 'card',
+    paymentMethod: 'binance',
     dueDate: '2024-01-18',
     createdAt: '2024-01-14 16:45',
-    description: 'Pago con tarjeta de crédito'
+    paidAt: '2024-01-14 17:20',
+    description: 'Pago con USDT',
+    paymentDetails: {
+      walletAddress: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
+      reference: 'PITA-003-2024'
+    },
+    receiptUrl: '/receipts/pay-003.pdf'
   },
   {
-    id: 'PAY-004',
+    id: 'PAY-2024-004',
     orderId: 'ORD-2024-004',
     product: 'iPad Pro 12.9"',
     amount: 1050,
     currency: 'USD',
-    status: 'failed',
-    paymentMethod: 'transfer',
+    status: 'pending',
+    paymentMethod: 'zelle',
     dueDate: '2024-01-22',
     createdAt: '2024-01-17 09:15',
     description: 'Pago inicial - 30% del total',
     paymentDetails: {
+      email: 'pagos@pitaexpress.com',
+      reference: 'PITA-004-2024'
+    }
+  },
+  {
+    id: 'PAY-2024-005',
+    orderId: 'ORD-2024-005',
+    product: 'Apple Watch Series 9',
+    amount: 750,
+    currency: 'USD',
+    status: 'processing',
+    paymentMethod: 'paypal',
+    dueDate: '2024-01-24',
+    createdAt: '2024-01-18 11:30',
+    description: 'Pago con PayPal',
+    paymentDetails: {
+      email: 'pagos@pitaexpress.com',
+      reference: 'PITA-005-2024'
+    }
+  },
+  {
+    id: 'PAY-2024-006',
+    orderId: 'ORD-2024-006',
+    product: 'Samsung Galaxy S24',
+    amount: 1200,
+    currency: 'USD',
+    status: 'failed',
+    paymentMethod: 'transfer',
+    dueDate: '2024-01-26',
+    createdAt: '2024-01-19 15:45',
+    description: 'Pago completo - Transferencia fallida',
+    paymentDetails: {
       accountNumber: '0102-1234-5678-9012',
       bankName: 'Banco de Venezuela',
-      reference: 'PITA-004-2024'
+      reference: 'PITA-006-2024'
+    }
+  },
+  {
+    id: 'PAY-2024-007',
+    orderId: 'ORD-2024-007',
+    product: 'MacBook Pro M3',
+    amount: 2200,
+    currency: 'USD',
+    status: 'paid',
+    paymentMethod: 'card',
+    dueDate: '2024-01-28',
+    createdAt: '2024-01-20 10:15',
+    paidAt: '2024-01-20 10:45',
+    description: 'Pago con tarjeta de crédito',
+    paymentDetails: {
+      reference: 'PITA-007-2024'
+    },
+    receiptUrl: '/receipts/pay-007.pdf'
+  },
+  {
+    id: 'PAY-2024-008',
+    orderId: 'ORD-2024-008',
+    product: 'Sony WH-1000XM5',
+    amount: 380,
+    currency: 'USD',
+    status: 'refunded',
+    paymentMethod: 'pago_movil',
+    dueDate: '2024-01-30',
+    createdAt: '2024-01-21 13:20',
+    paidAt: '2024-01-21 14:00',
+    description: 'Pago reembolsado - Producto no disponible',
+    paymentDetails: {
+      phoneNumber: '0412-123-4567',
+      reference: 'PITA-008-2024'
     }
   }
 ];
@@ -121,6 +209,7 @@ export default function PagosPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [methodFilter, setMethodFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
 
   useEffect(() => {
     setMounted(true);
@@ -132,6 +221,7 @@ export default function PagosPage() {
       case 'paid': return 'bg-green-100 text-green-800 border-green-200';
       case 'failed': return 'bg-red-100 text-red-800 border-red-200';
       case 'refunded': return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
@@ -142,32 +232,47 @@ export default function PagosPage() {
       case 'paid': return 'Pagado';
       case 'failed': return 'Fallido';
       case 'refunded': return 'Reembolsado';
+      case 'processing': return 'Procesando';
       default: return 'Desconocido';
     }
   };
 
   const getMethodText = (method: string) => {
     switch (method) {
+      case 'pago_movil': return 'Pago Móvil';
       case 'transfer': return 'Transferencia';
+      case 'binance': return 'Binance USDT';
+      case 'zelle': return 'Zelle';
+      case 'paypal': return 'PayPal';
       case 'card': return 'Tarjeta';
-      case 'cash': return 'Efectivo';
-      case 'crypto': return 'Criptomonedas';
       default: return 'Desconocido';
     }
   };
 
   const getMethodIcon = (method: string) => {
     switch (method) {
+      case 'pago_movil': return <Smartphone className="h-4 w-4" />;
       case 'transfer': return <Banknote className="h-4 w-4" />;
+      case 'binance': return <Globe className="h-4 w-4" />;
+      case 'zelle': return <CreditCard className="h-4 w-4" />;
+      case 'paypal': return <CreditCard className="h-4 w-4" />;
       case 'card': return <CreditCard className="h-4 w-4" />;
-      case 'cash': return <Wallet className="h-4 w-4" />;
-      case 'crypto': return <Zap className="h-4 w-4" />;
       default: return <CreditCard className="h-4 w-4" />;
     }
   };
 
   const formatCurrency = (amount: number, currency: string) => {
     return `${currency === 'USD' ? '$' : 'Bs.'}${amount.toLocaleString()}`;
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   const filteredPayments = PAYMENTS.filter(payment => {
@@ -177,7 +282,29 @@ export default function PagosPage() {
       payment.id.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || payment.status === statusFilter;
     const matchesMethod = methodFilter === 'all' || payment.paymentMethod === methodFilter;
-    return matchesSearch && matchesStatus && matchesMethod;
+    
+    // Filtro por fecha
+    let matchesDate = true;
+    if (dateFilter !== 'all') {
+      const paymentDate = new Date(payment.createdAt);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - paymentDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      switch (dateFilter) {
+        case 'today':
+          matchesDate = diffDays === 0;
+          break;
+        case 'week':
+          matchesDate = diffDays <= 7;
+          break;
+        case 'month':
+          matchesDate = diffDays <= 30;
+          break;
+      }
+    }
+    
+    return matchesSearch && matchesStatus && matchesMethod && matchesDate;
   });
 
   const stats = {
@@ -185,7 +312,10 @@ export default function PagosPage() {
     pending: PAYMENTS.filter(p => p.status === 'pending').length,
     paid: PAYMENTS.filter(p => p.status === 'paid').length,
     failed: PAYMENTS.filter(p => p.status === 'failed').length,
+    processing: PAYMENTS.filter(p => p.status === 'processing').length,
+    refunded: PAYMENTS.filter(p => p.status === 'refunded').length,
     totalAmount: PAYMENTS.reduce((sum, p) => sum + p.amount, 0),
+    paidAmount: PAYMENTS.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0),
     pendingAmount: PAYMENTS.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0)
   };
 
@@ -209,175 +339,311 @@ export default function PagosPage() {
         <Header 
           notifications={stats.pending}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Pagos"
-          subtitle="Gestiona y realiza pagos de tus pedidos"
+          title="Historial de Pagos"
+          subtitle="Consulta y gestiona todos tus pagos realizados"
         />
         
-        <div className="p-6 space-y-6">
-          {/* Header de la página */}
-          <div className="bg-gradient-to-r from-red-600 to-pink-600 rounded-xl p-6 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold">Pagos</h1>
-                <p className="text-red-100 mt-1">Gestiona y realiza pagos de tus pedidos</p>
-              </div>
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold">{stats.total}</p>
-                  <p className="text-sm text-red-100">Total Pagos</p>
+        <div className="p-6 space-y-8">
+          {/* Header del Dashboard con Bienvenida */}
+          <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl p-8 text-white relative overflow-hidden">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-bold mb-2">Historial de Pagos</h2>
+                  <p className="text-green-100 text-lg">Panel de Control - Pagos</p>
+                  <p className="text-green-200 mt-2">Consulta y gestiona todos tus pagos realizados</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold">{stats.pending}</p>
-                  <p className="text-sm text-red-100">Pendientes</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold">{formatCurrency(stats.pendingAmount, 'USD')}</p>
-                  <p className="text-sm text-red-100">Por Pagar</p>
+                <div className="hidden lg:flex items-center space-x-6">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold">{stats.total}</div>
+                    <p className="text-green-100">Total Pagos</p>
+                  </div>
+                  <div className="w-px h-16 bg-white/20"></div>
+                  <div className="text-center">
+                    <div className="text-4xl font-bold">{formatCurrency(stats.paidAmount, 'USD')}</div>
+                    <p className="text-green-100">Total Pagado</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Filtros y búsqueda */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-            <CardContent className="p-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                    <Input
-                      placeholder="Buscar por producto, orden o ID..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-40">
-                      <Filter className="w-4 h-4 mr-2" />
-                      <SelectValue placeholder="Estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos los estados</SelectItem>
-                      <SelectItem value="pending">Pendiente</SelectItem>
-                      <SelectItem value="paid">Pagado</SelectItem>
-                      <SelectItem value="failed">Fallido</SelectItem>
-                      <SelectItem value="refunded">Reembolsado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={methodFilter} onValueChange={setMethodFilter}>
-                    <SelectTrigger className="w-40">
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      <SelectValue placeholder="Método" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos los métodos</SelectItem>
-                      <SelectItem value="transfer">Transferencia</SelectItem>
-                      <SelectItem value="card">Tarjeta</SelectItem>
-                      <SelectItem value="cash">Efectivo</SelectItem>
-                      <SelectItem value="crypto">Criptomonedas</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <RefreshCw className="w-4 h-4" />
-                    Actualizar
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Lista de Pagos */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredPayments.map((payment) => (
-              <Card key={payment.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{payment.product}</CardTitle>
-                      <p className="text-sm text-slate-600">{payment.id} - {payment.orderId}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Badge className={getStatusColor(payment.status)}>
-                        {getStatusText(payment.status)}
-                      </Badge>
-                    </div>
+          {/* Dashboard Principal */}
+          <div className="space-y-8">
+            {/* Estadísticas Principales */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-green-800">Pagados</CardTitle>
+                  <div className="p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <CheckCircle className="h-4 w-4 text-white" />
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <p className="text-sm text-slate-600">{payment.description}</p>
-                    <div className="flex items-center justify-between text-sm">
-                      <span>Monto:</span>
-                      <span className="font-bold text-lg">{formatCurrency(payment.amount, payment.currency)}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span>Método de Pago:</span>
-                      <div className="flex items-center gap-2">
-                        {getMethodIcon(payment.paymentMethod)}
-                        <span className="font-medium">{getMethodText(payment.paymentMethod)}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span>Fecha de Vencimiento:</span>
-                      <span className="font-medium">{payment.dueDate}</span>
-                    </div>
-                  </div>
-
-                  {payment.paymentDetails && (
-                    <div className="p-3 bg-slate-50 rounded-lg space-y-2">
-                      <p className="text-sm font-medium text-slate-700">Detalles de Pago:</p>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex justify-between">
-                          <span>Banco:</span>
-                          <span className="font-medium">{payment.paymentDetails.bankName}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Cuenta:</span>
-                          <span className="font-mono font-medium">{payment.paymentDetails.accountNumber}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Referencia:</span>
-                          <span className="font-mono font-medium">{payment.paymentDetails.reference}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Eye className="w-4 h-4 mr-2" />
-                      Ver Detalles
-                    </Button>
-                    {payment.status === 'pending' && (
-                      <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700">
-                        <DollarSign className="w-4 h-4 mr-2" />
-                        Realizar Pago
-                      </Button>
-                    )}
-                    {payment.status === 'paid' && (
-                      <Button variant="outline" size="sm">
-                        <Download className="w-4 h-4" />
-                      </Button>
-                    )}
+                <CardContent>
+                  <div className="text-3xl font-bold text-green-900">{stats.paid}</div>
+                  <p className="text-xs text-green-700">Transacciones exitosas</p>
+                  <div className="mt-2 w-full bg-green-200 rounded-full h-2">
+                    <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.paid / stats.total) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
 
-          {/* Estado vacío */}
-          {filteredPayments.length === 0 && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardContent className="p-12 text-center">
-                <CreditCard className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">No hay pagos</h3>
-                <p className="text-slate-600">No hay pagos disponibles o no hay coincidencias con los filtros.</p>
+              <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-yellow-800">Pendientes</CardTitle>
+                  <div className="p-2 bg-yellow-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Clock className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-yellow-900">{stats.pending}</div>
+                  <p className="text-xs text-yellow-700">Esperando confirmación</p>
+                  <div className="mt-2 w-full bg-yellow-200 rounded-full h-2">
+                    <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(stats.pending / stats.total) * 100}%`}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-blue-800">Procesando</CardTitle>
+                  <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <RefreshCw className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-blue-900">{stats.processing}</div>
+                  <p className="text-xs text-blue-700">En proceso</p>
+                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.processing / stats.total) * 100}%`}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-red-800">Fallidos</CardTitle>
+                  <div className="p-2 bg-red-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <AlertTriangle className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-red-900">{stats.failed}</div>
+                  <p className="text-xs text-red-700">Transacciones fallidas</p>
+                  <div className="mt-2 w-full bg-red-200 rounded-full h-2">
+                    <div className="bg-red-500 h-2 rounded-full" style={{width: `${(stats.failed / stats.total) * 100}%`}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Filtros y búsqueda */}
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold">Filtros y Búsqueda</CardTitle>
+                <p className="text-sm text-slate-600">Encuentra rápidamente tus transacciones</p>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                      <Input
+                        placeholder="Buscar por producto, orden o ID de pago..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-40">
+                        <Filter className="w-4 h-4 mr-2" />
+                        <SelectValue placeholder="Estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos los estados</SelectItem>
+                        <SelectItem value="pending">Pendiente</SelectItem>
+                        <SelectItem value="paid">Pagado</SelectItem>
+                        <SelectItem value="processing">Procesando</SelectItem>
+                        <SelectItem value="failed">Fallido</SelectItem>
+                        <SelectItem value="refunded">Reembolsado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={methodFilter} onValueChange={setMethodFilter}>
+                      <SelectTrigger className="w-40">
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        <SelectValue placeholder="Método" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos los métodos</SelectItem>
+                        <SelectItem value="pago_movil">Pago Móvil</SelectItem>
+                        <SelectItem value="transfer">Transferencia</SelectItem>
+                        <SelectItem value="binance">Binance USDT</SelectItem>
+                        <SelectItem value="zelle">Zelle</SelectItem>
+                        <SelectItem value="paypal">PayPal</SelectItem>
+                        <SelectItem value="card">Tarjeta</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={dateFilter} onValueChange={setDateFilter}>
+                      <SelectTrigger className="w-40">
+                        <CalendarDays className="w-4 h-4 mr-2" />
+                        <SelectValue placeholder="Fecha" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todas las fechas</SelectItem>
+                        <SelectItem value="today">Hoy</SelectItem>
+                        <SelectItem value="week">Esta semana</SelectItem>
+                        <SelectItem value="month">Este mes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <RefreshCw className="w-4 h-4" />
+                      Actualizar
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-          )}
+
+            {/* Lista de Pagos */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold">Transacciones ({filteredPayments.length})</h3>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  Exportar Historial
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {filteredPayments.map((payment) => (
+                  <Card key={payment.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-all duration-300 group">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-slate-100 rounded-lg group-hover:bg-slate-200 transition-colors">
+                            {getMethodIcon(payment.paymentMethod)}
+                          </div>
+                          <div>
+                            <CardTitle className="text-lg">{payment.product}</CardTitle>
+                            <p className="text-sm text-slate-600">{payment.id} - {payment.orderId}</p>
+                          </div>
+                        </div>
+                        <Badge className={getStatusColor(payment.status)}>
+                          {getStatusText(payment.status)}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-3">
+                        <p className="text-sm text-slate-600">{payment.description}</p>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-600">Monto:</span>
+                          <span className="font-bold text-xl text-slate-800">{formatCurrency(payment.amount, payment.currency)}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-600">Método:</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{getMethodText(payment.paymentMethod)}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-600">Fecha de pago:</span>
+                          <span className="font-medium">{formatDate(payment.createdAt)}</span>
+                        </div>
+                        {payment.paidAt && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-slate-600">Confirmado:</span>
+                            <span className="font-medium text-green-600">{formatDate(payment.paidAt)}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {payment.paymentDetails && (
+                        <div className="p-4 bg-slate-50 rounded-xl space-y-3">
+                          <p className="text-sm font-medium text-slate-700">Detalles de Pago:</p>
+                          <div className="space-y-2 text-xs">
+                            {payment.paymentDetails.bankName && (
+                              <div className="flex justify-between">
+                                <span className="text-slate-600">Banco:</span>
+                                <span className="font-medium">{payment.paymentDetails.bankName}</span>
+                              </div>
+                            )}
+                            {payment.paymentDetails.accountNumber && (
+                              <div className="flex justify-between">
+                                <span className="text-slate-600">Cuenta:</span>
+                                <span className="font-mono font-medium">{payment.paymentDetails.accountNumber}</span>
+                              </div>
+                            )}
+                            {payment.paymentDetails.phoneNumber && (
+                              <div className="flex justify-between">
+                                <span className="text-slate-600">Teléfono:</span>
+                                <span className="font-mono font-medium">{payment.paymentDetails.phoneNumber}</span>
+                              </div>
+                            )}
+                            {payment.paymentDetails.walletAddress && (
+                              <div className="flex justify-between">
+                                <span className="text-slate-600">Wallet:</span>
+                                <span className="font-mono font-medium text-xs">{payment.paymentDetails.walletAddress.slice(0, 10)}...</span>
+                              </div>
+                            )}
+                            {payment.paymentDetails.email && (
+                              <div className="flex justify-between">
+                                <span className="text-slate-600">Email:</span>
+                                <span className="font-medium">{payment.paymentDetails.email}</span>
+                              </div>
+                            )}
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Referencia:</span>
+                              <span className="font-mono font-medium">{payment.paymentDetails.reference}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="flex-1 group-hover:bg-slate-50 transition-colors">
+                          <Eye className="w-4 h-4 mr-2" />
+                          Ver Detalles
+                        </Button>
+                        {payment.status === 'pending' && (
+                          <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700">
+                            <DollarSign className="w-4 h-4 mr-2" />
+                            Realizar Pago
+                          </Button>
+                        )}
+                        {payment.status === 'paid' && payment.receiptUrl && (
+                          <Button variant="outline" size="sm" className="hover:bg-green-50 hover:border-green-300 transition-colors">
+                            <Download className="w-4 h-4" />
+                          </Button>
+                        )}
+                        {payment.status === 'failed' && (
+                          <Button variant="outline" size="sm" className="flex-1 hover:bg-red-50 hover:border-red-300 transition-colors">
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Reintentar
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Estado vacío */}
+            {filteredPayments.length === 0 && (
+              <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
+                <CardContent className="p-12 text-center">
+                  <Receipt className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">No hay transacciones</h3>
+                  <p className="text-slate-600">No hay pagos disponibles o no hay coincidencias con los filtros aplicados.</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </main>
     </div>
