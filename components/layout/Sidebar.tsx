@@ -144,38 +144,6 @@ const CHINA_MENU_ITEMS = [
     badge: 12,
     color: 'text-orange-500',
     path: '/china/pedidos'
-  },
-  {
-    id: 'cotizaciones',
-    label: 'Cotizaciones',
-    icon: Calculator,
-    badge: 15,
-    color: 'text-yellow-500',
-    path: '/china/cotizaciones'
-  },
-  {
-    id: 'logistica',
-    label: 'Logística',
-    icon: Truck,
-    badge: 7,
-    color: 'text-purple-500',
-    path: '/china/logistica'
-  },
-  {
-    id: 'proveedores',
-    label: 'Proveedores',
-    icon: Users,
-    badge: null,
-    color: 'text-green-500',
-    path: '/china/proveedores'
-  },
-  {
-    id: 'pagos',
-    label: 'Pagos',
-    icon: CreditCard,
-    badge: 4,
-    color: 'text-red-500',
-    path: '/china/pagos'
   }
 ];
 
