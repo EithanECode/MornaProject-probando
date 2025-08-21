@@ -12,6 +12,8 @@ type Props = {
 export default function LoginForm({ onNavigateToPasswordReset }: Props) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loginAnim, setLoginAnim] = useState<any | null>(null);
   const [animError, setAnimError] = useState<boolean>(false);
@@ -46,9 +48,33 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
+  const validateEmail = (value: string) => {
+    // Validación básica de email
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setErrorMsg("");
+    let valid = true;
+
+    // Validar email
+    if (!validateEmail(email)) {
+      setEmailError("Correo electrónico inválido");
+      valid = false;
+    } else {
+      setEmailError("");
+    }
+
+    // Validar contraseña
+    if (!password) {
+      setPasswordError("La contraseña es obligatoria");
+      valid = false;
+    } else {
+      setPasswordError("");
+    }
+
+    if (!valid) return;
     setLoading(true);
     try {
       const supabase = getSupabaseBrowserClient();
@@ -92,15 +118,19 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
       }
 
       const isClient = ["cliente", "client"].includes(normalized);
-      const isPrivileged = ["vzla", "venezuela", "china", "admin", "administrador", "administrator"].includes(normalized);
+      const isVzla = ["vzla", "venezuela"].includes(normalized);
+      const isChina = ["china"].includes(normalized);
+      const isAdmin = ["admin", "administrador", "administrator"].includes(normalized);
 
-      // Regla solicitada: Cliente -> login; Vzla/China/Admin -> dashboard (/gestion)
       if (isClient) {
-        window.location.href = "/login-register"; // de momento, mantener en inicio de sesión
-      } else if (isPrivileged) {
-        window.location.href = "/gestion";
+        window.location.href = "/cliente";
+      } else if (isVzla) {
+        window.location.href = "/venezuela";
+      } else if (isChina) {
+        window.location.href = "/china";
+      } else if (isAdmin) {
+        window.location.href = "/admin";
       } else {
-        // Fallback si no hay nivel definido: enviar al dashboard por compatibilidad
         window.location.href = "/gestion";
       }
     } catch (err: unknown) {
@@ -141,6 +171,9 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
         onChange={(e) => setEmail(e.target.value)}
         required
       />
+      {emailError && (
+        <p className="text-red-500 text-xs mt-1" role="alert">{emailError}</p>
+      )}
 
       <label htmlFor="login-password">Contraseña</label>
       <div className="password-input-container">
@@ -156,6 +189,9 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
           <i className={showPassword ? "fas fa-eye-slash" : "fas fa-eye"}></i>
         </span>
       </div>
+      {passwordError && (
+        <p className="text-red-500 text-xs mt-1" role="alert">{passwordError}</p>
+      )}
 
       <a href="#" className="forgot-password-link" onClick={handleForgotPassword}>
         ¿Olvidaste tu contraseña?
