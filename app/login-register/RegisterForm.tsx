@@ -131,17 +131,35 @@ export default function RegisterForm(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [successMsg, setSuccessMsg] = useState<string>("");
+  const [nameError, setNameError] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
+    let valid = true;
+    setNameError("");
+    setEmailError("");
+
+    // Validación de nombre
+    if (fullName.trim().length < 3 || !/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/.test(fullName.trim())) {
+      setNameError("El nombre debe tener al menos 3 letras y solo caracteres válidos.");
+      valid = false;
+    }
+    // Validación de email
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
+      setEmailError("El correo electrónico no es válido.");
+      valid = false;
+    }
+    // Validación de contraseñas
     if (password !== confirmPassword) {
       setPasswordMatchError(true);
-      return;
+      valid = false;
     }
     if (passwordStrength !== "very-strong") {
       alert('La contraseña debe ser "Muy Fuerte" para registrarse.');
-      return;
+      valid = false;
     }
+    if (!valid) return;
     setPasswordMatchError(false);
     try {
       setLoading(true);
@@ -159,9 +177,22 @@ export default function RegisterForm(): JSX.Element {
         },
       });
       if (error) throw error;
-      // Insertar nivel por defecto en tabla userlevel (lado servidor)
+      // Insertar datos en tabla clients
       const userId = data?.user?.id;
       if (userId) {
+        const { error: clientError } = await supabase
+          .from('clients')
+          .insert([
+            {
+              user_id: userId,
+              name: fullName,
+              correo: email
+            }
+          ]);
+        if (clientError) {
+          console.warn('Error insertando en clients:', clientError.message);
+        }
+        // Insertar nivel por defecto en tabla userlevel (lado servidor)
         try {
           const res = await fetch("/api/auth/after-signup", {
             method: "POST",
@@ -263,6 +294,9 @@ export default function RegisterForm(): JSX.Element {
         onChange={(e) => setFullName(e.target.value)}
         required
       />
+      {nameError && (
+        <p className="text-red-500 text-sm mt-1" role="alert">{nameError}</p>
+      )}
 
       <label htmlFor="register-email">Correo electrónico</label>
       <input
@@ -273,6 +307,9 @@ export default function RegisterForm(): JSX.Element {
         onChange={(e) => setEmail(e.target.value)}
         required
       />
+      {emailError && (
+        <p className="text-red-500 text-sm mt-1" role="alert">{emailError}</p>
+      )}
 
       <label htmlFor="register-password">Contraseña</label>
       <div className="password-input-container">
