@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@supabase/supabase-js';
+import { useClientContext } from '@/lib/ClientContext';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -82,6 +83,7 @@ interface NewOrderData {
   deliveryVenezuela: string;
   estimatedBudget: string;
   client_id: string;
+  client_name?: string;
 }
 
 interface PaymentMethod {
@@ -161,6 +163,7 @@ const MOCK_ORDERS: Order[] = [
 ];
 
 export default function MisPedidosPage() {
+  const { clientId, clientName, clientEmail, clientRole } = useClientContext();
 
   // Supabase client
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -190,16 +193,27 @@ export default function MisPedidosPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [newOrderData, setNewOrderData] = useState<NewOrderData>({
-  productName: '',
-  description: '',
-  quantity: 1,
-  specifications: '',
-  requestType: 'link',
-  deliveryType: 'doorToDoor',
-  deliveryVenezuela: '',
-  estimatedBudget: '',
-  client_id: ''
+    productName: '',
+    description: '',
+    quantity: 1,
+    specifications: '',
+    requestType: 'link',
+    deliveryType: 'doorToDoor',
+    deliveryVenezuela: '',
+    estimatedBudget: '',
+    client_id: '',
+    client_name: ''
   });
+
+  // Obtener el user_id del usuario autenticado
+  useEffect(() => {
+    // Usar los datos globales del contexto cliente
+    setNewOrderData((prev) => ({
+      ...prev,
+      client_id: clientId || '',
+      client_name: clientName || '',
+    }));
+  }, [clientId, clientName]);
 
   // Estados para animaciones de Lottie
   const [hoveredDeliveryOption, setHoveredDeliveryOption] = useState<string | null>(null);
@@ -425,14 +439,14 @@ export default function MisPedidosPage() {
   const handleSubmitOrder = () => {
   // ...existing code...
   console.log('handleSubmitOrder called', newOrderData);
-    // Generar nombre del PDF con fecha legible dd-mm-yyyy
-    const fechaObj = new Date();
-    const dd = String(fechaObj.getDate()).padStart(2, '0');
-    const mm = String(fechaObj.getMonth() + 1).padStart(2, '0');
-    const yyyy = fechaObj.getFullYear();
-    const fechaPedidoLegible = `${dd}-${mm}-${yyyy}`;
-    const numeroPedido = Date.now();
-    const nombrePDF = `${newOrderData.productName}_${fechaPedidoLegible}_${numeroPedido}_fc3f575f-f625-4902-8cbf-d60b9aeb7ee7_${newOrderData.deliveryVenezuela}.pdf`;
+  // Generar nombre del PDF con fecha legible dd-mm-yyyy
+  const fechaObj = new Date();
+  const dd = String(fechaObj.getDate()).padStart(2, '0');
+  const mm = String(fechaObj.getMonth() + 1).padStart(2, '0');
+  const yyyy = fechaObj.getFullYear();
+  const fechaPedidoLegible = `${dd}-${mm}-${yyyy}`;
+  const numeroPedido = Date.now();
+  const nombrePDF = `${newOrderData.productName}_${fechaPedidoLegible}_${numeroPedido}_${newOrderData.client_id}_${newOrderData.deliveryVenezuela}.pdf`;
 
     // PDF profesional con layout corporativo y SSR compatible
     (async () => {
@@ -454,17 +468,18 @@ export default function MisPedidosPage() {
 
       // Datos para la tabla
       const pedidoTable = [
-    ['ID Pedido', `${numeroPedido}`],
-    ['Cliente ID', 'fc3f575f-f625-4902-8cbf-d60b9aeb7ee7'],
-    ['Fecha', `${fechaPedidoLegible}`],
-    ['Tipo de Envío', `${newOrderData.deliveryType}`],
-    ['Entrega en Venezuela', `${newOrderData.deliveryVenezuela}`],
-    ['Producto', `${newOrderData.productName}`],
-    ['Cantidad', `${newOrderData.quantity}`],
-    ['Presupuesto Estimado', `$${newOrderData.estimatedBudget}`],
-    ['Descripción', newOrderData.description || '-'],
-    ['Especificaciones', newOrderData.specifications || '-'],
-        ];
+        ['ID Pedido', `${numeroPedido}`],
+        ['Cliente ID', `${newOrderData.client_id}`],
+        ['Nombre de Usuario', `${newOrderData.client_name || '-'}`],
+        ['Fecha', `${fechaPedidoLegible}`],
+        ['Tipo de Envío', `${newOrderData.deliveryType}`],
+        ['Entrega en Venezuela', `${newOrderData.deliveryVenezuela}`],
+        ['Producto', `${newOrderData.productName}`],
+        ['Cantidad', `${newOrderData.quantity}`],
+        ['Presupuesto Estimado', `$${newOrderData.estimatedBudget}`],
+        ['Descripción', newOrderData.description || '-'],
+        ['Especificaciones', newOrderData.specifications || '-'],
+      ];
       if (newOrderData.requestType === 'link') {
         pedidoTable.push(['URL', newOrderData.productUrl || '-']);
       }
@@ -608,39 +623,42 @@ export default function MisPedidosPage() {
       const pdfBlob = doc.output('blob');
       let folder: string = String(newOrderData.deliveryType);
       if (folder === 'doorToDoor') folder = 'door-to-door';
+      // Usar el client_id actual (autenticado) para el PDF y pedido
+  const nombrePDFCorr = `${newOrderData.productName}_${fechaPedidoLegible}_${numeroPedido}_${clientId || ''}_${newOrderData.deliveryVenezuela}.pdf`;
       supabase.storage
         .from('orders')
-        .upload(`${folder}/${nombrePDF}`, pdfBlob, {
+        .upload(`${folder}/${nombrePDFCorr}`, pdfBlob, {
           cacheControl: '3600',
           upsert: true,
           contentType: 'application/pdf',
         })
         .then(async ({ error }: { error: any }) => {
           if (error) {
-            alert('Error al subir el PDF al bucket.');
+            alert(`Error al subir el PDF al bucket: ${error.message || JSON.stringify(error)}`);
+            console.error('Supabase Storage upload error:', error);
           } else {
             // Obtener la URL pública del PDF
-            const pdfUrl = supabase.storage.from('orders').getPublicUrl(`${folder}/${nombrePDF}`).publicUrl;
+            const pdfUrl = supabase.storage.from('orders').getPublicUrl(`${folder}/${nombrePDFCorr}`).publicUrl;
 
             // Insertar pedido en la tabla 'orders'
-                const { error: dbError } = await supabase
-                  .from('orders')
-                  .insert([
-                    {
-                      client_id: 'fc3f575f-f625-4902-8cbf-d60b9aeb7ee7',
-                      asignedEChina: '822e0db7-ce0a-49ce-b060-c0991078815e',
-                      productName: newOrderData.productName,
-                      estimatedBudget: Number(newOrderData.estimatedBudget),
-                      deliveryType: newOrderData.deliveryType,
-                      shippingType: newOrderData.deliveryVenezuela,
-                      imgs: pdfUrl ? [pdfUrl] : [],
-                      links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
-                      state: 1,
-                      order_origin: 'vzla',
-                      elapsed_time: null,
-                      asignedEVzla: null
-                    }
-                  ]);
+            const { error: dbError } = await supabase
+              .from('orders')
+              .insert([
+                {
+                  client_id: clientId || '',
+                  asignedEChina: '822e0db7-ce0a-49ce-b060-c0991078815e',
+                  productName: newOrderData.productName,
+                  estimatedBudget: Number(newOrderData.estimatedBudget),
+                  deliveryType: newOrderData.deliveryType,
+                  shippingType: newOrderData.deliveryVenezuela,
+                  imgs: pdfUrl ? [pdfUrl] : [],
+                  links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
+                  state: 1,
+                  order_origin: 'vzla',
+                  elapsed_time: null,
+                  asignedEVzla: null
+                }
+              ]);
             if (dbError) {
               alert('Error al guardar el pedido en la base de datos.');
             } else {
