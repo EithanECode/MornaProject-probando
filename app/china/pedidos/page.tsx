@@ -1,6 +1,7 @@
 
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import Sidebar from '@/components/layout/Sidebar';
 import '../../animations/animations.css';
 import Header from '@/components/layout/Header';
@@ -50,72 +51,56 @@ interface Pedido {
   especificaciones?: string;
 }
 
-// Datos de ejemplo mejorados
-const pedidosEjemplo: Pedido[] = [
-  {
-    id: 1,
-    cliente: "María González",
-    producto: "iPhone 15 Pro Max",
-    cantidad: 2,
-    estado: "pendiente",
-    cotizado: false,
-    precio: null,
-    fecha: "2024-01-15",
-    prioridad: "alta",
-    especificaciones: "256GB, Titanio Natural"
-  },
-  {
-    id: 2,
-    cliente: "Carlos Ruiz",
-    producto: "MacBook Air M2",
-    cantidad: 1,
-    estado: "cotizado",
-    cotizado: true,
-    precio: 2500,
-    fecha: "2024-01-14",
-    prioridad: "media",
-    especificaciones: "13\", 8GB RAM, 256GB SSD"
-  },
-  {
-    id: 3,
-    cliente: "Ana Martínez",
-    producto: "AirPods Pro",
-    cantidad: 3,
-    estado: "pendiente",
-    cotizado: false,
-    precio: null,
-    fecha: "2024-01-13",
-    prioridad: "baja",
-    especificaciones: "2da Generación"
-  },
-  {
-    id: 4,
-    cliente: "Luis Pérez",
-    producto: "iPad Air",
-    cantidad: 1,
-    estado: "procesando",
-    cotizado: true,
-    precio: 1800,
-    fecha: "2024-01-12",
-    prioridad: "media",
-    especificaciones: "10.9\", 64GB, WiFi"
-  },
-  {
-    id: 5,
-    cliente: "Patricia López",
-    producto: "Samsung Galaxy S24",
-    cantidad: 2,
-    estado: "enviado",
-    cotizado: true,
-    precio: 3200,
-    fecha: "2024-01-11",
-    prioridad: "alta",
-    especificaciones: "256GB, Negro"
-  }
-];
+// Elimina los datos de ejemplo
 
 export default function PedidosChina() {
-  const [pedidos, setPedidos] = useState<Pedido[]>(pedidosEjemplo);
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [loading, setLoading] = useState(false);
+  // Mapear state numérico a texto usado en China
+  function mapStateToEstado(state: number): Pedido['estado'] {
+    if (state === 1) return 'pendiente';
+    if (state === 2) return 'procesando';
+    if (state === 3) return 'cotizado';
+    if (state === 4) return 'enviado';
+    return 'pendiente';
+  }
+
+  // Fetch pedidos reales filtrando por asignedEChina
+  async function fetchPedidos() {
+    setLoading(true);
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      const empleadoId = user?.id;
+      if (!empleadoId) {
+        setPedidos([]);
+        setLoading(false);
+        return;
+      }
+      const res = await fetch(`/china/pedidos/api/orders?asignedEChina=${empleadoId}`);
+      const data = await res.json();
+      if (!Array.isArray(data)) {
+        setPedidos([]);
+        setLoading(false);
+        return;
+      }
+      setPedidos(
+        data.map((order: any) => ({
+          id: order.id,
+          cliente: order.clientName || '',
+          producto: order.productName || '',
+          cantidad: order.quantity || 0,
+          estado: mapStateToEstado(order.state),
+          cotizado: order.state === 3,
+          precio: null, // No hay campo precio
+          fecha: order.created_at || '',
+          especificaciones: order.specifications || '',
+        }))
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
   const [modalCotizar, setModalCotizar] = useState<{open: boolean, pedido?: Pedido, precioCotizacion?: number}>({open: false, precioCotizacion: 0});
   const [modalDetalle, setModalDetalle] = useState<{open: boolean, pedido?: Pedido}>({open: false});
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -135,6 +120,7 @@ export default function PedidosChina() {
 
   useEffect(() => {
     setMounted(true);
+    fetchPedidos();
   }, []);
 
   // Cerrar modales al hacer clic fuera
@@ -386,9 +372,9 @@ export default function PedidosChina() {
                   Lista de Pedidos
                 </CardTitle>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={fetchPedidos} disabled={loading}>
                     <RefreshCw className="h-4 w-4" />
-                    Actualizar
+                    {loading ? 'Actualizando...' : 'Actualizar'}
                   </Button>
                   <Button variant="outline" size="sm" className="flex items-center gap-2">
                     <Download className="h-4 w-4" />
