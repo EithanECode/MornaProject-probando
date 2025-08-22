@@ -646,17 +646,18 @@ export default function MisPedidosPage() {
               .insert([
                 {
                   client_id: clientId || '',
-                  asignedEChina: '822e0db7-ce0a-49ce-b060-c0991078815e',
                   productName: newOrderData.productName,
+                  description: newOrderData.description,
+                  quantity: newOrderData.quantity,
                   estimatedBudget: Number(newOrderData.estimatedBudget),
-                  deliveryType: newOrderData.deliveryType,
-                  shippingType: newOrderData.deliveryVenezuela,
+                  deliveryType: newOrderData.deliveryVenezuela,
+                  shippingType: newOrderData.deliveryType,
                   imgs: pdfUrl ? [pdfUrl] : [],
                   links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
                   state: 1,
                   order_origin: 'vzla',
                   elapsed_time: null,
-                  asignedEVzla: null
+                  asignedEVzla: null,
                 }
               ]);
             if (dbError) {
