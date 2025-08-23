@@ -33,6 +33,7 @@ interface Order {
   shippingType: string;
   state: number;
   clientName: string;
+  client_id: string;
   description?: string;
 }
 
@@ -256,7 +257,7 @@ export default function VenezuelaPedidosPage() {
                           const numeroPedido = order.id;
                           const fechaPedidoLegible = new Date().toLocaleDateString('es-ES');
                           const newOrderData = {
-                            client_id: order.clientName,
+                            client_id: order.client_id, // Usar el client_id real
                             client_name: order.clientName,
                             deliveryType: order.deliveryType,
                             deliveryVenezuela: order.deliveryType,
@@ -300,7 +301,7 @@ export default function VenezuelaPedidosPage() {
 
                           const pedidoTable = [
                             ['ID del Pedido', `${numeroPedido}`],
-                            ['Cliente ID', `${order.clientName}`],
+                            ['Cliente ID', `${order.client_id || '-'}`],
                             ['Nombre de Usuario', `${order.clientName || '-'}`],
                             ['Nombre del Pedido', `${order.productName}`],
                             ['Cantidad', `${order.quantity}`],

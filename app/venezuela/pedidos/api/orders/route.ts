@@ -31,6 +31,7 @@ async function getOrdersWithClientName() {
       state: order.state,
       asignedEVzla: order.asignedEVzla,
       clientName: client ? client.name : null,
+      client_id: order.client_id, // Aseguramos que se incluya el client_id
       description: order.description ?? '',
     };
   });
@@ -41,17 +42,8 @@ import { NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-    // Obtener el parámetro de empleado (asignedEVzla) de la query
-    const url = new URL(request.url);
-    const empleadoId = url.searchParams.get('asignedEVzla');
-
-    let orders = await getOrdersWithClientName();
-    if (empleadoId) {
-      orders = orders.filter(order => order.asignedEVzla === empleadoId);
-    } else {
-      // Si no se pasa el parámetro, solo mostrar los que tienen asignedEVzla no null
-      orders = orders.filter(order => order.asignedEVzla);
-    }
+    // Obtener todos los pedidos, sin filtrar por asignedEVzla
+    const orders = await getOrdersWithClientName();
     return Response.json(orders);
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
