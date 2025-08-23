@@ -21,6 +21,7 @@ import {
   Clock,
   AlertTriangle
 } from 'lucide-react';
+// ...existing code...
 
 
 // Tipos para los pedidos reales
@@ -32,6 +33,7 @@ interface Order {
   shippingType: string;
   state: number;
   clientName: string;
+  description?: string;
 }
 
 
@@ -237,15 +239,256 @@ export default function VenezuelaPedidosPage() {
                       <div className="flex items-center justify-between text-sm">
                         <span>Tipo de Envío:</span>
                         <span className="font-medium">
+                          {order.shippingType === 'doorToDoor' && 'Puerta A Puerta'}
                           {order.shippingType === 'maritime' && 'Marítimo'}
                           {order.shippingType === 'air' && 'Aéreo'}
-                          {order.shippingType !== 'maritime' && order.shippingType !== 'air' && order.shippingType}
+                          {order.shippingType !== 'doorToDoor' && order.shippingType !== 'maritime' && order.shippingType !== 'air' && order.shippingType}
                         </span>
                       </div>
                       {/* Asignado EVzla removido */}
                     </div>
                     <div className="flex gap-2">
-                      <Button className="bg-blue-600 gap-x-1 text-white hover:bg-blue-700 hover:text-white card-animate-liftbounce flex-1" variant="outline" size="sm">
+                      <Button
+                        className="bg-blue-600 gap-x-1 text-white hover:bg-blue-700 hover:text-white card-animate-liftbounce flex-1"
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          const numeroPedido = order.id;
+                          const fechaPedidoLegible = new Date().toLocaleDateString('es-ES');
+                          const newOrderData = {
+                            client_id: order.clientName,
+                            client_name: order.clientName,
+                            deliveryType: order.deliveryType,
+                            deliveryVenezuela: order.deliveryType,
+                            productName: order.productName,
+                            quantity: order.quantity,
+                            estimatedBudget: '-',
+                            description: '-',
+                            specifications: '-',
+                            requestType: 'normal',
+                            productUrl: '',
+                            productImage: null,
+                          };
+                          // PDF profesional con layout corporativo y SSR compatible
+                          const { jsPDF } = await import('jspdf');
+                          const autoTable = (await import('jspdf-autotable')).default;
+                          const doc = new jsPDF();
+                          // Layout y colores
+                          const pageWidth = doc.internal.pageSize.getWidth();
+                          const pageHeight = doc.internal.pageSize.height;
+                          const margin = 15;
+                          const colors = {
+                            primary: [22, 120, 187] as [number, number, number],
+                            secondary: [44, 62, 80] as [number, number, number],
+                            light: [245, 248, 255] as [number, number, number],
+                            border: [180, 200, 220] as [number, number, number],
+                            text: [33, 37, 41] as [number, number, number]
+                          };
+                          // Datos para la tabla
+                          const estadoTexto =
+                            order.state === 4 ? 'Enviado' :
+                            order.state === 1 ? 'Pendiente' :
+                            order.state === 2 ? 'Revisando' :
+                            order.state === 3 ? 'Cotizado' :
+                            `${order.state}`;
+
+                          let tipoEntregaTexto = '-';
+                          if (order.deliveryType === 'warehouse') tipoEntregaTexto = 'Almacén';
+                          else if (order.deliveryType === 'office') tipoEntregaTexto = 'Oficina';
+                          else if (order.deliveryType === 'express') tipoEntregaTexto = 'Express';
+                          else if (order.deliveryType) tipoEntregaTexto = order.deliveryType;
+
+                          const pedidoTable = [
+                            ['ID del Pedido', `${numeroPedido}`],
+                            ['Cliente ID', `${order.clientName}`],
+                            ['Nombre de Usuario', `${order.clientName || '-'}`],
+                            ['Nombre del Pedido', `${order.productName}`],
+                            ['Cantidad', `${order.quantity}`],
+                            ['Fecha', `${fechaPedidoLegible}`],
+                            ['Tipo de Envío', `${
+                              order.shippingType === 'doorToDoor' ? 'Puerta A Puerta' :
+                              order.shippingType === 'maritime' ? 'Marítimo' :
+                              order.shippingType === 'air' ? 'Aéreo' :
+                              order.shippingType === 'express' ? 'Express' :
+                              order.shippingType === 'pickup' ? 'Recoger en sitio' :
+                              order.shippingType === 'warehouse' ? 'Almacén' :
+                              order.shippingType === 'office' ? 'Oficina' :
+                              order.shippingType || '-'
+                            }`],
+                            ['Tipo de Entrega', tipoEntregaTexto],
+                            ['Estado del Pedido', estadoTexto],
+                            ['Descripción', order.description && order.description.trim() !== '' ? order.description : '-'],
+                          ];
+                          if (newOrderData.requestType === 'link') {
+                            pedidoTable.push(['URL', newOrderData.productUrl || '-']);
+                          }
+                          // === ENCABEZADO PROFESIONAL ===
+                          doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                          doc.rect(0, 0, pageWidth, 35, 'F');
+                          doc.setFontSize(12);
+                          doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                          doc.setFont('helvetica', 'bold');
+                          doc.setFillColor(255, 255, 255);
+                          doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
+                          doc.text('PITA', margin + 10, 20, { align: 'center' });
+                          doc.setFontSize(24);
+                          doc.setTextColor(255, 255, 255);
+                          doc.text('RESUMEN DE PEDIDO', pageWidth / 2, 22, { align: 'center' });
+                          doc.setFontSize(10);
+                          doc.setTextColor(255, 255, 255);
+                          doc.text(`Pedido: #${numeroPedido}`, pageWidth - margin, 15, { align: 'right' });
+                          doc.text(`Fecha: ${fechaPedidoLegible}`, pageWidth - margin, 21, { align: 'right' });
+                          let currentY = 50;
+                          // === MANEJO POR TIPO DE PEDIDO ===
+                          if (newOrderData.requestType === 'photo' && newOrderData.productImage) {
+                            // Imagen y tabla lado a lado
+                            const imgWidth = 80;
+                            const imgHeight = 80;
+                            const imgX = margin;
+                            doc.setFillColor(240, 240, 240);
+                            doc.roundedRect(imgX - 2, currentY - 2, imgWidth + 4, imgHeight + 4, 3, 3, 'F');
+                            doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+                            doc.setLineWidth(1);
+                            doc.roundedRect(imgX, currentY, imgWidth, imgHeight, 2, 2, 'D');
+                            if (newOrderData.productImage) {
+                              const imgData = await new Promise<string>((resolve) => {
+                                const reader = new FileReader();
+                                reader.onload = (e) => resolve(e.target?.result as string);
+                                reader.readAsDataURL(newOrderData.productImage as unknown as Blob);
+                              });
+                              doc.addImage(imgData, 'JPEG', imgX, currentY, imgWidth, imgHeight);
+                            }
+                            // Se elimina el texto "Imagen del Producto" para un diseño más limpio
+                            const tableStartX = imgX + imgWidth + 15;
+                            const tableWidth = pageWidth - tableStartX - margin;
+                            autoTable(doc, {
+                              head: [['Campo', 'Valor']],
+                              body: pedidoTable,
+                              startY: currentY,
+                              margin: { left: tableStartX, right: margin },
+                              tableWidth: tableWidth,
+                              theme: 'grid',
+                              headStyles: {
+                                fillColor: colors.primary,
+                                textColor: [255, 255, 255] as [number, number, number],
+                                fontStyle: 'bold',
+                                fontSize: 12,
+                                halign: 'center',
+                                cellPadding: 3
+                              },
+                              bodyStyles: {
+                                fontSize: 10,
+                                cellPadding: 3,
+                                textColor: colors.text as [number, number, number]
+                              },
+                              alternateRowStyles: {
+                                fillColor: colors.light as [number, number, number]
+                              },
+                              columnStyles: {
+                                0: { cellWidth: 50, fontStyle: 'bold', textColor: colors.secondary as [number, number, number] },
+                                1: { cellWidth: tableWidth - 50 }
+                              }
+                            });
+                          } else if (newOrderData.requestType === 'link') {
+                            // Tabla ocupando todo el ancho
+                            doc.setFillColor(colors.light[0], colors.light[1], colors.light[2]);
+                            doc.rect(margin, currentY, pageWidth - (margin * 2), 12, 'F');
+                            doc.setFontSize(14);
+                            doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                            doc.text('DETALLES DEL PEDIDO', margin + 5, currentY + 8);
+                            currentY += 20;
+                            autoTable(doc, {
+                              head: [['Campo', 'Información']],
+                              body: pedidoTable,
+                              startY: currentY,
+                              margin: { left: margin, right: margin },
+                              theme: 'striped',
+                              headStyles: {
+                                fillColor: colors.primary,
+                                textColor: [255, 255, 255] as [number, number, number],
+                                fontStyle: 'bold',
+                                fontSize: 12,
+                                halign: 'center',
+                                cellPadding: 4
+                              },
+                              bodyStyles: {
+                                fontSize: 11,
+                                cellPadding: 4,
+                                textColor: colors.text as [number, number, number]
+                              },
+                              alternateRowStyles: {
+                                fillColor: colors.light as [number, number, number]
+                              },
+                              columnStyles: {
+                                0: { cellWidth: 60, fontStyle: 'bold', textColor: colors.secondary as [number, number, number] },
+                                1: { cellWidth: pageWidth - (margin * 2) - 60 }
+                              }
+                            });
+                            // Destacar la URL si existe
+                            if (newOrderData.productUrl) {
+                              // Mejorar la sección de URL para que se vea integrada y profesional
+                              // @ts-ignore
+                              const finalY = (doc as any).lastAutoTable?.finalY + 12;
+                              doc.setFontSize(10);
+                              doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+                              doc.text('URL del Producto:', margin, finalY + 6);
+                              doc.setFontSize(10);
+                              doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                              const urlText = doc.splitTextToSize(newOrderData.productUrl, pageWidth - (margin * 2));
+                              doc.text(urlText, margin, finalY + 14);
+                            }
+                          } else {
+                            // Tabla ocupando todo el ancho (pedido normal)
+                            autoTable(doc, {
+                              head: [['Campo', 'Información']],
+                              body: pedidoTable,
+                              startY: currentY,
+                              margin: { left: margin, right: margin },
+                              theme: 'striped',
+                              headStyles: {
+                                fillColor: colors.primary,
+                                textColor: [255, 255, 255] as [number, number, number],
+                                fontStyle: 'bold',
+                                fontSize: 12,
+                                halign: 'center',
+                                cellPadding: 4
+                              },
+                              bodyStyles: {
+                                fontSize: 11,
+                                cellPadding: 4,
+                                textColor: colors.text as [number, number, number]
+                              },
+                              alternateRowStyles: {
+                                fillColor: colors.light as [number, number, number]
+                              },
+                              columnStyles: {
+                                0: { cellWidth: 60, fontStyle: 'bold', textColor: colors.secondary as [number, number, number] },
+                                1: { cellWidth: pageWidth - (margin * 2) - 60 }
+                              }
+                            });
+                          }
+                          // === FOOTER PROFESIONAL ===
+                          const footerY = pageHeight - 25;
+                          // Footer profesional, compacto y alineado
+                          doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+                          doc.setLineWidth(0.5);
+                          doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+                          doc.setFontSize(9);
+                          doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+                          doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
+                          doc.setFontSize(8);
+                          doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                          doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
+                          doc.setFontSize(7);
+                          doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+                          doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+                          doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+                          // Abrir PDF en nueva pestaña
+                          const pdfBlob = doc.output('blob');
+                          const pdfUrl = URL.createObjectURL(pdfBlob);
+                          window.open(pdfUrl, '_blank');
+                        }}
+                      >
                         <Eye className="w-4 h-4" /> Ver
                       </Button>
                       <Button

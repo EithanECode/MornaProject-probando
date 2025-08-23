@@ -10,7 +10,7 @@ async function getOrdersWithClientName() {
   // Traer pedidos
   const { data: orders, error: ordersError } = await supabase
     .from('orders')
-    .select('id, quantity, productName, deliveryType, shippingType, state, client_id, asignedEVzla');
+    .select('id, quantity, productName, deliveryType, shippingType, state, client_id, asignedEVzla, description');
   if (ordersError) throw ordersError;
 
   // Traer clientes
@@ -31,15 +31,18 @@ async function getOrdersWithClientName() {
       state: order.state,
       asignedEVzla: order.asignedEVzla,
       clientName: client ? client.name : null,
+      description: order.description ?? '',
     };
   });
 }
 
 // API Route para Next.js App Router (app router)
-export async function GET() {
+import { NextRequest } from 'next/server';
+
+export async function GET(request: NextRequest) {
   try {
     // Obtener el parámetro de empleado (asignedEVzla) de la query
-    const url = new URL(globalThis.request?.url || '', 'http://localhost');
+    const url = new URL(request.url);
     const empleadoId = url.searchParams.get('asignedEVzla');
 
     let orders = await getOrdersWithClientName();
