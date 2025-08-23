@@ -632,35 +632,42 @@ export default function MisPedidosPage() {
           upsert: true,
           contentType: 'application/pdf',
         })
-        .then(async ({ error }: { error: any }) => {
+        .then(async (result: any) => {
+          const { error } = result;
           if (error) {
             alert(`Error al subir el PDF al bucket: ${error.message || JSON.stringify(error)}`);
             console.error('Supabase Storage upload error:', error);
           } else {
-            // Obtener la URL pública del PDF
-            const pdfUrl = supabase.storage.from('orders').getPublicUrl(`${folder}/${nombrePDFCorr}`).publicUrl;
+            // Log del resultado de la subida
+            console.log('Resultado de upload:', result);
+            // Construir el URL público manualmente
+            const pdfUrl = `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${folder}/${nombrePDFCorr}`;
+            console.log('pdfUrl:', pdfUrl);
 
             // Insertar pedido en la tabla 'orders'
-            const { error: dbError } = await supabase
+            const pedidoInsert = {
+              client_id: clientId || '',
+              productName: newOrderData.productName,
+              description: newOrderData.description,
+              quantity: newOrderData.quantity,
+              estimatedBudget: Number(newOrderData.estimatedBudget),
+              deliveryType: newOrderData.deliveryVenezuela,
+              shippingType: newOrderData.deliveryType,
+              imgs: pdfUrl ? [pdfUrl] : [],
+              links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
+              pdfRoutes: pdfUrl,
+              state: 1,
+              order_origin: 'vzla',
+              elapsed_time: null,
+              asignedEVzla: null,
+            };
+            console.log('Insertando pedido en la tabla orders:', pedidoInsert);
+            const { error: dbInsertError } = await supabase
               .from('orders')
               .insert([
-                {
-                  client_id: clientId || '',
-                  productName: newOrderData.productName,
-                  description: newOrderData.description,
-                  quantity: newOrderData.quantity,
-                  estimatedBudget: Number(newOrderData.estimatedBudget),
-                  deliveryType: newOrderData.deliveryVenezuela,
-                  shippingType: newOrderData.deliveryType,
-                  imgs: pdfUrl ? [pdfUrl] : [],
-                  links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
-                  state: 1,
-                  order_origin: 'vzla',
-                  elapsed_time: null,
-                  asignedEVzla: null,
-                }
+                pedidoInsert
               ]);
-            if (dbError) {
+            if (dbInsertError) {
               alert('Error al guardar el pedido en la base de datos.');
             } else {
               setShowSuccessAnimation(true);
@@ -1513,14 +1520,6 @@ export default function MisPedidosPage() {
                           <Button variant="ghost" size="sm" className="h-6 px-2">
                             <MessageSquare className="h-3 w-3 mr-1" />
                             Soporte
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            className="h-6 px-2 bg-red-500 text-white hover:bg-red-600"
-                            onClick={() => setOrders(orders.filter(o => o.id !== order.id))}
-                          >
-                            Eliminar
                           </Button>
                         </div>
                       </div>
