@@ -10,7 +10,7 @@ async function getOrdersWithClientName() {
   // Traer pedidos
   const { data: orders, error: ordersError } = await supabase
     .from('orders')
-    .select('id, quantity, productName, deliveryType, shippingType, state, client_id, asignedEVzla, description');
+    .select('id, quantity, productName, deliveryType, shippingType, state, client_id, asignedEVzla, description, pdfRoutes');
   if (ordersError) throw ordersError;
 
   // Traer clientes
@@ -33,6 +33,7 @@ async function getOrdersWithClientName() {
       clientName: client ? client.name : null,
       client_id: order.client_id, // Aseguramos que se incluya el client_id
       description: order.description ?? '',
+      pdfRoutes: order.pdfRoutes ?? '',
     };
   });
 }
