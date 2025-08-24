@@ -9,7 +9,8 @@ async function getOrdersWithClientName() {
   // Traer pedidos
   const { data: orders, error: ordersError } = await supabase
     .from('orders')
-    .select('id, quantity, productName, deliveryType, shippingType, state, client_id, asignedEChina, created_at, description');
+  .select('id, quantity, productName, deliveryType, shippingType, state, client_id, asignedEChina, created_at, description, pdfRoutes, totalQuote')
+  .gt('state', 1);
   if (ordersError) throw ordersError;
 
   // Traer clientes
@@ -32,6 +33,8 @@ async function getOrdersWithClientName() {
       clientName: client ? client.name : null,
       created_at: order.created_at,
   specifications: order.description,
+  pdfRoutes: order.pdfRoutes ?? '',
+  totalQuote: order.totalQuote ?? null,
     };
   });
 }

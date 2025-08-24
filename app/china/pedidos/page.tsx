@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -28,7 +27,6 @@ import {
   Search,
   Filter,
   Plus,
-  Download,
   RefreshCw,
   MoreHorizontal,
   User,
@@ -46,9 +44,14 @@ interface Pedido {
   cotizado: boolean;
   precio: number | null;
   fecha: string;
-  prioridad: 'baja' | 'media' | 'alta';
+  prioridad?: 'baja' | 'media' | 'alta';
   proveedor?: string;
   especificaciones?: string;
+  // Ruta del PDF asociada al pedido
+  pdfRoutes?: string;
+  deliveryType?: string;
+  shippingType?: string;
+  totalQuote?: number | null;
 }
 
 // Elimina los datos de ejemplo
@@ -58,11 +61,11 @@ export default function PedidosChina() {
   const [loading, setLoading] = useState(false);
   // Mapear state numérico a texto usado en China
   function mapStateToEstado(state: number): Pedido['estado'] {
-    if (state === 1) return 'pendiente';
-    if (state === 2) return 'procesando';
-    if (state === 3) return 'cotizado';
-    if (state === 4) return 'enviado';
-    return 'pendiente';
+  if (state === 2) return 'pendiente';
+  if (state === 3) return 'cotizado';
+  if (state === 4) return 'procesando';
+  // Por defecto, tratar otros estados >1 como "procesando"
+  return 'pendiente';
   }
 
   // Fetch pedidos reales filtrando por asignedEChina
@@ -85,16 +88,22 @@ export default function PedidosChina() {
         return;
       }
       setPedidos(
-        data.map((order: any) => ({
+        data
+          .filter((order: any) => typeof order.state === 'number' ? order.state > 1 : true)
+          .map((order: any) => ({
           id: order.id,
           cliente: order.clientName || '',
           producto: order.productName || '',
           cantidad: order.quantity || 0,
-          estado: mapStateToEstado(order.state),
-          cotizado: order.state === 3,
-          precio: null, // No hay campo precio
+            estado: mapStateToEstado(order.state),
+            cotizado: order.state === 3 || (!!order.totalQuote && Number(order.totalQuote) > 0),
+            precio: order.totalQuote ? Number(order.totalQuote) / Math.max(1, Number(order.quantity || 1)) : null,
           fecha: order.created_at || '',
           especificaciones: order.specifications || '',
+          pdfRoutes: order.pdfRoutes || '',
+            deliveryType: order.deliveryType || '',
+            shippingType: order.shippingType || '',
+            totalQuote: order.totalQuote ?? null,
         }))
       );
     } finally {
@@ -172,9 +181,24 @@ export default function PedidosChina() {
   });
 
   // Cotizar pedido
-  const cotizarPedido = (id: number, precio: number) => {
-    setPedidos(pedidos.map(p => p.id === id ? { ...p, cotizado: true, estado: 'cotizado', precio } : p));
-    setModalCotizar({open: false});
+  const cotizarPedido = async (pedido: Pedido, precioUnitario: number) => {
+    const supabase = getSupabaseBrowserClient();
+    const total = Number(precioUnitario) * Number(pedido.cantidad || 0);
+
+    // 1) Actualizar totalQuote en la tabla orders
+    const { error: updateError } = await supabase
+      .from('orders')
+      .update({ totalQuote: total, state: 3 })
+      .eq('id', pedido.id);
+    if (updateError) {
+      alert('Error al actualizar la cotización en la base de datos.');
+      console.error('Error update totalQuote:', updateError);
+      return;
+    }
+  // Actualizar estado local y cerrar modal (sin PDF)
+  setPedidos(prev => prev.map(p => p.id === pedido.id ? { ...p, cotizado: true, estado: 'cotizado', precio: precioUnitario, totalQuote: total } : p));
+  setModalCotizar({ open: false });
+  setIsModalCotizarClosing(false);
   };
 
   const getStatusColor = (status: string) => {
@@ -371,14 +395,10 @@ export default function PedidosChina() {
                   <Package className="h-5 w-5" />
                   Lista de Pedidos
                 </CardTitle>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center">
                   <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={fetchPedidos} disabled={loading}>
                     <RefreshCw className="h-4 w-4" />
                     {loading ? 'Actualizando...' : 'Actualizar'}
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex items-center gap-2">
-                    <Download className="h-4 w-4" />
-                    Exportar
                   </Button>
                 </div>
               </div>
@@ -426,7 +446,14 @@ export default function PedidosChina() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setModalDetalle({open: true, pedido})}
+              onClick={() => {
+                            if (pedido.pdfRoutes) {
+                const bust = pedido.pdfRoutes.includes('?') ? `&t=${Date.now()}` : `?t=${Date.now()}`;
+                window.open(pedido.pdfRoutes + bust, '_blank', 'noopener,noreferrer');
+                            } else {
+                              alert('No hay PDF disponible para este pedido.');
+                            }
+                          }}
                           className="flex items-center gap-1"
                         >
                           <Eye className="h-4 w-4" />
@@ -494,7 +521,7 @@ export default function PedidosChina() {
                 e.preventDefault();
                 const precio = Number((e.target as any).precio.value);
                 if (precio > 0 && modalCotizar.pedido) {
-                  cotizarPedido(modalCotizar.pedido.id, precio);
+                  cotizarPedido(modalCotizar.pedido, precio);
                 }
               }} className="space-y-6">
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
@@ -566,78 +593,11 @@ export default function PedidosChina() {
           </div>
         )}
 
-                 {/* Modal Detalle */}
-         {modalDetalle.open && (
+                 {/* Modal Detalle desactivado: ahora el botón "Ver" abre el PDF en una nueva pestaña */}
+         {false && modalDetalle.open && (
            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
-             <div 
-               ref={modalDetalleRef}
-               className={`bg-white rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ${
-                 isModalDetalleClosing 
-                   ? 'translate-y-full scale-95 opacity-0' 
-                   : 'animate-in slide-in-from-bottom-4 duration-300'
-               }`}
-             >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-slate-900">Detalles del Pedido</h3>
-                                 <Button
-                   variant="ghost"
-                   size="sm"
-                   onClick={closeModalDetalle}
-                   className="h-8 w-8 p-0"
-                 >
-                   <span className="text-2xl">×</span>
-                 </Button>
-              </div>
-              <div className="space-y-6">
-                <div className="bg-gradient-to-r from-slate-50 to-blue-50 p-4 rounded-lg border border-slate-200">
-                  <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                    <Package className="h-4 w-4" />
-                    Información del Pedido
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="font-medium text-slate-700">ID del Pedido:</p>
-                      <p className="text-slate-600">#{modalDetalle.pedido?.id}</p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-slate-700">Cliente:</p>
-                      <p className="text-slate-600">{modalDetalle.pedido?.cliente}</p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-slate-700">Producto:</p>
-                      <p className="text-slate-600">{modalDetalle.pedido?.producto}</p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-slate-700">Cantidad:</p>
-                      <p className="text-slate-600">{modalDetalle.pedido?.cantidad}</p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-slate-700">Fecha:</p>
-                      <p className="text-slate-600">{modalDetalle.pedido?.fecha ? new Date(modalDetalle.pedido.fecha).toLocaleDateString('es-ES') : 'N/A'}</p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-slate-700">Estado:</p>
-                      <Badge className={`${getStatusColor(modalDetalle.pedido?.estado || '')} border`}>
-                        {getStatusText(modalDetalle.pedido?.estado || '')}
-                      </Badge>
-                    </div>
-                    
-                    <div>
-                      <p className="font-medium text-slate-700">Especificaciones:</p>
-                      <p className="text-slate-600">{modalDetalle.pedido?.especificaciones || 'N/A'}</p>
-                    </div>
-                    {modalDetalle.pedido?.precio && (
-                      <div>
-                        <p className="font-medium text-slate-700">Precio Cotizado:</p>
-                        <p className="text-green-600 font-semibold">${modalDetalle.pedido.precio.toLocaleString()}</p>
-                        <p className="text-slate-500 text-xs">Total: ${(modalDetalle.pedido.precio * modalDetalle.pedido.cantidad).toLocaleString()}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+             {/* Modal Detalle comentado intencionalmente para reuso futuro */}
+           </div>
         )}
       </main>
     </div>
