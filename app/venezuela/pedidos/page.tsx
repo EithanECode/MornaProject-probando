@@ -85,8 +85,16 @@ export default function VenezuelaPedidosPage() {
       (statusFilter === 'pending' && order.state === 1) ||
       (statusFilter === 'reviewing' && order.state === 2) ||
       (statusFilter === 'quoted' && order.state === 3) ||
-      (statusFilter === 'sent' && order.state === 4);
+      (statusFilter === 'processing' && order.state === 4);
     return matchesSearch && matchesStatus;
+  });
+
+  // Ordenar: siempre los de estado 1 primero
+  const sortedOrders = [...filteredOrders].sort((a, b) => {
+    const wa = a.state === 1 ? 0 : 1;
+    const wb = b.state === 1 ? 0 : 1;
+    if (wa !== wb) return wa - wb;
+    return 0;
   });
 
   if (!mounted) return null;
@@ -136,7 +144,7 @@ export default function VenezuelaPedidosPage() {
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold">{orders.filter(o => o.state === 4).length}</p>
-                  <p className="text-sm text-orange-100">ENVIADOS</p>
+                  <p className="text-sm text-orange-100">PROCESANDO</p>
                 </div>
               </div>
             </div>
@@ -168,7 +176,7 @@ export default function VenezuelaPedidosPage() {
                       <SelectItem value="pending">Pendiente</SelectItem>
                       <SelectItem value="reviewing">Revisando</SelectItem>
                       <SelectItem value="quoted">Cotizado</SelectItem>
-                      <SelectItem value="sent">Enviado</SelectItem>
+                      <SelectItem value="processing">Procesando</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button variant="outline" className="flex items-center gap-2" onClick={fetchOrders} disabled={loading}>
@@ -200,7 +208,7 @@ export default function VenezuelaPedidosPage() {
                 </CardContent>
               </Card>
                         ) : (
-                          filteredOrders.map((order) => (
+                          sortedOrders.map((order) => (
                             <Card key={order.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
                               <CardHeader>
                                 <div className="flex items-center justify-between">
@@ -219,7 +227,7 @@ export default function VenezuelaPedidosPage() {
                                       <Badge className="bg-purple-100 text-purple-800 border-purple-200">COTIZADO</Badge>
                                     )}
                                     {order.state === 4 && (
-                                      <Badge className="bg-blue-100 text-blue-800 border-blue-200">ENVIADO</Badge>
+                                      <Badge className="bg-blue-100 text-blue-800 border-blue-200">PROCESANDO</Badge>
                                     )}
                                   </div>
                                 </div>
@@ -269,13 +277,23 @@ export default function VenezuelaPedidosPage() {
                                   <Button
                                     size="sm"
                                     className="flex-1"
-                                    disabled={order.state === 3 || order.state === 4}
+                                    disabled={order.state !== 1 || loading}
                                     onClick={async () => {
-                                      if (order.state === 3 || order.state === 4) return;
+                                      if (order.state !== 1) return;
                                       try {
-                                        // ...lógica para enviar a China...
+                                        const res = await fetch('/venezuela/pedidos/api/send-to-china', {
+                                          method: 'PATCH',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ orderId: order.id })
+                                        });
+                                        if (!res.ok) {
+                                          const err = await res.json().catch(() => ({}));
+                                          throw new Error(err.error || 'No se pudo actualizar el pedido');
+                                        }
+                                        await fetchOrders();
                                       } catch (err) {
-                                        // ...manejo de error...
+                                        console.error(err);
+                                        alert((err as Error).message || 'Error al enviar a China');
                                       }
                                     }}
                                   >
