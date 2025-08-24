@@ -25,6 +25,9 @@ import {
 import VenezuelaFlag from '@/components/ui/common/VenezuelaFlag';
 import PitaLogo from '@/components/ui/common/PitaLogo';
 import { Badge } from '@/components/ui/badge';
+import { useClientContext } from '@/lib/ClientContext';
+import { useVzlaContext } from '@/lib/VzlaContext';
+import { useChinaContext } from '@/lib/ChinaContext';
 
 interface SidebarProps {
   isExpanded: boolean;
@@ -329,7 +332,43 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   const screenWidth = useScreenSize();
   
   const menuItems = getMenuItemsByRole(userRole);
-  const userInfo = getUserInfoByRole(userRole);
+
+  // Get dynamic user info from context if available
+  let userInfo: { name: string; email: string; flag?: string } = getUserInfoByRole(userRole);
+  if (userRole === 'client') {
+    try {
+      const clientCtx = useClientContext();
+      if (clientCtx?.clientName || clientCtx?.clientEmail) {
+        userInfo = {
+          name: clientCtx.clientName || userInfo.name,
+          email: clientCtx.clientEmail || userInfo.email,
+          flag: userInfo.flag
+        };
+      }
+    } catch {}
+  } else if (userRole === 'venezuela') {
+    try {
+      const vzlaCtx = useVzlaContext();
+      if (vzlaCtx?.vzlaName || vzlaCtx?.vzlaEmail) {
+        userInfo = {
+          name: vzlaCtx.vzlaName || userInfo.name,
+          email: vzlaCtx.vzlaEmail || userInfo.email,
+          flag: userInfo.flag
+        };
+      }
+    } catch {}
+  } else if (userRole === 'china') {
+    try {
+      const chinaCtx = useChinaContext();
+      if (chinaCtx?.chinaName || chinaCtx?.chinaEmail) {
+        userInfo = {
+          name: chinaCtx.chinaName || userInfo.name,
+          email: chinaCtx.chinaEmail || userInfo.email,
+          flag: userInfo.flag
+        };
+      }
+    } catch {}
+  }
   
   const activeItem = useActivePage(menuItems);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -348,7 +387,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         : 'w-20';
     
     const iconSize = 'w-4 h-4';
-    const logoSize = isExpanded ? (screenWidth < 1440 ? 'sm' : 'md') : 'md';
+  const logoSize: 'sm' | 'md' | 'lg' | 'xl' = isExpanded ? (screenWidth < 1440 ? 'sm' : 'md') : 'md';
     const padding = isExpanded ? 'p-4' : 'p-2';
     const buttonPadding = isExpanded ? 'px-4 py-3' : 'p-2';
     
@@ -486,6 +525,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
               <div className="whitespace-nowrap">
                 <h1 className={`font-bold text-white ${responsiveConfig.titleSize}`}>Pita Express</h1>
                 <p className={`text-slate-400 ${responsiveConfig.subtitleSize}`}>{userInfo.name}</p>
+                <p className={`text-slate-400 ${responsiveConfig.subtitleSize}`}>{userInfo.email}</p>
               </div>
             </div>
           </div>
@@ -502,7 +542,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           <div className={`flex items-center space-x-3 ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
             <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center`}>
               {userRole === 'client' ? (
-                <VenezuelaFlag size="sm" animated={true} />
+                <VenezuelaFlag size={"sm"} animated={true} />
               ) : (
                 <span className="text-lg">{userInfo.flag}</span>
               )}
@@ -548,7 +588,16 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           })}
 
           {/* Logout */}
-          <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ease-out group border border-red-500/20">
+          <button
+            className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ease-out group border border-red-500/20"
+            onClick={() => {
+              // Elimina el token del almacenamiento local
+              localStorage.removeItem('token');
+              sessionStorage.removeItem('token');
+              // Redirige al login-register
+              window.location.href = '/login-register';
+            }}
+          >
             <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-red-500/20`}>
               <LogOut className={responsiveConfig.iconSize} />
             </div>
