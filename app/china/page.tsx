@@ -1,6 +1,7 @@
 "use client";
 import "../animations/animations.css";
 import { useState, useEffect } from "react";
+import { useChinaContext } from '@/lib/ChinaContext';
 import { useTheme } from "next-themes";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
@@ -81,9 +82,30 @@ interface WarehouseItem {
 }
 
 export default function ChinaDashboard() {
+  // Pedidos asignados al empleado China autenticado
+  const { data: chinaOrders, loading: ordersLoading, error: ordersError } = require('@/hooks/use-china-orders').useChinaOrders();
+  // Obtener información de los clientes
+  const { data: clientsInfo } = require('@/hooks/use-clients-info').useClientsInfo();
+  // Nombres de los clientes de los 3 pedidos más recientes
+  const pedidosRecientes = (chinaOrders ?? []).slice(-3).reverse();
+  const nombresClientesRecientes = pedidosRecientes.map(order =>
+    clientsInfo?.find((client: any) => client.user_id === order.client_id)?.name ?? order.client_id
+  );
+
+  // Obtener el id del empleado de China autenticado
+  const { chinaId } = useChinaContext();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
+  
+  // Variables de pedidos
+  const totalPedidos = chinaOrders?.length ?? 0;
+  const pedidosPendientes = chinaOrders?.filter((order: any) => order.state === 1).length ?? 0;
+  const pedidosEnProceso = chinaOrders?.filter((order: any) => order.state === 2).length ?? 0;
+  const pedidosEnviados = chinaOrders?.filter((order: any) => order.state === 3).length ?? 0;
+  const reputaciones = chinaOrders?.map((order: any) => order.reputation).filter((r: number | undefined) => typeof r === 'number') ?? [];
+  const promedioReputacion = reputaciones.length > 0 ? (reputaciones.reduce((acc: number, r: number) => acc + r, 0) / reputaciones.length) : 0;
+  const sumaPresupuestos = chinaOrders?.reduce((acc: number, order: any) => acc + (order.estimatedBudget || 0), 0) ?? 0;
 
   useEffect(() => {
     setMounted(true);
@@ -286,7 +308,7 @@ export default function ChinaDashboard() {
                 </div>
                                  <div className="hidden lg:flex items-center space-x-6">
                    <div className="text-center">
-                     <div className="text-4xl font-bold">{stats.pendingOrders + stats.processingOrders}</div>
+                     <div className="text-4xl font-bold">{totalPedidos}</div>
                      <p className="text-blue-100">Pedidos Activos</p>
                    </div>
                  </div>
@@ -306,10 +328,10 @@ export default function ChinaDashboard() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-900">{stats.pendingOrders}</div>
+                  <div className="text-3xl font-bold text-blue-900">{pedidosPendientes}</div>
                   <p className="text-xs text-blue-700">Esperando procesamiento</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.pendingOrders / 10) * 100}%`}}></div>
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / totalPedidos) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -322,10 +344,10 @@ export default function ChinaDashboard() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-green-900">{stats.processingOrders}</div>
+                  <div className="text-3xl font-bold text-green-900">{pedidosEnProceso}</div>
                   <p className="text-xs text-green-700">En producción</p>
                   <div className="mt-2 w-full bg-green-200 rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.processingOrders / 8) * 100}%`}}></div>
+                    <div className="bg-green-500 h-2 rounded-full" style={{width: `${(pedidosEnProceso / totalPedidos) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -338,10 +360,10 @@ export default function ChinaDashboard() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-purple-900">{stats.shippedOrders}</div>
+                  <div className="text-3xl font-bold text-purple-900">{pedidosEnviados}</div>
                   <p className="text-xs text-purple-700">En tránsito</p>
                   <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
-                    <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(stats.shippedOrders / 50) * 100}%`}}></div>
+                    <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(pedidosEnviados / totalPedidos) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -354,10 +376,10 @@ export default function ChinaDashboard() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-orange-900">{stats.qualityScore}</div>
+                  <div className="text-3xl font-bold text-orange-900">{(promedioReputacion*100)/5}%</div>
                   <p className="text-xs text-orange-700">Score promedio</p>
                   <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
-                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${parseFloat(stats.qualityScore) / 100 * 100}%`}}></div>
+                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(promedioReputacion*100)/5}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -463,7 +485,7 @@ export default function ChinaDashboard() {
                         <DollarSign className="h-4 w-4 text-white" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-green-800">Ingresos: ${(stats.monthlyRevenue / 1000).toFixed(0)}K</p>
+                        <p className="text-sm font-medium text-green-800">Ingresos: ${sumaPresupuestos}</p>
                         <p className="text-xs text-green-600">Este mes</p>
                       </div>
                     </div>
@@ -481,7 +503,7 @@ export default function ChinaDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {PENDING_ORDERS.slice(0, 3).map((order) => (
+                    {(chinaOrders ?? []).slice(-3).reverse().map((order: any, idx: number) => (
                       <div key={order.id} className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
                         <div className="flex items-center gap-3">
                           <div className="p-2 bg-blue-100 rounded-lg">
@@ -489,15 +511,15 @@ export default function ChinaDashboard() {
                           </div>
                           <div>
                             <p className="text-sm font-medium text-slate-900">{order.id}</p>
-                            <p className="text-xs text-slate-600">{order.product}</p>
-                            <p className="text-xs text-slate-500">Cliente: {order.clientName}</p>
+                            <p className="text-xs text-slate-600">{order.productName}</p>
+                            <p className="text-xs text-slate-500">Cliente: {nombresClientesRecientes[idx]}</p>
                           </div>
                         </div>
-                                                 <div className="flex items-center gap-2">
-                           <Badge className={`${getStatusColor(order.status)} border`}>
-                             {getStatusText(order.status)}
-                           </Badge>
-                         </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={`border`}>
+                            Estado: {order.state}
+                          </Badge>
+                        </div>
                       </div>
                     ))}
                   </div>
