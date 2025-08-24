@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from 'react';
+import { useEffect } from 'react';
+import { getMetricasPorMes, getMetricasSatisfaccionCliente, getReportesSatisfaccionPorMes, getMetricasPorPedido, MetricasPorPedido } from './backend';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
@@ -7,162 +9,117 @@ import { Calendar, Users, Package, Download, Filter, TrendingUp, Clock, CheckCir
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const Reportes = () => {
+  const [metricasSatisfaccion, setMetricasSatisfaccion] = useState({ promedioGeneral: 0, totalResenas: 0, cincoEstrellas: 0, satisfechos: 0 });
+  // ...ya existe una declaración de ReporteSatisfaccion, eliminada duplicidad
+  const [reportesSatisfaccion, setReportesSatisfaccion] = useState<ReporteSatisfaccion[]>([]);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  type MetricasMes = {
+    id: number;
+    mes: string;
+    totalPedidos: number;
+    completados: number;
+    pendientes: number;
+    satisfaccion: number;
+    ingresos: number;
+    fechaGeneracion: string;
+  };
+  const [metricasMeses, setMetricasMeses] = useState<MetricasMes[]>([]);
   const { theme } = useTheme();
   const [activeFilter, setActiveFilter] = useState('mes');
   const [selectedMonth, setSelectedMonth] = useState('2024-08');
   const [selectedEmployee, setSelectedEmployee] = useState('todos');
   const [modalOpen, setModalOpen] = useState(false);
-  type ReporteMensual = typeof reportesMensuales[number];
-  type ReportePedido = typeof reportesPedidos[number];
-  type ReporteSatisfaccion = typeof reportesSatisfaccion[number];
+  type ReporteMensual = {
+    id: number;
+    mes: string;
+    totalPedidos: number;
+    completados: number;
+    pendientes: number;
+    satisfaccion: number;
+    ingresos: number;
+    fechaGeneracion: string;
+  };
+  // Definición de ReportePedido agregada para evitar error de tipo
+  type ReportePedido = {
+    id: number;
+    numeroPedido: string;
+    cliente: string;
+    fechaPedido: string;
+    estado: string;
+    valor: number;
+    tiempoEntrega: string;
+    satisfaccion: number;
+  };
+  type ReporteSatisfaccion = {
+    id: number;
+    periodo: string;
+    promedioGeneral: number;
+    totalReseñas: number;
+    comentariosDestacados: string[];
+    distribucion: { [estrella: string]: number };
+  };
   type Reporte = ReporteMensual | ReportePedido | ReporteSatisfaccion;
   const [selectedReport, setSelectedReport] = useState<Reporte | null>(null);
 
-  // Datos para reportes mensuales
-  const reportesMensuales = [
-    {
-      id: 1,
-      mes: 'Agosto 2024',
-      totalPedidos: 156,
-      completados: 124,
-      pendientes: 32,
-      satisfaccion: 4.2,
-      ingresos: 45250,
-      fechaGeneracion: '2024-08-31'
-    },
-    {
-      id: 2,
-      mes: 'Julio 2024',
-      totalPedidos: 142,
-      completados: 118,
-      pendientes: 24,
-      satisfaccion: 4.0,
-      ingresos: 41800,
-      fechaGeneracion: '2024-07-31'
-    },
-    {
-      id: 3,
-      mes: 'Junio 2024',
-      totalPedidos: 134,
-      completados: 112,
-      pendientes: 22,
-      satisfaccion: 3.9,
-      ingresos: 38950,
-      fechaGeneracion: '2024-06-30'
+  // Métricas clave dinámicas para el filtro 'mes' y 'pedido'
+  const [metricasPedido, setMetricasPedido] = useState<MetricasPorPedido | null>(null);
+  useEffect(() => {
+    if (activeFilter === 'mes') {
+      getMetricasPorMes().then((res) => {
+        if (Array.isArray(res)) {
+          setMetricasMeses(res);
+        } else {
+          setMetricasMeses(Object.values(res));
+        }
+      }).catch(console.error);
+    } else if (activeFilter === 'satisfaccion') {
+      getMetricasSatisfaccionCliente().then(setMetricasSatisfaccion).catch(console.error);
+      getReportesSatisfaccionPorMes().then(setReportesSatisfaccion).catch(console.error);
+    } else if (activeFilter === 'pedido') {
+      getMetricasPorPedido().then(setMetricasPedido).catch(console.error);
     }
-  ];
+  }, [activeFilter]);
 
-  // Datos para reportes por pedido
-  const reportesPedidos = [
-    {
-      id: 1,
-      numeroPedido: 'PED-2024-001',
-      cliente: 'María González',
-      fechaPedido: '2024-08-15',
-      estado: 'Entregado',
-      valor: 250.00,
-      tiempoEntrega: '2 días',
-      satisfaccion: 5
-    },
-    {
-      id: 2,
-      numeroPedido: 'PED-2024-002',
-      cliente: 'Carlos Mendoza',
-      fechaPedido: '2024-08-14',
-      estado: 'En Tránsito',
-      valor: 180.50,
-      tiempoEntrega: '1 día',
-      satisfaccion: 4
-    },
-    {
-      id: 3,
-      numeroPedido: 'PED-2024-003',
-      cliente: 'Ana Rodríguez',
-      fechaPedido: '2024-08-13',
-      estado: 'Entregado',
-      valor: 320.75,
-      tiempoEntrega: '3 días',
-      satisfaccion: 5
-    },
-    {
-      id: 4,
-      numeroPedido: 'PED-2024-004',
-      cliente: 'Luis Morales',
-      fechaPedido: '2024-08-12',
-      estado: 'Pendiente',
-      valor: 195.30,
-      tiempoEntrega: 'Pendiente',
-      satisfaccion: 0
-    }
-  ];
+  // Los reportesPedidos deben venir de la base de datos en el futuro, por ahora solo se usan las métricas clave
+  // Renderizar métricas clave para el filtro 'pedido'
+  const renderMetricasPedido = () => {
+    if (!metricasPedido) return null;
+    const metricas = [
+      { label: 'Total Pedidos', value: metricasPedido.totalPedidos, icon: Package, color: 'text-blue-600' },
+      { label: 'Entregados', value: metricasPedido.entregados, icon: CheckCircle, color: 'text-green-600' },
+      { label: 'En Tránsito', value: metricasPedido.enTransito, icon: Clock, color: 'text-orange-600' },
+      { label: 'Valor Promedio', value: `$${metricasPedido.valorPromedio}`, icon: TrendingUp, color: 'text-purple-600' }
+    ];
+    return metricas.map(({ label, value, icon: Icon, color }, index) => (
+      <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <Icon className={`mx-auto mb-2 ${color}`} size={24} />
+        <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>
+      </div>
+    ));
+  };
 
   // Datos para reportes de satisfacción
-  const reportesSatisfaccion = [
-    {
-      id: 1,
-      periodo: 'Agosto 2024',
-      promedioGeneral: 4.2,
-      totalReseñas: 89,
-      distribucion: {
-        5: 45,
-        4: 28,
-        3: 12,
-        2: 3,
-        1: 1
-      },
-      comentariosDestacados: ['Excelente servicio', 'Entrega rápida', 'Producto de calidad']
-    },
-    {
-      id: 2,
-      periodo: 'Julio 2024',
-      promedioGeneral: 4.0,
-      totalReseñas: 76,
-      distribucion: {
-        5: 38,
-        4: 24,
-        3: 10,
-        2: 3,
-        1: 1
-      },
-      comentariosDestacados: ['Buen servicio', 'Producto correcto', 'Tiempo de entrega adecuado']
-    },
-    {
-      id: 3,
-      periodo: 'Junio 2024',
-      promedioGeneral: 3.9,
-      totalReseñas: 65,
-      distribucion: {
-        5: 30,
-        4: 20,
-        3: 12,
-        2: 2,
-        1: 1
-      },
-      comentariosDestacados: ['Servicio aceptable', 'Puede mejorar', 'Entrega en tiempo']
-    }
-  ];
+  // ...eliminado: los datos hardcodeados, ahora solo se usa el estado reportesSatisfaccion
 
   // Datos para gráficos
   const datosGraficos = {
-    mes: [
-      { mes: 'Jun', pedidos: 134, satisfaccion: 3.9 },
-      { mes: 'Jul', pedidos: 142, satisfaccion: 4.0 },
-      { mes: 'Ago', pedidos: 156, satisfaccion: 4.2 }
-    ],
-    satisfaccion: [
-      { estrella: '5⭐', cantidad: 45 },
-      { estrella: '4⭐', cantidad: 28 },
-      { estrella: '3⭐', cantidad: 12 },
-      { estrella: '2⭐', cantidad: 3 },
-      { estrella: '1⭐', cantidad: 1 }
-    ]
+    mes: [...metricasMeses]
+      .sort((a, b) => new Date(a.fechaGeneracion).getTime() - new Date(b.fechaGeneracion).getTime())
+      .map(mes => ({ mes: mes.mes.charAt(0).toUpperCase() + mes.mes.slice(1), pedidos: mes.totalPedidos })),
+    satisfaccion: reportesSatisfaccion.length > 0
+      ? Object.entries(reportesSatisfaccion[0].distribucion).map(([estrella, cantidad]) => ({
+          estrella: `${estrella}⭐`,
+          cantidad: cantidad as number
+        }))
+      : []
   };
 
   const obtenerDatosReporte = () => {
     switch (activeFilter) {
-      case 'mes': return reportesMensuales;
-      case 'pedido': return reportesPedidos;
+      case 'mes':
+        return metricasMeses;
+  case 'pedido': return []; // Los reportesPedidos se integrarán con datos reales en el siguiente paso
       case 'satisfaccion': return reportesSatisfaccion;
       default: return [];
     }
@@ -201,7 +158,7 @@ const Reportes = () => {
     const datos = obtenerDatosReporte();
     let contenido = `Reporte General - ${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)}\n=====================================================`;
     contenido += '\n\n';
-    contenido += datos.map(item => {
+    contenido += datos.map((item: any) => {
       if (activeFilter === 'mes' && 'mes' in item) {
         return `${item.mes}:\n- Pedidos: ${item.totalPedidos}\n- Completados: ${item.completados}\n- Satisfacción: ${item.satisfaccion}/5\n- Ingresos: $${item.ingresos}`;
       } else if (activeFilter === 'pedido' && 'numeroPedido' in item) {
@@ -486,38 +443,36 @@ const Reportes = () => {
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="grid grid-cols-2 gap-4 h-[300px] content-center">
-                  {activeFilter === 'mes' && reportesMensuales.slice(0, 1).map(reporte => [
-                    { label: 'Pedidos Totales', value: reporte.totalPedidos, icon: Package, color: 'text-blue-600' },
-                    { label: 'Completados', value: reporte.completados, icon: CheckCircle, color: 'text-green-600' },
-                    { label: 'Satisfacción', value: `${reporte.satisfaccion}/5`, icon: Star, color: 'text-yellow-600' },
-                    { label: 'Ingresos', value: `$${reporte.ingresos}`, icon: TrendingUp, color: 'text-purple-600' }
-                  ]).flat().map(({ label, value, icon: Icon, color }, index) => (
-                    <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <Icon className={`mx-auto mb-2 ${color}`} size={24} />
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>
-                    </div>
-                  ))}
+                  {activeFilter === 'mes' && metricasMeses.length > 0 && (() => {
+                    const totalPedidos = metricasMeses.reduce((acc, mes) => acc + mes.totalPedidos, 0);
+                    const completados = metricasMeses.reduce((acc, mes) => acc + mes.completados, 0);
+                    const ingresos = metricasMeses.reduce((acc, mes) => acc + mes.ingresos, 0);
+                    // Satisfacción promedio ponderada por cantidad de pedidos con reputación
+                    const totalSatisfaccion = metricasMeses.reduce((acc, mes) => acc + (mes.satisfaccion * mes.totalPedidos), 0);
+                    const totalPedidosConReputacion = metricasMeses.reduce((acc, mes) => acc + (mes.satisfaccion > 0 ? mes.totalPedidos : 0), 0);
+                    const satisfaccionPromedio = totalPedidosConReputacion > 0 ? (totalSatisfaccion / totalPedidosConReputacion).toFixed(2) : '0';
+                    return [
+                      { label: 'Pedidos Totales', value: totalPedidos, icon: Package, color: 'text-blue-600' },
+                      { label: 'Completados', value: completados, icon: CheckCircle, color: 'text-green-600' },
+                      { label: 'Satisfacción', value: `${satisfaccionPromedio}/5`, icon: Star, color: 'text-yellow-600' },
+                      { label: 'Ingresos', value: `$${ingresos}`, icon: TrendingUp, color: 'text-purple-600' }
+                    ].map(({ label, value, icon: Icon, color }, index) => (
+                      <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <Icon className={`mx-auto mb-2 ${color}`} size={24} />
+                        <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>
+                      </div>
+                    ));
+                  })()}
                   
-                  {activeFilter === 'pedido' && [
-                    { label: 'Total Pedidos', value: reportesPedidos.length, icon: Package, color: 'text-blue-600' },
-                    { label: 'Entregados', value: reportesPedidos.filter(p => p.estado === 'Entregado').length, icon: CheckCircle, color: 'text-green-600' },
-                    { label: 'En Tránsito', value: reportesPedidos.filter(p => p.estado === 'En Tránsito').length, icon: Clock, color: 'text-orange-600' },
-                    { label: 'Valor Promedio', value: `$${(reportesPedidos.reduce((acc, p) => acc + p.valor, 0) / reportesPedidos.length).toFixed(0)}`, icon: TrendingUp, color: 'text-purple-600' }
+                  {activeFilter === 'pedido' && renderMetricasPedido()}
+                  
+                  {activeFilter === 'satisfaccion' && [
+                    { label: 'Promedio General', value: `${metricasSatisfaccion.promedioGeneral}/5`, icon: Star, color: 'text-yellow-600' },
+                    { label: 'Total Reseñas', value: metricasSatisfaccion.totalResenas, icon: Users, color: 'text-blue-600' },
+                    { label: '5 Estrellas', value: metricasSatisfaccion.cincoEstrellas, icon: Heart, color: 'text-green-600' },
+                    { label: 'Satisfacción', value: `${metricasSatisfaccion.satisfechos}%`, icon: CheckCircle, color: 'text-purple-600' }
                   ].map(({ label, value, icon: Icon, color }, index) => (
-                    <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <Icon className={`mx-auto mb-2 ${color}`} size={24} />
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>
-                    </div>
-                  ))}
-                  
-                  {activeFilter === 'satisfaccion' && reportesSatisfaccion.slice(0, 1).map(reporte => [
-                    { label: 'Promedio General', value: `${reporte.promedioGeneral}/5`, icon: Star, color: 'text-yellow-600' },
-                    { label: 'Total Reseñas', value: reporte.totalReseñas, icon: Users, color: 'text-blue-600' },
-                    { label: '5 Estrellas', value: reporte.distribucion[5], icon: Heart, color: 'text-green-600' },
-                    { label: 'Satisfechos', value: `${Math.round(((reporte.distribucion[4] + reporte.distribucion[5]) / reporte.totalReseñas) * 100)}%`, icon: CheckCircle, color: 'text-purple-600' }
-                  ]).flat().map(({ label, value, icon: Icon, color }, index) => (
                     <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <Icon className={`mx-auto mb-2 ${color}`} size={24} />
                       <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
@@ -541,39 +496,65 @@ const Reportes = () => {
             </CardHeader>
             <CardContent className="pt-0">
               <div className="space-y-3">
-                {obtenerDatosReporte().map((reporte) => (
-                  <div 
-                    key={reporte.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                        {activeFilter === 'mes' && <Calendar className="text-blue-600" size={20} />}
-                        {activeFilter === 'pedido' && <ShoppingCart className="text-green-600" size={20} />}
-                        {activeFilter === 'satisfaccion' && <Heart className="text-purple-600" size={20} />}
-                            </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 dark:text-white">
-                          {activeFilter === 'mes' && 'mes' in reporte && reporte.mes}
-                          {activeFilter === 'pedido' && 'numeroPedido' in reporte && reporte.numeroPedido}
-                          {activeFilter === 'satisfaccion' && 'periodo' in reporte && reporte.periodo}
-                        </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {activeFilter === 'mes' && 'mes' in reporte && `${reporte.totalPedidos} pedidos • ${reporte.satisfaccion}/5 ⭐ • ${reporte.ingresos}`}
-                          {activeFilter === 'pedido' && 'numeroPedido' in reporte && `${reporte.cliente} • ${reporte.estado} • ${reporte.valor} • ${reporte.satisfaccion > 0 ? `${reporte.satisfaccion}/5 ⭐` : 'Sin calificar'}`}
-                          {activeFilter === 'satisfaccion' && 'periodo' in reporte && `${reporte.promedioGeneral}/5 ⭐ • ${reporte.totalReseñas} reseñas`}
-                        </p>
+                {activeFilter === 'satisfaccion'
+                  ? reportesSatisfaccion.map((reporte: any) => (
+                      <div 
+                        key={reporte.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                            <Heart className="text-purple-600" size={20} />
                           </div>
-                            </div>
-                    <button
-                      onClick={() => abrirModal(reporte)}
-                      className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                    >
-                      <Eye size={16} />
-                      Ver Detalles
-                    </button>
+                          <div>
+                            <h4 className="font-medium text-gray-900 dark:text-white">
+                              {reporte.periodo}
+                            </h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {reporte.promedioGeneral}/5 ⭐ • {reporte.totalReseñas} reseñas
+                            </p>
                           </div>
-                    ))}
+                        </div>
+                        <button
+                          onClick={() => abrirModal(reporte)}
+                          className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                        >
+                          <Eye size={16} />
+                          Ver Detalles
+                        </button>
+                      </div>
+                    ))
+                  : obtenerDatosReporte().map((reporte: any) => (
+                      <div 
+                        key={reporte.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                            {activeFilter === 'mes' && <Calendar className="text-blue-600" size={20} />}
+                            {activeFilter === 'pedido' && <ShoppingCart className="text-green-600" size={20} />}
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-gray-900 dark:text-white">
+                              {activeFilter === 'mes' && 'mes' in reporte && reporte.mes}
+                              {activeFilter === 'pedido' && 'numeroPedido' in reporte && reporte.numeroPedido}
+                            </h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {activeFilter === 'mes' && 'mes' in reporte && `${reporte.totalPedidos} pedidos • ${reporte.satisfaccion}/5 ⭐ • ${reporte.ingresos}`}
+                              {activeFilter === 'pedido' && 'numeroPedido' in reporte && `${reporte.cliente} • ${reporte.estado} • ${reporte.valor} • ${reporte.satisfaccion > 0 ? `${reporte.satisfaccion}/5 ⭐` : 'Sin calificar'}`}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => abrirModal(reporte)}
+                          className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                        >
+                          <Eye size={16} />
+                          Ver Detalles
+                        </button>
+                      </div>
+                    ))
+                }
               </div>
             </CardContent>
           </Card>
