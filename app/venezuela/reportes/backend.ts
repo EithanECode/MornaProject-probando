@@ -198,3 +198,64 @@ export async function getReportesSatisfaccionPorMes() {
 
   return resultado;
 }
+
+// Obtener lista de pedidos para el reporte por pedido
+export async function getPedidosReportes() {
+  // Obtener pedidos con client_id
+  const { data: orders, error } = await supabase
+    .from('orders')
+    .select('id, client_id, state, reputation, created_at, productName');
+  if (error) {
+    console.error('Error al consultar pedidos:', error.message);
+    return { error: 'No se pudo obtener los pedidos: ' + error.message, pedidos: [] };
+  }
+  if (!orders || orders.length === 0) {
+    console.warn('No hay pedidos en la tabla orders');
+    return { error: 'No hay pedidos registrados.', pedidos: [] };
+  }
+
+  // Obtener todos los clientes
+  const { data: clients, error: errorClients } = await supabase
+    .from('clients')
+    .select('user_id, name');
+  if (errorClients) {
+    console.error('Error al consultar clientes:', errorClients.message);
+    return { error: 'No se pudo obtener los clientes: ' + errorClients.message, pedidos: [] };
+  }
+  if (!clients) {
+    console.warn('No hay clientes en la tabla clients');
+    return { error: 'No hay clientes registrados.', pedidos: [] };
+  }
+
+  // Mapear estados a texto
+  const estadosMap: Record<number, string> = {
+    5: 'EN TRANSITO',
+    6: 'EN TRANSITO',
+    7: 'EN TRANSITO',
+    1: 'PENDIENTE',
+    2: 'PENDIENTE',
+    3: 'PENDIENTE',
+    4: 'PENDIENTE',
+  };
+
+  // Valor fijo para ingresos
+  const ingresoFijo = 250;
+
+  const pedidos = orders.map((order: any) => {
+    // Buscar nombre del cliente
+    const clienteObj = clients.find((c: any) => c.user_id === order.client_id);
+    const nombreCliente = clienteObj ? clienteObj.name : 'Sin Cliente';
+    return {
+      id: order.id,
+      numeroPedido: `PED-${order.id}`,
+      cliente: nombreCliente,
+      estado: estadosMap[order.state] || 'DESCONOCIDO',
+      valor: ingresoFijo,
+      satisfaccion: order.reputation !== null && order.reputation !== undefined ? order.reputation : null,
+      fechaPedido: order.created_at ? new Date(order.created_at).toISOString().slice(0,10) : '',
+      productName: order.productName || '',
+    };
+  });
+  console.log('Pedidos obtenidos:', pedidos.length);
+  return { error: null, pedidos };
+}

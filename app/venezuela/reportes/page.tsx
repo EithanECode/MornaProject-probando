@@ -47,8 +47,9 @@ const Reportes = () => {
     fechaPedido: string;
     estado: string;
     valor: number;
-    tiempoEntrega: string;
+    tiempoEntrega?: string;
     satisfaccion: number;
+    productName?: string;
   };
   type ReporteSatisfaccion = {
     id: number;
@@ -63,6 +64,8 @@ const Reportes = () => {
 
   // Métricas clave dinámicas para el filtro 'mes' y 'pedido'
   const [metricasPedido, setMetricasPedido] = useState<MetricasPorPedido | null>(null);
+  const [reportesPedidos, setReportesPedidos] = useState<ReportePedido[]>([]);
+  const [errorPedidos, setErrorPedidos] = useState<string | null>(null);
   useEffect(() => {
     if (activeFilter === 'mes') {
       getMetricasPorMes().then((res) => {
@@ -77,6 +80,28 @@ const Reportes = () => {
       getReportesSatisfaccionPorMes().then(setReportesSatisfaccion).catch(console.error);
     } else if (activeFilter === 'pedido') {
       getMetricasPorPedido().then(setMetricasPedido).catch(console.error);
+      import('./backend').then(({ getPedidosReportes }) => {
+        getPedidosReportes()
+          .then((data: { error: string | null, pedidos: ReportePedido[] }) => {
+            if (data.error) {
+              setErrorPedidos(data.error);
+              setReportesPedidos([]);
+            } else {
+              setErrorPedidos(null);
+              // Mapear para agregar tiempoEntrega si falta
+              const pedidosConTiempo = data.pedidos.map((pedido: any) => ({
+                ...pedido,
+                tiempoEntrega: pedido.tiempoEntrega ?? '', // valor por defecto si no existe
+              }));
+              setReportesPedidos(pedidosConTiempo);
+            }
+          })
+          .catch((err) => {
+            setErrorPedidos('Error inesperado al obtener pedidos.');
+            setReportesPedidos([]);
+            console.error(err);
+          });
+      });
     }
   }, [activeFilter]);
 
@@ -119,9 +144,12 @@ const Reportes = () => {
     switch (activeFilter) {
       case 'mes':
         return metricasMeses;
-  case 'pedido': return []; // Los reportesPedidos se integrarán con datos reales en el siguiente paso
-      case 'satisfaccion': return reportesSatisfaccion;
-      default: return [];
+      case 'pedido':
+        return reportesPedidos;
+      case 'satisfaccion':
+        return reportesSatisfaccion;
+      default:
+        return [];
     }
   };
 
@@ -198,50 +226,32 @@ const Reportes = () => {
               <X size={24} />
             </button>
           </div>
-          
-          <div className="p-6">
+          <div className="space-y-4">
             {activeFilter === 'mes' && selectedReport && 'mes' in selectedReport && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                    <h4 className="font-medium text-blue-900 dark:text-blue-300">Período</h4>
-                    <p className="text-2xl font-bold text-blue-600">{selectedReport.mes}</p>
-                  </div>
-                  <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                    <h4 className="font-medium text-green-900 dark:text-green-300">Ingresos</h4>
-                    <p className="text-2xl font-bold text-green-600">${selectedReport.ingresos}</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <Package className="mx-auto mb-2 text-gray-600" size={24} />
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{selectedReport.totalPedidos}</p>
-                    <p className="text-sm text-gray-600">Total Pedidos</p>
-                  </div>
-                  <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <CheckCircle className="mx-auto mb-2 text-green-600" size={24} />
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{selectedReport.completados}</p>
-                    <p className="text-sm text-gray-600">Completados</p>
-                  </div>
-                  <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <Star className="mx-auto mb-2 text-yellow-500" size={24} />
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{selectedReport.satisfaccion}</p>
-                    <p className="text-sm text-gray-600">Satisfacción</p>
-                  </div>
+              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Información Mensual</h4>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div><span className="font-semibold">Período:</span> {selectedReport.mes}</div>
+                  <div><span className="font-semibold">Total Pedidos:</span> {selectedReport.totalPedidos}</div>
+                  <div><span className="font-semibold">Completados:</span> {selectedReport.completados}</div>
+                  <div><span className="font-semibold">Pendientes:</span> {selectedReport.pendientes}</div>
+                  <div><span className="font-semibold">Satisfacción:</span> {selectedReport.satisfaccion}/5</div>
+                  <div><span className="font-semibold">Ingresos:</span> ${selectedReport.ingresos}</div>
+                  <div><span className="font-semibold">Fecha de Generación:</span> {selectedReport.fechaGeneracion}</div>
                 </div>
               </div>
             )}
-
             {activeFilter === 'pedido' && selectedReport && 'numeroPedido' in selectedReport && (
-              <div className="space-y-4">
-                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Información del Pedido</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="text-gray-700 dark:text-gray-300"><strong>Número:</strong> {selectedReport.numeroPedido}</div>
-                    <div className="text-gray-700 dark:text-gray-300"><strong>Cliente:</strong> {selectedReport.cliente}</div>
-                    <div className="text-gray-700 dark:text-gray-300"><strong>Fecha:</strong> {selectedReport.fechaPedido}</div>
+              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Información del Pedido</h4>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  {'numeroPedido' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Número:</strong> {selectedReport.numeroPedido}</div>}
+                  {'cliente' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Cliente:</strong> {selectedReport.cliente}</div>}
+                  {'productName' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Producto:</strong> {selectedReport.productName}</div>}
+                  {'fechaPedido' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Fecha:</strong> {selectedReport.fechaPedido}</div>}
+                  {'estado' in selectedReport && (
                     <div className="text-gray-700 dark:text-gray-300">
-                      <strong>Estado:</strong> 
+                      <strong>Estado:</strong>
                       <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
                         selectedReport.estado === 'Entregado' 
                           ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
@@ -252,26 +262,10 @@ const Reportes = () => {
                         {selectedReport.estado}
                       </span>
                     </div>
-                    <div className="text-gray-700 dark:text-gray-300"><strong>Valor:</strong> ${selectedReport.valor}</div>
-                    <div className="text-gray-700 dark:text-gray-300"><strong>Tiempo Entrega:</strong> {selectedReport.tiempoEntrega}</div>
-                  </div>
+                  )}
+                  {'valor' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Valor:</strong> ${selectedReport.valor}</div>}
+                  {'tiempoEntrega' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Tiempo Entrega:</strong> {selectedReport.tiempoEntrega}</div>}
                 </div>
-                {selectedReport.satisfaccion > 0 && (
-                  <div className="flex items-center justify-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                    <div className="text-center">
-                      <div className="flex justify-center mb-2">
-                        {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            size={20} 
-                            className={i < selectedReport.satisfaccion ? 'text-yellow-400 fill-current' : 'text-gray-300'} 
-                          />
-                        ))}
-                      </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Satisfacción del Cliente</p>
-                    </div>
-                  </div>
-                )}
               </div>
             )}
 
@@ -312,16 +306,6 @@ const Reportes = () => {
                 </div>
               </div>
             )}
-          </div>
-          
-          <div className="sticky bottom-0 bg-inherit border-t p-4">
-            <button 
-              onClick={() => exportarPDF(selectedReport)}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Download size={20} />
-              Exportar como PDF
-            </button>
           </div>
         </div>
       </div>
@@ -427,6 +411,34 @@ const Reportes = () => {
                       <XAxis dataKey="estrella" stroke="#666" />
                       <YAxis stroke="#666" />
                       <Tooltip />
+                              {activeFilter === 'mes' && selectedReport && 'mes' in selectedReport && (
+                                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                                  <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Información Mensual</h4>
+                                  <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                      <span className="font-semibold">Período:</span> {selectedReport.mes}
+                                    </div>
+                                    <div>
+                                      <span className="font-semibold">Total Pedidos:</span> {selectedReport.totalPedidos}
+                                    </div>
+                                    <div>
+                                      <span className="font-semibold">Completados:</span> {selectedReport.completados}
+                                    </div>
+                                    <div>
+                                      <span className="font-semibold">Pendientes:</span> {selectedReport.pendientes}
+                                    </div>
+                                    <div>
+                                      <span className="font-semibold">Satisfacción:</span> {selectedReport.satisfaccion}/5
+                                    </div>
+                                    <div>
+                                      <span className="font-semibold">Ingresos:</span> ${selectedReport.ingresos}
+                                    </div>
+                                    <div>
+                                      <span className="font-semibold">Fecha de Generación:</span> {selectedReport.fechaGeneracion}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                       <Bar dataKey="cantidad" fill="#fbbf24" radius={[4, 4, 0, 0]} />
                   </BarChart>
                   )}
@@ -496,65 +508,93 @@ const Reportes = () => {
             </CardHeader>
             <CardContent className="pt-0">
               <div className="space-y-3">
-                {activeFilter === 'satisfaccion'
-                  ? reportesSatisfaccion.map((reporte: any) => (
-                      <div 
-                        key={reporte.id}
-                        className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                            <Heart className="text-purple-600" size={20} />
-                          </div>
-                          <div>
-                            <h4 className="font-medium text-gray-900 dark:text-white">
-                              {reporte.periodo}
-                            </h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {reporte.promedioGeneral}/5 ⭐ • {reporte.totalReseñas} reseñas
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => abrirModal(reporte)}
-                          className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                        >
-                          <Eye size={16} />
-                          Ver Detalles
-                        </button>
+                {activeFilter === 'mes' && obtenerDatosReporte().length > 0 && obtenerDatosReporte().map((reporte: any) => (
+                  <div key={reporte.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                        <Calendar className="text-blue-600" size={20} />
                       </div>
-                    ))
-                  : obtenerDatosReporte().map((reporte: any) => (
-                      <div 
-                        key={reporte.id}
-                        className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                            {activeFilter === 'mes' && <Calendar className="text-blue-600" size={20} />}
-                            {activeFilter === 'pedido' && <ShoppingCart className="text-green-600" size={20} />}
-                          </div>
-                          <div>
-                            <h4 className="font-medium text-gray-900 dark:text-white">
-                              {activeFilter === 'mes' && 'mes' in reporte && reporte.mes}
-                              {activeFilter === 'pedido' && 'numeroPedido' in reporte && reporte.numeroPedido}
-                            </h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {activeFilter === 'mes' && 'mes' in reporte && `${reporte.totalPedidos} pedidos • ${reporte.satisfaccion}/5 ⭐ • ${reporte.ingresos}`}
-                              {activeFilter === 'pedido' && 'numeroPedido' in reporte && `${reporte.cliente} • ${reporte.estado} • ${reporte.valor} • ${reporte.satisfaccion > 0 ? `${reporte.satisfaccion}/5 ⭐` : 'Sin calificar'}`}
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => abrirModal(reporte)}
-                          className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                        >
-                          <Eye size={16} />
-                          Ver Detalles
-                        </button>
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white">{reporte.mes}</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {`${reporte.totalPedidos} pedidos • ${reporte.satisfaccion}/5 ⭐ • $${reporte.ingresos}`}
+                        </p>
                       </div>
-                    ))
-                }
+                    </div>
+                    <button
+                      onClick={() => abrirModal(reporte)}
+                      className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                    >
+                      <Eye size={16} />
+                      Ver Detalles
+                    </button>
+                  </div>
+                ))}
+                {activeFilter === 'mes' && obtenerDatosReporte().length === 0 && (
+                  <div className="text-center text-gray-500 py-8">No hay reportes mensuales registrados.</div>
+                )}
+
+                {activeFilter === 'satisfaccion' && obtenerDatosReporte().length > 0 && obtenerDatosReporte().map((reporte: any) => (
+                  <div key={reporte.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                        <Heart className="text-purple-600" size={20} />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white">{reporte.periodo}</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {`${reporte.promedioGeneral}/5 ⭐ • ${reporte.totalReseñas} reseñas`}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => abrirModal(reporte)}
+                      className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                    >
+                      <Eye size={16} />
+                      Ver Detalles
+                    </button>
+                  </div>
+                ))}
+                {activeFilter === 'satisfaccion' && obtenerDatosReporte().length === 0 && (
+                  <div className="text-center text-gray-500 py-8">No hay reportes de satisfacción registrados.</div>
+                )}
+                {activeFilter === 'pedido' && errorPedidos && (
+                  <div className="text-center text-red-500 py-8">{errorPedidos}</div>
+                )}
+                {activeFilter === 'pedido' && !errorPedidos && reportesPedidos.length > 0 && reportesPedidos.map((pedido: ReportePedido) => (
+                  <div key={pedido.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-lg px-6 py-4 shadow-sm">
+                    <div className="flex items-center gap-4">
+                      <ShoppingCart size={32} className="text-blue-400" />
+                      <div>
+                        <div className="font-bold text-lg text-[#202841] dark:text-white">{pedido.numeroPedido}</div>
+                        <div className="text-sm text-gray-700 dark:text-gray-300">
+                          <span className="font-semibold">{pedido.productName}</span> &bull; {pedido.cliente} &bull; {pedido.estado} &bull; <span className="font-semibold">{pedido.valor}</span>
+                          &bull; {pedido.satisfaccion !== null ? `${pedido.satisfaccion}/5` : 'Sin calificar'}
+                          {pedido.satisfaccion !== null && <Star size={16} className="inline ml-1 text-yellow-400" />}
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => abrirModal(pedido)}
+                      className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <Eye size={20} />
+                      Ver detalles
+                    </button>
+                  </div>
+                ))}
+                {activeFilter === 'pedido' && !errorPedidos && reportesPedidos.length === 0 && (
+                  <div className="text-center text-gray-500 py-8">No hay pedidos registrados.</div>
+                )}
+                {/*
+                {activeFilter === 'satisfaccion' && reportesSatisfaccion.map((reporte: any) => (
+                  // ...existing code para renderizar reportes de satisfacción...
+                ))}
+                {activeFilter !== 'pedido' && activeFilter !== 'satisfaccion' && obtenerDatosReporte().map((reporte: any) => (
+                  // ...existing code para renderizar otros reportes...
+                ))}
+                */}
               </div>
             </CardContent>
           </Card>
