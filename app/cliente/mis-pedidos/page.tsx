@@ -8,7 +8,7 @@ import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useClientContext } from '@/lib/ClientContext';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -43,14 +43,14 @@ import {
   X
 } from 'lucide-react';
 
-// Importar animaciones de Lottie
-import airPlaneLottie from '/public/animations/FTQoLAnxbj.json';
-import cargoShipLottie from '/public/animations/wired-flat-1337-cargo-ship-hover-pinch.json';
-import truckLottie from '/public/animations/wired-flat-18-delivery-truck.json';
-import cameraLottie from '/public/animations/wired-flat-61-camera-hover-flash.json';
-import folderLottie from '/public/animations/wired-flat-120-folder-hover-adding-files.json';
-import linkLottie from '/public/animations/wired-flat-11-link-unlink-hover-bounce.json';
-import confettiLottie from '/public/animations/wired-flat-1103-confetti-hover-pinch.json';
+// Rutas de animaciones Lottie (desde /public)
+const airPlaneLottie = '/animations/FTQoLAnxbj.json';
+const cargoShipLottie = '/animations/wired-flat-1337-cargo-ship-hover-pinch.json';
+const truckLottie = '/animations/wired-flat-18-delivery-truck.json';
+const cameraLottie = '/animations/wired-flat-61-camera-hover-flash.json';
+const folderLottie = '/animations/wired-flat-120-folder-hover-adding-files.json';
+const linkLottie = '/animations/wired-flat-11-link-unlink-hover-bounce.json';
+const confettiLottie = '/animations/wired-flat-1103-confetti-hover-pinch.json';
 
 // Tipos
 interface Order {
@@ -64,6 +64,8 @@ interface Order {
   estimatedDelivery: string;
   createdAt: string;
   category: string;
+  estimatedBudget?: number | null;
+  totalQuote?: number | null;
   documents?: Array<{
     type: 'image' | 'link';
     url: string;
@@ -165,16 +167,8 @@ const MOCK_ORDERS: Order[] = [
 export default function MisPedidosPage() {
   const { clientId, clientName, clientEmail, clientRole } = useClientContext();
 
-  // Supabase client
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase environment variables are missing');
-  }
-  const supabase = require('@supabase/supabase-js').createClient(
-    supabaseUrl,
-    supabaseAnonKey
-  );
+  // Supabase client (navegador)
+  const supabase = getSupabaseBrowserClient();
   // Estados básicos
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
@@ -239,6 +233,74 @@ export default function MisPedidosPage() {
     setMounted(true);
   }, []);
 
+  // Mapeos de estado numérico de la BD a estados de UI y progreso
+  const mapStateToStatus = (state?: number | null): Order['status'] => {
+    switch (state) {
+      case 3: return 'quoted';
+      case 4: return 'processing';
+      case 5: return 'shipped';
+      case 6: return 'delivered';
+      case 2: return 'pending';
+      case 1:
+      default:
+        return 'pending';
+    }
+  };
+
+  const mapStateToProgress = (state?: number | null): number => {
+    switch (state) {
+      case 1: return 10; // creado
+      case 2: return 20; // recibido
+      case 3: return 25; // cotizado
+      case 4: return 60; // procesando
+      case 5: return 85; // enviado
+      case 6: return 100; // entregado
+      default: return 0;
+    }
+  };
+
+  // Cargar pedidos del cliente autenticado
+  const fetchOrders = async () => {
+    if (!clientId) return;
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('id, productName, description, estimatedBudget, totalQuote, state, created_at, pdfRoutes, quantity')
+        .eq('client_id', clientId)
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error('Error cargando pedidos:', error);
+        return;
+      }
+      const mapped: Order[] = (data || []).map((row: any) => {
+        const amountNumber = (row.totalQuote ?? row.estimatedBudget ?? 0) as number;
+        return {
+          id: String(row.id),
+          product: row.productName || 'Pedido',
+          description: row.description || '',
+          amount: `$${Number(amountNumber || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`,
+          status: mapStateToStatus(row.state as number | null),
+          progress: mapStateToProgress(row.state as number | null),
+          tracking: '',
+          estimatedDelivery: '',
+          createdAt: row.created_at || '',
+          category: '',
+          estimatedBudget: typeof row.estimatedBudget === 'number' ? row.estimatedBudget : (row.estimatedBudget ? Number(row.estimatedBudget) : null),
+          totalQuote: typeof row.totalQuote === 'number' ? row.totalQuote : (row.totalQuote ? Number(row.totalQuote) : null),
+          documents: row.pdfRoutes ? [{ type: 'link' as const, url: row.pdfRoutes, label: 'Resumen PDF' }] : []
+        };
+      });
+      setOrders(mapped);
+    } catch (e) {
+      console.error('Excepción cargando pedidos:', e);
+    }
+  };
+
+  // Disparar carga cuando tengamos clientId
+  useEffect(() => {
+    if (clientId) fetchOrders();
+  }, [clientId]);
+
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
       order.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -254,7 +316,10 @@ export default function MisPedidosPage() {
     processing: orders.filter(o => o.status === 'processing').length,
     shipped: orders.filter(o => o.status === 'shipped').length,
     delivered: orders.filter(o => o.status === 'delivered').length,
-    totalSpent: orders.reduce((sum, order) => sum + parseFloat(order.amount.replace('$', '').replace(',', '')), 0)
+    // Total gastado: solo considerar pedidos ya pagados/en proceso en adelante usando totalQuote
+    totalSpent: orders
+      .filter(o => o.status === 'processing' || o.status === 'shipped' || o.status === 'delivered')
+      .reduce((sum, order) => sum + Number(order.totalQuote ?? 0), 0)
   };
 
   // Funciones helper
@@ -686,32 +751,8 @@ export default function MisPedidosPage() {
                   client_id: ''
                 });
               }, 1500);
-              // Agregar el nuevo pedido a la lista local
-              const nuevoPedido: Order = {
-                id: numeroPedido.toString(),
-                product: newOrderData.productName,
-                description: newOrderData.description,
-                amount: newOrderData.estimatedBudget ? `$${newOrderData.estimatedBudget}` : '$0',
-                status: 'pending',
-                progress: 0,
-                tracking: '',
-                estimatedDelivery: '',
-                createdAt: new Date().toISOString(),
-                category: '',
-                documents: [
-                  newOrderData.requestType === 'link' && newOrderData.productUrl ? {
-                    type: 'link',
-                    url: newOrderData.productUrl,
-                    label: 'URL del producto'
-                  } : null,
-                  newOrderData.requestType === 'photo' && newOrderData.productImage ? {
-                    type: 'image',
-                    url: pdfUrl,
-                    label: newOrderData.productImage.name
-                  } : null
-                ].filter(Boolean) as Array<{ type: 'image' | 'link'; url: string; label: string }>
-              };
-              setOrders(prev => [...prev, nuevoPedido]);
+              // Refrescar desde BD para mostrar el pedido real sin duplicados
+              fetchOrders();
             }
           }
         });
@@ -1479,8 +1520,19 @@ export default function MisPedidosPage() {
                         </Badge>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium text-lg">{order.amount}</p>
-                        <p className="text-xs text-slate-600">Tracking: {order.tracking}</p>
+                        <p className="text-[11px] uppercase tracking-wide text-slate-500">
+                          {order.status === 'pending' && 'Presupuesto'}
+                          {order.status === 'quoted' && 'Cotización a pagar'}
+                          {order.status !== 'pending' && order.status !== 'quoted' && 'Monto'}
+                        </p>
+                        <p className="font-medium text-lg">
+                          {order.status === 'pending' && typeof order.estimatedBudget !== 'undefined' && order.estimatedBudget !== null
+                            ? `$${Number(order.estimatedBudget).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+                            : order.status === 'quoted' && typeof order.totalQuote !== 'undefined' && order.totalQuote !== null
+                              ? `$${Number(order.totalQuote).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+                              : order.amount}
+                        </p>
+                        <p className="text-xs text-slate-600">Tracking: {order.tracking || '-'}</p>
                       </div>
                     </div>
                     
@@ -1557,8 +1609,18 @@ export default function MisPedidosPage() {
                     <p className="text-lg">{selectedOrder.product}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Monto</p>
-                    <p className="text-lg font-bold text-green-600">{selectedOrder.amount}</p>
+                    <p className="text-sm font-medium text-slate-600">
+                      {selectedOrder.status === 'pending' && 'Presupuesto'}
+                      {selectedOrder.status === 'quoted' && 'Cotización a pagar'}
+                      {selectedOrder.status !== 'pending' && selectedOrder.status !== 'quoted' && 'Monto'}
+                    </p>
+                    <p className="text-lg font-bold text-green-600">
+                      {selectedOrder.status === 'pending' && typeof selectedOrder.estimatedBudget !== 'undefined' && selectedOrder.estimatedBudget !== null
+                        ? `$${Number(selectedOrder.estimatedBudget).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+                        : selectedOrder.status === 'quoted' && typeof selectedOrder.totalQuote !== 'undefined' && selectedOrder.totalQuote !== null
+                          ? `$${Number(selectedOrder.totalQuote).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+                          : selectedOrder.amount}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-600">Estado</p>
