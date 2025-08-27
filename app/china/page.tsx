@@ -392,7 +392,7 @@ export default function ChinaDashboard() {
                 <p className="text-sm text-slate-600">Accede rápidamente a las funciones más utilizadas</p>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Link href="/china/pedidos">
                     <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
                       <div className="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
@@ -401,101 +401,28 @@ export default function ChinaDashboard() {
                       <span className="text-sm font-medium">Nuevo Pedido</span>
                     </Button>
                   </Link>
-                  <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group">
-                    <div className="p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
-                      <Clock className="h-8 w-8 text-green-600" />
-                    </div>
-                    <span className="text-sm font-medium">Procesar Pedido</span>
-                  </Button>
-                  <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group">
-                    <div className="p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
-                      <Truck className="h-8 w-8 text-purple-600" />
-                    </div>
-                    <span className="text-sm font-medium">Preparar Envío</span>
-                  </Button>
-                  <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group">
-                    <div className="p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
-                      <BarChart3 className="h-8 w-8 text-red-600" />
-                    </div>
-                    <span className="text-sm font-medium">Control Calidad</span>
-                  </Button>
+                  <Link href="/china/pedidos">
+                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group w-full">
+                      <div className="p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                        <Clock className="h-8 w-8 text-green-600" />
+                      </div>
+                      <span className="text-sm font-medium">Procesar Pedido</span>
+                    </Button>
+                  </Link>
+                  <Link href="/china/pedidos">
+                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
+                      <div className="p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+                        <Truck className="h-8 w-8 text-purple-600" />
+                      </div>
+                      <span className="text-sm font-medium">Preparar Envío</span>
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Métricas de Rendimiento y Próximas Acciones */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-xl font-semibold">Métricas de Rendimiento</CardTitle>
-                  <p className="text-sm text-slate-600">Tu desempeño en tiempo real</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Eficiencia diaria</span>
-                        <span className="font-bold text-lg">{stats.dailyEfficiency}</span>
-                      </div>
-                      <div className="w-full bg-slate-200 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style={{ width: `${parseFloat(stats.dailyEfficiency)}%` }}></div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-blue-50 rounded-xl">
-                        <div className="text-2xl font-bold text-blue-600">{stats.averageProcessingTime}</div>
-                        <p className="text-sm text-blue-700">Tiempo promedio</p>
-                      </div>
-                      <div className="text-center p-4 bg-green-50 rounded-xl">
-                        <div className="text-2xl font-bold text-green-600">{stats.onTimeDelivery}</div>
-                        <p className="text-sm text-green-700">Entrega a tiempo</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-xl font-semibold">Próximas Acciones</CardTitle>
-                  <p className="text-sm text-slate-600">Tareas que requieren tu atención</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-red-50 to-red-100 border border-red-200">
-                      <div className="p-2 bg-red-500 rounded-lg">
-                        <AlertTriangle className="h-4 w-4 text-white" />
-                      </div>
-                      <div>
-                                               <p className="text-sm font-medium text-red-800">3 pedidos requieren atención</p>
-                       <p className="text-xs text-red-600">Revisar estado</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
-                      <div className="p-2 bg-blue-500 rounded-lg">
-                        <CheckCircle className="h-4 w-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-blue-800">8 pedidos listos para envío</p>
-                        <p className="text-xs text-blue-600">Preparar documentación</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-green-50 to-green-100 border border-green-200">
-                      <div className="p-2 bg-green-500 rounded-lg">
-                        <DollarSign className="h-4 w-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-green-800">Ingresos: ${sumaPresupuestos}</p>
-                        <p className="text-xs text-green-600">Este mes</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
             {/* Pedidos Recientes y Información del Almacén */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <CardTitle className="text-xl font-semibold">Pedidos Recientes</CardTitle>
@@ -503,64 +430,29 @@ export default function ChinaDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {(chinaOrders ?? []).slice(-3).reverse().map((order: any, idx: number) => (
-                      <div key={order.id} className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-blue-100 rounded-lg">
-                            <Package className="h-4 w-4 text-blue-600" />
+                    {pedidosRecientes.length === 0 ? (
+                      <div className="text-center text-slate-500">No hay pedidos para mostrar</div>
+                    ) : (
+                      pedidosRecientes.map((order: any, idx: number) => (
+                        <div key={order.id} className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-blue-100 rounded-lg">
+                              <Package className="h-4 w-4 text-blue-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-slate-900">{order.id}</p>
+                              <p className="text-xs text-slate-600">{order.productName}</p>
+                              <p className="text-xs text-slate-500">Cliente: {nombresClientesRecientes[idx]}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-sm font-medium text-slate-900">{order.id}</p>
-                            <p className="text-xs text-slate-600">{order.productName}</p>
-                            <p className="text-xs text-slate-500">Cliente: {nombresClientesRecientes[idx]}</p>
+                          <div className="flex items-center gap-2">
+                            <Badge className={`border`}>
+                              Estado: {order.state}
+                            </Badge>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge className={`border`}>
-                            Estado: {order.state}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-xl font-semibold">Información del Almacén</CardTitle>
-                  <p className="text-sm text-slate-600">Estado actual del inventario</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">Capacidad utilizada</span>
-                        <span className="font-bold">{stats.warehouseCapacity}</span>
-                      </div>
-                      <div className="w-full bg-slate-200 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500" style={{ width: stats.warehouseCapacity }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">Tasa de devoluciones</span>
-                        <span className="font-bold text-green-600">{stats.returnRate}</span>
-                      </div>
-                      <div className="w-full bg-slate-200 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500" style={{ width: "12%" }}></div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-3 bg-blue-50 rounded-xl">
-                        <div className="text-xl font-bold text-blue-600">{stats.totalProducts}</div>
-                        <p className="text-sm text-blue-700">Productos</p>
-                      </div>
-                      <div className="text-center p-3 bg-green-50 rounded-xl">
-                        <div className="text-xl font-bold text-green-600">{stats.activeSuppliers}</div>
-                        <p className="text-sm text-green-700">Proveedores</p>
-                      </div>
-                    </div>
+                      ))
+                    )}
                   </div>
                 </CardContent>
               </Card>
