@@ -1,6 +1,9 @@
-'use client';
+
+"use client";
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
+import { useClientContext } from '@/lib/ClientContext';
+import { useClientOrders } from '@/hooks/use-client-orders';
 import { useTheme } from 'next-themes';
 import dynamic from 'next/dynamic';
 import Sidebar from '@/components/layout/Sidebar';
@@ -151,6 +154,23 @@ export default function DashboardPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Obtener el id del cliente autenticado
+  const { clientId } = useClientContext();
+  // Obtener los pedidos del cliente autenticado
+  const { data: clientOrders, loading: ordersLoading, error: ordersError } = useClientOrders();
+
+  // Variables de pedidos
+  const totalPedidos = clientOrders?.length ?? 0;
+  const pedidosPendientes = clientOrders?.filter(order => order.state === 1).length ?? 0;
+  const pedidosEnTransito = clientOrders?.filter(order => order.state === 2).length ?? 0;
+  const pedidosCompletados = clientOrders?.filter(order => order.state === 3).length ?? 0;
+  const totalGastado = clientOrders?.reduce((acc, order) => acc + (order.estimatedBudget || 0), 0) ?? 0;
+
+  // Datos de los 3 pedidos más recientes
+  const pedidosRecientes = clientOrders?.slice(-3).reverse() ?? [];
+  const orderId = pedidosRecientes.map(order => order.id);
+  const orderName = pedidosRecientes.map(order => order.productName);
+  const orderStatus = pedidosRecientes.map(order => order.state);
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -206,7 +226,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="hidden lg:flex items-center space-x-6">
                   <div className="text-center">
-                    <div className="text-4xl font-bold">{CLIENT_STATS.activeShipments}</div>
+                    <div className="text-4xl font-bold">{pedidosEnTransito + pedidosPendientes}</div>
                     <p className="text-blue-100">Envíos Activos</p>
                   </div>
                 </div>
@@ -226,10 +246,10 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-900">{CLIENT_STATS.totalOrders}</div>
+                  <div className="text-3xl font-bold text-blue-900">{totalPedidos}</div>
                   <p className="text-xs text-blue-700">Pedidos realizados</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(CLIENT_STATS.totalOrders / 20) * 100}%`}}></div>
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `100%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -242,10 +262,10 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-green-900">{CLIENT_STATS.activeShipments}</div>
+                  <div className="text-3xl font-bold text-green-900">{pedidosEnTransito}</div>
                   <p className="text-xs text-green-700">Envíos activos</p>
                   <div className="mt-2 w-full bg-green-200 rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full" style={{width: `${(CLIENT_STATS.activeShipments / 5) * 100}%`}}></div>
+                    <div className="bg-green-500 h-2 rounded-full" style={{width: `${(pedidosEnTransito / totalPedidos) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -258,10 +278,10 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-purple-900">${CLIENT_STATS.totalSpent.toLocaleString()}</div>
+                  <div className="text-3xl font-bold text-purple-900">${totalGastado}</div>
                   <p className="text-xs text-purple-700">Inversión total</p>
                   <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
-                    <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(CLIENT_STATS.totalSpent / 10000) * 100}%`}}></div>
+                    <div className="bg-purple-500 h-2 rounded-full" style={{width: `100%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -274,10 +294,10 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-orange-900">{CLIENT_STATS.completedOrders}</div>
+                  <div className="text-3xl font-bold text-orange-900">{pedidosCompletados}</div>
                   <p className="text-xs text-orange-700">Pedidos entregados</p>
                   <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
-                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(CLIENT_STATS.completedOrders / 20) * 100}%`}}></div>
+                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(pedidosCompletados / totalPedidos) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -320,19 +340,19 @@ export default function DashboardPage() {
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium">Progreso de pedidos</span>
-                        <span className="font-bold text-lg">{Math.round((CLIENT_STATS.completedOrders / CLIENT_STATS.totalOrders) * 100)}%</span>
+                        <span className="font-bold text-lg">{Math.round((pedidosCompletados / totalPedidos) * 100)}%</span>
                       </div>
                       <div className="w-full bg-slate-200 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style={{ width: `${(CLIENT_STATS.completedOrders / CLIENT_STATS.totalOrders) * 100}%` }}></div>
+                        <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style={{ width: `${(pedidosCompletados / totalPedidos) * 100}%` }}></div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="text-center p-4 bg-blue-50 rounded-xl">
-                        <div className="text-2xl font-bold text-blue-600">{CLIENT_STATS.pendingOrders}</div>
+                        <div className="text-2xl font-bold text-blue-600">{pedidosPendientes}</div>
                         <p className="text-sm text-blue-700">Pendientes</p>
                       </div>
                       <div className="text-center p-4 bg-green-50 rounded-xl">
-                        <div className="text-2xl font-bold text-green-600">{CLIENT_STATS.activeShipments}</div>
+                        <div className="text-2xl font-bold text-green-600">{pedidosEnTransito}</div>
                         <p className="text-sm text-green-700">En tránsito</p>
                       </div>
                     </div>
@@ -352,7 +372,7 @@ export default function DashboardPage() {
                         <Package className="h-4 w-4 text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-orange-800">{CLIENT_STATS.pendingOrders} pedidos en proceso</p>
+                        <p className="font-medium text-orange-800">{pedidosPendientes} pedidos en proceso</p>
                         <p className="text-xs text-orange-600">Seguimiento activo</p>
                       </div>
                     </div>
@@ -361,7 +381,7 @@ export default function DashboardPage() {
                         <Truck className="h-4 w-4 text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-blue-800">{CLIENT_STATS.activeShipments} envíos en tránsito</p>
+                        <p className="font-medium text-blue-800">{pedidosEnTransito} envíos en tránsito</p>
                         <p className="text-xs text-blue-600">Llegada próxima</p>
                       </div>
                     </div>
@@ -370,7 +390,7 @@ export default function DashboardPage() {
                         <CheckCircle className="h-4 w-4 text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-green-800">{CLIENT_STATS.completedOrders} pedidos completados</p>
+                        <p className="font-medium text-green-800">{pedidosCompletados} pedidos completados</p>
                         <p className="text-xs text-green-600">Entregas exitosas</p>
                       </div>
                     </div>
@@ -379,7 +399,7 @@ export default function DashboardPage() {
                         <DollarSign className="h-4 w-4 text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-purple-800">${CLIENT_STATS.totalSpent.toLocaleString()} gastados</p>
+                        <p className="font-medium text-purple-800">${totalGastado} gastados</p>
                         <p className="text-xs text-purple-600">Inversión total</p>
                       </div>
                     </div>
@@ -396,53 +416,31 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {RECENT_ORDERS.map((order) => {
-                    const Icon = order.icon;
-                    return (
+                  {pedidosRecientes.length === 0 ? (
+                    <div className="text-center text-slate-500">No hay pedidos recientes.</div>
+                  ) : (
+                    pedidosRecientes.map((order, idx) => (
                       <div key={order.id} className="border border-slate-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-slate-50 to-white">
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-4">
                             <div className="p-3 bg-slate-100 rounded-lg">
-                              <Icon className="h-6 w-6 text-slate-600" />
+                              <Truck className="h-6 w-6 text-slate-600" />
                             </div>
                             <div>
                               <p className="font-bold text-sm text-slate-600">{order.id}</p>
                               <p className="font-semibold text-xl text-slate-800">{order.productName}</p>
                             </div>
                           </div>
-                          <Badge className={`${order.statusColor} font-medium border`}>
-                            {order.status}
+                          <Badge className={`font-medium border`}>
+                            Estado: {order.state}
                           </Badge>
                         </div>
-                        
                         <div className="mb-4">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-slate-600">PROGRESO</span>
-                            <span className="text-sm font-bold">{order.progress}%</span>
-                          </div>
-                          <div className="w-full bg-slate-200 rounded-full h-3">
-                            <div 
-                              className={`h-3 rounded-full transition-all duration-500 ${order.progressColor}`}
-                              style={{ width: `${order.progress}%` }}
-                            ></div>
+                            <span className="text-sm font-medium text-slate-600">PRESUPUESTO</span>
+                            <span className="text-sm font-bold">${order.estimatedBudget?.toLocaleString() ?? 'N/A'}</span>
                           </div>
                         </div>
-                        
-                        <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                          <div className="p-3 bg-slate-50 rounded-lg">
-                            <p className="text-slate-600 font-medium">ENTREGA ESTIMADA:</p>
-                            <p className="font-bold text-slate-800">{order.estimatedDelivery}</p>
-                          </div>
-                          <div className="p-3 bg-slate-50 rounded-lg text-right">
-                            <p className="text-slate-600 font-medium">PRECIO:</p>
-                            <p className="font-bold text-green-600">${order.price.toLocaleString()}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="mb-4 p-3 bg-slate-50 rounded-lg">
-                          <p className="text-sm text-slate-600 font-medium">TRACKING: <span className="font-mono font-bold text-slate-800">{order.trackingNumber}</span></p>
-                        </div>
-                        
                         <Button 
                           variant="outline" 
                           className="w-full hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group"
@@ -452,8 +450,8 @@ export default function DashboardPage() {
                           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
                       </div>
-                    );
-                  })}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
