@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
+import { useVzlaContext } from '@/lib/VzlaContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -232,6 +233,16 @@ const SATISFACTION_SURVEYS: SatisfactionSurvey[] = [
 ];
 
 export default function VenezuelaDashboard() {
+  const { vzlaId } = useVzlaContext();
+  const { data: vzlaOrdersRaw } = require('@/hooks/use-vzla-orders').useVzlaOrders();
+  const vzlaOrders = Array.isArray(vzlaOrdersRaw) ? vzlaOrdersRaw : [];
+
+  const totalPedidos = vzlaOrders.filter((order: any) => order.asignedEVzla === vzlaId).length;
+  const pedidosPendientes = vzlaOrders.filter((order: any) => order.state === 1).length;
+  const pedidosTracking = vzlaOrders.filter((order: any) => order.state === 2).length;
+  const reputaciones = vzlaOrders.filter((order: any) => order.asignedEVzla === vzlaId && typeof order.reputation === 'number').map((order: any) => order.reputation);
+  const promedioReputacion = reputaciones.length > 0 ? reputaciones.reduce((acc: number, r: number) => acc + r, 0) / reputaciones.length : 0;
+
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -332,13 +343,8 @@ export default function VenezuelaDashboard() {
                 </div>
                 <div className="hidden lg:flex items-center space-x-6">
                   <div className="text-center">
-                    <div className="text-4xl font-bold">{stats.pendingOrders + stats.activeChats}</div>
+                    <div className="text-4xl font-bold">{pedidosPendientes + pedidosTracking}</div>
                     <p className="text-blue-100">Tareas Pendientes</p>
-                  </div>
-                  <div className="w-px h-16 bg-white/20"></div>
-                  <div className="text-center">
-                    <div className="text-4xl font-bold">98%</div>
-                    <p className="text-blue-100">Eficiencia</p>
                   </div>
                 </div>
               </div>
@@ -357,10 +363,10 @@ export default function VenezuelaDashboard() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-900">{stats.pendingOrders}</div>
+                  <div className="text-3xl font-bold text-blue-900">{pedidosPendientes}</div>
                   <p className="text-xs text-blue-700">Esperando revisión</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.pendingOrders / 10) * 100}%`}}></div>
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / (pedidosPendientes + pedidosTracking)) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -389,10 +395,10 @@ export default function VenezuelaDashboard() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-purple-900">{stats.trackingUpdates}</div>
+                  <div className="text-3xl font-bold text-purple-900">{pedidosTracking}</div>
                   <p className="text-xs text-purple-700">Pendientes</p>
                   <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
-                    <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(stats.trackingUpdates / 8) * 100}%`}}></div>
+                    <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(pedidosTracking / (pedidosPendientes + pedidosTracking)) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -405,10 +411,9 @@ export default function VenezuelaDashboard() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-orange-900">{stats.averageRating}/5</div>
-                  <p className="text-xs text-orange-700">{stats.satisfactionRate} satisfechos</p>
+                  <div className="text-3xl font-bold text-orange-900">{promedioReputacion}/5</div>
                   <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
-                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(stats.averageRating / 5) * 100}%`}}></div>
+                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(promedioReputacion / 5) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -448,93 +453,13 @@ export default function VenezuelaDashboard() {
                   </Link>
                   <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group">
                     <div className="p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
-                      <Phone className="h-8 w-8 text-red-600" />
+                      <DollarSign className="h-8 w-8 text-red-600" />
                     </div>
-                    <span className="text-sm font-medium">Llamar Cliente</span>
+                    <span className="text-sm font-medium">Validar Pago</span>
                   </Button>
                 </div>
               </CardContent>
-            </Card>
-
-            {/* Métricas de Rendimiento y Próximas Acciones */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-xl font-semibold">Métricas de Rendimiento</CardTitle>
-                  <p className="text-sm text-slate-600">Tu desempeño en tiempo real</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Satisfacción del cliente</span>
-                        <span className="font-bold text-lg">{stats.averageRating}/5</span>
-                      </div>
-                      <div className="w-full bg-slate-200 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style={{ width: `${(stats.averageRating/5)*100}%` }}></div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-blue-50 rounded-xl">
-                        <div className="text-2xl font-bold text-blue-600">{stats.responseTime}</div>
-                        <p className="text-sm text-blue-700">Tiempo de respuesta</p>
-                      </div>
-                      <div className="text-center p-4 bg-green-50 rounded-xl">
-                        <div className="text-2xl font-bold text-green-600">{stats.satisfactionRate}</div>
-                        <p className="text-sm text-green-700">Tasa de satisfacción</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-xl font-semibold">Próximas Acciones</CardTitle>
-                  <p className="text-sm text-slate-600">Tareas que requieren tu atención</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-red-50 to-red-100 border border-red-200">
-                      <div className="p-2 bg-red-500 rounded-lg">
-                        <AlertTriangle className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-red-800">{stats.pendingOrders} pedidos requieren revisión</p>
-                        <p className="text-xs text-red-600">Prioridad alta</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
-                      <div className="p-2 bg-blue-500 rounded-lg">
-                        <MessageSquare className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-blue-800">{stats.activeChats} chats requieren atención</p>
-                        <p className="text-xs text-blue-600">Clientes esperando</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-green-50 to-green-100 border border-green-200">
-                      <div className="p-2 bg-green-500 rounded-lg">
-                        <Truck className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-green-800">{stats.trackingUpdates} actualizaciones pendientes</p>
-                        <p className="text-xs text-green-600">Tracking activo</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200">
-                      <div className="p-2 bg-purple-500 rounded-lg">
-                        <Users className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-purple-800">12 clientes nuevos esta semana</p>
-                        <p className="text-xs text-purple-600">Crecimiento</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            </Card>+
           </div>
         </div>
       </main>
