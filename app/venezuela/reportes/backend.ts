@@ -77,6 +77,7 @@ export async function getMetricasPorMes() {
     fechaGeneracion: string;
     reputaciones: number[];
     primerPedido: Date;
+    states: number[];
   }> = {};
 
   orders.forEach(order => {
@@ -93,11 +94,14 @@ export async function getMetricasPorMes() {
         ingresos: 45250, // Temporal
         fechaGeneracion: fecha.toISOString().slice(0, 10),
         reputaciones: [],
-        primerPedido: fecha
+        primerPedido: fecha,
+        states: []
       };
     }
     pedidosPorMes[mes].totalPedidos++;
+    pedidosPorMes[mes].states.push(order.state);
     if (order.state === 8) pedidosPorMes[mes].completados++;
+    if ([1,2,3,4].includes(order.state)) pedidosPorMes[mes].pendientes++;
     if (order.reputation !== null && order.reputation !== undefined) {
       pedidosPorMes[mes].reputaciones.push(order.reputation);
     }
@@ -116,10 +120,11 @@ export async function getMetricasPorMes() {
       mes: datos.mes,
       totalPedidos: datos.totalPedidos,
       completados: datos.completados,
-      pendientes: datos.totalPedidos - datos.completados,
+      pendientes: datos.pendientes,
       satisfaccion: datos.reputaciones.length > 0 ? Number((datos.reputaciones.reduce((a, b) => a + b, 0) / datos.reputaciones.length).toFixed(2)) : 0,
       ingresos: datos.ingresos,
-      fechaGeneracion: datos.fechaGeneracion
+      fechaGeneracion: datos.fechaGeneracion,
+      states: datos.states
     }));
 
   return resultado;

@@ -22,6 +22,7 @@ const Reportes = () => {
     satisfaccion: number;
     ingresos: number;
     fechaGeneracion: string;
+    states?: number[]; // Agregado para evitar error de propiedad 'states'
   };
   const [metricasMeses, setMetricasMeses] = useState<MetricasMes[]>([]);
   const { theme } = useTheme();
@@ -128,10 +129,36 @@ const Reportes = () => {
   // ...eliminado: los datos hardcodeados, ahora solo se usa el estado reportesSatisfaccion
 
   // Datos para gráficos
+  // Agrupar por mes y estado para el gráfico de estados de pedidos
+  // Agrupar por mes y estado usando los valores correctos de state
+  // Se requiere acceder a los datos originales de los pedidos por mes
+  // Por lo tanto, se debe obtener los datos desde getMetricasPorMes o guardar los states por mes
+  // Si metricasMeses no tiene los states, se debe modificar backend para incluirlos
+  // Aquí se asume que metricasMeses tiene un campo 'states' con array de states de los pedidos de ese mes
+  // Si no existe, se puede obtener desde el backend
+
+  // Si metricasMeses no tiene los states, se omite y se usa la mejor aproximación
+  // Si tienes acceso a los pedidos por mes, reemplaza la lógica por la agrupación real
+  // Ordenar los meses de menor a mayor (por fechaGeneracion)
+  const datosEstadosPorMes = [...metricasMeses]
+    .sort((a, b) => new Date(a.fechaGeneracion).getTime() - new Date(b.fechaGeneracion).getTime())
+    .map(mes => {
+      const pendientes = mes.states ? mes.states.filter((s: number) => [1,2,3,4].includes(s)).length : mes.pendientes;
+      const enTransito = mes.states ? mes.states.filter((s: number) => [5,6,7].includes(s)).length : (mes.totalPedidos - mes.pendientes - mes.completados);
+      const completados = mes.states ? mes.states.filter((s: number) => s === 8).length : mes.completados;
+      return {
+        mes: mes.mes.toUpperCase(),
+        Pendiente: pendientes,
+        "En tránsito": enTransito,
+        Completado: completados
+      };
+    });
+
   const datosGraficos = {
     mes: [...metricasMeses]
       .sort((a, b) => new Date(a.fechaGeneracion).getTime() - new Date(b.fechaGeneracion).getTime())
       .map(mes => ({ mes: mes.mes.charAt(0).toUpperCase() + mes.mes.slice(1), pedidos: mes.totalPedidos })),
+    estadosPorMes: datosEstadosPorMes,
     satisfaccion: reportesSatisfaccion.length > 0
       ? Object.entries(reportesSatisfaccion[0].distribucion).map(([estrella, cantidad]) => ({
           estrella: `${estrella}⭐`,
@@ -159,54 +186,308 @@ const Reportes = () => {
   };
 
   const exportarPDF = (reporte: Reporte) => {
-    // Simulación de exportación a PDF
-    let contenido = `Reporte Detallado\n================\n\n`;
-    if (activeFilter === 'mes' && 'mes' in reporte) {
-      contenido += `Período: ${reporte.mes}\nTotal Pedidos: ${reporte.totalPedidos}\nCompletados: ${reporte.completados}\nPendientes: ${reporte.pendientes}\nSatisfacción: ${reporte.satisfaccion}/5\nIngresos: $${reporte.ingresos}\n`;
-    } else if (activeFilter === 'pedido' && 'numeroPedido' in reporte) {
-      contenido += `Número: ${reporte.numeroPedido}\nCliente: ${reporte.cliente}\nFecha: ${reporte.fechaPedido}\nEstado: ${reporte.estado}\nValor: $${reporte.valor}\nSatisfacción: ${reporte.satisfaccion}/5\n`;
-    } else if (activeFilter === 'satisfaccion' && 'periodo' in reporte) {
-      contenido += `Período: ${reporte.periodo}\nPromedio: ${reporte.promedioGeneral}/5\nTotal Reseñas: ${reporte.totalReseñas}\nComentarios: ${reporte.comentariosDestacados.join(', ')}\n`;
+    // PDF profesional con layout corporativo y SSR compatible
+    if (activeFilter === 'pedido' && 'id' in reporte) {
+      (async () => {
+        const { jsPDF } = await import('jspdf');
+        const autoTable = (await import('jspdf-autotable')).default;
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.height;
+        const margin = 15;
+        const colors = {
+          primary: [22, 120, 187],
+          secondary: [44, 62, 80],
+          light: [245, 248, 255],
+          border: [180, 200, 220],
+          text: [33, 37, 41]
+        };
+        // Campos personalizados para pedido
+        const tableData = [
+          ['Total Pedidos', `${metricasPedido?.totalPedidos ?? ''}`],
+          ['Entregados', `${metricasPedido?.entregados ?? ''}`],
+          ['En Tránsito', `${metricasPedido?.enTransito ?? ''}`],
+          ['Valor Promedio', `$${metricasPedido?.valorPromedio ?? ''}`]
+        ];
+        // Encabezado
+        doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.rect(0, 0, pageWidth, 35, 'F');
+        doc.setFontSize(12);
+        doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.setFont('helvetica', 'bold');
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
+        doc.text('PITA', margin + 10, 20, { align: 'center' });
+        doc.setFontSize(24);
+        doc.setTextColor(255, 255, 255);
+        doc.text('RESUMEN DE PEDIDOS', pageWidth / 2, 22, { align: 'center' });
+        let currentY = 50;
+        autoTable(doc, {
+          head: [['Campo', 'Valor']],
+          body: tableData,
+          startY: currentY,
+          margin: { left: margin, right: margin },
+          theme: 'grid',
+          headStyles: {
+            fillColor: [22, 120, 187],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 12,
+            halign: 'center',
+            cellPadding: 3
+          },
+          bodyStyles: {
+            fontSize: 10,
+            cellPadding: 3,
+            textColor: [33, 37, 41]
+          },
+          alternateRowStyles: {
+            fillColor: [245, 248, 255]
+          },
+          columnStyles: {
+            0: { cellWidth: 60, fontStyle: 'bold', textColor: [44, 62, 80] },
+            1: { cellWidth: pageWidth - (margin * 2) - 60 }
+          }
+        });
+        // Gráfico de estados de pedidos
+        const chartElement = document.querySelector('[data-export="estados-pedidos"]');
+        if (chartElement) {
+          const html2canvas = (await import('html2canvas')).default;
+          const canvas = await html2canvas(chartElement as HTMLElement, { backgroundColor: null, scale: 2 });
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = pageWidth * 0.65;
+          const imgHeight = imgWidth * 0.5;
+          const afterTableY = (doc as any).lastAutoTable ? (doc as any).lastAutoTable.finalY + 40 : currentY + 90;
+          doc.setFontSize(14);
+          doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+          const tituloY = afterTableY - 20;
+          doc.text('Estados de Pedidos', pageWidth / 2, tituloY, { align: 'center' });
+          const leftMargin = (pageWidth - imgWidth) / 2;
+          doc.addImage(imgData, 'PNG', leftMargin, afterTableY, imgWidth, imgHeight);
+        }
+        // Footer
+        const footerY = pageHeight - 25;
+        doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+        doc.setLineWidth(0.5);
+        doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+        doc.setFontSize(9);
+        doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+        doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
+        doc.setFontSize(8);
+        doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
+        doc.setFontSize(7);
+        doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+        doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+        doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+        window.open(doc.output('bloburl'), '_blank');
+      })();
+      return;
     }
-    contenido += `\nGenerado el: ${new Date().toLocaleDateString()}`;
-
-    // Crear y descargar archivo
-    const blob = new Blob([contenido], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `reporte-${reporte.id}-${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    // ...PDF para reportes mensuales y otros tipos...
+    (async () => {
+      const { jsPDF } = await import('jspdf');
+      const autoTable = (await import('jspdf-autotable')).default;
+      const doc = new jsPDF();
+      // ...existing code para PDF mensual...
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.height;
+      const margin = 15;
+      const colors = {
+        primary: [22, 120, 187],
+        secondary: [44, 62, 80],
+        light: [245, 248, 255],
+        border: [180, 200, 220],
+        text: [33, 37, 41]
+      };
+      let tableData: [string, string][] = [];
+      let title = '';
+      if (activeFilter === 'mes' && 'mes' in reporte) {
+        title = 'RESUMEN MENSUAL';
+        tableData = [
+          ['Periodo', reporte.mes.toUpperCase()],
+          ['Ingresos', `$${reporte.ingresos}`],
+          ['Total Pedidos', `${reporte.totalPedidos}`],
+          ['Completados', `${reporte.completados}`],
+          ['Satisfacción', `${reporte.satisfaccion}/5`]
+        ];
+      }
+      // ...existing code para PDF mensual...
+      doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+      doc.rect(0, 0, pageWidth, 35, 'F');
+      doc.setFontSize(12);
+      doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+      doc.setFont('helvetica', 'bold');
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
+      doc.text('PITA', margin + 10, 20, { align: 'center' });
+      doc.setFontSize(24);
+      doc.setTextColor(255, 255, 255);
+      doc.text(title, pageWidth / 2, 22, { align: 'center' });
+      let currentY = 50;
+      autoTable(doc, {
+        head: [['Campo', 'Valor']],
+        body: tableData,
+        startY: currentY,
+        margin: { left: margin, right: margin },
+        theme: 'grid',
+        headStyles: {
+          fillColor: [22, 120, 187],
+          textColor: [255, 255, 255],
+          fontStyle: 'bold',
+          fontSize: 12,
+          halign: 'center',
+          cellPadding: 3
+        },
+        bodyStyles: {
+          fontSize: 10,
+          cellPadding: 3,
+          textColor: [33, 37, 41]
+        },
+        alternateRowStyles: {
+          fillColor: [245, 248, 255]
+        },
+        columnStyles: {
+          0: { cellWidth: 60, fontStyle: 'bold', textColor: [44, 62, 80] },
+          1: { cellWidth: pageWidth - (margin * 2) - 60 }
+        }
+      });
+      const footerY = pageHeight - 25;
+      doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+      doc.setLineWidth(0.5);
+      doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+      doc.setFontSize(9);
+      doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+      doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
+      doc.setFontSize(8);
+      doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+      doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
+      doc.setFontSize(7);
+      doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+      doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+      doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+      window.open(doc.output('bloburl'), '_blank');
+    })();
   };
 
-  const exportarGeneral = () => {
-    const datos = obtenerDatosReporte();
-    let contenido = `Reporte General - ${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)}\n=====================================================`;
-    contenido += '\n\n';
-    contenido += datos.map((item: any) => {
-      if (activeFilter === 'mes' && 'mes' in item) {
-        return `${item.mes}:\n- Pedidos: ${item.totalPedidos}\n- Completados: ${item.completados}\n- Satisfacción: ${item.satisfaccion}/5\n- Ingresos: $${item.ingresos}`;
-      } else if (activeFilter === 'pedido' && 'numeroPedido' in item) {
-        return `${item.numeroPedido}:\n- Cliente: ${item.cliente}\n- Estado: ${item.estado}\n- Valor: $${item.valor}\n- Satisfacción: ${item.satisfaccion}/5`;
-      } else if (activeFilter === 'satisfaccion' && 'periodo' in item) {
-        return `${item.periodo}:\n- Promedio: ${item.promedioGeneral}/5\n- Total Reseñas: ${item.totalReseñas}\n- Principales comentarios: ${item.comentariosDestacados.join(', ')}`;
-      }
-      return '';
-    }).join('\n');
-    contenido += `\n\nGenerado el: ${new Date().toLocaleDateString()}`;
+  const exportarGeneral = async () => {
+    // PDF profesional con layout corporativo y SSR compatible
+    const { jsPDF } = await import('jspdf');
+    const autoTable = (await import('jspdf-autotable')).default;
+    const doc = new jsPDF();
 
-    const blob = new Blob([contenido], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `reporte-general-${activeFilter}-${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    // Layout y colores
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 15;
+    const colors = {
+      primary: [22, 120, 187],
+      secondary: [44, 62, 80],
+      light: [245, 248, 255],
+      border: [180, 200, 220],
+      text: [33, 37, 41]
+    };
+
+    // Datos para la tabla PDF: Pedidos Totales, Completados, Satisfacción e Ingresos
+    // Usar los datos agregados de los reportes mensuales
+    const totalPedidos = metricasMeses.reduce((acc, mes) => acc + mes.totalPedidos, 0);
+    const completados = metricasMeses.reduce((acc, mes) => acc + mes.completados, 0);
+    const ingresos = metricasMeses.reduce((acc, mes) => acc + mes.ingresos, 0);
+    const totalSatisfaccion = metricasMeses.reduce((acc, mes) => acc + (mes.satisfaccion * mes.totalPedidos), 0);
+    const totalPedidosConReputacion = metricasMeses.reduce((acc, mes) => acc + (mes.satisfaccion > 0 ? mes.totalPedidos : 0), 0);
+    const satisfaccionPromedio = totalPedidosConReputacion > 0 ? (totalSatisfaccion / totalPedidosConReputacion).toFixed(2) : '0';
+
+    const pedidoTable = [
+      ['Pedidos Totales', `${totalPedidos}`],
+      ['Completados', `${completados}`],
+      ['Satisfacción', `${satisfaccionPromedio}/5`],
+      ['Ingresos', `$${ingresos}`]
+    ];
+
+    // === ENCABEZADO PROFESIONAL ===
+    doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+    doc.rect(0, 0, pageWidth, 35, 'F');
+    doc.setFontSize(12);
+    doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
+    doc.text('PITA', margin + 10, 20, { align: 'center' });
+    doc.setFontSize(24);
+    doc.setTextColor(255, 255, 255);
+    doc.text('RESUMEN DE PEDIDO', pageWidth / 2, 22, { align: 'center' });
+
+    let currentY = 50;
+
+    // === MANEJO POR TIPO DE PEDIDO ===
+    // Solo tabla de métricas agregadas
+    autoTable(doc, {
+      head: [['Campo', 'Valor']],
+      body: pedidoTable,
+      startY: currentY,
+      margin: { left: margin, right: margin },
+      theme: 'grid',
+      headStyles: {
+        fillColor: [22, 120, 187],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 12,
+        halign: 'center',
+        cellPadding: 3
+      },
+      bodyStyles: {
+        fontSize: 10,
+        cellPadding: 3,
+        textColor: [33, 37, 41]
+      },
+      alternateRowStyles: {
+        fillColor: [245, 248, 255]
+      },
+      columnStyles: {
+        0: { cellWidth: 60, fontStyle: 'bold', textColor: [44, 62, 80] },
+        1: { cellWidth: pageWidth - (margin * 2) - 60 }
+      }
+    });
+
+    // === AGREGAR GRÁFICO DE TENDENCIA MENSUAL ===
+    // Usar html2canvas para capturar el gráfico SVG de Recharts
+    const chartElement = document.getElementById('tendencia-mensual-export');
+    if (chartElement) {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(chartElement, { backgroundColor: null, scale: 2 });
+      const imgData = canvas.toDataURL('image/png');
+      // Insertar la imagen debajo de la tabla
+  // Reducir el ancho y centrar el gráfico
+  const imgWidth = pageWidth * 0.65; // 65% del ancho de la página
+  const imgHeight = imgWidth * 0.5; // Relación de aspecto
+  const afterTableY = (doc as any).lastAutoTable ? (doc as any).lastAutoTable.finalY + 40 : currentY + 90;
+  doc.setFontSize(14);
+  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  // Separar el título del gráfico
+  const tituloY = afterTableY - 20;
+  doc.text('Tendencia Mensual', pageWidth / 2, tituloY, { align: 'center' });
+  // Calcular margen izquierdo para centrar
+  const leftMargin = (pageWidth - imgWidth) / 2;
+  doc.addImage(imgData, 'PNG', leftMargin, afterTableY, imgWidth, imgHeight);
+    }
+
+    // === FOOTER PROFESIONAL ===
+    const footerY = pageHeight - 25;
+    doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+    doc.setLineWidth(0.5);
+    doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+    doc.setFontSize(9);
+    doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+    doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
+    doc.setFontSize(8);
+    doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+    doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
+    doc.setFontSize(7);
+    doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+    doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+    doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+
+    window.open(doc.output('bloburl'), '_blank');
   };
 
   const renderModal = () => {
@@ -228,16 +509,67 @@ const Reportes = () => {
           </div>
           <div className="space-y-4">
             {activeFilter === 'mes' && selectedReport && 'mes' in selectedReport && (
-              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Información Mensual</h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="font-semibold">Período:</span> {selectedReport.mes}</div>
-                  <div><span className="font-semibold">Total Pedidos:</span> {selectedReport.totalPedidos}</div>
-                  <div><span className="font-semibold">Completados:</span> {selectedReport.completados}</div>
-                  <div><span className="font-semibold">Pendientes:</span> {selectedReport.pendientes}</div>
-                  <div><span className="font-semibold">Satisfacción:</span> {selectedReport.satisfaccion}/5</div>
-                  <div><span className="font-semibold">Ingresos:</span> ${selectedReport.ingresos}</div>
-                  <div><span className="font-semibold">Fecha de Generación:</span> {selectedReport.fechaGeneracion}</div>
+              <div className="p-6 rounded-lg">
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-blue-50 rounded-lg p-4 flex flex-col justify-center items-start">
+                    <span className="text-xs font-semibold text-gray-500 mb-1">PERIODO</span>
+                    <span className="text-2xl font-bold text-blue-700">{selectedReport.mes.toUpperCase()}</span>
+                  </div>
+                  <div className="bg-green-50 rounded-lg p-4 flex flex-col justify-center items-start">
+                    <span className="text-xs font-semibold text-gray-500 mb-1">INGRESOS</span>
+                    <span className="text-2xl font-bold text-green-600">${selectedReport.ingresos}</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
+                    <Package size={32} className="mb-2 text-gray-400" />
+                    <span className="text-2xl font-bold text-[#202841]">{selectedReport.totalPedidos}</span>
+                    <span className="text-xs text-gray-500 mt-1">TOTAL PEDIDOS</span>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
+                    <CheckCircle size={32} className="mb-2 text-green-500" />
+                    <span className="text-2xl font-bold text-[#202841]">{selectedReport.completados}</span>
+                    <span className="text-xs text-gray-500 mt-1">COMPLETADOS</span>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
+                    <Star size={32} className="mb-2 text-yellow-500" />
+                    <span className="text-2xl font-bold text-[#202841]">{selectedReport.satisfaccion}</span>
+                    <span className="text-xs text-gray-500 mt-1">SATISFACCION</span>
+                  </div>
+                </div>
+                <div className="pt-2">
+                  <button
+                    className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-lg font-bold text-base hover:bg-blue-700 transition-colors"
+                    onClick={async () => {
+                      if ('id' in selectedReport) {
+                        // Buscar el PDF en la columna pdfRoutes de la tabla orders
+                        const { createClient } = await import('@supabase/supabase-js');
+                        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+                        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+                        if (!supabaseUrl || !supabaseKey) {
+                          alert('Supabase URL o Key no están definidos en las variables de entorno.');
+                          return;
+                        }
+                        const supabase = createClient(supabaseUrl as string, supabaseKey as string);
+                        const { data, error } = await supabase
+                          .from('orders')
+                          .select('pdfRoutes')
+                          .eq('id', selectedReport.id)
+                          .single();
+                        if (!error && data && data.pdfRoutes) {
+                          window.open(data.pdfRoutes, '_blank');
+                        } else {
+                          // Si no existe, puedes mostrar un mensaje o fallback
+                          alert('No se encontró PDF para este pedido.');
+                        }
+                      } else {
+                        exportarPDF(selectedReport);
+                      }
+                    }}
+                  >
+                    <Download size={20} />
+                    EXPORTAR COMO PDF
+                  </button>
                 </div>
               </div>
             )}
@@ -266,6 +598,38 @@ const Reportes = () => {
                   {'valor' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Valor:</strong> ${selectedReport.valor}</div>}
                   {'tiempoEntrega' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Tiempo Entrega:</strong> {selectedReport.tiempoEntrega}</div>}
                 </div>
+                <div className="pt-4">
+                  <button
+                    className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-lg font-bold text-base hover:bg-blue-700 transition-colors"
+                    onClick={async () => {
+                      if (activeFilter === 'pedido' && selectedReport && 'id' in selectedReport) {
+                        const { createClient } = await import('@supabase/supabase-js');
+                        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+                        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+                        if (typeof supabaseUrl !== 'string' || typeof supabaseKey !== 'string') {
+                          alert('Supabase URL o Key no están definidos correctamente.');
+                          return;
+                        }
+                        const supabase = createClient(supabaseUrl, supabaseKey);
+                        const { data, error } = await supabase
+                          .from('orders')
+                          .select('pdfRoutes')
+                          .eq('id', selectedReport.id)
+                          .single();
+                        if (!error && data && data.pdfRoutes) {
+                          window.open(data.pdfRoutes, '_blank');
+                        } else {
+                          alert('No se encontró PDF para este pedido.');
+                        }
+                      } else {
+                        exportarPDF(selectedReport);
+                      }
+                    }}
+                  >
+                    <Download size={20} />
+                    EXPORTAR COMO PDF
+                  </button>
+                </div>
               </div>
             )}
 
@@ -288,21 +652,10 @@ const Reportes = () => {
                             style={{ width: `${(typeof cantidad === 'number' && selectedReport.totalReseñas ? (cantidad / selectedReport.totalReseñas) * 100 : 0)}%` }}
                           ></div>
                         </div>
-                        <span className="w-8 text-sm text-right text-gray-700 dark:text-gray-300">{cantidad as number}</span>
+                        {/* Comentarios destacados eliminados */}
                       </div>
                     ))}
                   </div>
-                </div>
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Comentarios Destacados</h4>
-                  <ul className="space-y-1 text-sm">
-                    {selectedReport.comentariosDestacados.map((comentario: string, index: number) => (
-                      <li key={index} className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                        <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
-                        {comentario}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </div>
             )}
@@ -333,7 +686,121 @@ const Reportes = () => {
               <p className={theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>Analiza el rendimiento y métricas de tu operación</p>
             </div>
             <button 
-              onClick={exportarGeneral}
+              onClick={() => {
+                if (activeFilter === 'mes') {
+                  exportarGeneral();
+                } else if (activeFilter === 'pedido') {
+                  // Exportar PDF con los datos agregados de pedidos
+                  exportarPDF({
+                    id: 0,
+                    numeroPedido: '',
+                    cliente: '',
+                    fechaPedido: '',
+                    estado: '',
+                    valor: 0,
+                    tiempoEntrega: '',
+                    satisfaccion: 0,
+                    productName: ''
+                  });
+                } else if (activeFilter === 'satisfaccion' && reportesSatisfaccion.length > 0) {
+                  // PDF profesional para satisfacción cliente en nueva pestaña
+                  const reporte = reportesSatisfaccion[0];
+                  (async () => {
+                    const { jsPDF } = await import('jspdf');
+                    const autoTable = (await import('jspdf-autotable')).default;
+                    const doc = new jsPDF();
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const pageHeight = doc.internal.pageSize.height;
+                    const margin = 15;
+                    const colors = {
+                      primary: [22, 120, 187],
+                      secondary: [44, 62, 80],
+                      light: [245, 248, 255],
+                      border: [180, 200, 220],
+                      text: [33, 37, 41]
+                    };
+                    // Tabla de satisfacción
+                    const tableData = [
+                      ['Promedio General', `${reporte.promedioGeneral}/5`],
+                      ['Total Reseñas', `${reporte.totalReseñas}`],
+                      ['5 Estrellas', `${metricasSatisfaccion.cincoEstrellas}`],
+                      ['Satisfacción', `${metricasSatisfaccion.satisfechos}%`]
+                    ];
+                    doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                    doc.rect(0, 0, pageWidth, 35, 'F');
+                    doc.setFontSize(12);
+                    doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFillColor(255, 255, 255);
+                    doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
+                    doc.text('PITA', margin + 10, 20, { align: 'center' });
+                    doc.setFontSize(24);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('SATISFACCIÓN CLIENTE', pageWidth / 2, 22, { align: 'center' });
+                    let currentY = 50;
+                    autoTable(doc, {
+                      head: [['Campo', 'Valor']],
+                      body: tableData,
+                      startY: currentY,
+                      margin: { left: margin, right: margin },
+                      theme: 'grid',
+                      headStyles: {
+                        fillColor: [22, 120, 187],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        fontSize: 12,
+                        halign: 'center',
+                        cellPadding: 3
+                      },
+                      bodyStyles: {
+                        fontSize: 10,
+                        cellPadding: 3,
+                        textColor: [33, 37, 41]
+                      },
+                      alternateRowStyles: {
+                        fillColor: [245, 248, 255]
+                      },
+                      columnStyles: {
+                        0: { cellWidth: 60, fontStyle: 'bold', textColor: [44, 62, 80] },
+                        1: { cellWidth: pageWidth - (margin * 2) - 60 }
+                      }
+                    });
+                    // Gráfico de distribución de satisfacción debajo de la tabla
+                    const chartElement = document.querySelector('[data-export="satisfaccion"]');
+                    if (chartElement) {
+                      const html2canvas = (await import('html2canvas')).default;
+                      const canvas = await html2canvas(chartElement as HTMLElement, { backgroundColor: null, scale: 2 });
+                      const imgData = canvas.toDataURL('image/png');
+                      const imgWidth = pageWidth * 0.65;
+                      const imgHeight = imgWidth * 0.5;
+                      // Ubicar el gráfico debajo de la tabla
+                      const afterTableY = (doc as any).lastAutoTable ? (doc as any).lastAutoTable.finalY + 40 : currentY + 90;
+                      doc.setFontSize(14);
+                      doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                      const tituloY = afterTableY - 20;
+                      doc.text('Distribución de Satisfacción', pageWidth / 2, tituloY, { align: 'center' });
+                      const leftMargin = (pageWidth - imgWidth) / 2;
+                      doc.addImage(imgData, 'PNG', leftMargin, afterTableY, imgWidth, imgHeight);
+                    }
+                    // Footer
+                    const footerY = pageHeight - 25;
+                    doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+                    doc.setLineWidth(0.5);
+                    doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+                    doc.setFontSize(9);
+                    doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+                    doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
+                    doc.setFontSize(8);
+                    doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                    doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
+                    doc.setFontSize(7);
+                    doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+                    doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+                    doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+                    window.open(doc.output('bloburl'), '_blank');
+                  })();
+                }
+              }}
               className="flex items-center gap-2 bg-[#202841] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
             >
               <Download size={20} />
@@ -356,11 +823,11 @@ const Reportes = () => {
             </CardHeader>
             <CardContent className="pt-0 pb-6">
               <div className="flex flex-wrap gap-3">
-                {[
+                {([
                   { key: 'mes', label: 'Por Mes', icon: Calendar, color: 'bg-blue-500' },
                   { key: 'pedido', label: 'Por Pedido', icon: ShoppingCart, color: 'bg-green-500' },
                   { key: 'satisfaccion', label: 'Satisfacción Cliente', icon: Heart, color: 'bg-purple-500' }
-                ].map(({ key, label, icon: Icon, color }) => (
+                ] as { key: 'mes' | 'pedido' | 'satisfaccion'; label: string; icon: any; color: string }[]).map(({ key, label, icon: Icon, color }) => (
                       <button
                         key={key}
                         onClick={() => setActiveFilter(key)}
@@ -380,22 +847,36 @@ const Reportes = () => {
 
           {/* Gráficos */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card className={
-              `rounded-lg shadow-lg border-0 backdrop-blur-sm p-0 transition-colors duration-300 ` +
-              (theme === 'dark' ? 'bg-zinc-900/80' : 'bg-white/70')
-            }>
+            <Card
+              className={
+                `rounded-lg shadow-lg border-0 backdrop-blur-sm p-0 transition-colors duration-300 ` +
+                (theme === 'dark' ? 'bg-zinc-900/80' : 'bg-white/70')
+              }
+              id={activeFilter === 'mes' ? 'tendencia-mensual-export' : activeFilter === 'pedido' ? 'estados-pedidos-export' : activeFilter === 'satisfaccion' ? 'satisfaccion-export' : ''}
+              data-export={activeFilter === 'mes' ? 'tendencia-mensual' : activeFilter === 'pedido' ? 'estados-pedidos' : activeFilter === 'satisfaccion' ? 'satisfaccion' : ''}
+            >
               <CardHeader className="pb-0">
-                <CardTitle className={theme === 'dark' ? 'text-white' : 'text-black'}>
-                  {activeFilter === 'mes' ? 'Tendencia Mensual' : activeFilter === 'pedido' ? 'Estados de Pedidos' : 'Distribución de Satisfacción'}
-                </CardTitle>
+                {/* Eliminar el título negro para el gráfico de estados de pedidos */}
+                {/* Título eliminado para evitar duplicado en PDF */}
               </CardHeader>
               <CardContent className="pt-0">
                 <ResponsiveContainer width="100%" height={300}>
-                  {activeFilter === 'mes' ? (
+                  {activeFilter === 'pedido' ? (
+                    <BarChart data={datosGraficos.estadosPorMes}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="mes" stroke="#222" />
+                      <YAxis stroke="#222" />
+                      <Tooltip />
+                      {/* Pendiente: amarillo, En tránsito: naranja, Completado: verde */}
+                      <Bar dataKey="Pendiente" fill="#fde047" name="Pendiente" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="En tránsito" fill="#fb923c" name="En tránsito" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Completado" fill="#22c55e" name="Completado" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  ) : activeFilter === 'mes' ? (
                     <LineChart data={datosGraficos.mes}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="mes" stroke="#666" />
-                    <YAxis stroke="#666" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="mes" stroke="#666" />
+                      <YAxis stroke="#666" />
                       <Tooltip />
                       <Line 
                         type="monotone" 
@@ -411,45 +892,20 @@ const Reportes = () => {
                       <XAxis dataKey="estrella" stroke="#666" />
                       <YAxis stroke="#666" />
                       <Tooltip />
-                              {activeFilter === 'mes' && selectedReport && 'mes' in selectedReport && (
-                                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                                  <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Información Mensual</h4>
-                                  <div className="grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                      <span className="font-semibold">Período:</span> {selectedReport.mes}
-                                    </div>
-                                    <div>
-                                      <span className="font-semibold">Total Pedidos:</span> {selectedReport.totalPedidos}
-                                    </div>
-                                    <div>
-                                      <span className="font-semibold">Completados:</span> {selectedReport.completados}
-                                    </div>
-                                    <div>
-                                      <span className="font-semibold">Pendientes:</span> {selectedReport.pendientes}
-                                    </div>
-                                    <div>
-                                      <span className="font-semibold">Satisfacción:</span> {selectedReport.satisfaccion}/5
-                                    </div>
-                                    <div>
-                                      <span className="font-semibold">Ingresos:</span> ${selectedReport.ingresos}
-                                    </div>
-                                    <div>
-                                      <span className="font-semibold">Fecha de Generación:</span> {selectedReport.fechaGeneracion}
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
                       <Bar dataKey="cantidad" fill="#fbbf24" radius={[4, 4, 0, 0]} />
-                  </BarChart>
+                    </BarChart>
                   )}
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
-            <Card className={
-              `rounded-lg shadow-lg border-0 backdrop-blur-sm p-0 transition-colors duration-300 ` +
-              (theme === 'dark' ? 'bg-zinc-900/80' : 'bg-white/70')
-            }>
+            <Card
+              className={
+                `rounded-lg shadow-lg border-0 backdrop-blur-sm p-0 transition-colors duration-300 ` +
+                (theme === 'dark' ? 'bg-zinc-900/80' : 'bg-white/70')
+              }
+              data-export={activeFilter === 'mes' ? 'metricas-clave' : undefined}
+            >
               <CardHeader className="pb-0">
                 <CardTitle className={theme === 'dark' ? 'text-white' : 'text-black'}>Métricas Clave</CardTitle>
               </CardHeader>
@@ -497,10 +953,13 @@ const Reportes = () => {
           </div>
 
           {/* Lista de Reportes */}
-          <Card className={
-            `rounded-lg shadow-lg border-0 backdrop-blur-sm p-0 transition-colors duration-300 ` +
-            (theme === 'dark' ? 'bg-zinc-900/80' : 'bg-white/70')
-          }>
+          <Card
+            className={
+              `rounded-lg shadow-lg border-0 backdrop-blur-sm p-0 transition-colors duration-300 ` +
+              (theme === 'dark' ? 'bg-zinc-900/80' : 'bg-white/70')
+            }
+            data-export={activeFilter === 'mes' ? 'lista-reportes-mes' : undefined}
+          >
             <CardHeader className="pb-0">
               <CardTitle className={theme === 'dark' ? 'text-white' : 'text-black'}>
                 Lista de Reportes - {activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)}
