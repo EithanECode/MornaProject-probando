@@ -1,6 +1,38 @@
 "use client";
 
 import { useMemo, useState, useEffect } from 'react';
+
+// Estilos para animaciones
+const animationStyles = `
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+`;
+
+// Inyectar estilos en el head
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = animationStyles;
+  document.head.appendChild(style);
+}
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -75,6 +107,23 @@ export default function UsuariosPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | UserStatus>('all');
+  const [animationKey, setAnimationKey] = useState(0);
+
+  // Handlers para actualizar filtros con animación
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setAnimationKey(prev => prev + 1);
+  };
+
+  const handleRoleFilterChange = (value: 'all' | UserRole) => {
+    setRoleFilter(value);
+    setAnimationKey(prev => prev + 1);
+  };
+
+  const handleStatusFilterChange = (value: 'all' | UserStatus) => {
+    setStatusFilter(value);
+    setAnimationKey(prev => prev + 1);
+  };
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -82,7 +131,7 @@ export default function UsuariosPage() {
   const { toast } = useToast();
 
   const filteredUsers = useMemo(() => {
-    return users.filter((u) => {
+    const filtered = users.filter((u) => {
       const matchesText =
         u.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -91,6 +140,8 @@ export default function UsuariosPage() {
       const matchesStatus = statusFilter === 'all' || u.status === statusFilter;
       return matchesText && matchesRole && matchesStatus;
     });
+    
+    return filtered;
   }, [users, searchTerm, roleFilter, statusFilter]);
 
   function handleOpenCreate() {
@@ -247,12 +298,12 @@ export default function UsuariosPage() {
                        <Input
                          placeholder="Buscar por nombre, correo o ID..."
                          value={searchTerm}
-                         onChange={(e) => setSearchTerm(e.target.value)}
+                         onChange={(e) => handleSearchChange(e.target.value)}
                          className="pl-10 w-full bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500"
                        />
                      </div>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Select value={roleFilter} onValueChange={(v: 'all' | UserRole) => setRoleFilter(v)}>
+                                             <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
                         <SelectTrigger className="w-56 bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500">
                           <Filter className="w-4 h-4 mr-2 text-slate-400" />
                           <SelectValue placeholder="Filtrar por rol" />
@@ -264,7 +315,7 @@ export default function UsuariosPage() {
                           ))}
                         </SelectContent>
                       </Select>
-                      <Select value={statusFilter} onValueChange={(v: 'all' | UserStatus) => setStatusFilter(v)}>
+                                             <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
                         <SelectTrigger className="w-48 bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500">
                           <UserCheck className="w-4 h-4 mr-2 text-slate-400" />
                           <SelectValue placeholder="Filtrar por estado" />
@@ -289,49 +340,57 @@ export default function UsuariosPage() {
                 </div>
               </div>
 
-              {/* Tabla Modernizada */}
-              <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white/50 backdrop-blur-sm transition-all duration-300 ease-in-out">
-                <table className="w-full table-fixed">
-                  <thead className="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-slate-200">
-                    <tr>
-                      <th className="text-left py-4 px-6 text-slate-700 font-semibold w-2/5">
+                            {/* Tabla Modernizada */}
+              <div className="rounded-xl border border-slate-200 bg-white/50 backdrop-blur-sm">
+                <div className="min-h-[400px] transition-all duration-700 ease-in-out">
+                  <table className="w-full table-fixed">
+                    <thead className="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-slate-200">
+                      <tr>
+                                              <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '40%'}}>
                         <div className="flex items-center gap-2">
                           <Users className="w-4 h-4" />
                           Usuario
                         </div>
                       </th>
-                      <th className="text-left py-4 px-6 text-slate-700 font-semibold w-1/6">
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
                         <div className="flex items-center gap-2">
                           <Shield className="w-4 h-4" />
                           Rol
                         </div>
                       </th>
-                      <th className="text-left py-4 px-6 text-slate-700 font-semibold w-1/6">
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
                         <div className="flex items-center gap-2">
                           <UserCheck className="w-4 h-4" />
                           Estado
                         </div>
                       </th>
-                      <th className="text-left py-4 px-6 text-slate-700 font-semibold w-1/6">
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
                           Creado
                         </div>
                       </th>
-                      <th className="text-left py-4 px-6 text-slate-700 font-semibold w-1/6">
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
                         <div className="flex items-center gap-2">
                           <Settings className="w-4 h-4" />
                           Acciones
                         </div>
                       </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                                        {filteredUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-200 group">
-                        <td className="py-4 px-6 w-2/5">
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredUsers.map((user, index) => (
+                        <tr 
+                          key={`${user.id}-${animationKey}`}
+                          className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-300 ease-out group"
+                          style={{
+                            animationDelay: `${index * 50}ms`,
+                            animation: 'fadeInUp 0.6s ease-out forwards'
+                          }}
+                        >
+                                                  <td className="py-4 px-6" style={{width: '40%'}}>
                           <div className="flex items-center gap-4">
-                            <Avatar className="h-12 w-12 ring-2 ring-slate-100 group-hover:ring-blue-200 transition-all duration-200">
+                            <Avatar className="h-12 w-12 ring-2 ring-slate-100 group-hover:ring-blue-200 transition-all duration-200 flex-shrink-0">
                               <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-800 font-semibold">
                                 {user.fullName
                                   .split(' ')
@@ -350,12 +409,12 @@ export default function UsuariosPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 px-6 w-1/6">
+                        <td className="py-4 px-6" style={{width: '15%'}}>
                           <Badge className={`${ROLE_COLORS[user.role]} border font-medium px-3 py-1`}>
                             {user.role}
                           </Badge>
                         </td>
-                        <td className="py-4 px-6 w-1/6">
+                        <td className="py-4 px-6" style={{width: '15%'}}>
                           {user.status === 'activo' ? (
                             <Badge className="bg-green-100 text-green-800 border border-green-200 font-medium px-3 py-1">
                               <CheckCircle className="w-3 h-3 mr-1" /> Activo
@@ -366,59 +425,65 @@ export default function UsuariosPage() {
                             </Badge>
                           )}
                         </td>
-                        <td className="py-4 px-6 w-1/6 text-slate-600 text-sm">
+                        <td className="py-4 px-6" style={{width: '15%'}}>
                           <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4 text-slate-400 flex-shrink-0" />
                             <span className="truncate">{new Date(user.createdAt).toLocaleDateString('es-VE')}</span>
                           </div>
                         </td>
-                        <td className="py-4 px-6 w-1/6">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleOpenEdit(user)}
-                              className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                        <td className="py-4 px-6" style={{width: '15%'}}>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleOpenEdit(user)}
+                                className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                              >
+                                <Edit3 className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleToggleStatus(user)}
+                                className={`h-8 w-8 p-0 transition-all duration-200 ${
+                                  user.status === 'activo' 
+                                    ? 'hover:bg-red-100 hover:text-red-700' 
+                                    : 'hover:bg-green-100 hover:text-green-700'
+                                }`}
+                              >
+                                {user.status === 'activo' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDelete(user)}
+                                className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {filteredUsers.length === 0 && (
+                        <tr>
+                          <td colSpan={5} className="text-center py-16">
+                            <div 
+                              className="flex flex-col items-center gap-4 text-slate-500"
+                              style={{
+                                animation: 'fadeInUp 0.6s ease-out forwards'
+                              }}
                             >
-                              <Edit3 className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleToggleStatus(user)}
-                              className={`h-8 w-8 p-0 transition-all duration-200 ${
-                                user.status === 'activo' 
-                                  ? 'hover:bg-red-100 hover:text-red-700' 
-                                  : 'hover:bg-green-100 hover:text-green-700'
-                              }`}
-                            >
-                              {user.status === 'activo' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDelete(user)}
-                              className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                    {filteredUsers.length === 0 && (
-                      <tr>
-                        <td colSpan={5} className="text-center py-16">
-                          <div className="flex flex-col items-center gap-4 text-slate-500">
-                            <Users className="w-12 h-12 text-slate-300" />
-                            <p className="text-lg font-medium">No se encontraron usuarios</p>
-                            <p className="text-sm">Intenta ajustar los filtros de búsqueda</p>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                              <Users className="w-12 h-12 text-slate-300" />
+                              <p className="text-lg font-medium">No se encontraron usuarios</p>
+                              <p className="text-sm">Intenta ajustar los filtros de búsqueda</p>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </CardContent>
           </Card>
