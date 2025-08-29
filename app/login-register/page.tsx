@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import AuthPage from "./AuthPage";
 import PasswordReset from "./PasswordReset/PasswordReset";
 
-export default function LoginRegisterPage(): JSX.Element {
+export default function LoginRegisterPage() {
   const [currentPage, setCurrentPage] = useState<"auth" | "password-reset">(
     "auth"
   );

@@ -28,7 +28,7 @@ type Props = {
   onNavigateToAuth: () => void;
 };
 
-export default function FormPanel(props: Props): JSX.Element {
+export default function FormPanel(props: Props) {
   const {
     step,
     setStep,
@@ -232,7 +232,7 @@ export default function FormPanel(props: Props): JSX.Element {
     }
   };
 
-  const getStepContent = (currentStep: number): JSX.Element | null => {
+  const getStepContent = (currentStep: number) => {
     switch (currentStep) {
       case STEPS.CONTACT_METHOD:
         return (

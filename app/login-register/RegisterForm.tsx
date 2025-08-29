@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import Lottie from "react-lottie";
 
-export default function RegisterForm(): JSX.Element {
+export default function RegisterForm() {
   const [registerAnim, setRegisterAnim] = useState<any | null>(null);
   const [successAnim, setSuccessAnim] = useState<any | null>(null);
   const [registerAnimError, setRegisterAnimError] = useState<boolean>(false);

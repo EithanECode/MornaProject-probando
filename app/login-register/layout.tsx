@@ -6,7 +6,7 @@ export default function LoginRegisterLayout({
   children,
 }: {
   children: React.ReactNode;
-}): JSX.Element {
+}) {
   return (
     <>
       <img

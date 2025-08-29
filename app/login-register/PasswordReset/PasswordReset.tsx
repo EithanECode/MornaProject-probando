@@ -11,7 +11,7 @@ type Props = {
   initialStep?: number; // Permite forzar el paso inicial (ej: recuperación desde email)
 };
 
-export default function PasswordReset({ onNavigateToAuth, initialStep }: Props): JSX.Element {
+export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) {
   const [step, setStep] = useState<number>(initialStep ?? STEPS.CONTACT_METHOD);
   const [contactMethod, setContactMethod] = useState<string>(CONTACT_METHODS.EMAIL);
   const [contactValue, setContactValue] = useState<string>("");
