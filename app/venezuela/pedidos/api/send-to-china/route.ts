@@ -1,12 +1,20 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+function getSupabaseClient() {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Missing Supabase environment variables');
+  }
+  
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 // Cambia el estado de un pedido a 2 (Revisando/Enviado a China)
 export async function PATCH(request: Request) {
   try {
+    const supabase = getSupabaseClient();
     const { orderId } = await request.json();
     if (!orderId) {
       return new Response(JSON.stringify({ error: 'Falta orderId' }), { status: 400 });
