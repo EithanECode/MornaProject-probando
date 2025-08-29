@@ -311,35 +311,43 @@ export default function VenezuelaDashboard() {
   }
 
   return (
-    <div className="min-h-screen flex overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <Sidebar 
-        isExpanded={sidebarExpanded} 
-        setIsExpanded={setSidebarExpanded}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onMobileMenuClose={() => setIsMobileMenuOpen(false)}
-        userRole="venezuela"
-      />
-      
-      <main className={`flex-1 transition-all duration-300 ${
-        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'
-      }`}>
-        <Header 
-          notifications={stats.pendingOrders + stats.activeChats}
-          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Panel Venezuela"
-          subtitle="Revisión de pedidos, soporte al cliente y tracking"
+    <>
+      {/* Layout Desktop */}
+      <div className="hidden lg:flex min-h-screen overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Sidebar 
+          isExpanded={sidebarExpanded} 
+          setIsExpanded={setSidebarExpanded}
+          isMobileMenuOpen={isMobileMenuOpen}
+          onMobileMenuClose={() => setIsMobileMenuOpen(false)}
+          userRole="venezuela"
         />
         
-        <div className="p-6 space-y-8">
+        <main className={`transition-all duration-300 ${
+          sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'
+        } flex-1`}>
+          <Header 
+            notifications={stats.pendingOrders + stats.activeChats}
+            onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            title="Panel Venezuela"
+            subtitle="Revisión de pedidos, soporte al cliente y tracking"
+          />
+          
+          <div className="p-6 space-y-8">
           {/* Header del Dashboard con Bienvenida */}
-          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-8 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative z-10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
-                  <p className="text-blue-100 text-lg">Panel de Control - Empleado Venezuela</p>
-                  <p className="text-blue-200 mt-2">Gestiona pedidos, soporte y tracking desde un solo lugar</p>
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
+                <div className="flex-1">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
+                  <p className="text-blue-100 text-sm sm:text-base md:text-lg">Panel de Control - Empleado Venezuela</p>
+                  <p className="text-blue-200 mt-2 text-xs sm:text-sm md:text-base">Gestiona pedidos, soporte y tracking desde un solo lugar</p>
+                </div>
+                <div className="flex lg:hidden items-center justify-center lg:justify-end">
+                  <div className="text-center">
+                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold">{pedidosPendientes + pedidosTracking}</div>
+                    <p className="text-blue-100 text-xs sm:text-sm">Tareas Pendientes</p>
+                  </div>
                 </div>
                 <div className="hidden lg:flex items-center space-x-6">
                   <div className="text-center">
@@ -352,68 +360,68 @@ export default function VenezuelaDashboard() {
           </div>
 
           {/* Dashboard Principal */}
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-6 md:space-y-8">
             {/* Estadísticas Principales */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-blue-800">Pedidos Pendientes</CardTitle>
-                  <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
-                    <Package className="h-4 w-4 text-white" />
+                  <CardTitle className="text-xs sm:text-sm font-medium text-blue-800">Pedidos Pendientes</CardTitle>
+                  <div className="p-1.5 sm:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Package className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-900">{pedidosPendientes}</div>
+                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-900">{pedidosPendientes}</div>
                   <p className="text-xs text-blue-700">Esperando revisión</p>
-                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / (pedidosPendientes + pedidosTracking)) * 100}%`}}></div>
+                  <div className="mt-2 w-full bg-blue-200 rounded-full h-1.5 sm:h-2">
+                    <div className="bg-blue-500 h-1.5 sm:h-2 rounded-full" style={{width: `${(pedidosPendientes / (pedidosPendientes + pedidosTracking)) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-green-800">Chats Activos</CardTitle>
-                  <div className="p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
-                    <MessageSquare className="h-4 w-4 text-white" />
+                  <CardTitle className="text-xs sm:text-sm font-medium text-green-800">Chats Activos</CardTitle>
+                  <div className="p-1.5 sm:p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-green-900">{stats.activeChats}</div>
+                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-green-900">{stats.activeChats}</div>
                   <p className="text-xs text-green-700">Clientes en línea</p>
-                  <div className="mt-2 w-full bg-green-200 rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.activeChats / 5) * 100}%`}}></div>
+                  <div className="mt-2 w-full bg-green-200 rounded-full h-1.5 sm:h-2">
+                    <div className="bg-green-500 h-1.5 sm:h-2 rounded-full" style={{width: `${(stats.activeChats / 5) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-purple-800">Tracking Activo</CardTitle>
-                  <div className="p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
-                    <MapPin className="h-4 w-4 text-white" />
+                  <CardTitle className="text-xs sm:text-sm font-medium text-purple-800">Tracking Activo</CardTitle>
+                  <div className="p-1.5 sm:p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-purple-900">{pedidosTracking}</div>
+                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-900">{pedidosTracking}</div>
                   <p className="text-xs text-purple-700">Pendientes</p>
-                  <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
-                    <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(pedidosTracking / (pedidosPendientes + pedidosTracking)) * 100}%`}}></div>
+                  <div className="mt-2 w-full bg-purple-200 rounded-full h-1.5 sm:h-2">
+                    <div className="bg-purple-500 h-1.5 sm:h-2 rounded-full" style={{width: `${(pedidosTracking / (pedidosPendientes + pedidosTracking)) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-orange-800">Satisfacción</CardTitle>
-                  <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
-                    <Star className="h-4 w-4 text-white" />
+                  <CardTitle className="text-xs sm:text-sm font-medium text-orange-800">Satisfacción</CardTitle>
+                  <div className="p-1.5 sm:p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Star className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-orange-900">{promedioReputacion}/5</div>
-                  <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
-                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(promedioReputacion / 5) * 100}%`}}></div>
+                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-orange-900">{promedioReputacion}/5</div>
+                  <div className="mt-2 w-full bg-orange-200 rounded-full h-1.5 sm:h-2">
+                    <div className="bg-orange-500 h-1.5 sm:h-2 rounded-full" style={{width: `${(promedioReputacion / 5) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -422,47 +430,352 @@ export default function VenezuelaDashboard() {
             {/* Acciones Rápidas */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-xl font-semibold">Acciones Rápidas</CardTitle>
-                <p className="text-sm text-slate-600">Accede rápidamente a las funciones más utilizadas</p>
+                <CardTitle className="text-lg sm:text-xl font-semibold">Acciones Rápidas</CardTitle>
+                <p className="text-xs sm:text-sm text-slate-600">Accede rápidamente a las funciones más utilizadas</p>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                   <Link href="/venezuela/pedidos">
-                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
-                      <div className="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                        <Package className="h-8 w-8 text-blue-600" />
+                    <Button variant="outline" className="h-16 sm:h-20 md:h-24 flex flex-col gap-2 sm:gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
+                      <div className="p-2 sm:p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                        <Package className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-blue-600" />
                       </div>
-                      <span className="text-sm font-medium">Revisar Pedido</span>
+                      <span className="text-xs sm:text-sm font-medium">Revisar Pedido</span>
                     </Button>
                   </Link>
                   <Link href="/venezuela/soporte">
-                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group w-full">
-                      <div className="p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
-                        <MessageSquare className="h-8 w-8 text-green-600" />
+                    <Button variant="outline" className="h-16 sm:h-20 md:h-24 flex flex-col gap-2 sm:gap-3 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group w-full">
+                      <div className="p-2 sm:p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                        <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-green-600" />
                       </div>
-                      <span className="text-sm font-medium">Chat Soporte</span>
+                      <span className="text-xs sm:text-sm font-medium">Chat Soporte</span>
                     </Button>
                   </Link>
                   <Link href="/venezuela/tracking">
-                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
-                      <div className="p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
-                        <MapPin className="h-8 w-8 text-purple-600" />
+                    <Button variant="outline" className="h-16 sm:h-20 md:h-24 flex flex-col gap-2 sm:gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
+                      <div className="p-2 sm:p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+                        <MapPin className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-purple-600" />
                       </div>
-                      <span className="text-sm font-medium">Actualizar Tracking</span>
+                      <span className="text-xs sm:text-sm font-medium">Actualizar Tracking</span>
                     </Button>
                   </Link>
-                  <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group">
-                    <div className="p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
-                      <DollarSign className="h-8 w-8 text-red-600" />
+                  <Button variant="outline" className="h-16 sm:h-20 md:h-24 flex flex-col gap-2 sm:gap-3 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group w-full">
+                    <div className="p-2 sm:p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
+                      <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-red-600" />
                     </div>
-                    <span className="text-sm font-medium">Validar Pago</span>
+                    <span className="text-xs sm:text-sm font-medium">Validar Pago</span>
                   </Button>
                 </div>
               </CardContent>
-            </Card>+
+            </Card>
           </div>
         </div>
-      </main>
-    </div>
+              </main>
+      </div>
+
+      {/* Layout Tablet */}
+      <div className="hidden md:flex lg:hidden min-h-screen overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Sidebar 
+          isExpanded={sidebarExpanded} 
+          setIsExpanded={setSidebarExpanded}
+          isMobileMenuOpen={isMobileMenuOpen}
+          onMobileMenuClose={() => setIsMobileMenuOpen(false)}
+          userRole="venezuela"
+        />
+        
+        <main className="w-full flex-1">
+          <Header 
+            notifications={stats.pendingOrders + stats.activeChats}
+            onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            title="Panel Venezuela"
+            subtitle="Revisión de pedidos, soporte al cliente y tracking"
+          />
+          
+          <div className="p-5 space-y-6">
+            {/* Header del Dashboard con Bienvenida */}
+            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-6 text-white relative overflow-hidden">
+              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
+                    <p className="text-blue-100 text-base">Panel de Control - Empleado Venezuela</p>
+                    <p className="text-blue-200 mt-2 text-sm">Gestiona pedidos, soporte y tracking desde un solo lugar</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold">{pedidosPendientes + pedidosTracking}</div>
+                    <p className="text-blue-100 text-sm">Tareas Pendientes</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Dashboard Principal */}
+            <div className="space-y-6">
+              {/* Estadísticas Principales */}
+              <div className="grid grid-cols-2 gap-5">
+                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-blue-800">Pedidos Pendientes</CardTitle>
+                    <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                      <Package className="h-4 w-4 text-white" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-blue-900">{pedidosPendientes}</div>
+                    <p className="text-xs text-blue-700">Esperando revisión</p>
+                    <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                      <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / (pedidosPendientes + pedidosTracking)) * 100}%`}}></div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-green-800">Chats Activos</CardTitle>
+                    <div className="p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
+                      <MessageSquare className="h-4 w-4 text-white" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-green-900">{stats.activeChats}</div>
+                    <p className="text-xs text-green-700">Clientes en línea</p>
+                    <div className="mt-2 w-full bg-green-200 rounded-full h-2">
+                      <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.activeChats / 5) * 100}%`}}></div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-purple-800">Tracking Activo</CardTitle>
+                    <div className="p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                      <MapPin className="h-4 w-4 text-white" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-purple-900">{pedidosTracking}</div>
+                    <p className="text-xs text-purple-700">Pendientes</p>
+                    <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
+                      <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(pedidosTracking / (pedidosPendientes + pedidosTracking)) * 100}%`}}></div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-orange-800">Satisfacción</CardTitle>
+                    <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
+                      <Star className="h-4 w-4 text-white" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-orange-900">{promedioReputacion}/5</div>
+                    <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
+                      <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(promedioReputacion / 5) * 100}%`}}></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Acciones Rápidas */}
+              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">Acciones Rápidas</CardTitle>
+                  <p className="text-sm text-slate-600">Accede rápidamente a las funciones más utilizadas</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-5">
+                    <Link href="/venezuela/pedidos">
+                      <Button variant="outline" className="h-20 flex flex-col gap-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
+                        <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                          <Package className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <span className="text-sm font-medium">Revisar Pedido</span>
+                      </Button>
+                    </Link>
+                    <Link href="/venezuela/soporte">
+                      <Button variant="outline" className="h-20 flex flex-col gap-2 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group w-full">
+                        <div className="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                          <MessageSquare className="h-6 w-6 text-green-600" />
+                        </div>
+                        <span className="text-sm font-medium">Chat Soporte</span>
+                      </Button>
+                    </Link>
+                    <Link href="/venezuela/tracking">
+                      <Button variant="outline" className="h-20 flex flex-col gap-2 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
+                        <div className="p-2 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+                          <MapPin className="h-6 w-6 text-purple-600" />
+                        </div>
+                        <span className="text-sm font-medium">Actualizar Tracking</span>
+                      </Button>
+                    </Link>
+                    <Button variant="outline" className="h-20 flex flex-col gap-2 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group w-full">
+                      <div className="p-2 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
+                        <DollarSign className="h-6 w-6 text-red-600" />
+                      </div>
+                      <span className="text-sm font-medium">Validar Pago</span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      {/* Layout Mobile */}
+      <div className="md:hidden min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Sidebar 
+          isExpanded={sidebarExpanded} 
+          setIsExpanded={setSidebarExpanded}
+          isMobileMenuOpen={isMobileMenuOpen}
+          onMobileMenuClose={() => setIsMobileMenuOpen(false)}
+          userRole="venezuela"
+        />
+        
+        <main className="w-full">
+          <Header 
+            notifications={stats.pendingOrders + stats.activeChats}
+            onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            title="Panel Venezuela"
+            subtitle="Revisión de pedidos, soporte al cliente y tracking"
+          />
+          
+          <div className="p-4 space-y-6">
+            {/* Header del Dashboard con Bienvenida */}
+            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-6 text-white relative overflow-hidden">
+              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="relative z-10">
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
+                    <p className="text-blue-100 text-base">Panel de Control - Empleado Venezuela</p>
+                    <p className="text-blue-200 mt-2 text-sm">Gestiona pedidos, soporte y tracking desde un solo lugar</p>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold">{pedidosPendientes + pedidosTracking}</div>
+                      <p className="text-blue-100 text-sm">Tareas Pendientes</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Dashboard Principal */}
+            <div className="space-y-6">
+              {/* Estadísticas Principales */}
+              <div className="grid grid-cols-1 gap-4">
+                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-blue-800">Pedidos Pendientes</CardTitle>
+                    <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                      <Package className="h-4 w-4 text-white" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-blue-900">{pedidosPendientes}</div>
+                    <p className="text-xs text-blue-700">Esperando revisión</p>
+                    <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                      <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / (pedidosPendientes + pedidosTracking)) * 100}%`}}></div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-green-800">Chats Activos</CardTitle>
+                    <div className="p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
+                      <MessageSquare className="h-4 w-4 text-white" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-green-900">{stats.activeChats}</div>
+                    <p className="text-xs text-green-700">Clientes en línea</p>
+                    <div className="mt-2 w-full bg-green-200 rounded-full h-2">
+                      <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.activeChats / 5) * 100}%`}}></div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-purple-800">Tracking Activo</CardTitle>
+                    <div className="p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                      <MapPin className="h-4 w-4 text-white" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-purple-900">{pedidosTracking}</div>
+                    <p className="text-xs text-purple-700">Pendientes</p>
+                    <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
+                      <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(pedidosTracking / (pedidosPendientes + pedidosTracking)) * 100}%`}}></div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-orange-800">Satisfacción</CardTitle>
+                    <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
+                      <Star className="h-4 w-4 text-white" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-orange-900">{promedioReputacion}/5</div>
+                    <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
+                      <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(promedioReputacion / 5) * 100}%`}}></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Acciones Rápidas */}
+              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">Acciones Rápidas</CardTitle>
+                  <p className="text-sm text-slate-600">Accede rápidamente a las funciones más utilizadas</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Link href="/venezuela/pedidos">
+                      <Button variant="outline" className="h-20 flex flex-col gap-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
+                        <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                          <Package className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <span className="text-sm font-medium">Revisar Pedido</span>
+                      </Button>
+                    </Link>
+                    <Link href="/venezuela/soporte">
+                      <Button variant="outline" className="h-20 flex flex-col gap-2 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group w-full">
+                        <div className="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                          <MessageSquare className="h-6 w-6 text-green-600" />
+                        </div>
+                        <span className="text-sm font-medium">Chat Soporte</span>
+                      </Button>
+                    </Link>
+                    <Link href="/venezuela/tracking">
+                      <Button variant="outline" className="h-20 flex flex-col gap-2 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
+                        <div className="p-2 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+                          <MapPin className="h-6 w-6 text-purple-600" />
+                        </div>
+                        <span className="text-sm font-medium">Actualizar Tracking</span>
+                      </Button>
+                    </Link>
+                    <Button variant="outline" className="h-20 flex flex-col gap-2 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group w-full">
+                      <div className="p-2 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
+                        <DollarSign className="h-6 w-6 text-red-600" />
+                      </div>
+                      <span className="text-sm font-medium">Validar Pago</span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </main>
+      </div>
+    </>
   );
 } 
