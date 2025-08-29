@@ -8,7 +8,7 @@ type Props = {
   onDotClick?: (index: number) => void;
 };
 
-export default function ProgressDots({ total = 4, current = 0, onDotClick }: Props): JSX.Element {
+export default function ProgressDots({ total = 4, current = 0, onDotClick }: Props) {
   return (
     <div className="progress-dots-container">
       {Array.from({ length: total }, (_, index) => (

@@ -7,7 +7,7 @@ import { ANIMATION_CONTENTS } from "@/lib/constants/auth";
 
 const ANIMATION_ICONS = [Shield, Mail, Phone, Check];
 
-export default function AnimatedPanel(): JSX.Element {
+export default function AnimatedPanel() {
   const [animationStep, setAnimationStep] = useState<number>(0);
 
   useEffect(() => {
