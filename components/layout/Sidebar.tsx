@@ -399,7 +399,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   const responsiveConfig = useMemo(() => {
     const isSmallScreen = screenWidth < 1366;
     const isMediumScreen = screenWidth < 1600;
-    const isMobile = screenWidth < 1024;
+    const isMobile = screenWidth < 768;
 
     // Simplificar cálculos
     const sidebarWidth = isMobile 
