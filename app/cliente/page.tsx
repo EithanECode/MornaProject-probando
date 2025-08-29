@@ -8,7 +8,7 @@ import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useClientContext } from '@/lib/ClientContext';
 import { useClientOrders } from '@/hooks/use-client-orders';
 import { useTheme } from 'next-themes';
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,7 +35,7 @@ import {
 import Link from 'next/link';
 
 // Lazy load components
-const QuickActions = dynamic(() => import('@/components/dashboard/QuickActions'), {
+const QuickActions = dynamicImport(() => import('@/components/dashboard/QuickActions'), {
   loading: () => <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
     {[1, 2, 3].map(i => (
       <div key={i} className="h-24 bg-slate-200 animate-pulse rounded-lg" />
@@ -43,7 +43,7 @@ const QuickActions = dynamic(() => import('@/components/dashboard/QuickActions')
   </div>
 });
 
-const RecentOrders = dynamic(() => import('@/components/dashboard/RecentOrders'), {
+const RecentOrders = dynamicImport(() => import('@/components/dashboard/RecentOrders'), {
   loading: () => <div className="space-y-4">
     {[1, 2, 3].map(i => (
       <div key={i} className="h-16 bg-slate-200 animate-pulse rounded-lg" />
