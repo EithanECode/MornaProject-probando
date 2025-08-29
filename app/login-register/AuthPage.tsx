@@ -11,7 +11,7 @@ type Props = {
 
 export default function AuthPage({
   onNavigateToPasswordReset,
-}: Props): JSX.Element {
+}: Props) {
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [overlayAnimation, setOverlayAnimation] = useState<any | null>(null);
 
