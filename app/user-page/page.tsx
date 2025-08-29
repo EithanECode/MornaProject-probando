@@ -3,7 +3,7 @@
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom/client';
+// import ReactDOM from 'react-dom/client';
 import './styles/App.css';
 import Header from '@/components/user-page/Header';
 import ChatSupportModal from '@/components/user-page/ChatSupportModal';
@@ -172,14 +172,14 @@ function Page() {
     );
 }
 
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(
-    <React.StrictMode>
-      <Page />
-    </React.StrictMode>
-  );
-}
+// const container = document.getElementById('root');
+// if (container) {
+//   const root = ReactDOM.createRoot(container);
+//   root.render(
+//     <React.StrictMode>
+//       <Page />
+//     </React.StrictMode>
+//   );
+// }
 
 export default Page;
