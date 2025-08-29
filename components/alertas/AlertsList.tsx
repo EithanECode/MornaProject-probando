@@ -1,7 +1,7 @@
 import React from 'react';
 import AlertCard from './AlertCard';
-import { getTypeIcon } from './utils/icons';
-import { Alert } from './interfaces/Alerts';
+import { getTypeIcon } from '@/lib/icons';
+import { Alert } from '@/lib/types/Alerts';
 
 interface AlertsListProps {
   alerts: Alert[];

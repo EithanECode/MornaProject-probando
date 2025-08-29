@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/ChatSupportModal.css';
+import '@/app/user-page/styles/ChatSupportModal.css';
 
 type ChatSupportModalProps = {
     onClose: () => void;

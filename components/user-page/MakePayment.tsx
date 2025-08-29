@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import '../styles/MakePayment.css';
+import '@/app/user-page/styles/MakePayment.css';
 import { Player } from '@lottiefiles/react-lottie-player';
 
-import alarmClockLottie from '../assets/lottie/wired-flat-236-alarm-clock-loop-cycle.json';
-import generalCoinLottie from '../assets/lottie/wired-flat-290-coin-hover-pinch.json'; // Usado para iconos de dinero/moneda
-import bankBuildingLottie from '../assets/lottie/wired-flat-403-museum-authority-hover-pinch.json'; // Para transferencia bancaria
-import binanceLogoLottie from '../assets/lottie/wired-flat-2585-logo-binance-hover-pinch.json'; // Para Binance USDT
-import shareArrowLottie from '../assets/lottie/wired-flat-259-share-arrow-hover-pointing.json'; // Para Zelle (implica compartir/transferir)
-import folderAddingFilesLottie from '../assets/lottie/wired-flat-120-folder-hover-adding-files.json'; // Para subir comprobante
-import approveCheckLottie from '../assets/lottie/wired-flat-37-approve-checked-simple-hover-pinch.json'; // Para el botón de confirmar pago
+import alarmClockLottie from '@/public/animations/wired-flat-236-alarm-clock-loop-cycle.json';
+import generalCoinLottie from '@/public/animations/wired-flat-290-coin-hover-pinch.json'; // Usado para iconos de dinero/moneda
+import bankBuildingLottie from '@/public/animations/wired-flat-403-museum-authority-hover-pinch.json'; // Para transferencia bancaria
+import binanceLogoLottie from '@/public/animations/wired-flat-2585-logo-binance-hover-pinch.json'; // Para Binance USDT
+import shareArrowLottie from '@/public/animations/wired-flat-259-share-arrow-hover-pointing.json'; // Para Zelle (implica compartir/transferir)
+import folderAddingFilesLottie from '@/public/animations/wired-flat-120-folder-hover-adding-files.json'; // Para subir comprobante
+import approveCheckLottie from '@/public/animations/wired-flat-37-approve-checked-simple-hover-pinch.json'; // Para el botón de confirmar pago
 
 // Tipos para los métodos de pago
 interface PaymentMethodOption {

@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // NOTA: Para exportación estática, descomentar la siguiente línea
+  // y comentar los redirects y otras funciones dinámicas
+  // output: 'export',
   
   // Optimizaciones de imágenes
   images: {

@@ -25,8 +25,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import StatusBadge from './ui/StatusBadge';
-import OrderDetailsModal from './ui/OrderDetailsModal';
-import EditOrderModal from './ui/EditOrderModal';
+// import OrderDetailsModal from './ui/OrderDetailsModal';
+// import EditOrderModal from './ui/EditOrderModal';
 import {
   Select,
   SelectTrigger,
@@ -213,6 +213,7 @@ const TrackingPanel = () => {
     <>
   <div className="px-2 sm:px-8 lg:px-12 py-10">
         {/* Modales de detalles y edición */}
+        {/* TODO: Uncomment when OrderDetailsModal and EditOrderModal are implemented
         {showDetails && selectedOrder && (
           <OrderDetailsModal order={selectedOrder} onClose={() => { setShowDetails(false); setSelectedOrder(null); }} />
         )}
@@ -224,6 +225,7 @@ const TrackingPanel = () => {
             onDelete={handleDeleteOrder}
           />
         )}
+        */}
         {/* Stats Cards estilo dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
           {/* Total Pedidos */}

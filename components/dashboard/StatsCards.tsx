@@ -74,7 +74,7 @@ const StatCard = memo(({
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
             <Icon 
               className={`w-6 h-6 ${config.animation}`}
-              style={config.animationDuration ? { animationDuration: config.animationDuration } : undefined}
+              style={'animationDuration' in config && config.animationDuration ? { animationDuration: config.animationDuration } : undefined}
             />
           </div>
         </div>

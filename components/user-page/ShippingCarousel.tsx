@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import '../styles/ShippingCarousel.css';
+import '@/app/user-page/styles/ShippingCarousel.css';
 import { Player } from '@lottiefiles/react-lottie-player';
-import airPlaneLottie from '../assets/lottie/FTQoLAnxbj.json';
-import cargoShipLottie from '../assets/lottie/wired-flat-1337-cargo-ship-hover-pinch.json';
-import woodenBoxLottie from '../assets/lottie/wired-flat-1356-wooden-box-hover-pinch.json';
+import airPlaneLottie from '@/public/animations/FTQoLAnxbj.json';
+import cargoShipLottie from '@/public/animations/wired-flat-1337-cargo-ship-hover-pinch.json';
+import woodenBoxLottie from '@/public/animations/wired-flat-1356-wooden-box-hover-pinch.json';
 
 interface ShippingOption {
   value: string;

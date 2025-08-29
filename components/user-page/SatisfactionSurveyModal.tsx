@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
-import '../styles/SatisfactionSurveyModal.css';
+import '@/app/user-page/styles/SatisfactionSurveyModal.css';
 
 // Importa el archivo .json con la ruta corregida.
 // Se asume que el archivo está en la carpeta 'src/assets' y el componente en 'src/components'.
-import editDocumentIcon from '../assets/lottie/wired-flat-245-edit-document-hover-pinch.json';
+import editDocumentIcon from '@/public/animations/wired-flat-245-edit-document-hover-pinch.json';
 
 type SatisfactionSurveyModalProps = {
     onClose: () => void;

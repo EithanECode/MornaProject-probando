@@ -88,7 +88,7 @@ export default function ChinaDashboard() {
   const { data: clientsInfo } = require('@/hooks/use-clients-info').useClientsInfo();
   // Nombres de los clientes de los 3 pedidos más recientes
   const pedidosRecientes = (chinaOrders ?? []).slice(-3).reverse();
-  const nombresClientesRecientes = pedidosRecientes.map(order =>
+  const nombresClientesRecientes = pedidosRecientes.map((order: any) =>
     clientsInfo?.find((client: any) => client.user_id === order.client_id)?.name ?? order.client_id
   );
 

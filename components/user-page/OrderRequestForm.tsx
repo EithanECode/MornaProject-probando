@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import '../styles/OrderRequestForm.css';
+import '@/app/user-page/styles/OrderRequestForm.css';
 import { Player } from '@lottiefiles/react-lottie-player';
 
 import DeliveryCarousel from './DeliveryCarousel';
 
-import airPlaneLottie from '../assets/lottie/FTQoLAnxbj.json';
-import cargoShipLottie from '../assets/lottie/wired-flat-1337-cargo-ship-hover-pinch.json';
-import woodenBoxLottie from '../assets/lottie/wired-flat-1356-wooden-box-hover-pinch.json';
-import cameraLottie from '../assets/lottie/wired-flat-61-camera-hover-flash.json';
-import folderLottie from '../assets/lottie/wired-flat-120-folder-hover-adding-files.json';
-import linkLottie from '../assets/lottie/wired-flat-11-link-unlink-hover-bounce.json';
+import airPlaneLottie from '@/public/animations/FTQoLAnxbj.json';
+import cargoShipLottie from '@/public/animations/wired-flat-1337-cargo-ship-hover-pinch.json';
+import woodenBoxLottie from '@/public/animations/wired-flat-1356-wooden-box-hover-pinch.json';
+import cameraLottie from '@/public/animations/wired-flat-61-camera-hover-flash.json';
+import folderLottie from '@/public/animations/wired-flat-120-folder-hover-adding-files.json';
+import linkLottie from '@/public/animations/wired-flat-11-link-unlink-hover-bounce.json';
 
 // Tipos para los datos del formulario y la función de submit
 export type CartItem = {

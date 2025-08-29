@@ -1,12 +1,12 @@
 import React from 'react';
-import '../styles/OrderTracking.css';
+import '@/app/user-page/styles/OrderTracking.css';
 import { Player } from '@lottiefiles/react-lottie-player';
 
 // Importa tus archivos Lottie.
-import checkmarkLottie from '../assets/lottie/wired-flat-37-approve-checked-simple-hover-wobble.json';
-import purchaseLottie from '../assets/lottie/IWTFP3ADxQ.json';
-import airplaneLottie from '../assets/lottie/Airplane.json';
-import editDocumentIcon from '../assets/lottie/wired-flat-245-edit-document-hover-pinch.json';
+import checkmarkLottie from '@/public/animations/wired-flat-37-approve-checked-simple-hover-wobble.json';
+import purchaseLottie from '@/public/animations/IWTFP3ADxQ.json';
+import airplaneLottie from '@/public/animations/Airplane.json';
+import editDocumentIcon from '@/public/animations/wired-flat-245-edit-document-hover-pinch.json';
 
 type OrderTrackingProps = {
     orderId: string;

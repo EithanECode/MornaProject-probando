@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { Alert } from "./interfaces/Alerts";
-import { getPriorityBadge } from "./utils/badges";
-import { getTypeIcon } from "./utils/icons";
+import { Alert } from "@/lib/types/Alerts";
+import { getPriorityBadge } from "@/lib/badges";
+import { getTypeIcon } from "@/lib/icons";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { CheckCircle2, Info, AlertTriangle, XCircle } from "lucide-react";

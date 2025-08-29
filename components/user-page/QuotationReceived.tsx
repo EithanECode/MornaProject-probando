@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import '../styles/QuotationReceived.css';
+import '@/app/user-page/styles/QuotationReceived.css';
 import { Player } from '@lottiefiles/react-lottie-player';
 
 // Importa tus archivos Lottie
-import moneyBagLottie from '../assets/lottie/wired-flat-298-coins-loop-spin.json';
-import alarmClockLottie from '../assets/lottie/wired-flat-236-alarm-clock-loop-cycle.json';
-import editLottie from '../assets/lottie/wired-flat-35-edit-hover-line.json';
-import approveLottie from '../assets/lottie/wired-flat-37-approve-checked-simple-hover-pinch.json';
-import errorLottie from '../assets/lottie/wired-flat-1140-error-hover-oscillate.json';
+import moneyBagLottie from '@/public/animations/wired-flat-298-coins-loop-spin.json';
+import alarmClockLottie from '@/public/animations/wired-flat-236-alarm-clock-loop-cycle.json';
+import editLottie from '@/public/animations/wired-flat-35-edit-hover-line.json';
+import approveLottie from '@/public/animations/wired-flat-37-approve-checked-simple-hover-pinch.json';
+import errorLottie from '@/public/animations/wired-flat-1140-error-hover-oscillate.json';
 
 type QuotationReceivedProps = {
     quotation: {

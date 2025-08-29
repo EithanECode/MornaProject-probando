@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import '../styles/TrackingModal.css';
+import '@/app/user-page/styles/TrackingModal.css';
 // Eliminamos la importación del Player de Lottie
 // import { Player } from '@lottiefiles/react-lottie-player';
 
 // Importa el archivo GIF directamente
-import packageGif from '../assets/lottie/package.gif'; // <--- Importa tu archivo GIF aquí
+import packageGif from '@/public/animations/package.gif'; // <--- Importa tu archivo GIF aquí
 
 type TrackingModalProps = {
     onClose: () => void;

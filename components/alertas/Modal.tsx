@@ -2,7 +2,7 @@
 
 'use client';
 import React, { useState } from 'react';
-import { AlertFormData } from './interfaces/Alerts';
+import { AlertFormData } from '@/lib/types/Alerts';
 
 interface ModalProps {
   onClose: () => void;

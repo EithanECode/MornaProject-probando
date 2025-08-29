@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import '../styles/OrderConfirmed.css';
+import '@/app/user-page/styles/OrderConfirmed.css';
 import { Player } from '@lottiefiles/react-lottie-player';
 
 // Importa tus archivos Lottie
-import confettiLottie from '../assets/lottie/wired-flat-1103-confetti-hover-pinch.json';
-import shareArrowLottie from '../assets/lottie/wired-flat-751-share-hover-slide.json';
+import confettiLottie from '@/public/animations/wired-flat-1103-confetti-hover-pinch.json';
+import shareArrowLottie from '@/public/animations/wired-flat-751-share-hover-slide.json';
 
 type OrderConfirmedProps = {
     orderId: string;

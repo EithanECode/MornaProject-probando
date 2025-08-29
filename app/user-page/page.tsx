@@ -2,18 +2,18 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/App.css';
-import Header from './components/Header';
-import ChatSupportModal from './components/ChatSupportModal';
-import TrackingModal from './components/TrackingModal';
-import QuotationReceived from './components/QuotationReceived';
-import ModificationRequestModal from './components/ModificationRequestModal';
-import OrderConfirmed from './components/OrderConfirmed';
-import MakePayment from './components/MakePayment';
-import OrderTracking from './components/OrderTracking';
-import PaymentSuccessNotification from './components/PaymentSuccessNotification';
-import SatisfactionSurveyModal from './components/SatisfactionSurveyModal';
-import { FormData } from './components/OrderRequestForm';
-import OrderRequestForm from './components/OrderRequestForm';
+import Header from '@/components/user-page/Header';
+import ChatSupportModal from '@/components/user-page/ChatSupportModal';
+import TrackingModal from '@/components/user-page/TrackingModal';
+import QuotationReceived from '@/components/user-page/QuotationReceived';
+import ModificationRequestModal from '@/components/user-page/ModificationRequestModal';
+import OrderConfirmed from '@/components/user-page/OrderConfirmed';
+import MakePayment from '@/components/user-page/MakePayment';
+import OrderTracking from '@/components/user-page/OrderTracking';
+import PaymentSuccessNotification from '@/components/user-page/PaymentSuccessNotification';
+import SatisfactionSurveyModal from '@/components/user-page/SatisfactionSurveyModal';
+import { FormData } from '@/components/user-page/OrderRequestForm';
+import OrderRequestForm from '@/components/user-page/OrderRequestForm';
 
 function Page() {
     // ...código de App...

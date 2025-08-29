@@ -84,6 +84,7 @@
     "@types/react": "^19.1.11",
     "@types/react-dom": "^19.1.7",
     "globby": "^14.1.0",
-    "recast": "^0.23.11"
+    "recast": "^0.23.11",
+    "vercel": "^46.1.0"
   }
 }

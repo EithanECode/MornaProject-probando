@@ -1,10 +1,10 @@
 import React from 'react';
 import { toast } from '@/hooks/use-toast';
-import { Alert } from './interfaces/Alerts';
-import { getPriorityBadge } from './utils/badges';
+import { Alert } from '@/lib/types/Alerts';
+import { getPriorityBadge } from '@/lib/badges';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { getTypeIcon } from './utils/icons';
+import { getTypeIcon } from '@/lib/icons';
 
 interface AlertCardProps {
   alert: Alert;

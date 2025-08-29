@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import '../styles/CustomSelect.css';
+import '@/app/user-page/styles/CustomSelect.css';
 
 interface Option {
   value: string;

@@ -29,6 +29,31 @@ import { useClientContext } from '@/lib/ClientContext';
 import { useVzlaContext } from '@/lib/VzlaContext';
 import { useChinaContext } from '@/lib/ChinaContext';
 
+// Safe context hooks that don't throw errors
+const useSafeClientContext = () => {
+  try {
+    return useClientContext();
+  } catch {
+    return null;
+  }
+};
+
+const useSafeVzlaContext = () => {
+  try {
+    return useVzlaContext();
+  } catch {
+    return null;
+  }
+};
+
+const useSafeChinaContext = () => {
+  try {
+    return useChinaContext();
+  } catch {
+    return null;
+  }
+};
+
 interface SidebarProps {
   isExpanded: boolean;
   setIsExpanded: (expanded: boolean) => void;
@@ -333,41 +358,38 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   
   const menuItems = getMenuItemsByRole(userRole);
 
+  // Call all hooks unconditionally at the top level
+  const clientCtx = useSafeClientContext();
+  const vzlaCtx = useSafeVzlaContext();
+  const chinaCtx = useSafeChinaContext();
+
   // Get dynamic user info from context if available
   let userInfo: { name: string; email: string; flag?: string } = getUserInfoByRole(userRole);
-  if (userRole === 'client') {
-    try {
-      const clientCtx = useClientContext();
-      if (clientCtx?.clientName || clientCtx?.clientEmail) {
-        userInfo = {
-          name: clientCtx.clientName || userInfo.name,
-          email: clientCtx.clientEmail || userInfo.email,
-          flag: userInfo.flag
-        };
-      }
-    } catch {}
-  } else if (userRole === 'venezuela') {
-    try {
-      const vzlaCtx = useVzlaContext();
-      if (vzlaCtx?.vzlaName || vzlaCtx?.vzlaEmail) {
-        userInfo = {
-          name: vzlaCtx.vzlaName || userInfo.name,
-          email: vzlaCtx.vzlaEmail || userInfo.email,
-          flag: userInfo.flag
-        };
-      }
-    } catch {}
-  } else if (userRole === 'china') {
-    try {
-      const chinaCtx = useChinaContext();
-      if (chinaCtx?.chinaName || chinaCtx?.chinaEmail) {
-        userInfo = {
-          name: chinaCtx.chinaName || userInfo.name,
-          email: chinaCtx.chinaEmail || userInfo.email,
-          flag: userInfo.flag
-        };
-      }
-    } catch {}
+  
+  if (userRole === 'client' && clientCtx) {
+    if (clientCtx.clientName || clientCtx.clientEmail) {
+      userInfo = {
+        name: clientCtx.clientName || userInfo.name,
+        email: clientCtx.clientEmail || userInfo.email,
+        flag: userInfo.flag
+      };
+    }
+  } else if (userRole === 'venezuela' && vzlaCtx) {
+    if (vzlaCtx.vzlaName || vzlaCtx.vzlaEmail) {
+      userInfo = {
+        name: vzlaCtx.vzlaName || userInfo.name,
+        email: vzlaCtx.vzlaEmail || userInfo.email,
+        flag: userInfo.flag
+      };
+    }
+  } else if (userRole === 'china' && chinaCtx) {
+    if (chinaCtx.chinaName || chinaCtx.chinaEmail) {
+      userInfo = {
+        name: chinaCtx.chinaName || userInfo.name,
+        email: chinaCtx.chinaEmail || userInfo.email,
+        flag: userInfo.flag
+      };
+    }
   }
   
   const activeItem = useActivePage(menuItems);

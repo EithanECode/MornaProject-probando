@@ -1,8 +1,8 @@
 import React from 'react';
-import '../styles/DeliveryCarousel.css';
+import '@/app/user-page/styles/DeliveryCarousel.css';
 import { Player } from '@lottiefiles/react-lottie-player';
-import courierLottie from '../assets/lottie/wired-flat-18-delivery-truck.json';
-import pickupLottie from '../assets/lottie/wired-flat-81-bank-office.json';
+import courierLottie from '@/public/animations/wired-flat-18-delivery-truck.json';
+import pickupLottie from '@/public/animations/wired-flat-81-bank-office.json';
 
 type DeliveryCarouselProps = {
     selectedValue: string;

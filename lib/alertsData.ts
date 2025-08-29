@@ -1,4 +1,4 @@
-import { AlertFormData } from '../interfaces/Alerts';
+import { AlertFormData } from './types/Alerts';
 
 export const alertTemplates: Omit<AlertFormData, 'pedidoId' | 'usuario'>[] = [
   {

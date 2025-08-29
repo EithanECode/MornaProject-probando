@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import '../styles/ModificationRequestModal.css';
+import '@/app/user-page/styles/ModificationRequestModal.css';
 import { Player } from '@lottiefiles/react-lottie-player'; // ¡Importa el Player!
 
 // Importa el archivo Lottie para el icono de modificación
-import editDocumentLottie from '../assets/lottie/wired-flat-245-edit-document-hover-pinch.json';
+import editDocumentLottie from '@/public/animations/wired-flat-245-edit-document-hover-pinch.json';
 
 type ModificationRequestModalProps = {
     onClose: () => void;
