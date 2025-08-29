@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '@/app/user-page/styles/ShippingCarousel.css';
-import { Player } from '@lottiefiles/react-lottie-player';
+import LazyPlayer from './LazyPlayer';
 import airPlaneLottie from '@/public/animations/FTQoLAnxbj.json';
 import cargoShipLottie from '@/public/animations/wired-flat-1337-cargo-ship-hover-pinch.json';
 import woodenBoxLottie from '@/public/animations/wired-flat-1356-wooden-box-hover-pinch.json';

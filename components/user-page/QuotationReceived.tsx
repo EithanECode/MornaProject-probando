@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '@/app/user-page/styles/QuotationReceived.css';
-import { Player } from '@lottiefiles/react-lottie-player';
+import LazyPlayer from './LazyPlayer';
 
 // Importa tus archivos Lottie
 import moneyBagLottie from '@/public/animations/wired-flat-298-coins-loop-spin.json';
@@ -32,7 +32,7 @@ function QuotationReceived({ quotation, onSolicitarModificacion, onAceptarCotiza
     return (
         <div className="quotation-received-card">
             <div className="quotation-header-icon">
-                <Player
+                <LazyPlayer
                     autoplay={true} // Ahora la animación se reproduce automáticamente
                     loop={true} // Se repite de forma continua
                     src={moneyBagLottie}
@@ -44,7 +44,7 @@ function QuotationReceived({ quotation, onSolicitarModificacion, onAceptarCotiza
             <p className="quotation-subtitle">Revisa los detalles de tu cotización</p>
 
             <div className="response-time-notice">
-                <Player
+                <LazyPlayer
                     autoplay={true}
                     loop={true}
                     src={alarmClockLottie}
@@ -101,7 +101,7 @@ function QuotationReceived({ quotation, onSolicitarModificacion, onAceptarCotiza
                             onMouseLeave={() => setIsEditHovered(false)}
                         >
                             <span className="btn-icon">
-                                <Player
+                                <LazyPlayer
                                     key={isEditHovered ? 'edit-active' : 'edit-inactive'}
                                     autoplay={isEditHovered}
                                     loop={false}
@@ -119,7 +119,7 @@ function QuotationReceived({ quotation, onSolicitarModificacion, onAceptarCotiza
                             onMouseLeave={() => setIsApproveHovered(false)}
                         >
                             <span className="btn-icon">
-                                <Player
+                                <LazyPlayer
                                     key={isApproveHovered ? 'approve-active' : 'approve-inactive'}
                                     autoplay={isApproveHovered}
                                     loop={true}
@@ -137,7 +137,7 @@ function QuotationReceived({ quotation, onSolicitarModificacion, onAceptarCotiza
                             onMouseLeave={() => setIsErrorHovered(false)}
                         >
                             <span className="btn-icon">
-                                <Player
+                                <LazyPlayer
                                     key={isErrorHovered ? 'error-active' : 'error-inactive'}
                                     autoplay={isErrorHovered}
                                     loop={true}

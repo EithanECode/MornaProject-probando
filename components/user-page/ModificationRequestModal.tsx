@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '@/app/user-page/styles/ModificationRequestModal.css';
-import { Player } from '@lottiefiles/react-lottie-player'; // ¡Importa el Player!
+import LazyPlayer from './LazyPlayer'; // ¡Importa el Player!
 
 // Importa el archivo Lottie para el icono de modificación
 import editDocumentLottie from '@/public/animations/wired-flat-245-edit-document-hover-pinch.json';
@@ -40,7 +40,7 @@ function ModificationRequestModal({ onClose }: ModificationRequestModalProps) {
             <div className="modification-modal-content">
                 <div className="modification-header">
                     {/* El Player ahora se reproduce automáticamente y en loop */}
-                    <Player
+                    <LazyPlayer
                         autoplay={true} 
                         loop={true} 
                         src={editDocumentLottie}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '@/app/user-page/styles/MakePayment.css';
-import { Player } from '@lottiefiles/react-lottie-player';
+import LazyPlayer from './LazyPlayer';
 
 import alarmClockLottie from '@/public/animations/wired-flat-236-alarm-clock-loop-cycle.json';
 import generalCoinLottie from '@/public/animations/wired-flat-290-coin-hover-pinch.json'; // Usado para iconos de dinero/moneda
@@ -130,16 +130,16 @@ function MakePayment({ orderId, totalAmount, onPaymentConfirmed }: MakePaymentPr
         setReferenceNumber('');
         setPaymentProof(null);
         // Clear file input
-                if (typeof window !== 'undefined') {
-                    const input = document.getElementById('paymentProofInput') as HTMLInputElement | null;
-                    if (input) input.value = '';
-                }
+        if (typeof window !== 'undefined') {
+            const input = document.getElementById('paymentProofInput') as HTMLInputElement | null;
+            if (input) input.value = '';
+        }
     };
 
     return (
         <div className="make-payment-card">
             <div className="payment-header-icon">
-                <Player
+                <LazyPlayer
                     autoplay={true} // Se reproduce automáticamente
                     loop={true} // Se repite de forma continua
                     src={generalCoinLottie}
@@ -154,7 +154,7 @@ function MakePayment({ orderId, totalAmount, onPaymentConfirmed }: MakePaymentPr
 
             <div className="payment-notice">
                 <span className="clock-icon-wrapper">
-                    <Player
+                    <LazyPlayer
                         autoplay={true} // Se reproduce automáticamente
                         loop={true} // Se repite de forma continua
                         src={alarmClockLottie}
@@ -181,7 +181,7 @@ function MakePayment({ orderId, totalAmount, onPaymentConfirmed }: MakePaymentPr
                             onMouseLeave={() => setIsBolivaresCategoryHovered(false)}
                         >
                             <span className="category-header-icon">
-                                <Player
+                                <LazyPlayer
                                     key={isBolivaresCategoryHovered ? 'bolivares-category-active' : 'bolivares-category-inactive'}
                                     autoplay={isBolivaresCategoryHovered}
                                     loop={false}
@@ -212,7 +212,7 @@ function MakePayment({ orderId, totalAmount, onPaymentConfirmed }: MakePaymentPr
                                                 </span>
                                             )}
                                             {key === 'transferenciaBancaria' && (
-                                                <Player
+                                                <LazyPlayer
                                                     key={'transfer-bank-lottie'}
                                                     autoplay={selectedPaymentMethod === key || isBolivaresCategoryHovered}
                                                     loop={false}
@@ -234,7 +234,7 @@ function MakePayment({ orderId, totalAmount, onPaymentConfirmed }: MakePaymentPr
                             onMouseLeave={() => setIsDolaresCategoryHovered(false)}
                         >
                             <span className="category-header-icon">
-                                <Player
+                                <LazyPlayer
                                     key={isDolaresCategoryHovered ? 'dolares-category-active' : 'dolares-category-inactive'}
                                     autoplay={isDolaresCategoryHovered}
                                     loop={false}
@@ -256,7 +256,7 @@ function MakePayment({ orderId, totalAmount, onPaymentConfirmed }: MakePaymentPr
                                         />
                                         <div className="option-content">
                                             {key === 'binanceUSDT' && (
-                                                <Player
+                                                <LazyPlayer
                                                     key={'binance-usdt-lottie'}
                                                     autoplay={selectedPaymentMethod === key || isDolaresCategoryHovered}
                                                     loop={false}
@@ -266,7 +266,7 @@ function MakePayment({ orderId, totalAmount, onPaymentConfirmed }: MakePaymentPr
                                                 />
                                             )}
                                             {key === 'zelle' && (
-                                                <Player
+                                                <LazyPlayer
                                                     key={'zelle-lottie'}
                                                     autoplay={selectedPaymentMethod === key || isDolaresCategoryHovered}
                                                     loop={false}
@@ -322,7 +322,7 @@ function MakePayment({ orderId, totalAmount, onPaymentConfirmed }: MakePaymentPr
                             onMouseLeave={() => setIsUploadIconHovered(false)}
                         >
                             <span className="upload-icon-wrapper">
-                                <Player
+                                <LazyPlayer
                                     key={isUploadIconHovered ? 'upload-active' : 'upload-inactive'}
                                     autoplay={isUploadIconHovered}
                                     loop={true}
@@ -332,8 +332,10 @@ function MakePayment({ orderId, totalAmount, onPaymentConfirmed }: MakePaymentPr
                                 />
                             </span>
                             <button type="button" className="select-file-button" onClick={() => {
-                                const input = document.getElementById('paymentProofInput');
-                                if (input) input.click();
+                                if (typeof window !== 'undefined') {
+                                    const input = document.getElementById('paymentProofInput');
+                                    if (input) input.click();
+                                }
                             }}>
                                 Seleccionar archivo
                             </button>
@@ -357,7 +359,7 @@ function MakePayment({ orderId, totalAmount, onPaymentConfirmed }: MakePaymentPr
                         >
                             Confirmar Pago
                             <span className="check-icon-wrapper">
-                                <Player
+                                <LazyPlayer
                                     key={isConfirmCheckHovered ? 'confirm-check-active' : 'confirm-check-inactive'}
                                     autoplay={isConfirmCheckHovered}
                                     loop={false}

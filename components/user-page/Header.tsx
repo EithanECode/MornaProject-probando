@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import '@/app/user-page/styles/Header.css';
-import { Player } from '@lottiefiles/react-lottie-player';
+import LazyPlayer from './LazyPlayer';
 import truckAnimation from '@/public/animations/wired-lineal-497-truck-delivery-loop-cycle.json';
 import logoImage from '@/public/animations/logo.png';
 import {Home, Menu} from 'lucide-react';
@@ -58,7 +58,7 @@ function Header({ onOpenChat, onOpenTracking }: HeaderProps) {
                     onMouseEnter={() => setIsTruckHovered(true)}
                     onMouseLeave={() => setIsTruckHovered(false)}
                 >
-                    <Player
+                    <LazyPlayer
                         key={isTruckHovered ? 'truck-anim-active' : 'truck-anim-inactive'}
                         autoplay={isTruckHovered}
                         loop={true}

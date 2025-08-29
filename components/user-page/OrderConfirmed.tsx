@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '@/app/user-page/styles/OrderConfirmed.css';
-import { Player } from '@lottiefiles/react-lottie-player';
+import LazyPlayer from './LazyPlayer';
 
 // Importa tus archivos Lottie
 import confettiLottie from '@/public/animations/wired-flat-1103-confetti-hover-pinch.json';
@@ -20,7 +20,7 @@ function OrderConfirmed({ orderId, productName, totalPrice, onProceedToPayment }
     return (
         <div className="order-confirmed-card">
             <div className="celebration-icon-container">
-                <Player
+                <LazyPlayer
                     autoplay={true} // Ahora la animación se reproduce automáticamente
                     loop={true} // Se repite de forma continua
                     src={confettiLottie}
@@ -72,7 +72,7 @@ function OrderConfirmed({ orderId, productName, totalPrice, onProceedToPayment }
             >
                 Proceder al Pago
                 <span className="arrow-icon">
-                    <Player
+                    <LazyPlayer
                         key={isArrowHovered ? 'arrow-active' : 'arrow-inactive'}
                         autoplay={isArrowHovered}
                         loop={false}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '@/app/user-page/styles/OrderRequestForm.css';
-import { Player } from '@lottiefiles/react-lottie-player';
+import LazyPlayer from './LazyPlayer';
 
 import DeliveryCarousel from './DeliveryCarousel';
 
@@ -164,9 +164,9 @@ function OrderRequestForm({ onSubmitForm }: OrderRequestFormProps) {
         handleRemoveFromCart(index);
         
         // Scroll al formulario
-                if (typeof window !== 'undefined') {
-                    document.querySelector('.form-section')?.scrollIntoView({ behavior: 'smooth' });
-                }
+        if (typeof window !== 'undefined') {
+            document.querySelector('.form-section')?.scrollIntoView({ behavior: 'smooth' });
+        }
     };
 
     const isActiveAnimation = (optionName: string) => {
@@ -195,7 +195,7 @@ function OrderRequestForm({ onSubmitForm }: OrderRequestFormProps) {
                                 onChange={() => setRequestType('link')}
                             />
                             <div className="option-content">
-                                <Player
+                                <LazyPlayer
                                     key={isLinkHovered ? 'link-active' : 'link-inactive'}
                                     autoplay={isLinkHovered}
                                     loop={false}
@@ -222,7 +222,7 @@ function OrderRequestForm({ onSubmitForm }: OrderRequestFormProps) {
                                 onChange={() => setRequestType('photo')}
                             />
                             <div className="option-content">
-                                <Player
+                                <LazyPlayer
                                     key={isCameraHovered ? 'camera-active' : 'camera-inactive'}
                                     autoplay={isCameraHovered}
                                     loop={false}
@@ -262,7 +262,7 @@ function OrderRequestForm({ onSubmitForm }: OrderRequestFormProps) {
                             onMouseEnter={() => setIsFolderHovered(true)}
                             onMouseLeave={() => setIsFolderHovered(false)}
                         >
-                            <Player
+                            <LazyPlayer
                                 key={isFolderHovered ? 'folder-active' : 'folder-inactive'}
                                 autoplay={isFolderHovered}
                                 loop={false}
@@ -274,9 +274,11 @@ function OrderRequestForm({ onSubmitForm }: OrderRequestFormProps) {
                                 type="button"
                                 className="select-image-button"
                                 onClick={() => {
-                                    const input = document.getElementById('productImageInput');
-                                    if (input) {
-                                        input.click();
+                                    if (typeof window !== 'undefined') {
+                                        const input = document.getElementById('productImageInput');
+                                        if (input) {
+                                            input.click();
+                                        }
                                     }
                                 }}
                             >
@@ -395,7 +397,7 @@ function OrderRequestForm({ onSubmitForm }: OrderRequestFormProps) {
                     
                     <button type="button" className="add-to-cart-button" onClick={handleAddToCart}>
                         <span className="add-to-cart-text">Agregar a la Caja</span>
-                        <Player
+                        <LazyPlayer
                             autoplay={true}
                             loop={true}
                             src={woodenBoxLottie}
@@ -423,7 +425,7 @@ function OrderRequestForm({ onSubmitForm }: OrderRequestFormProps) {
                             />
                             <div className="shipping-option-content">
                                 <div className="shipping-lottie-container">
-                                    <Player
+                                    <LazyPlayer
                                         key={hoveredShippingOption === 'doorToWarehouse' || deliveryType === 'doorToWarehouse' ? 'box-active' : 'box-inactive'}
                                         autoplay={hoveredShippingOption === 'doorToWarehouse' || deliveryType === 'doorToWarehouse'}
                                         loop={false}
@@ -453,7 +455,7 @@ function OrderRequestForm({ onSubmitForm }: OrderRequestFormProps) {
                             />
                             <div className="shipping-option-content">
                                 <div className="shipping-lottie-container">
-                                    <Player
+                                    <LazyPlayer
                                         key={hoveredShippingOption === 'air' || deliveryType === 'air' ? 'air-active' : 'air-inactive'}
                                         autoplay={hoveredShippingOption === 'air' || deliveryType === 'air'}
                                         loop={false}
@@ -483,7 +485,7 @@ function OrderRequestForm({ onSubmitForm }: OrderRequestFormProps) {
                             />
                             <div className="shipping-option-content">
                                 <div className="shipping-lottie-container">
-                                    <Player
+                                    <LazyPlayer
                                         key={hoveredShippingOption === 'maritime' || deliveryType === 'maritime' ? 'maritime-active' : 'maritime-inactive'}
                                         autoplay={hoveredShippingOption === 'maritime' || deliveryType === 'maritime'}
                                         loop={false}

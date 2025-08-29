@@ -1,6 +1,6 @@
 "use client";
 
-// Force dynamic rendering
+// Force dynamic rendering to avoid SSR issues with document API
 export const dynamic = 'force-dynamic';
 import React, { useState } from 'react';
 // import ReactDOM from 'react-dom/client';

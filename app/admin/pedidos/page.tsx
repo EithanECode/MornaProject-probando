@@ -1,8 +1,11 @@
 "use client";
 
+// Force dynamic rendering to avoid SSR issues with html2canvas
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTheme } from 'next-themes';
-import dynamic from 'next/dynamic';
+import { default as dynamicImport } from 'next/dynamic';
 import Sidebar from '@/components/layout/Sidebar';
 import { 
   Search, 
@@ -36,11 +39,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+// jsPDF se importará dinámicamente para evitar errores de SSR
+// html2canvas se importará dinámicamente para evitar errores de SSR
 
 // Lazy load components pesados
-const LazyExportButton = dynamic(() => Promise.resolve(({ onClick }: { onClick: () => void }) => (
+const LazyExportButton = dynamicImport(() => Promise.resolve(({ onClick }: { onClick: () => void }) => (
   <Button variant="outline" size="sm" onClick={onClick}>
     <Download className="w-4 h-4 mr-2" />
     Exportar a PDF
@@ -243,12 +246,14 @@ export default function PedidosPage() {
 
     document.body.appendChild(pdfContent);
 
-    const canvas = await html2canvas(pdfContent, { scale: 2 });
+            const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(pdfContent, { scale: 2 });
     
     document.body.removeChild(pdfContent);
 
     const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
+            const { jsPDF } = await import('jspdf');
+        const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     

@@ -1,6 +1,6 @@
 import React from 'react';
 import '@/app/user-page/styles/OrderTracking.css';
-import { Player } from '@lottiefiles/react-lottie-player';
+import LazyPlayer from './LazyPlayer';
 
 // Importa tus archivos Lottie.
 import checkmarkLottie from '@/public/animations/wired-flat-37-approve-checked-simple-hover-wobble.json';
@@ -61,7 +61,7 @@ function OrderTracking({ orderId, orderData, onOpenSurvey }: OrderTrackingProps)
     return (
         <div className="order-tracking-card">
             <div className="tracking-header-icon">
-                <Player
+                <LazyPlayer
                     autoplay={true}
                     loop={true}
                     src={purchaseLottie}
@@ -76,7 +76,7 @@ function OrderTracking({ orderId, orderData, onOpenSurvey }: OrderTrackingProps)
                 {trackingSteps.map(step => (
                     <div key={step.id} className={`tracking-step-box ${step.color}`}>
                         <div className="step-icon-circle">
-                            <Player
+                            <LazyPlayer
                                 autoplay={true}
                                 loop={true}
                                 src={step.icon}
@@ -123,13 +123,12 @@ function OrderTracking({ orderId, orderData, onOpenSurvey }: OrderTrackingProps)
             <div className="tracking-actions">
                 <button className="action-button survey" onClick={onOpenSurvey}>
                     {/* Se reemplaza el icono de emoji por el componente Player */}
-                    <Player
+                    <LazyPlayer
                         autoplay
                         loop
                         src={editDocumentIcon}
                         style={{ height: '30px', width: '30px' }}
-                    >
-                    </Player> 
+                    />
                     Encuesta
                 </button>
             </div>

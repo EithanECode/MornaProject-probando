@@ -1,6 +1,6 @@
 import React from 'react';
 import '@/app/user-page/styles/DeliveryCarousel.css';
-import { Player } from '@lottiefiles/react-lottie-player';
+import LazyPlayer from './LazyPlayer';
 import courierLottie from '@/public/animations/wired-flat-18-delivery-truck.json';
 import pickupLottie from '@/public/animations/wired-flat-81-bank-office.json';
 
@@ -35,7 +35,7 @@ const DeliveryCarousel = ({ selectedValue, onSelect }: DeliveryCarouselProps) =>
                         className={`delivery-card ${selectedValue === option.value ? 'selected' : ''}`}
                         onClick={() => onSelect(option.value)}
                     >
-                        <Player
+                        <LazyPlayer
                             autoplay
                             loop
                             src={option.lottie}

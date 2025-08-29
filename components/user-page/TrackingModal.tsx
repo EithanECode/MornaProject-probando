@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '@/app/user-page/styles/TrackingModal.css';
 // Eliminamos la importación del Player de Lottie
-// import { Player } from '@lottiefiles/react-lottie-player';
+// import LazyPlayer from './LazyPlayer';
 
 // Importa el archivo GIF directamente
 import packageGif from '@/public/animations/package.gif'; // <--- Importa tu archivo GIF aquí

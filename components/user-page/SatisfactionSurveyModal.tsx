@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Player } from '@lottiefiles/react-lottie-player';
+import LazyPlayer from './LazyPlayer';
 import '@/app/user-page/styles/SatisfactionSurveyModal.css';
 
 // Importa el archivo .json con la ruta corregida.
@@ -31,13 +31,12 @@ function SatisfactionSurveyModal({ onClose }: SatisfactionSurveyModalProps) {
             <div className="survey-modal-content">
                 <div className="survey-modal-header">
                     {/* Se reemplaza el icono de emoji por el componente Player */}
-                    <Player
+                    <LazyPlayer
                         autoplay
                         loop
                         src={editDocumentIcon}
                         style={{ height: '50px', width: '50px' }}
-                    >
-                    </Player>
+                    />
                     <h2 className="survey-title">Encuesta de Satisfacción</h2>
                     <button className="survey-close-button" onClick={onClose}>&times;</button>
                 </div>

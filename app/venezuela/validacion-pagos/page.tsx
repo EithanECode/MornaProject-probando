@@ -1,9 +1,13 @@
 "use client";
+
+// Force dynamic rendering to avoid SSR issues with XLSX
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import * as XLSX from 'xlsx';
+// XLSX se importará dinámicamente para evitar errores de SSR
 import { 
   Search, 
   Filter, 
@@ -466,7 +470,7 @@ const PaymentValidationDashboard: React.FC = () => {
     })}`;
   };
 
-  const exportarGeneral = () => {
+  const exportarGeneral = async () => {
     const data = filteredPayments.map(payment => ({
       'ID Pedido': payment.id,
       'Cliente': payment.usuario,
@@ -478,10 +482,11 @@ const PaymentValidationDashboard: React.FC = () => {
       'Descripción': payment.descripcion
     }));
 
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Pagos");
-    XLSX.writeFile(workbook, "pagos_validacion.xlsx");
+            const XLSX = await import('xlsx');
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Pagos");
+        XLSX.writeFile(workbook, "pagos_validacion.xlsx");
   };
 
   return (
