@@ -6,10 +6,10 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
 // import { Player } from '@lottiefiles/react-lottie-player';
-import dynamic from 'next/dynamic';
+import { default as dynamicImport } from 'next/dynamic';
 
 // Importar Player dinámicamente sin SSR
-const Player = dynamic(
+const Player = dynamicImport(
   () => import('@lottiefiles/react-lottie-player').then((mod) => mod.Player),
   { ssr: false }
 );
