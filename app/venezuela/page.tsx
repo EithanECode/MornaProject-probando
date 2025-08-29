@@ -1,16 +1,106 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Package, MessageSquare, MapPin, Star, DollarSign, Users, TrendingUp, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
-import Link from 'next/link';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
-import { useTheme } from 'next-themes';
+import { useVzlaContext } from '@/lib/VzlaContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Progress } from '@/components/ui/progress';
+import { 
+  MessageSquare, 
+  Truck, 
+  AlertTriangle, 
+  CheckCircle,
+  Clock,
+  DollarSign,
+  MapPin,
+  FileText,
+  Phone,
+  Flag,
+  Users,
+  BarChart3,
+  Search,
+  Filter,
+  Eye,
+  Send,
+  Calculator,
+  Package,
+  UserCheck,
+  Star,
+  TrendingUp,
+  Calendar,
+  Bell,
+  RefreshCw,
+  Download,
+  Share2,
+  Edit,
+  Trash2,
+  Plus,
+  ArrowRight,
+  ArrowLeft,
+  Zap
+} from 'lucide-react';
+import Link from 'next/link';
 
-// Datos mock para el dashboard
+// Tipos
+interface PendingOrder {
+  id: string;
+  clientName: string;
+  clientId: string;
+  product: string;
+  description: string;
+  quantity: number;
+  specifications: string;
+  shippingOptions: string[];
+  deliveryOptions: string[];
+  receivedFromChina: string;
+  status: 'pending' | 'reviewing' | 'quoted' | 'sent';
+  priority: 'low' | 'medium' | 'high';
+  estimatedDelivery?: string;
+  finalPrice?: number;
+  currency?: 'USD' | 'BS';
+}
+
+interface ChatSupport {
+  id: string;
+  clientName: string;
+  clientId: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  status: 'active' | 'waiting' | 'resolved';
+  priority: 'low' | 'medium' | 'high';
+  unreadMessages: number;
+  orderId?: string;
+}
+
+interface TrackingUpdate {
+  id: string;
+  orderId: string;
+  clientName: string;
+  product: string;
+  currentStatus: string;
+  location: string;
+  lastUpdate: string;
+  nextStep: string;
+  estimatedArrival: string;
+  needsUpdate: boolean;
+}
+
+interface SatisfactionSurvey {
+  id: string;
+  orderId: string;
+  clientName: string;
+  rating: number;
+  feedback: string;
+  date: string;
+  category: 'delivery' | 'product' | 'service' | 'communication';
+}
+
+// Datos mock para el dashboard (mantenemos algunos para funcionalidad completa)
 const PENDING_ORDERS = [
   { id: 1, client: 'Cliente A', product: 'Producto 1', status: 'pending', priority: 'high' },
   { id: 2, client: 'Cliente B', product: 'Producto 2', status: 'pending', priority: 'medium' },
@@ -29,8 +119,16 @@ const TRACKING_UPDATES = [
   { id: 3, order: 'ORD-003', status: 'En aduana', needsUpdate: true },
 ];
 
-export default function VenezuelaPage() {
-  const { theme } = useTheme();
+export default function VenezuelaDashboard() {
+  const { vzlaId } = useVzlaContext();
+  const { data: vzlaOrdersRaw } = require('@/hooks/use-vzla-orders').useVzlaOrders();
+  const vzlaOrders = Array.isArray(vzlaOrdersRaw) ? vzlaOrdersRaw : [];
+
+  const totalPedidos = vzlaOrders.filter((order: any) => order.asignedEVzla === vzlaId).length;
+  const pedidosPendientes = vzlaOrders.filter((order: any) => order.state === 1).length;
+  const pedidosTracking = vzlaOrders.filter((order: any) => order.state === 2).length;
+  const reputaciones = vzlaOrders.filter((order: any) => order.asignedEVzla === vzlaId && typeof order.reputation === 'number').map((order: any) => order.reputation);
+  const promedioReputacion = reputaciones.length > 0 ? reputaciones.reduce((acc: number, r: number) => acc + r, 0) / reputaciones.length : 0;
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -39,13 +137,13 @@ export default function VenezuelaPage() {
     setMounted(true);
   }, []);
 
-  // Estadísticas
+  // Estadísticas usando datos reales de Supabase
   const stats = {
-    pendingOrders: PENDING_ORDERS.filter(o => o.status === 'pending').length,
+    pendingOrders: pedidosPendientes,
     activeChats: CHAT_SUPPORT.filter(c => c.status === 'active').length,
-    trackingUpdates: TRACKING_UPDATES.filter(t => t.needsUpdate).length,
-    deliveredOrders: 45,
-    averageRating: 4.6,
+    trackingUpdates: pedidosTracking,
+    deliveredOrders: vzlaOrders.filter((order: any) => order.state === 8).length,
+    averageRating: promedioReputacion,
     responseTime: '12 min',
     satisfactionRate: '94%'
   };
@@ -129,7 +227,7 @@ export default function VenezuelaPage() {
                 </div>
                 <div className="flex items-center justify-center md:justify-end">
                   <div className="text-center">
-                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{stats.pendingOrders + stats.activeChats}</div>
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{pedidosPendientes + pedidosTracking}</div>
                     <p className="text-blue-100 text-xs md:text-sm lg:text-base">Tareas Pendientes</p>
                   </div>
                 </div>
@@ -149,10 +247,10 @@ export default function VenezuelaPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.pendingOrders}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{pedidosPendientes}</div>
                   <p className="text-xs text-blue-700">Esperando revisión</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-1.5 md:h-2">
-                    <div className="bg-blue-500 h-1.5 md:h-2 rounded-full" style={{width: `${(stats.pendingOrders / 10) * 100}%`}}></div>
+                    <div className="bg-blue-500 h-1.5 md:h-2 rounded-full" style={{width: `${(pedidosPendientes / Math.max(totalPedidos, 1)) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -181,10 +279,10 @@ export default function VenezuelaPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{stats.trackingUpdates}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{pedidosTracking}</div>
                   <p className="text-xs text-purple-700">Pendientes</p>
                   <div className="mt-2 w-full bg-purple-200 rounded-full h-1.5 md:h-2">
-                    <div className="bg-purple-500 h-1.5 md:h-2 rounded-full" style={{width: `${(stats.trackingUpdates / 5) * 100}%`}}></div>
+                    <div className="bg-purple-500 h-1.5 md:h-2 rounded-full" style={{width: `${(pedidosTracking / Math.max(totalPedidos, 1)) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -197,9 +295,9 @@ export default function VenezuelaPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{stats.averageRating}/5</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{promedioReputacion.toFixed(1)}/5</div>
                   <div className="mt-2 w-full bg-orange-200 rounded-full h-1.5 md:h-2">
-                    <div className="bg-orange-500 h-1.5 md:h-2 rounded-full" style={{width: `${(stats.averageRating / 5) * 100}%`}}></div>
+                    <div className="bg-orange-500 h-1.5 md:h-2 rounded-full" style={{width: `${(promedioReputacion / 5) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
