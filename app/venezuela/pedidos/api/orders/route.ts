@@ -1,12 +1,20 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Usa variables privadas para el backend
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+function getSupabaseClient() {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Missing Supabase environment variables');
+  }
+  
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 // Esta función obtiene los pedidos con el nombre del cliente
 async function getOrdersWithClientName() {
+  const supabase = getSupabaseClient();
+  
   // Traer pedidos
   const { data: orders, error: ordersError } = await supabase
     .from('orders')
