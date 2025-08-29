@@ -68,6 +68,7 @@ import {
   Archive,
   RefreshCw
 } from 'lucide-react';
+import Header from '@/components/layout/Header';
 
 type UserStatus = 'activo' | 'inactivo';
 type UserRole = 'Cliente' | 'Empleado China' | 'Empleado Vzla' | 'Validador Pagos' | 'Admin';
@@ -204,80 +205,11 @@ export default function UsuariosPage() {
       <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="admin" />
 
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
-        <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900">Seguridad y acceso</h1>
-                <p className="text-sm text-slate-600">Gestión de usuarios y accesos</p>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button onClick={handleOpenCreate} className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl">
-                      <Plus className="w-4 h-4 mr-2" /> Nuevo Usuario
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>{editingUser && users.some(u => u.id === editingUser.id) ? 'Editar Usuario' : 'Crear Usuario'}</DialogTitle>
-                      <DialogDescription>Define el rol, el estado y los datos de contacto.</DialogDescription>
-                    </DialogHeader>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="fullName">Nombre completo</Label>
-                        <Input
-                          id="fullName"
-                          value={editingUser?.fullName ?? ''}
-                          onChange={(e) => setEditingUser((prev) => prev ? { ...prev, fullName: e.target.value } : prev)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Correo</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={editingUser?.email ?? ''}
-                          onChange={(e) => setEditingUser((prev) => prev ? { ...prev, email: e.target.value } : prev)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Rol</Label>
-                        <Select
-                          value={editingUser?.role ?? 'Empleado Vzla'}
-                          onValueChange={(val: UserRole) => setEditingUser((prev) => prev ? { ...prev, role: val } : prev)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar rol" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {(['Cliente','Empleado China','Empleado Vzla','Validador Pagos','Admin'] as UserRole[]).map((r) => (
-                              <SelectItem key={r} value={r}>{r}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Estado</Label>
-                        <div className="flex items-center justify-between rounded-md border p-2">
-                          <span className="text-sm text-slate-600">Activo</span>
-                          <Switch
-                            checked={(editingUser?.status ?? 'activo') === 'activo'}
-                            onCheckedChange={(checked: boolean) => setEditingUser((prev) => prev ? { ...prev, status: checked ? 'activo' : 'inactivo' } : prev)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
-                      <Button onClick={handleSave} className="bg-blue-600 text-white">Guardar</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-          </div>
-        </header>
+        <Header 
+          notifications={3}
+          title="Seguridad y acceso"
+          subtitle="Gestión de usuarios y accesos"
+        />
 
         <div className="p-6 space-y-6">
           <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300">
@@ -329,13 +261,69 @@ export default function UsuariosPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-slate-300 hover:bg-slate-50">
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      Actualizar
-                    </Button>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
-                      {filteredUsers.length} usuarios
-                    </Badge>
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button onClick={handleOpenCreate} className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl">
+                          <Plus className="w-4 h-4 mr-2" /> Nuevo Usuario
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>{editingUser && users.some(u => u.id === editingUser.id) ? 'Editar Usuario' : 'Crear Usuario'}</DialogTitle>
+                          <DialogDescription>Define el rol, el estado y los datos de contacto.</DialogDescription>
+                        </DialogHeader>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
+                          <div className="space-y-2">
+                            <Label htmlFor="fullName">Nombre completo</Label>
+                            <Input
+                              id="fullName"
+                              value={editingUser?.fullName ?? ''}
+                              onChange={(e) => setEditingUser((prev) => prev ? { ...prev, fullName: e.target.value } : prev)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="email">Correo</Label>
+                            <Input
+                              id="email"
+                              type="email"
+                              value={editingUser?.email ?? ''}
+                              onChange={(e) => setEditingUser((prev) => prev ? { ...prev, email: e.target.value } : prev)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Rol</Label>
+                            <Select
+                              value={editingUser?.role ?? 'Empleado Vzla'}
+                              onValueChange={(val: UserRole) => setEditingUser((prev) => prev ? { ...prev, role: val } : prev)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Seleccionar rol" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {(['Cliente','Empleado China','Empleado Vzla','Validador Pagos','Admin'] as UserRole[]).map((r) => (
+                                  <SelectItem key={r} value={r}>{r}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Estado</Label>
+                            <div className="flex items-center justify-between rounded-md border p-2">
+                              <span className="text-sm text-slate-600">Activo</span>
+                              <Switch
+                                checked={(editingUser?.status ?? 'activo') === 'activo'}
+                                onCheckedChange={(checked: boolean) => setEditingUser((prev) => prev ? { ...prev, status: checked ? 'activo' : 'inactivo' } : prev)}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+                          <Button onClick={handleSave} className="bg-blue-600 text-white">Guardar</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+
                   </div>
                 </div>
               </div>
