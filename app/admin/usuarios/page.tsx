@@ -242,15 +242,15 @@ export default function UsuariosPage() {
               <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-6 mb-6 border border-slate-200">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    <div className="relative flex-1 min-w-[280px]">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-                      <Input
-                        placeholder="Buscar por nombre, correo o ID..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 w-full bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500"
-                      />
-                    </div>
+                                         <div className="relative flex-1 min-w-[280px]">
+                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 z-10" />
+                       <Input
+                         placeholder="Buscar por nombre, correo o ID..."
+                         value={searchTerm}
+                         onChange={(e) => setSearchTerm(e.target.value)}
+                         className="pl-10 w-full bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                       />
+                     </div>
                     <div className="flex flex-col sm:flex-row gap-3">
                       <Select value={roleFilter} onValueChange={(v: 'all' | UserRole) => setRoleFilter(v)}>
                         <SelectTrigger className="w-56 bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500">
