@@ -1,4 +1,7 @@
 "use client";
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 import "../animations/animations.css";
 import { useState, useEffect } from "react";
 import { useChinaContext } from '@/lib/ChinaContext';

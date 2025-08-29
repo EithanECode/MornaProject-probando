@@ -1,5 +1,8 @@
 'use client';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { Player } from '@lottiefiles/react-lottie-player';

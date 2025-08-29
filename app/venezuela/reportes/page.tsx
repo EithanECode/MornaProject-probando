@@ -1,4 +1,7 @@
 "use client";
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { getMetricasPorMes, getMetricasSatisfaccionCliente, getReportesSatisfaccionPorMes, getMetricasPorPedido, MetricasPorPedido } from './backend';

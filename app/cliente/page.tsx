@@ -1,6 +1,9 @@
 
 "use client";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useClientContext } from '@/lib/ClientContext';
 import { useClientOrders } from '@/hooks/use-client-orders';
