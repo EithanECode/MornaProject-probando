@@ -372,52 +372,38 @@ export default function UsuariosPage() {
                             {new Date(user.createdAt).toLocaleDateString('es-VE')}
                           </div>
                         </td>
-                        <td className="py-4 px-6">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleOpenEdit(user)}
-                              className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
-                            >
-                              <Edit3 className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleToggleStatus(user)}
-                              className={`h-8 w-8 p-0 transition-all duration-200 ${
-                                user.status === 'activo' 
-                                  ? 'hover:bg-red-100 hover:text-red-700' 
-                                  : 'hover:bg-green-100 hover:text-green-700'
-                              }`}
-                            >
-                              {user.status === 'activo' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                            </Button>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button 
-                                  variant="ghost" 
-                                  className="h-8 w-8 p-0 hover:bg-slate-100 transition-all duration-200"
-                                >
-                                  <MoreVertical className="w-4 h-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-48">
-                                <DropdownMenuItem onClick={() => handleOpenEdit(user)} className="cursor-pointer">
-                                  <UserCog className="w-4 h-4 mr-2" /> Editar Usuario
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleToggleStatus(user)} className="cursor-pointer">
-                                  <Shield className="w-4 h-4 mr-2" /> 
-                                  {user.status === 'activo' ? 'Desactivar' : 'Activar'}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={() => handleDelete(user)}>
-                                  <Trash2 className="w-4 h-4 mr-2" /> Eliminar
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </td>
+                                                 <td className="py-4 px-6">
+                           <div className="flex items-center gap-2">
+                             <Button
+                               variant="ghost"
+                               size="sm"
+                               onClick={() => handleOpenEdit(user)}
+                               className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                             >
+                               <Edit3 className="w-4 h-4" />
+                             </Button>
+                             <Button
+                               variant="ghost"
+                               size="sm"
+                               onClick={() => handleToggleStatus(user)}
+                               className={`h-8 w-8 p-0 transition-all duration-200 ${
+                                 user.status === 'activo' 
+                                   ? 'hover:bg-red-100 hover:text-red-700' 
+                                   : 'hover:bg-green-100 hover:text-green-700'
+                               }`}
+                             >
+                               {user.status === 'activo' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                             </Button>
+                             <Button
+                               variant="ghost"
+                               size="sm"
+                               onClick={() => handleDelete(user)}
+                               className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
+                             >
+                               <Trash2 className="w-4 h-4" />
+                             </Button>
+                           </div>
+                         </td>
                       </tr>
                     ))}
                     {filteredUsers.length === 0 && (
