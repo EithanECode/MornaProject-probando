@@ -290,35 +290,35 @@ export default function UsuariosPage() {
               </div>
 
               {/* Tabla Modernizada */}
-              <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white/50 backdrop-blur-sm">
-                <table className="w-full">
+              <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white/50 backdrop-blur-sm transition-all duration-300 ease-in-out">
+                <table className="w-full table-fixed">
                   <thead className="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-slate-200">
                     <tr>
-                      <th className="text-left py-4 px-6 text-slate-700 font-semibold">
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold w-2/5">
                         <div className="flex items-center gap-2">
                           <Users className="w-4 h-4" />
                           Usuario
                         </div>
                       </th>
-                      <th className="text-left py-4 px-6 text-slate-700 font-semibold">
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold w-1/6">
                         <div className="flex items-center gap-2">
                           <Shield className="w-4 h-4" />
                           Rol
                         </div>
                       </th>
-                      <th className="text-left py-4 px-6 text-slate-700 font-semibold">
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold w-1/6">
                         <div className="flex items-center gap-2">
                           <UserCheck className="w-4 h-4" />
                           Estado
                         </div>
                       </th>
-                      <th className="text-left py-4 px-6 text-slate-700 font-semibold">
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold w-1/6">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
                           Creado
                         </div>
                       </th>
-                      <th className="text-left py-4 px-6 text-slate-700 font-semibold">
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold w-1/6">
                         <div className="flex items-center gap-2">
                           <Settings className="w-4 h-4" />
                           Acciones
@@ -327,9 +327,9 @@ export default function UsuariosPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {filteredUsers.map((user) => (
+                                        {filteredUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-200 group">
-                        <td className="py-4 px-6">
+                        <td className="py-4 px-6 w-2/5">
                           <div className="flex items-center gap-4">
                             <Avatar className="h-12 w-12 ring-2 ring-slate-100 group-hover:ring-blue-200 transition-all duration-200">
                               <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-800 font-semibold">
@@ -340,22 +340,22 @@ export default function UsuariosPage() {
                                   .join('')}
                               </AvatarFallback>
                             </Avatar>
-                            <div>
-                              <div className="font-semibold text-slate-900 group-hover:text-blue-900 transition-colors">{user.fullName}</div>
-                              <div className="text-sm text-slate-600 flex items-center gap-1">
-                                <Mail className="w-3 h-3" />
-                                {user.email}
+                            <div className="min-w-0 flex-1">
+                              <div className="font-semibold text-slate-900 group-hover:text-blue-900 transition-colors truncate">{user.fullName}</div>
+                              <div className="text-sm text-slate-600 flex items-center gap-1 truncate">
+                                <Mail className="w-3 h-3 flex-shrink-0" />
+                                <span className="truncate">{user.email}</span>
                               </div>
-                              <div className="text-xs text-slate-400 font-mono">{user.id}</div>
+                              <div className="text-xs text-slate-400 font-mono truncate">{user.id}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 px-6">
+                        <td className="py-4 px-6 w-1/6">
                           <Badge className={`${ROLE_COLORS[user.role]} border font-medium px-3 py-1`}>
                             {user.role}
                           </Badge>
                         </td>
-                        <td className="py-4 px-6">
+                        <td className="py-4 px-6 w-1/6">
                           {user.status === 'activo' ? (
                             <Badge className="bg-green-100 text-green-800 border border-green-200 font-medium px-3 py-1">
                               <CheckCircle className="w-3 h-3 mr-1" /> Activo
@@ -366,44 +366,44 @@ export default function UsuariosPage() {
                             </Badge>
                           )}
                         </td>
-                        <td className="py-4 px-6 text-slate-600 text-sm">
+                        <td className="py-4 px-6 w-1/6 text-slate-600 text-sm">
                           <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-slate-400" />
-                            {new Date(user.createdAt).toLocaleDateString('es-VE')}
+                            <Calendar className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                            <span className="truncate">{new Date(user.createdAt).toLocaleDateString('es-VE')}</span>
                           </div>
                         </td>
-                                                 <td className="py-4 px-6">
-                           <div className="flex items-center gap-2">
-                             <Button
-                               variant="ghost"
-                               size="sm"
-                               onClick={() => handleOpenEdit(user)}
-                               className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
-                             >
-                               <Edit3 className="w-4 h-4" />
-                             </Button>
-                             <Button
-                               variant="ghost"
-                               size="sm"
-                               onClick={() => handleToggleStatus(user)}
-                               className={`h-8 w-8 p-0 transition-all duration-200 ${
-                                 user.status === 'activo' 
-                                   ? 'hover:bg-red-100 hover:text-red-700' 
-                                   : 'hover:bg-green-100 hover:text-green-700'
-                               }`}
-                             >
-                               {user.status === 'activo' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                             </Button>
-                             <Button
-                               variant="ghost"
-                               size="sm"
-                               onClick={() => handleDelete(user)}
-                               className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
-                             >
-                               <Trash2 className="w-4 h-4" />
-                             </Button>
-                           </div>
-                         </td>
+                        <td className="py-4 px-6 w-1/6">
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleOpenEdit(user)}
+                              className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleToggleStatus(user)}
+                              className={`h-8 w-8 p-0 transition-all duration-200 ${
+                                user.status === 'activo' 
+                                  ? 'hover:bg-red-100 hover:text-red-700' 
+                                  : 'hover:bg-green-100 hover:text-green-700'
+                              }`}
+                            >
+                              {user.status === 'activo' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(user)}
+                              className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                     {filteredUsers.length === 0 && (
