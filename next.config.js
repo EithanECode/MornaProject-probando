@@ -4,6 +4,13 @@ const nextConfig = {
   // y comentar los redirects y otras funciones dinámicas
   // output: 'export',
   
+  // Configuración experimental para fonts
+  experimental: {
+    fontLoaders: [
+      { loader: '@next/font/google', options: { subsets: ['latin'] } }
+    ]
+  },
+  
   // Optimizaciones de imágenes
   images: {
     formats: ['image/webp', 'image/avif'],
