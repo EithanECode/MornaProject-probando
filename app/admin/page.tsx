@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,13 +16,27 @@ import {
   DollarSign,
   TrendingUp,
   Activity,
-  Shield
+  Shield,
+  MessageSquare,
+  MapPin,
+  Star,
+  Bell,
+  RefreshCw,
+  Download,
+  Share2,
+  Edit,
+  Trash2,
+  Plus,
+  ArrowRight,
+  ArrowLeft,
+  Zap
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AdminDashboard() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { theme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -36,7 +49,9 @@ export default function AdminDashboard() {
     criticalAlerts: 3,
     pendingPayments: 12,
     totalRevenue: '$45,230',
-    monthlyGrowth: '+12.5%'
+    monthlyGrowth: '+12.5%',
+    responseTime: '8 min',
+    satisfactionRate: '96%'
   };
 
   const recentActivities = [
@@ -78,142 +93,183 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className={`min-h-screen flex overflow-x-hidden ${
-      theme === 'dark' 
-        ? 'bg-slate-900' 
-        : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
-    }`}>
+    <div className="min-h-screen flex overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <Sidebar 
         isExpanded={sidebarExpanded} 
         setIsExpanded={setSidebarExpanded}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onMobileMenuClose={() => setIsMobileMenuOpen(false)}
         userRole="admin"
       />
       
       <main className={`flex-1 transition-all duration-300 ${
-        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'
+        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'
       }`}>
         <Header 
           notifications={stats.criticalAlerts}
-          onMenuToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          title="Panel de Administración"
+          subtitle="Supervisión completa del sistema Morna"
         />
         
-        <div className="p-6 space-y-6">
-          {/* Header del Dashboard */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className={`text-3xl font-bold ${
-                theme === 'dark' ? 'text-white' : 'text-slate-900'
-              }`}>
-                Panel de Administración
-              </h1>
-              <p className={`text-sm ${
-                theme === 'dark' ? 'text-slate-300' : 'text-slate-600'
-              }`}>
-                Supervisión completa del sistema Morna
-              </p>
-            </div>
-            <Badge variant="outline" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Master Admin
-            </Badge>
-          </div>
-
-          {/* Estadísticas Principales */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Usuarios</CardTitle>
-                <Users className="h-4 w-4 text-blue-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.totalUsers}</div>
-                <p className="text-xs text-slate-600">Usuarios activos</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pedidos Activos</CardTitle>
-                <Package className="h-4 w-4 text-green-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.activeOrders}</div>
-                <p className="text-xs text-slate-600">En proceso</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Alertas Críticas</CardTitle>
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.criticalAlerts}</div>
-                <p className="text-xs text-slate-600">Requieren atención</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Ingresos Totales</CardTitle>
-                <TrendingUp className="h-4 w-4 text-purple-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.totalRevenue}</div>
-                <p className="text-xs text-slate-600">{stats.monthlyGrowth} este mes</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Acciones Rápidas */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-            <CardHeader>
-              <CardTitle>Acciones Rápidas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
-                  <Users className="h-6 w-6" />
-                  <span className="text-sm">Gestionar Usuarios</span>
-                </Button>
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
-                  <Settings className="h-6 w-6" />
-                  <span className="text-sm">Configuración</span>
-                </Button>
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
-                  <BarChart3 className="h-6 w-6" />
-                  <span className="text-sm">Reportes</span>
-                </Button>
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
-                  <Eye className="h-6 w-6" />
-                  <span className="text-sm">Supervisar Todo</span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Actividad Reciente */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-            <CardHeader>
-              <CardTitle>Actividad Reciente del Sistema</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-center gap-4 p-3 rounded-lg bg-slate-50">
-                    <div className={`p-2 rounded-full ${getActivityColor(activity.type)}`}>
-                      {getActivityIcon(activity.type)}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{activity.action}</p>
-                      <p className="text-xs text-slate-600">{activity.user}</p>
-                    </div>
-                    <span className="text-xs text-slate-500">{activity.time}</span>
+        <div className="p-6 space-y-8">
+          {/* Header del Dashboard con Bienvenida */}
+          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-8 text-white relative overflow-hidden">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
+                  <p className="text-blue-100 text-lg">Panel de Control - Master Admin</p>
+                  <p className="text-blue-200 mt-2">Supervisa y gestiona todo el sistema desde un solo lugar</p>
+                </div>
+                <div className="hidden lg:flex items-center space-x-6">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold">{stats.criticalAlerts + stats.pendingPayments}</div>
+                    <p className="text-blue-100">Tareas Críticas</p>
                   </div>
-                ))}
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+
+          {/* Dashboard Principal */}
+          <div className="space-y-8">
+            {/* Estadísticas Principales */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-blue-800">Total Usuarios</CardTitle>
+                  <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Users className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-blue-900">{stats.totalUsers}</div>
+                  <p className="text-xs text-blue-700">Usuarios activos</p>
+                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.totalUsers / 100) * 100}%`}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-green-800">Pedidos Activos</CardTitle>
+                  <div className="p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Package className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-green-900">{stats.activeOrders}</div>
+                  <p className="text-xs text-green-700">En proceso</p>
+                  <div className="mt-2 w-full bg-green-200 rounded-full h-2">
+                    <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.activeOrders / 200) * 100}%`}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-red-800">Alertas Críticas</CardTitle>
+                  <div className="p-2 bg-red-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <AlertTriangle className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-red-900">{stats.criticalAlerts}</div>
+                  <p className="text-xs text-red-700">Requieren atención</p>
+                  <div className="mt-2 w-full bg-red-200 rounded-full h-2">
+                    <div className="bg-red-500 h-2 rounded-full" style={{width: `${(stats.criticalAlerts / 10) * 100}%`}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-purple-800">Ingresos Totales</CardTitle>
+                  <div className="p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <TrendingUp className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-purple-900">{stats.totalRevenue}</div>
+                  <p className="text-xs text-purple-700">{stats.monthlyGrowth} este mes</p>
+                  <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
+                    <div className="bg-purple-500 h-2 rounded-full" style={{width: '85%'}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Acciones Rápidas */}
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold">Acciones Rápidas</CardTitle>
+                <p className="text-sm text-slate-600">Accede rápidamente a las funciones de administración</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <Link href="/admin/usuarios">
+                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
+                      <div className="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                        <Users className="h-8 w-8 text-blue-600" />
+                      </div>
+                      <span className="text-sm font-medium">Gestionar Usuarios</span>
+                    </Button>
+                  </Link>
+                  <Link href="/admin/configuracion">
+                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group w-full">
+                      <div className="p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                        <Settings className="h-8 w-8 text-green-600" />
+                      </div>
+                      <span className="text-sm font-medium">Configuración</span>
+                    </Button>
+                  </Link>
+                  <Link href="/admin/alertas">
+                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group w-full">
+                      <div className="p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
+                        <AlertTriangle className="h-8 w-8 text-red-600" />
+                      </div>
+                      <span className="text-sm font-medium">Alertas</span>
+                    </Button>
+                  </Link>
+                  <Link href="/admin/pedidos">
+                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
+                      <div className="p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+                        <BarChart3 className="h-8 w-8 text-purple-600" />
+                      </div>
+                      <span className="text-sm font-medium">Reportes</span>
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Actividad Reciente */}
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold">Actividad Reciente del Sistema</CardTitle>
+                <p className="text-sm text-slate-600">Últimas acciones y eventos del sistema</p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {recentActivities.map((activity) => (
+                    <div key={activity.id} className="flex items-center gap-4 p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors">
+                      <div className={`p-3 rounded-full ${getActivityColor(activity.type)}`}>
+                        {getActivityIcon(activity.type)}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{activity.action}</p>
+                        <p className="text-xs text-slate-600">{activity.user}</p>
+                      </div>
+                      <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-full">{activity.time}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </main>
     </div>

@@ -14,7 +14,28 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { MoreVertical, Plus, Search, UserCog, Shield, CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { 
+  MoreVertical, 
+  Plus, 
+  Search, 
+  UserCog, 
+  Shield, 
+  CheckCircle, 
+  XCircle, 
+  Trash2,
+  Filter,
+  Users,
+  UserCheck,
+  UserX,
+  Calendar,
+  Mail,
+  Phone,
+  Settings,
+  Eye,
+  Edit3,
+  Archive,
+  RefreshCw
+} from 'lucide-react';
 
 type UserStatus = 'activo' | 'inactivo';
 type UserRole = 'Cliente' | 'Empleado China' | 'Empleado Vzla' | 'Validador Pagos' | 'Admin';
@@ -142,7 +163,7 @@ export default function UsuariosPage() {
               <div className="flex items-center space-x-2">
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button onClick={handleOpenCreate} className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                    <Button onClick={handleOpenCreate} className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl">
                       <Plus className="w-4 h-4 mr-2" /> Nuevo Usuario
                     </Button>
                   </DialogTrigger>
@@ -208,65 +229,110 @@ export default function UsuariosPage() {
         </header>
 
         <div className="p-6 space-y-6">
-          <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+          <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300">
             <CardHeader>
-              <CardTitle className="text-xl flex items-center text-black">Listado de Usuarios</CardTitle>
+              <CardTitle className="text-xl flex items-center text-black">
+                <Users className="w-5 h-5 mr-2 text-blue-600" />
+                Listado de Usuarios
+              </CardTitle>
               <CardDescription>Administra roles, estados y accesos de la plataforma</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-                    <Input
-                      placeholder="Buscar por nombre, correo o ID..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-9 w-72"
-                    />
+              {/* Filtros Mejorados */}
+              <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-6 mb-6 border border-slate-200">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <div className="relative flex-1 min-w-[280px]">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                      <Input
+                        placeholder="Buscar por nombre, correo o ID..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 w-full bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Select value={roleFilter} onValueChange={(v: 'all' | UserRole) => setRoleFilter(v)}>
+                        <SelectTrigger className="w-56 bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500">
+                          <Filter className="w-4 h-4 mr-2 text-slate-400" />
+                          <SelectValue placeholder="Filtrar por rol" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todos los roles</SelectItem>
+                          {(['Cliente','Empleado China','Empleado Vzla','Validador Pagos','Admin'] as UserRole[]).map((r) => (
+                            <SelectItem key={r} value={r}>{r}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select value={statusFilter} onValueChange={(v: 'all' | UserStatus) => setStatusFilter(v)}>
+                        <SelectTrigger className="w-48 bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500">
+                          <UserCheck className="w-4 h-4 mr-2 text-slate-400" />
+                          <SelectValue placeholder="Filtrar por estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todos</SelectItem>
+                          <SelectItem value="activo">Activos</SelectItem>
+                          <SelectItem value="inactivo">Inactivos</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <Select value={roleFilter} onValueChange={(v: 'all' | UserRole) => setRoleFilter(v)}>
-                    <SelectTrigger className="w-56">
-                      <SelectValue placeholder="Filtrar por rol" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos los roles</SelectItem>
-                      {(['Cliente','Empleado China','Empleado Vzla','Validador Pagos','Admin'] as UserRole[]).map((r) => (
-                        <SelectItem key={r} value={r}>{r}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select value={statusFilter} onValueChange={(v: 'all' | UserStatus) => setStatusFilter(v)}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue placeholder="Filtrar por estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      <SelectItem value="activo">Activos</SelectItem>
-                      <SelectItem value="inactivo">Inactivos</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-slate-300 hover:bg-slate-50">
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Actualizar
+                    </Button>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
+                      {filteredUsers.length} usuarios
+                    </Badge>
+                  </div>
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
+              {/* Tabla Modernizada */}
+              <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white/50 backdrop-blur-sm">
                 <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="text-left py-3 px-4 text-slate-700">Usuario</th>
-                      <th className="text-left py-3 px-4 text-slate-700">Rol</th>
-                      <th className="text-left py-3 px-4 text-slate-700">Estado</th>
-                      <th className="text-left py-3 px-4 text-slate-700">Creado</th>
-                      <th className="text-left py-3 px-4 text-slate-700">Acciones</th>
+                  <thead className="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-slate-200">
+                    <tr>
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4" />
+                          Usuario
+                        </div>
+                      </th>
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold">
+                        <div className="flex items-center gap-2">
+                          <Shield className="w-4 h-4" />
+                          Rol
+                        </div>
+                      </th>
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold">
+                        <div className="flex items-center gap-2">
+                          <UserCheck className="w-4 h-4" />
+                          Estado
+                        </div>
+                      </th>
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          Creado
+                        </div>
+                      </th>
+                      <th className="text-left py-4 px-6 text-slate-700 font-semibold">
+                        <div className="flex items-center gap-2">
+                          <Settings className="w-4 h-4" />
+                          Acciones
+                        </div>
+                      </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-slate-100">
                     {filteredUsers.map((user) => (
-                      <tr key={user.id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-9 w-9">
-                              <AvatarFallback>
+                      <tr key={user.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-200 group">
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-4">
+                            <Avatar className="h-12 w-12 ring-2 ring-slate-100 group-hover:ring-blue-200 transition-all duration-200">
+                              <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-800 font-semibold">
                                 {user.fullName
                                   .split(' ')
                                   .map((n) => n[0])
@@ -275,52 +341,94 @@ export default function UsuariosPage() {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="font-medium text-slate-900">{user.fullName}</div>
-                              <div className="text-sm text-slate-600">{user.email}</div>
-                              <div className="text-xs text-slate-400">{user.id}</div>
+                              <div className="font-semibold text-slate-900 group-hover:text-blue-900 transition-colors">{user.fullName}</div>
+                              <div className="text-sm text-slate-600 flex items-center gap-1">
+                                <Mail className="w-3 h-3" />
+                                {user.email}
+                              </div>
+                              <div className="text-xs text-slate-400 font-mono">{user.id}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <Badge className={`${ROLE_COLORS[user.role]} border`}>{user.role}</Badge>
+                        <td className="py-4 px-6">
+                          <Badge className={`${ROLE_COLORS[user.role]} border font-medium px-3 py-1`}>
+                            {user.role}
+                          </Badge>
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-4 px-6">
                           {user.status === 'activo' ? (
-                            <Badge className="bg-green-100 text-green-800 border border-green-200">
+                            <Badge className="bg-green-100 text-green-800 border border-green-200 font-medium px-3 py-1">
                               <CheckCircle className="w-3 h-3 mr-1" /> Activo
                             </Badge>
                           ) : (
-                            <Badge className="bg-red-100 text-red-800 border border-red-200">
+                            <Badge className="bg-red-100 text-red-800 border border-red-200 font-medium px-3 py-1">
                               <XCircle className="w-3 h-3 mr-1" /> Inactivo
                             </Badge>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-slate-600 text-sm">
-                          {new Date(user.createdAt).toLocaleDateString('es-VE')}
+                        <td className="py-4 px-6 text-slate-600 text-sm">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-slate-400" />
+                            {new Date(user.createdAt).toLocaleDateString('es-VE')}
+                          </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0"><MoreVertical className="w-4 h-4" /></Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleOpenEdit(user)}>
-                                <UserCog className="w-4 h-4 mr-2" /> Editar
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleToggleStatus(user)}>
-                                <Shield className="w-4 h-4 mr-2" /> {user.status === 'activo' ? 'Desactivar' : 'Activar'}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(user)}>
-                                <Trash2 className="w-4 h-4 mr-2" /> Eliminar
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleOpenEdit(user)}
+                              className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleToggleStatus(user)}
+                              className={`h-8 w-8 p-0 transition-all duration-200 ${
+                                user.status === 'activo' 
+                                  ? 'hover:bg-red-100 hover:text-red-700' 
+                                  : 'hover:bg-green-100 hover:text-green-700'
+                              }`}
+                            >
+                              {user.status === 'activo' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  className="h-8 w-8 p-0 hover:bg-slate-100 transition-all duration-200"
+                                >
+                                  <MoreVertical className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuItem onClick={() => handleOpenEdit(user)} className="cursor-pointer">
+                                  <UserCog className="w-4 h-4 mr-2" /> Editar Usuario
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleToggleStatus(user)} className="cursor-pointer">
+                                  <Shield className="w-4 h-4 mr-2" /> 
+                                  {user.status === 'activo' ? 'Desactivar' : 'Activar'}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={() => handleDelete(user)}>
+                                  <Trash2 className="w-4 h-4 mr-2" /> Eliminar
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
                         </td>
                       </tr>
                     ))}
                     {filteredUsers.length === 0 && (
                       <tr>
-                        <td colSpan={5} className="text-center py-10 text-slate-500">No se encontraron usuarios</td>
+                        <td colSpan={5} className="text-center py-16">
+                          <div className="flex flex-col items-center gap-4 text-slate-500">
+                            <Users className="w-12 h-12 text-slate-300" />
+                            <p className="text-lg font-medium">No se encontraron usuarios</p>
+                            <p className="text-sm">Intenta ajustar los filtros de búsqueda</p>
+                          </div>
+                        </td>
                       </tr>
                     )}
                   </tbody>
