@@ -162,7 +162,7 @@ export default function VenezuelaSoportePage() {
       />
       
       <main className={`flex-1 transition-all duration-300 ${
-        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'
+        sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       }`}>
         <Header 
           notifications={stats.totalUnread}
@@ -171,26 +171,26 @@ export default function VenezuelaSoportePage() {
           subtitle="Gestiona chats y consultas de clientes"
         />
         
-        <div className="p-6 space-y-6">
+        <div className="p-4 md:p-5 lg:p-6 space-y-6">
           {/* Header de la página */}
-          <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl p-6 text-white">
-            <div className="flex items-center justify-between">
+          <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl p-4 md:p-6 text-white">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
               <div>
-                <h1 className="text-2xl font-bold">Soporte al Cliente</h1>
-                <p className="text-green-100 mt-1">Gestiona chats y consultas de clientes</p>
+                <h1 className="text-xl md:text-2xl font-bold">Soporte al Cliente</h1>
+                <p className="text-green-100 mt-1 text-sm md:text-base">Gestiona chats y consultas de clientes</p>
               </div>
-              <div className="hidden md:flex items-center space-x-4">
+              <div className="grid grid-cols-3 md:flex md:items-center md:space-x-4 gap-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold">{stats.active}</p>
-                  <p className="text-sm text-green-100">Activos</p>
+                  <p className="text-xl md:text-2xl font-bold">{stats.active}</p>
+                  <p className="text-xs md:text-sm text-green-100">Activos</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold">{stats.waiting}</p>
-                  <p className="text-sm text-green-100">Esperando</p>
+                  <p className="text-xl md:text-2xl font-bold">{stats.waiting}</p>
+                  <p className="text-xs md:text-sm text-green-100">Esperando</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold">{stats.totalUnread}</p>
-                  <p className="text-sm text-green-100">Sin Leer</p>
+                  <p className="text-xl md:text-2xl font-bold">{stats.totalUnread}</p>
+                  <p className="text-xs md:text-sm text-green-100">Sin Leer</p>
                 </div>
               </div>
             </div>
@@ -199,21 +199,19 @@ export default function VenezuelaSoportePage() {
           {/* Filtros y búsqueda */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
             <CardContent className="p-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                    <Input
-                      placeholder="Buscar por cliente o mensaje..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
+              <div className="flex flex-col gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Input
+                    placeholder="Buscar por cliente o mensaje..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
                 </div>
                 <div className="flex gap-2">
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-40">
+                    <SelectTrigger className="flex-1 md:w-40">
                       <Filter className="w-4 h-4 mr-2" />
                       <SelectValue placeholder="Estado" />
                     </SelectTrigger>
@@ -225,7 +223,7 @@ export default function VenezuelaSoportePage() {
                     </SelectContent>
                   </Select>
                   <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                    <SelectTrigger className="w-40">
+                    <SelectTrigger className="flex-1 md:w-40">
                       <AlertTriangle className="w-4 h-4 mr-2" />
                       <SelectValue placeholder="Prioridad" />
                     </SelectTrigger>
@@ -246,7 +244,7 @@ export default function VenezuelaSoportePage() {
           </Card>
 
           {/* Lista de Chats */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5 lg:gap-6">
             {filteredChats.map((chat) => (
               <Card key={chat.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
@@ -301,15 +299,16 @@ export default function VenezuelaSoportePage() {
                       className="flex-1 bg-[#202841]/90 text-white hover:bg-[#202841]"
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />
-                      Abrir Chat
+                      <span className="hidden sm:inline">Abrir Chat</span>
+                      <span className="sm:hidden">Chat</span>
                     </Button>
                     {chat.orderId && (
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="flex-shrink-0">
                         <Package className="w-4 h-4" />
                       </Button>
                     )}
                     {chat.phone && (
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="flex-shrink-0">
                         <Phone className="w-4 h-4" />
                       </Button>
                     )}
@@ -322,10 +321,10 @@ export default function VenezuelaSoportePage() {
           {/* Estado vacío */}
           {filteredChats.length === 0 && (
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardContent className="p-12 text-center">
-                <MessageSquare className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">No hay chats activos</h3>
-                <p className="text-slate-600">Todos los chats han sido resueltos o no hay coincidencias con los filtros.</p>
+              <CardContent className="p-8 md:p-12 text-center">
+                <MessageSquare className="w-12 h-12 md:w-16 md:h-16 text-slate-400 mx-auto mb-4" />
+                <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-2">No hay chats activos</h3>
+                <p className="text-sm md:text-base text-slate-600">Todos los chats han sido resueltos o no hay coincidencias con los filtros.</p>
               </CardContent>
             </Card>
           )}
