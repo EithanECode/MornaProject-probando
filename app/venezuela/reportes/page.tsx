@@ -230,8 +230,11 @@ const Reportes = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // Scroll suave hacia arriba de la lista
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll suave hacia la sección de lista de reportes
+    const listaReportes = document.querySelector('[data-section="lista-reportes"]');
+    if (listaReportes) {
+      listaReportes.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   const obtenerDatosReporte = () => {
@@ -980,6 +983,7 @@ const Reportes = () => {
               (theme === 'dark' ? 'bg-zinc-900/80' : 'bg-white/70')
             }
             data-export={activeFilter === 'mes' ? 'lista-reportes-mes' : undefined}
+            data-section="lista-reportes"
           >
             <CardHeader className="pb-0">
               <CardTitle className={theme === 'dark' ? 'text-white' : 'text-black'}>
