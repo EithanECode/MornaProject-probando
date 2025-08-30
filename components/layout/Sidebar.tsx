@@ -328,7 +328,7 @@ const getUserInfoByRole = (role?: string) => {
 const useScreenSize = () => {
   const [screenWidth, setScreenWidth] = useState(0);
 
-  useEffect(() => {
+    useEffect(() => {
     const updateScreenWidth = () => {
       setScreenWidth(window.innerWidth);
     };
@@ -403,7 +403,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
     // Simplificar cálculos
     const sidebarWidth = isMobile 
-      ? (isExpanded ? 'w-80' : 'w-16')
+      ? (isMobileMenuOpen ? 'w-80' : 'w-16')
       : isExpanded 
         ? (screenWidth < 1440 ? 'w-64' : 'w-72')
         : 'w-20';
@@ -430,7 +430,16 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       userPadding: isSmallScreen ? 'p-2' : 'p-3',
       isMobile
     };
-  }, [screenWidth, isExpanded]);
+  }, [screenWidth, isExpanded, isMobileMenuOpen]);
+
+  // Actualizar isExpanded automáticamente cuando cambie la resolución
+  useEffect(() => {
+    const isMobile = screenWidth < 768;
+    if (isMobile) {
+      // En mobile, isExpanded debe seguir a isMobileMenuOpen
+      setIsExpanded(isMobileMenuOpen || false);
+    }
+  }, [screenWidth, isMobileMenuOpen, setIsExpanded]);
 
   // Optimizar el manejo del hover (solo en desktop)
   const handleMouseEnter = useCallback(() => {
@@ -463,7 +472,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           href={item.path}
           prefetch={true}
           className={`
-            w-full flex items-center ${isExpanded ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`} rounded-xl
+            w-full flex items-center ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`) : (isExpanded ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`)} rounded-xl
             transition-all duration-100 ease-out group relative
             active:scale-95
             ${isActive 
@@ -487,7 +496,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         
         <div className={`
           transition-all duration-150 ease-out overflow-hidden
-          ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+          ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
         `}>
           <div className="flex items-center justify-between whitespace-nowrap">
             <span className={`font-medium ${responsiveConfig.textSize}`}>{item.label}</span>
@@ -499,7 +508,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           </div>
         </div>
         
-        {!isExpanded && item.badge && (
+        {!responsiveConfig.isMobile && !isExpanded && item.badge && (
           <div className={`absolute top-1 right-1 ${screenWidth < 1366 ? 'w-4 h-4' : 'w-5 h-5'} bg-red-500 rounded-full flex items-center justify-center animate-pulse`}>
             <span className={`${responsiveConfig.badgeSize} text-white font-bold`}>{item.badge}</span>
           </div>
@@ -511,6 +520,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
   return (
     <>
+      
       {/* Overlay para móviles */}
       {responsiveConfig.isMobile && isMobileMenuOpen && (
         <div 
@@ -537,13 +547,13 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         onMouseLeave={handleMouseLeave}
       >
         {/* Header */}
-        <div className={`${responsiveConfig.padding} border-b border-slate-700/50 flex-shrink-0`}>
-          <div className={`flex items-center ${isExpanded ? 'space-x-3' : 'justify-center'}`}>
-            <PitaLogo size={responsiveConfig.logoSize} animated={true} />
-            <div className={`
-              transition-all duration-150 ease-out overflow-hidden
-              ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
-            `}>
+                  <div className={`${responsiveConfig.padding} border-b border-slate-700/50 flex-shrink-0`}>
+            <div className={`flex items-center ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : (isExpanded ? 'space-x-3' : 'justify-center')}`}>
+              <PitaLogo size={responsiveConfig.logoSize} animated={true} />
+              <div className={`
+                transition-all duration-150 ease-out overflow-hidden
+                ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
+              `}>
               <div className="whitespace-nowrap">
                 <h1 className={`font-bold text-white ${responsiveConfig.titleSize}`}>Pita Express</h1>
                 <p className={`text-slate-400 ${responsiveConfig.subtitleSize}`}>{userInfo.name}</p>
@@ -561,7 +571,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         {/* Bottom Section */}
         <div className={`${responsiveConfig.padding} border-t border-slate-700/50 space-y-4 flex-shrink-0`}>
           {/* User Profile */}
-          <div className={`flex items-center space-x-3 ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
+          <div className={`flex items-center ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : 'space-x-3'} ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
             <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center`}>
               {userRole === 'client' ? (
                 <VenezuelaFlag size={"sm"} animated={true} />
@@ -571,7 +581,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
             </div>
             <div className={`
               transition-all duration-150 ease-out overflow-hidden
-              ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+              ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
             `}>
               <div className="whitespace-nowrap">
                 <p className={`font-medium text-white ${responsiveConfig.userTextSize}`}>
@@ -593,14 +603,14 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
                 <Link
                   href={item.path}
                   prefetch={true}
-                  className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-150 ease-out group"
+                  className={`w-full flex items-center ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : 'justify-center p-2') : 'space-x-3 px-4 py-3'} rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-150 ease-out group`}
                 >
                   <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-slate-600/50`}>
                     <Icon className={`${responsiveConfig.iconSize} ${item.color}`} />
                   </div>
                   <div className={`
                     transition-all duration-150 ease-out overflow-hidden
-                    ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+                    ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
                   `}>
                     <span className="font-medium whitespace-nowrap">{item.label}</span>
                   </div>
@@ -611,7 +621,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
           {/* Logout */}
           <button
-            className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ease-out group border border-red-500/20"
+            className={`w-full flex items-center ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : 'justify-center p-2') : 'space-x-3 px-4 py-3'} rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ease-out group border border-red-500/20`}
             onClick={() => {
               // Elimina el token del almacenamiento local
               localStorage.removeItem('token');
@@ -625,7 +635,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
             </div>
             <div className={`
               transition-all duration-150 ease-out overflow-hidden
-              ${isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'}
+              ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
             `}>
               <span className="font-medium whitespace-nowrap">Cerrar Sesión</span>
             </div>
