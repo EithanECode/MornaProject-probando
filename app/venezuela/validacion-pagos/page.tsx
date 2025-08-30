@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
+import Header from '@/components/layout/Header';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 // XLSX se importará dinámicamente para evitar errores de SSR
 import { 
@@ -27,7 +28,9 @@ import {
   X,
   AlertTriangle,
   MapPin,
-  TrendingUp
+  TrendingUp,
+  Bell,
+  Menu
 } from 'lucide-react';
 
 // ================================
@@ -375,6 +378,7 @@ const ConfirmationDialog: React.FC<{
 // ================================
 const PaymentValidationDashboard: React.FC = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [payments, setPayments] = useState<Payment[]>(mockPayments);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('todos');
@@ -515,31 +519,20 @@ const PaymentValidationDashboard: React.FC = () => {
             : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50')
         }
       >
-  <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="venezuela" />
+  <Sidebar 
+    isExpanded={sidebarExpanded} 
+    setIsExpanded={setSidebarExpanded}
+    isMobileMenuOpen={isMobileMenuOpen}
+    onMobileMenuClose={() => setIsMobileMenuOpen(false)}
+    userRole="venezuela" 
+  />
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
-      <header className={
-          `sticky top-0 z-40 border-b border-slate-200 backdrop-blur-sm transition-colors duration-300 ` +
-          (mounted && theme === 'dark' ? 'bg-slate-900/80' : 'bg-white/80')
-        }>
-          <div className="px-6 py-4 flex items-center justify-between">
-            <div>
-              <h1 className={`text-2xl font-bold flex items-center gap-3 ${mounted && theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <DollarSign className="text-blue-600" size={24} />
-                Validación de Pagos
-              </h1>
-              <p className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>Administra y da seguimiento a todos los pedidos</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={exportarGeneral}
-                className="flex items-center gap-2 bg-[#202841] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
-              >
-                <Download size={20} />
-                Exportar
-              </button>
-            </div>
-          </div>
-        </header>
+        <Header 
+          notifications={3}
+          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          title="Validación de Pagos"
+          subtitle="Administra y da seguimiento a todos los pedidos"
+        />
         <div className="p-6">
           
 
@@ -619,6 +612,13 @@ const PaymentValidationDashboard: React.FC = () => {
                     <SelectItem value="rechazado">Rechazados</SelectItem>
                   </SelectContent>
                 </Select>
+                <button
+                  onClick={exportarGeneral}
+                  className="flex items-center gap-2 bg-[#202841] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
+                >
+                  <Download size={20} />
+                  Exportar
+                </button>
               </div>
             </div>
           </div>

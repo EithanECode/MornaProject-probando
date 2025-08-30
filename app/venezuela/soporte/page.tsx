@@ -234,10 +234,6 @@ export default function VenezuelaSoportePage() {
                       <SelectItem value="low">Baja</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <RefreshCw className="w-4 h-4" />
-                    Actualizar
-                  </Button>
                 </div>
               </div>
             </CardContent>
