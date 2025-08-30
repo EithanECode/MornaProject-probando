@@ -289,7 +289,7 @@ export default function ChinaDashboard() {
       />
       
       <main className={`flex-1 transition-all duration-300 ${
-        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'
+        sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       }`}>
         <Header 
           notifications={stats.pendingOrders + stats.processingOrders}
@@ -298,23 +298,23 @@ export default function ChinaDashboard() {
           subtitle="Gestión de pedidos, procesamiento y logística"
         />
         
-        <div className="p-6 space-y-8">
+        <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-8">
           {/* Header del Dashboard con Bienvenida */}
-          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-8 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative z-10">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
-                  <p className="text-blue-100 text-lg">Panel de Control - Empleado China</p>
-                  <p className="text-blue-200 mt-2">Gestiona pedidos, procesamiento y logística desde un solo lugar</p>
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
+                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">Panel de Control - Empleado China</p>
+                  <p className="text-blue-200 mt-2 text-xs md:text-sm">Gestiona pedidos, procesamiento y logística desde un solo lugar</p>
                 </div>
-                                 <div className="hidden lg:flex items-center space-x-6">
-                   <div className="text-center">
-                     <div className="text-4xl font-bold">{totalPedidos}</div>
-                     <p className="text-blue-100">Pedidos Activos</p>
-                   </div>
-                 </div>
+                <div className="flex md:hidden lg:flex items-center space-x-4 md:space-x-6">
+                  <div className="text-center">
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{totalPedidos}</div>
+                    <p className="text-blue-100 text-xs md:text-sm">Pedidos Activos</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -322,16 +322,16 @@ export default function ChinaDashboard() {
           {/* Dashboard Principal */}
           <div className="space-y-8">
             {/* Estadísticas Principales */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-blue-800">Pedidos Pendientes</CardTitle>
-                  <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
-                    <Package className="h-4 w-4 text-white" />
+                  <CardTitle className="text-xs md:text-sm font-medium text-blue-800">Pedidos Pendientes</CardTitle>
+                  <div className="p-1 md:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Package className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-900">{pedidosPendientes}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{pedidosPendientes}</div>
                   <p className="text-xs text-blue-700">Esperando procesamiento</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                     <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / totalPedidos) * 100}%`}}></div>
@@ -341,13 +341,13 @@ export default function ChinaDashboard() {
 
               <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-green-800">En Procesamiento</CardTitle>
-                  <div className="p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
-                    <Clock className="h-4 w-4 text-white" />
+                  <CardTitle className="text-xs md:text-sm font-medium text-green-800">En Procesamiento</CardTitle>
+                  <div className="p-1 md:p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Clock className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-green-900">{pedidosEnProceso}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{pedidosEnProceso}</div>
                   <p className="text-xs text-green-700">En producción</p>
                   <div className="mt-2 w-full bg-green-200 rounded-full h-2">
                     <div className="bg-green-500 h-2 rounded-full" style={{width: `${(pedidosEnProceso / totalPedidos) * 100}%`}}></div>
@@ -357,13 +357,13 @@ export default function ChinaDashboard() {
 
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-purple-800">Enviados</CardTitle>
-                  <div className="p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
-                    <Truck className="h-4 w-4 text-white" />
+                  <CardTitle className="text-xs md:text-sm font-medium text-purple-800">Enviados</CardTitle>
+                  <div className="p-1 md:p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Truck className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-purple-900">{pedidosEnviados}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{pedidosEnviados}</div>
                   <p className="text-xs text-purple-700">En tránsito</p>
                   <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
                     <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(pedidosEnviados / totalPedidos) * 100}%`}}></div>
@@ -373,13 +373,13 @@ export default function ChinaDashboard() {
 
               <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-orange-800">Calidad</CardTitle>
-                  <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
-                    <Star className="h-4 w-4 text-white" />
+                  <CardTitle className="text-xs md:text-sm font-medium text-orange-800">Calidad</CardTitle>
+                  <div className="p-1 md:p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Star className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-orange-900">{(promedioReputacion*100)/5}%</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{(promedioReputacion*100)/5}%</div>
                   <p className="text-xs text-orange-700">Score promedio</p>
                   <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
                     <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(promedioReputacion*100)/5}%`}}></div>
@@ -391,33 +391,33 @@ export default function ChinaDashboard() {
             {/* Acciones Rápidas */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-xl font-semibold">Acciones Rápidas</CardTitle>
-                <p className="text-sm text-slate-600">Accede rápidamente a las funciones más utilizadas</p>
+                <CardTitle className="text-lg md:text-xl font-semibold">Acciones Rápidas</CardTitle>
+                <p className="text-xs md:text-sm text-slate-600">Accede rápidamente a las funciones más utilizadas</p>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                   <Link href="/china/pedidos">
-                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
-                      <div className="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                        <Package className="h-8 w-8 text-blue-600" />
+                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
+                      <div className="p-2 md:p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                        <Package className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
                       </div>
-                      <span className="text-sm font-medium">Nuevo Pedido</span>
+                      <span className="text-xs md:text-sm font-medium">Nuevo Pedido</span>
                     </Button>
                   </Link>
                   <Link href="/china/pedidos">
-                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group w-full">
-                      <div className="p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
-                        <Clock className="h-8 w-8 text-green-600" />
+                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group w-full">
+                      <div className="p-2 md:p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                        <Clock className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
                       </div>
-                      <span className="text-sm font-medium">Procesar Pedido</span>
+                      <span className="text-xs md:text-sm font-medium">Procesar Pedido</span>
                     </Button>
                   </Link>
                   <Link href="/china/pedidos">
-                    <Button variant="outline" className="h-24 flex flex-col gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
-                      <div className="p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
-                        <Truck className="h-8 w-8 text-purple-600" />
+                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
+                      <div className="p-2 md:p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+                        <Truck className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
                       </div>
-                      <span className="text-sm font-medium">Preparar Envío</span>
+                      <span className="text-xs md:text-sm font-medium">Preparar Envío</span>
                     </Button>
                   </Link>
                 </div>
@@ -425,30 +425,30 @@ export default function ChinaDashboard() {
             </Card>
 
             {/* Pedidos Recientes y Información del Almacén */}
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 gap-4 md:gap-6">
               <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <CardTitle className="text-xl font-semibold">Pedidos Recientes</CardTitle>
-                  <p className="text-sm text-slate-600">Últimos pedidos procesados</p>
+                  <CardTitle className="text-lg md:text-xl font-semibold">Pedidos Recientes</CardTitle>
+                  <p className="text-xs md:text-sm text-slate-600">Últimos pedidos procesados</p>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {pedidosRecientes.length === 0 ? (
-                      <div className="text-center text-slate-500">No hay pedidos para mostrar</div>
-                    ) : (
-                      pedidosRecientes.map((order: any, idx: number) => (
-                        <div key={order.id} className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                              <Package className="h-4 w-4 text-blue-600" />
+                                  <CardContent>
+                    <div className="space-y-3 md:space-y-4">
+                      {pedidosRecientes.length === 0 ? (
+                        <div className="text-center text-slate-500 text-sm md:text-base">No hay pedidos para mostrar</div>
+                      ) : (
+                        pedidosRecientes.map((order: any, idx: number) => (
+                          <div key={order.id} className="flex flex-col md:flex-row md:items-center justify-between p-3 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 gap-3">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 bg-blue-100 rounded-lg">
+                                <Package className="h-4 w-4 text-blue-600" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-slate-900">{order.id}</p>
+                                <p className="text-xs text-slate-600">{order.productName}</p>
+                                <p className="text-xs text-slate-500">Cliente: {nombresClientesRecientes[idx]}</p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-sm font-medium text-slate-900">{order.id}</p>
-                              <p className="text-xs text-slate-600">{order.productName}</p>
-                              <p className="text-xs text-slate-500">Cliente: {nombresClientesRecientes[idx]}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2">
                             <Badge className={`border`}>
                               Estado: {order.state}
                             </Badge>

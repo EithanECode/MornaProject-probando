@@ -219,16 +219,16 @@ export default function VenezuelaDashboard() {
           <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative z-10">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
-                <div className="flex-1">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
                   <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
                   <p className="text-blue-100 text-sm md:text-base lg:text-lg">Panel de Control - Empleado Venezuela</p>
-                  <p className="text-blue-200 mt-2 text-xs md:text-sm lg:text-base">Gestiona pedidos, soporte y tracking desde un solo lugar</p>
+                  <p className="text-blue-200 mt-2 text-xs md:text-sm">Gestiona pedidos, soporte y tracking desde un solo lugar</p>
                 </div>
-                <div className="flex items-center justify-center md:justify-end">
+                <div className="flex md:hidden lg:flex items-center space-x-4 md:space-x-6">
                   <div className="text-center">
                     <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{pedidosPendientes + pedidosTracking}</div>
-                    <p className="text-blue-100 text-xs md:text-sm lg:text-base">Tareas Pendientes</p>
+                    <p className="text-blue-100 text-xs md:text-sm">Tareas Pendientes</p>
                   </div>
                 </div>
               </div>
@@ -238,19 +238,19 @@ export default function VenezuelaDashboard() {
           {/* Dashboard Principal */}
           <div className="space-y-6 md:space-y-6 lg:space-y-8">
             {/* Estadísticas Principales */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs md:text-sm font-medium text-blue-800">Pedidos Pendientes</CardTitle>
-                  <div className="p-1.5 md:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <div className="p-1 md:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Package className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{pedidosPendientes}</div>
                   <p className="text-xs text-blue-700">Esperando revisión</p>
-                  <div className="mt-2 w-full bg-blue-200 rounded-full h-1.5 md:h-2">
-                    <div className="bg-blue-500 h-1.5 md:h-2 rounded-full" style={{width: `${(pedidosPendientes / Math.max(totalPedidos, 1)) * 100}%`}}></div>
+                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / Math.max(totalPedidos, 1)) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -258,15 +258,15 @@ export default function VenezuelaDashboard() {
               <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs md:text-sm font-medium text-green-800">Chats Activos</CardTitle>
-                  <div className="p-1.5 md:p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <div className="p-1 md:p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
                     <MessageSquare className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{stats.activeChats}</div>
                   <p className="text-xs text-green-700">Clientes en línea</p>
-                  <div className="mt-2 w-full bg-green-200 rounded-full h-1.5 md:h-2">
-                    <div className="bg-green-500 h-1.5 md:h-2 rounded-full" style={{width: `${(stats.activeChats / 5) * 100}%`}}></div>
+                  <div className="mt-2 w-full bg-green-200 rounded-full h-2">
+                    <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.activeChats / 5) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -274,15 +274,15 @@ export default function VenezuelaDashboard() {
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs md:text-sm font-medium text-purple-800">Tracking Activo</CardTitle>
-                  <div className="p-1.5 md:p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <div className="p-1 md:p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
                     <MapPin className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{pedidosTracking}</div>
                   <p className="text-xs text-purple-700">Pendientes</p>
-                  <div className="mt-2 w-full bg-purple-200 rounded-full h-1.5 md:h-2">
-                    <div className="bg-purple-500 h-1.5 md:h-2 rounded-full" style={{width: `${(pedidosTracking / Math.max(totalPedidos, 1)) * 100}%`}}></div>
+                  <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
+                    <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(pedidosTracking / Math.max(totalPedidos, 1)) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -290,14 +290,14 @@ export default function VenezuelaDashboard() {
               <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs md:text-sm font-medium text-orange-800">Satisfacción</CardTitle>
-                  <div className="p-1.5 md:p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <div className="p-1 md:p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Star className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{promedioReputacion.toFixed(1)}/5</div>
-                  <div className="mt-2 w-full bg-orange-200 rounded-full h-1.5 md:h-2">
-                    <div className="bg-orange-500 h-1.5 md:h-2 rounded-full" style={{width: `${(promedioReputacion / 5) * 100}%`}}></div>
+                  <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
+                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(promedioReputacion / 5) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
