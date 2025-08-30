@@ -35,6 +35,7 @@ const Reportes = () => {
   const [selectedMonth, setSelectedMonth] = useState('2024-08');
   const [selectedEmployee, setSelectedEmployee] = useState('todos');
   const [modalOpen, setModalOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   type ReporteMensual = {
     id: number;
     mes: string;
@@ -252,7 +253,17 @@ const Reportes = () => {
 
   const abrirModal = (reporte: Reporte) => {
     setSelectedReport(reporte);
+    setIsClosing(false);
     setModalOpen(true);
+  };
+
+  const cerrarModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setModalOpen(false);
+      setIsClosing(false);
+      setSelectedReport(null);
+    }, 300); // Duración de la animación
   };
 
   const exportarPDF = (reporte: Reporte) => {
@@ -563,15 +574,28 @@ const Reportes = () => {
   const renderModal = () => {
     if (!modalOpen || !selectedReport) return null;
 
+    const handleBackdropClick = (e: React.MouseEvent) => {
+      if (e.target === e.currentTarget) {
+        cerrarModal();
+      }
+    };
+
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className={`rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto ${theme === 'dark' ? 'bg-zinc-900' : 'bg-white'}`}>
+      <div 
+        className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 transition-all duration-300 ${
+          isClosing ? 'animate-out fade-out' : 'animate-in fade-in'
+        }`}
+        onClick={handleBackdropClick}
+      >
+        <div className={`rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ${
+          isClosing ? 'animate-out zoom-out-95' : 'animate-in zoom-in-95'
+        } ${theme === 'dark' ? 'bg-zinc-900' : 'bg-white'}`}>
           <div className="sticky top-0 bg-inherit border-b p-4 flex justify-between items-center">
             <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Detalles del Reporte
             </h3>
             <button 
-              onClick={() => setModalOpen(false)}
+              onClick={cerrarModal}
               className="text-gray-500 hover:text-gray-700"
             >
               <X size={24} />
