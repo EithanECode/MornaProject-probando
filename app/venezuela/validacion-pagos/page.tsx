@@ -5,8 +5,10 @@ export const dynamic = 'force-dynamic';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTheme } from 'next-themes';
+import { useToast } from '@/hooks/use-toast';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
+import { Toaster } from '@/components/ui/toaster';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 // XLSX se importará dinámicamente para evitar errores de SSR
 import { 
@@ -30,7 +32,8 @@ import {
   MapPin,
   TrendingUp,
   Bell,
-  Menu
+  Menu,
+  RotateCcw
 } from 'lucide-react';
 
 // ================================
@@ -505,6 +508,8 @@ const ConfirmationDialog: React.FC<{
 // COMPONENTE PRINCIPAL
 // ================================
 const PaymentValidationDashboard: React.FC = () => {
+  const { theme } = useTheme();
+  const { toast } = useToast();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [payments, setPayments] = useState<Payment[]>(mockPayments);
@@ -513,7 +518,11 @@ const PaymentValidationDashboard: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<'todos' | 'pendientes'>('todos');
   const [rejectionConfirmation, setRejectionConfirmation] = useState<{ isOpen: boolean; paymentId: string | null }>({ isOpen: false, paymentId: null });
   const [detailsModal, setDetailsModal] = useState<{ isOpen: boolean; payment: Payment | null }>({ isOpen: false, payment: null });
-  const { theme } = useTheme();
+  const [lastAction, setLastAction] = useState<{
+    type: 'approve' | 'reject';
+    paymentId: string;
+    previousStatus: string;
+  } | null>(null);
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
@@ -556,19 +565,93 @@ const PaymentValidationDashboard: React.FC = () => {
     return filtered;
   }, [payments, searchTerm, filterStatus, selectedTab]);
 
+  // Función para deshacer la última acción
+  const handleUndo = () => {
+    if (lastAction) {
+      setPayments(prev => prev.map(p => 
+        p.id === lastAction.paymentId ? { ...p, estado: lastAction.previousStatus as 'completado' | 'pendiente' | 'rechazado' } : p
+      ));
+      setLastAction(null);
+      toast({
+        title: "Acción deshecha",
+        description: `El pago ha vuelto a su estado anterior.`,
+        variant: "default",
+        duration: 3000,
+      });
+    }
+  };
+
   // Manejar aprobación
   const handleApprove = (id: string) => {
-    setPayments(prev => prev.map(p => 
-      p.id === id ? { ...p, estado: 'completado' as const } : p
-    ));
+    const payment = payments.find(p => p.id === id);
+    if (payment) {
+      setLastAction({
+        type: 'approve',
+        paymentId: id,
+        previousStatus: payment.estado
+      });
+      
+      setPayments(prev => prev.map(p => 
+        p.id === id ? { ...p, estado: 'completado' as const } : p
+      ));
+
+      toast({
+        title: "Pago aprobado",
+        description: `El pago ${id} ha sido aprobado exitosamente.`,
+        variant: "default",
+        duration: 3000,
+        action: (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleUndo();
+            }}
+            className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+          >
+            <RotateCcw size={14} />
+            Deshacer
+          </button>
+        ),
+      });
+    }
   };
 
   // Manejar rechazo
   const handleReject = (id: string) => {
-    setPayments(prev => prev.map(p => 
-      p.id === id ? { ...p, estado: 'rechazado' as const } : p
-    ));
-    setRejectionConfirmation({ isOpen: false, paymentId: null });
+    const payment = payments.find(p => p.id === id);
+    if (payment) {
+      setLastAction({
+        type: 'reject',
+        paymentId: id,
+        previousStatus: payment.estado
+      });
+      
+      setPayments(prev => prev.map(p => 
+        p.id === id ? { ...p, estado: 'rechazado' as const } : p
+      ));
+      setRejectionConfirmation({ isOpen: false, paymentId: null });
+
+      toast({
+        title: "Pago rechazado",
+        description: `El pago ${id} ha sido rechazado.`,
+        variant: "default",
+        duration: 3000,
+        action: (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleUndo();
+            }}
+            className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+          >
+            <RotateCcw size={14} />
+            Deshacer
+          </button>
+        ),
+      });
+    }
   };
 
   const openRejectionConfirmation = (id: string) => {
@@ -904,6 +987,7 @@ const PaymentValidationDashboard: React.FC = () => {
         </div>
       </main>
     </div>
+    <Toaster />
     </>
   );
 };
