@@ -7,6 +7,7 @@ import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import {
@@ -113,6 +114,7 @@ export default function PedidosChina() {
   const [modalCotizar, setModalCotizar] = useState<{open: boolean, pedido?: Pedido, precioCotizacion?: number}>({open: false, precioCotizacion: 0});
   const [modalDetalle, setModalDetalle] = useState<{open: boolean, pedido?: Pedido}>({open: false});
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Estados para animaciones de salida
@@ -239,6 +241,8 @@ export default function PedidosChina() {
       <Sidebar
         isExpanded={sidebarExpanded}
         setIsExpanded={setSidebarExpanded}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onMobileMenuClose={() => setIsMobileMenuOpen(false)}
         userRole="china"
       />
       
@@ -247,103 +251,43 @@ export default function PedidosChina() {
       }`}>
         <Header 
           notifications={stats.pendientes}
-          onMenuToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title="Gestión de Pedidos"
           subtitle="Administra y cotiza pedidos de clientes"
         />
         
-        <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-8">
-          {/* Header del Dashboard */}
-          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
-            <div className="absolute inset-0 bg-black/10"></div>
-            <div className="relative z-10">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">Gestión de Pedidos</h2>
-                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">Panel de Control - Empleado China</p>
-                  <p className="text-blue-200 mt-2 text-xs md:text-sm">Administra pedidos, cotizaciones y seguimiento</p>
+        <div className="p-4 md:p-5 lg:p-6 space-y-6">
+          {/* Header de la página */}
+          <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-xl p-4 md:p-6 text-white">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold">Pedidos</h1>
+                <p className="text-orange-100 mt-1 text-sm md:text-base">Administra y cotiza pedidos de clientes</p>
+              </div>
+              <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
+                <div className="text-center">
+                  <p className="text-xl md:text-2xl font-bold">{stats.pendientes}</p>
+                  <p className="text-xs md:text-sm text-orange-100">PENDIENTES</p>
                 </div>
-                <div className="flex md:hidden lg:flex items-center space-x-4 md:space-x-6">
-                  <div className="text-center">
-                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{stats.pendientes}</div>
-                    <p className="text-blue-100 text-xs md:text-sm">Pendientes</p>
-                  </div>
-                  <div className="w-px h-12 md:h-16 bg-white/20"></div>
-                  <div className="text-center">
-                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{stats.totalCotizado.toLocaleString()}</div>
-                    <p className="text-blue-100 text-xs md:text-sm">Total Cotizado</p>
-                  </div>
+                <div className="text-center">
+                  <p className="text-xl md:text-2xl font-bold">{stats.cotizados}</p>
+                  <p className="text-xs md:text-sm text-orange-100">COTIZADOS</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xl md:text-2xl font-bold">{stats.procesando}</p>
+                  <p className="text-xs md:text-sm text-orange-100">PROCESANDO</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xl md:text-2xl font-bold">{stats.enviados}</p>
+                  <p className="text-xs md:text-sm text-orange-100">ENVIADOS</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Estadísticas Principales */}
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs md:text-sm font-medium text-blue-800">Pendientes</CardTitle>
-                <div className="p-1 md:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
-                  <Clock className="h-3 w-3 md:h-4 md:w-4 text-white" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.pendientes}</div>
-                <p className="text-xs text-blue-700">Esperando cotización</p>
-                <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.pendientes / pedidos.length) * 100}%`}}></div>
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs md:text-sm font-medium text-green-800">Cotizados</CardTitle>
-                <div className="p-1 md:p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
-                  <CheckCircle className="h-3 w-3 md:h-4 md:w-4 text-white" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{stats.cotizados}</div>
-                <p className="text-xs text-green-700">Precios enviados</p>
-                <div className="mt-2 w-full bg-green-200 rounded-full h-2">
-                  <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.cotizados / pedidos.length) * 100}%`}}></div>
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs md:text-sm font-medium text-purple-800">Procesando</CardTitle>
-                <div className="p-1 md:p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
-                  <Truck className="h-3 w-3 md:h-4 md:w-4 text-white" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{stats.procesando}</div>
-                <p className="text-xs text-purple-700">En producción</p>
-                <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
-                  <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(stats.procesando / pedidos.length) * 100}%`}}></div>
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs md:text-sm font-medium text-orange-800">Total Cotizado</CardTitle>
-                <div className="p-1 md:p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
-                  <DollarSign className="h-3 w-3 md:h-4 md:w-4 text-white" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">${(stats.totalCotizado / 1000).toFixed(1)}K</div>
-                <p className="text-xs text-orange-700">Valor total</p>
-                <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
-                  <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(stats.totalCotizado / 10000) * 100}%`}}></div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
 
           {/* Filtros y Búsqueda */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">

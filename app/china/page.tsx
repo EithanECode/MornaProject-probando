@@ -98,6 +98,7 @@ export default function ChinaDashboard() {
   // Obtener el id del empleado de China autenticado
   const { chinaId } = useChinaContext();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
   
@@ -285,6 +286,8 @@ export default function ChinaDashboard() {
       <Sidebar
         isExpanded={sidebarExpanded}
         setIsExpanded={setSidebarExpanded}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onMobileMenuClose={() => setIsMobileMenuOpen(false)}
         userRole="china"
       />
       
@@ -293,7 +296,7 @@ export default function ChinaDashboard() {
       }`}>
         <Header 
           notifications={stats.pendingOrders + stats.processingOrders}
-          onMenuToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title="Panel China"
           subtitle="Gestión de pedidos, procesamiento y logística"
         />
