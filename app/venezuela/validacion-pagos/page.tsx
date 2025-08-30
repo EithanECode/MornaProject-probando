@@ -222,22 +222,22 @@ const StatsCards: React.FC<{ stats: PaymentStats }> = ({ stats }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
       {cardsData.map((card, index) => (
         <div 
           key={index}
-          className={`${card.bgColor} text-white p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer`}
+          className={`${card.bgColor} text-white p-4 md:p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer`}
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className={`${card.textColor} text-sm font-medium mb-1`}>
+              <p className={`${card.textColor} text-xs md:text-sm font-medium mb-1`}>
                 {card.title}
               </p>
-              <p className="text-3xl font-bold">
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold">
                 {card.value}
               </p>
             </div>
-            <div className="bg-white bg-opacity-20 p-3 rounded-lg">
+            <div className="bg-white bg-opacity-20 p-2 md:p-3 rounded-lg">
               <AnimatedIcon animation="float">
                 {card.icon}
               </AnimatedIcon>
@@ -327,6 +327,100 @@ const PaymentDetailsModal: React.FC<{
             <p><span className="font-medium">Descripción:</span> {payment.descripcion}</p>
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// ================================
+// COMPONENTE: CARD DE PAGO PARA MOBILE
+// ================================
+const PaymentCard: React.FC<{ payment: Payment; onApprove: (id: string) => void; onReject: (id: string) => void; onViewDetails: (payment: Payment) => void }> = ({ 
+  payment, 
+  onApprove, 
+  onReject, 
+  onViewDetails 
+}) => {
+  const formatCurrency = (amount: number) => {
+    return `$${amount.toLocaleString('es-ES', { 
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}`;
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 space-y-3">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center text-xs font-semibold">
+            {payment.id.split('-')[1]}
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-900 text-sm">{payment.usuario}</h3>
+            <p className="text-xs text-gray-500">{payment.idProducto}</p>
+          </div>
+        </div>
+        <StatusBadge status={payment.estado} />
+      </div>
+
+      {/* Detalles */}
+      <div className="space-y-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-gray-600">Fecha:</span>
+          <span className="font-medium">{formatDate(payment.fecha)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600">Monto:</span>
+          <span className="font-semibold text-green-600">{formatCurrency(payment.monto)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600">Método:</span>
+          <span className="font-medium">{payment.metodo}</span>
+        </div>
+        {payment.destino && (
+          <div className="flex justify-between">
+            <span className="text-gray-600">Destino:</span>
+            <span className="font-medium">{payment.destino}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Acciones */}
+      <div className="flex gap-2 pt-2">
+        <button
+          onClick={() => onViewDetails(payment)}
+          className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
+        >
+          <Eye className="w-4 h-4 inline mr-1" />
+          Ver
+        </button>
+        {payment.estado === 'pendiente' && (
+          <>
+            <button
+              onClick={() => onApprove(payment.id)}
+              className="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-green-700 transition-colors"
+            >
+              <Check className="w-4 h-4 inline mr-1" />
+              Aprobar
+            </button>
+            <button
+              onClick={() => onReject(payment.id)}
+              className="flex-1 bg-red-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-700 transition-colors"
+            >
+              <X className="w-4 h-4 inline mr-1" />
+              Rechazar
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
@@ -526,14 +620,16 @@ const PaymentValidationDashboard: React.FC = () => {
     onMobileMenuClose={() => setIsMobileMenuOpen(false)}
     userRole="venezuela" 
   />
-      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
+      <main className={`flex-1 transition-all duration-300 ${
+        sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
+      } w-full`}>
         <Header 
           notifications={3}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title="Validación de Pagos"
           subtitle="Administra y da seguimiento a todos los pedidos"
         />
-        <div className="p-6">
+        <div className="p-4 md:p-5 lg:p-6">
           
 
           {/* ================================ */}
@@ -544,9 +640,9 @@ const PaymentValidationDashboard: React.FC = () => {
           {/* ================================ */}
           {/* PESTAÑAS */}
           {/* ================================ */}
-          <div className="mb-6">
+          <div className="mb-4 md:mb-6">
             <div className={mounted && theme === 'dark' ? 'border-b border-slate-700' : 'border-b border-gray-200'}>
-              <nav className="-mb-px flex space-x-8">
+              <nav className="-mb-px flex space-x-4 md:space-x-8">
                 {[
                   { id: 'todos', label: 'Lista de Pedidos', count: payments.length },
                   { id: 'pendientes', label: 'Pagos Pendientes', count: stats.pendientes },
@@ -554,7 +650,7 @@ const PaymentValidationDashboard: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setSelectedTab(tab.id as any)}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 flex items-center gap-2 ${
+                    className={`py-3 md:py-4 px-1 border-b-2 font-medium text-xs md:text-sm transition-all duration-200 flex items-center gap-1 md:gap-2 ${
                       selectedTab === tab.id
                         ? 'border-blue-500 text-blue-600'
                         : mounted && theme === 'dark'
@@ -562,8 +658,9 @@ const PaymentValidationDashboard: React.FC = () => {
                           : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                   >
-                    {tab.label}
-                    <span className={`px-2 py-1 rounded-full text-xs ${
+                    <span className="hidden sm:inline">{tab.label}</span>
+                    <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+                    <span className={`px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-xs ${
                       selectedTab === tab.id 
                         ? 'bg-blue-100 text-blue-600' 
                         : mounted && theme === 'dark'
@@ -581,9 +678,9 @@ const PaymentValidationDashboard: React.FC = () => {
           {/* ================================ */}
           {/* FILTROS Y BÚSQUEDA */}
           {/* ================================ */}
-          <div className={mounted && theme === 'dark' ? 'bg-slate-800 rounded-xl shadow-sm p-6 mb-6' : 'bg-white rounded-xl shadow-sm p-6 mb-6'}>
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-              <div className="relative flex-1 md:w-80 group">
+          <div className={mounted && theme === 'dark' ? 'bg-slate-800 rounded-xl shadow-sm p-4 md:p-6 mb-4 md:mb-6' : 'bg-white rounded-xl shadow-sm p-4 md:p-6 mb-4 md:mb-6'}>
+            <div className="flex flex-col gap-4">
+              <div className="relative group">
                 <div className="absolute left-3 top-3 z-10">
                   <AnimatedIcon animation="pulse">
                     <Search size={20} className="text-gray-400 group-focus-within:text-blue-500 transition-colors duration-200" />
@@ -597,12 +694,12 @@ const PaymentValidationDashboard: React.FC = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
                 <AnimatedIcon animation="shake">
                   <Filter size={20} className="text-gray-500" />
                 </AnimatedIcon>
                 <Select onValueChange={(value) => setFilterStatus(value)} defaultValue="todos">
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="flex-1 md:w-[180px]">
                     <SelectValue placeholder="Todos los estados" />
                   </SelectTrigger>
                   <SelectContent>
@@ -614,10 +711,11 @@ const PaymentValidationDashboard: React.FC = () => {
                 </Select>
                 <button
                   onClick={exportarGeneral}
-                  className="flex items-center gap-2 bg-[#202841] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
+                  className="flex items-center gap-2 bg-[#202841] text-white px-3 md:px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
                 >
-                  <Download size={20} />
-                  Exportar
+                  <Download size={18} className="md:w-5 md:h-5" />
+                  <span className="hidden sm:inline">Exportar</span>
+                  <span className="sm:hidden">Export</span>
                 </button>
               </div>
             </div>
@@ -626,21 +724,37 @@ const PaymentValidationDashboard: React.FC = () => {
           {/* ================================ */}
           {/* TABLA DE PAGOS */}
           {/* ================================ */}
+          
+          {/* Header de la tabla */}
           <div className={mounted && theme === 'dark' ? 'bg-slate-800 rounded-xl shadow-sm overflow-hidden' : 'bg-white rounded-xl shadow-sm overflow-hidden'}>
-            <div className={mounted && theme === 'dark' ? 'px-6 py-4 border-b border-slate-700 bg-gradient-to-r from-slate-900 to-slate-800' : 'px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white'}>
-              <h2 className={`text-xl font-semibold flex items-center gap-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            <div className={mounted && theme === 'dark' ? 'px-4 md:px-6 py-3 md:py-4 border-b border-slate-700 bg-gradient-to-r from-slate-900 to-slate-800' : 'px-4 md:px-6 py-3 md:py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white'}>
+              <h2 className={`text-lg md:text-xl font-semibold flex items-center gap-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 <AnimatedIcon animation="float">
-                  <Package size={24} className="text-blue-500" />
+                  <Package size={20} className="md:w-6 md:h-6 text-blue-500" />
                 </AnimatedIcon>
                 {selectedTab === 'pendientes' ? 'Pagos Pendientes de Aprobación' :
                  'Lista de Pedidos'}
               </h2>
-              <p className={mounted && theme === 'dark' ? 'text-slate-300 text-sm mt-1' : 'text-gray-600 text-sm mt-1'}>
+              <p className={mounted && theme === 'dark' ? 'text-slate-300 text-xs md:text-sm mt-1' : 'text-gray-600 text-xs md:text-sm mt-1'}>
                 {filteredPayments.length} pedidos encontrados
               </p>
             </div>
 
-            <div className="overflow-x-auto">
+            {/* Vista Mobile - Cards */}
+            <div className="block lg:hidden p-4 space-y-4">
+              {filteredPayments.map((payment) => (
+                <PaymentCard
+                  key={payment.id}
+                  payment={payment}
+                  onApprove={handleApprove}
+                  onReject={openRejectionConfirmation}
+                  onViewDetails={openDetailsModal}
+                />
+              ))}
+            </div>
+
+            {/* Vista Desktop - Tabla */}
+            <div className="hidden lg:block overflow-x-auto">
               <table className={`w-full table-fixed ${mounted && theme === 'dark' ? 'bg-slate-800' : ''}`}> 
                 <thead className={mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gray-50'}>
                   <tr>
@@ -739,18 +853,18 @@ const PaymentValidationDashboard: React.FC = () => {
             </div>
 
             {filteredPayments.length === 0 && (
-              <div className="text-center py-16">
+              <div className="text-center py-8 md:py-16">
                 <AnimatedIcon animation="bounce">
-                  <Package size={48} className={mounted && theme === 'dark' ? 'mx-auto text-slate-600 mb-4' : 'mx-auto text-gray-400 mb-4'} />
+                  <Package size={32} className="md:w-12 md:h-12 mx-auto text-gray-400 mb-4" />
                 </AnimatedIcon>
-                <p className={mounted && theme === 'dark' ? 'text-slate-400 text-lg font-medium' : 'text-gray-500 text-lg font-medium'}>No se encontraron pagos</p>
-                <p className={mounted && theme === 'dark' ? 'text-slate-500 text-sm mt-2' : 'text-gray-400 text-sm mt-2'}>Intenta ajustar los filtros o términos de búsqueda</p>
+                <p className="text-gray-500 text-base md:text-lg font-medium">No se encontraron pagos</p>
+                <p className="text-gray-400 text-sm mt-2">Intenta ajustar los filtros o términos de búsqueda</p>
               </div>
             )}
           </div>
 
           {/* Footer */}
-          <div className={`mt-6 text-center text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-gray-500'}`}>
+          <div className={`mt-4 md:mt-6 text-center text-xs md:text-sm text-gray-500`}>
             Mostrando {filteredPayments.length} de {payments.length} transacciones
           </div>
         </div>
