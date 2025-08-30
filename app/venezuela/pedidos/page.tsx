@@ -117,7 +117,7 @@ export default function VenezuelaPedidosPage() {
         <Header 
           notifications={0}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Revisar Pedidos"
+          title="Pedidos"
           subtitle="Revisa y envía pedidos a China para cotización"
         />
         
@@ -126,7 +126,7 @@ export default function VenezuelaPedidosPage() {
           <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-xl p-4 md:p-6 text-white">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
               <div>
-                <h1 className="text-xl md:text-2xl font-bold">Revisar Pedidos</h1>
+                <h1 className="text-xl md:text-2xl font-bold">Pedidos</h1>
                 <p className="text-orange-100 mt-1 text-sm md:text-base">Revisa y envía pedidos a China para cotización</p>
               </div>
               <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">

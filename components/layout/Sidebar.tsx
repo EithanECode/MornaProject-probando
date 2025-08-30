@@ -117,7 +117,7 @@ const VENEZUELA_MENU_ITEMS = [
   },
   {
     id: 'pedidos',
-    label: 'Revisar Pedidos',
+    label: 'Pedidos',
     icon: Package,
     badge: 5,
     color: 'text-orange-500',
