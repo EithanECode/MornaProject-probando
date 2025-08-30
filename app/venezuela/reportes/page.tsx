@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { getMetricasPorMes, getMetricasSatisfaccionCliente, getReportesSatisfaccionPorMes, getMetricasPorPedido, MetricasPorPedido } from './backend';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
+import Header from '@/components/layout/Header';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Calendar, Users, Package, Download, Filter, TrendingUp, Clock, CheckCircle, Eye, X, Star, FileText, ShoppingCart, Heart } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -16,6 +17,7 @@ const Reportes = () => {
   // ...ya existe una declaración de ReporteSatisfaccion, eliminada duplicidad
   const [reportesSatisfaccion, setReportesSatisfaccion] = useState<ReporteSatisfaccion[]>([]);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   type MetricasMes = {
     id: number;
     mes: string;
@@ -673,146 +675,25 @@ const Reportes = () => {
       `min-h-screen flex overflow-x-hidden transition-colors duration-300 ` +
       (theme === 'dark' ? 'bg-[#18181b]' : 'bg-gray-50')
     }>
-      <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="venezuela" />
-      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
-        {/* Header */}
-        <header className={
-          `sticky top-0 z-40 border-b border-slate-200 backdrop-blur-sm transition-colors duration-300 ` +
-          (theme === 'dark' ? 'bg-slate-900/80' : 'bg-white/80')
-        }>
-          <div className="px-6 py-4 flex items-center justify-between">
-            <div>
-              <h1 className={
-                `text-2xl font-bold ` +
-                (theme === 'dark' ? 'text-white' : 'text-slate-900')
-              }>Reportes</h1>
-              <p className={theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>Analiza el rendimiento y métricas de tu operación</p>
-            </div>
-            <button 
-              onClick={() => {
-                if (activeFilter === 'mes') {
-                  exportarGeneral();
-                } else if (activeFilter === 'pedido') {
-                  // Exportar PDF con los datos agregados de pedidos
-                  exportarPDF({
-                    id: 0,
-                    numeroPedido: '',
-                    cliente: '',
-                    fechaPedido: '',
-                    estado: '',
-                    valor: 0,
-                    tiempoEntrega: '',
-                    satisfaccion: 0,
-                    productName: ''
-                  });
-                } else if (activeFilter === 'satisfaccion' && reportesSatisfaccion.length > 0) {
-                  // PDF profesional para satisfacción cliente en nueva pestaña
-                  const reporte = reportesSatisfaccion[0];
-                  (async () => {
-                    const { jsPDF } = await import('jspdf');
-                    const autoTable = (await import('jspdf-autotable')).default;
-                    const doc = new jsPDF();
-                    const pageWidth = doc.internal.pageSize.getWidth();
-                    const pageHeight = doc.internal.pageSize.height;
-                    const margin = 15;
-                    const colors = {
-                      primary: [22, 120, 187],
-                      secondary: [44, 62, 80],
-                      light: [245, 248, 255],
-                      border: [180, 200, 220],
-                      text: [33, 37, 41]
-                    };
-                    // Tabla de satisfacción
-                    const tableData = [
-                      ['Promedio General', `${reporte.promedioGeneral}/5`],
-                      ['Total Reseñas', `${reporte.totalReseñas}`],
-                      ['5 Estrellas', `${metricasSatisfaccion.cincoEstrellas}`],
-                      ['Satisfacción', `${metricasSatisfaccion.satisfechos}%`]
-                    ];
-                    doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-                    doc.rect(0, 0, pageWidth, 35, 'F');
-                    doc.setFontSize(12);
-                    doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFillColor(255, 255, 255);
-                    doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
-                    doc.text('PITA', margin + 10, 20, { align: 'center' });
-                    doc.setFontSize(24);
-                    doc.setTextColor(255, 255, 255);
-                    doc.text('SATISFACCIÓN CLIENTE', pageWidth / 2, 22, { align: 'center' });
-                    let currentY = 50;
-                    autoTable(doc, {
-                      head: [['Campo', 'Valor']],
-                      body: tableData,
-                      startY: currentY,
-                      margin: { left: margin, right: margin },
-                      theme: 'grid',
-                      headStyles: {
-                        fillColor: [22, 120, 187],
-                        textColor: [255, 255, 255],
-                        fontStyle: 'bold',
-                        fontSize: 12,
-                        halign: 'center',
-                        cellPadding: 3
-                      },
-                      bodyStyles: {
-                        fontSize: 10,
-                        cellPadding: 3,
-                        textColor: [33, 37, 41]
-                      },
-                      alternateRowStyles: {
-                        fillColor: [245, 248, 255]
-                      },
-                      columnStyles: {
-                        0: { cellWidth: 60, fontStyle: 'bold', textColor: [44, 62, 80] },
-                        1: { cellWidth: pageWidth - (margin * 2) - 60 }
-                      }
-                    });
-                    // Gráfico de distribución de satisfacción debajo de la tabla
-                    const chartElement = document.querySelector('[data-export="satisfaccion"]');
-                    if (chartElement) {
-                      const html2canvas = (await import('html2canvas')).default;
-                      const canvas = await html2canvas(chartElement as HTMLElement, { backgroundColor: null, scale: 2 });
-                      const imgData = canvas.toDataURL('image/png');
-                      const imgWidth = pageWidth * 0.65;
-                      const imgHeight = imgWidth * 0.5;
-                      // Ubicar el gráfico debajo de la tabla
-                      const afterTableY = (doc as any).lastAutoTable ? (doc as any).lastAutoTable.finalY + 40 : currentY + 90;
-                      doc.setFontSize(14);
-                      doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-                      const tituloY = afterTableY - 20;
-                      doc.text('Distribución de Satisfacción', pageWidth / 2, tituloY, { align: 'center' });
-                      const leftMargin = (pageWidth - imgWidth) / 2;
-                      doc.addImage(imgData, 'PNG', leftMargin, afterTableY, imgWidth, imgHeight);
-                    }
-                    // Footer
-                    const footerY = pageHeight - 25;
-                    doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
-                    doc.setLineWidth(0.5);
-                    doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
-                    doc.setFontSize(9);
-                    doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-                    doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
-                    doc.setFontSize(8);
-                    doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-                    doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
-                    doc.setFontSize(7);
-                    doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-                    doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
-                    doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
-                    window.open(doc.output('bloburl'), '_blank');
-                  })();
-                }
-              }}
-              className="flex items-center gap-2 bg-[#202841] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
-            >
-              <Download size={20} />
-              Exportar
-            </button>
-          </div>
-        </header>
+      <Sidebar 
+        isExpanded={sidebarExpanded} 
+        setIsExpanded={setSidebarExpanded}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onMobileMenuClose={() => setIsMobileMenuOpen(false)}
+        userRole="venezuela" 
+      />
+      <main className={`flex-1 transition-all duration-300 ${
+        sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
+      } w-full`}>
+        <Header 
+          notifications={0}
+          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          title="Reportes"
+          subtitle="Analiza el rendimiento y métricas de tu operación"
+        />
 
-        <div className="p-6 flex flex-col gap-8">
+
+        <div className="p-4 md:p-5 lg:p-6 flex flex-col gap-6 md:gap-8">
           {/* Filtros */}
           <Card className={
             `rounded-lg shadow-lg border-0 backdrop-blur-sm p-0 mb-6 transition-colors duration-300 ` +
@@ -824,32 +705,140 @@ const Reportes = () => {
                 <CardTitle className={theme === 'dark' ? 'text-white' : 'text-black'}>Tipo de Reporte</CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="pt-0 pb-6">
-              <div className="flex flex-wrap gap-3">
-                {([
-                  { key: 'mes', label: 'Por Mes', icon: Calendar, color: 'bg-blue-500' },
-                  { key: 'pedido', label: 'Por Pedido', icon: ShoppingCart, color: 'bg-green-500' },
-                  { key: 'satisfaccion', label: 'Satisfacción Cliente', icon: Heart, color: 'bg-purple-500' }
-                ] as { key: 'mes' | 'pedido' | 'satisfaccion'; label: string; icon: any; color: string }[]).map(({ key, label, icon: Icon, color }) => (
-                      <button
-                        key={key}
-                        onClick={() => setActiveFilter(key)}
-                    className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all transform hover:scale-105 ${
-                          activeFilter === key
-                        ? `${color} text-white shadow-lg`
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
-                      >
-                    <Icon size={18} />
-                    <span>{label}</span>
-                      </button>
-                    ))}
+            <CardContent className="pt-0 pb-4 md:pb-6">
+              <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                <div className="flex flex-wrap gap-2 md:gap-3">
+                  {([
+                    { key: 'mes', label: 'Por Mes', icon: Calendar, color: 'bg-blue-500' },
+                    { key: 'pedido', label: 'Por Pedido', icon: ShoppingCart, color: 'bg-green-500' },
+                    { key: 'satisfaccion', label: 'Satisfacción Cliente', icon: Heart, color: 'bg-purple-500' }
+                  ] as { key: 'mes' | 'pedido' | 'satisfaccion'; label: string; icon: any; color: string }[]).map(({ key, label, icon: Icon, color }) => (
+                        <button
+                          key={key}
+                          onClick={() => setActiveFilter(key)}
+                      className={`flex items-center gap-2 px-3 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-all transform hover:scale-105 text-sm md:text-base ${
+                            activeFilter === key
+                          ? `${color} text-white shadow-lg`
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                          }`}
+                        >
+                      <Icon size={18} />
+                      <span>{label}</span>
+                        </button>
+                      ))}
+                </div>
+                <button 
+                  onClick={() => {
+                    if (activeFilter === 'mes') {
+                      exportarGeneral();
+                    } else if (activeFilter === 'pedido') {
+                      exportarPDF({
+                        id: 0,
+                        numeroPedido: '',
+                        cliente: '',
+                        fechaPedido: '',
+                        estado: '',
+                        valor: 0,
+                        tiempoEntrega: '',
+                        satisfaccion: 0,
+                        productName: ''
+                      });
+                    } else if (activeFilter === 'satisfaccion' && reportesSatisfaccion.length > 0) {
+                      const reporte = reportesSatisfaccion[0];
+                      (async () => {
+                        const { jsPDF } = await import('jspdf');
+                        const autoTable = (await import('jspdf-autotable')).default;
+                        const doc = new jsPDF();
+                        const pageWidth = doc.internal.pageSize.getWidth();
+                        const pageHeight = doc.internal.pageSize.height;
+                        const margin = 15;
+                        const colors = {
+                          primary: [22, 120, 187],
+                          secondary: [44, 62, 80],
+                          light: [245, 248, 255],
+                          border: [180, 200, 220],
+                          text: [33, 37, 41]
+                        };
+                        const tableData = [
+                          ['Promedio General', `${reporte.promedioGeneral}/5`],
+                          ['Total Reseñas', `${reporte.totalReseñas}`],
+                          ['5 Estrellas', `${metricasSatisfaccion.cincoEstrellas}`],
+                          ['Satisfacción', `${metricasSatisfaccion.satisfechos}%`]
+                        ];
+                        doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                        doc.rect(0, 0, pageWidth, 35, 'F');
+                        doc.setFontSize(12);
+                        doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFillColor(255, 255, 255);
+                        doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
+                        doc.text('PITA', margin + 10, 20, { align: 'center' });
+                        doc.setFontSize(24);
+                        doc.setTextColor(255, 255, 255);
+                        doc.text('SATISFACCIÓN CLIENTE', pageWidth / 2, 22, { align: 'center' });
+                        let currentY = 50;
+                        autoTable(doc, {
+                          head: [['Campo', 'Valor']],
+                          body: tableData,
+                          startY: currentY,
+                          margin: { left: margin, right: margin },
+                          theme: 'grid',
+                          headStyles: {
+                            fillColor: [22, 120, 187],
+                            textColor: [255, 255, 255],
+                            fontStyle: 'bold',
+                            fontSize: 12,
+                            halign: 'center',
+                            cellPadding: 3
+                          },
+                          bodyStyles: {
+                            fontSize: 10,
+                            cellPadding: 3,
+                            textColor: [33, 37, 41]
+                          },
+                          alternateRowStyles: {
+                            fillColor: [245, 248, 255]
+                          },
+                          columnStyles: {
+                            0: { cellWidth: 60, fontStyle: 'bold', textColor: [44, 62, 80] },
+                            1: { cellWidth: pageWidth - (margin * 2) - 60 }
+                          }
+                        });
+                        const chartElement = document.querySelector('[data-export="satisfaccion"]');
+                        if (chartElement) {
+                          const html2canvas = (await import('html2canvas')).default;
+                          const canvas = await html2canvas(chartElement as HTMLElement, { backgroundColor: null, scale: 2 });
+                          const imgData = canvas.toDataURL('image/png');
+                          const imgWidth = pageWidth * 0.65;
+                          const imgHeight = imgWidth * 0.5;
+                          const afterTableY = (doc as any).lastAutoTable ? (doc as any).lastAutoTable.finalY + 40 : currentY + 90;
+                          doc.setFontSize(14);
+                          doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                          const tituloY = afterTableY - 20;
+                          doc.text('Distribución de Satisfacción', pageWidth / 2, tituloY, { align: 'center' });
+                          const leftMargin = (pageWidth - imgWidth) / 2;
+                          doc.addImage(imgData, 'PNG', leftMargin, afterTableY, imgWidth, imgHeight);
+                        }
+                        const footerY = pageHeight - 25;
+                        doc.setFontSize(10);
+                        doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+                        doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+                        doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+                        window.open(doc.output('bloburl'), '_blank');
+                      })();
+                    }
+                  }}
+                  className="flex items-center gap-2 bg-[#202841] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
+                >
+                  <Download size={20} />
+                  Exportar
+                </button>
               </div>
             </CardContent>
           </Card>
 
           {/* Gráficos */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
             <Card
               className={
                 `rounded-lg shadow-lg border-0 backdrop-blur-sm p-0 transition-colors duration-300 ` +
@@ -863,7 +852,7 @@ const Reportes = () => {
                 {/* Título eliminado para evitar duplicado en PDF */}
               </CardHeader>
               <CardContent className="pt-0">
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={250} className="md:h-[300px]">
                   {activeFilter === 'pedido' ? (
                     <BarChart data={datosGraficos.estadosPorMes}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -913,7 +902,7 @@ const Reportes = () => {
                 <CardTitle className={theme === 'dark' ? 'text-white' : 'text-black'}>Métricas Clave</CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="grid grid-cols-2 gap-4 h-[300px] content-center">
+                <div className="grid grid-cols-2 gap-3 md:gap-4 h-[250px] md:h-[300px] content-center">
                   {activeFilter === 'mes' && metricasMeses.length > 0 && (() => {
                     const totalPedidos = metricasMeses.reduce((acc, mes) => acc + mes.totalPedidos, 0);
                     const completados = metricasMeses.reduce((acc, mes) => acc + mes.completados, 0);
@@ -928,9 +917,9 @@ const Reportes = () => {
                       { label: 'Satisfacción', value: `${satisfaccionPromedio}/5`, icon: Star, color: 'text-yellow-600' },
                       { label: 'Ingresos', value: `$${ingresos}`, icon: TrendingUp, color: 'text-purple-600' }
                     ].map(({ label, value, icon: Icon, color }, index) => (
-                      <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <Icon className={`mx-auto mb-2 ${color}`} size={24} />
-                        <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
+                      <div key={index} className="text-center p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <Icon className={`mx-auto mb-1 md:mb-2 ${color}`} size={20} className="md:w-6 md:h-6" />
+                        <p className="text-base md:text-lg font-bold text-gray-900 dark:text-white">{value}</p>
                         <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>
                       </div>
                     ));
@@ -944,9 +933,9 @@ const Reportes = () => {
                     { label: '5 Estrellas', value: metricasSatisfaccion.cincoEstrellas, icon: Heart, color: 'text-green-600' },
                     { label: 'Satisfacción', value: `${metricasSatisfaccion.satisfechos}%`, icon: CheckCircle, color: 'text-purple-600' }
                   ].map(({ label, value, icon: Icon, color }, index) => (
-                    <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <Icon className={`mx-auto mb-2 ${color}`} size={24} />
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
+                    <div key={index} className="text-center p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <Icon className={`mx-auto mb-1 md:mb-2 ${color}`} size={20} className="md:w-6 md:h-6" />
+                      <p className="text-base md:text-lg font-bold text-gray-900 dark:text-white">{value}</p>
                       <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>
                     </div>
                   ))}
@@ -969,85 +958,88 @@ const Reportes = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="space-y-3">
+              <div className="space-y-2 md:space-y-3">
                 {activeFilter === 'mes' && obtenerDatosReporte().length > 0 && obtenerDatosReporte().map((reporte: any) => (
-                  <div key={reporte.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    <div className="flex items-center gap-4">
+                  <div key={reporte.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors gap-3">
+                    <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                        <Calendar className="text-blue-600" size={20} />
+                        <Calendar className="text-blue-600" size={18} className="md:w-5 md:h-5" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-900 dark:text-white">{reporte.mes}</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <h4 className="font-medium text-gray-900 dark:text-white text-sm md:text-base">{reporte.mes}</h4>
+                        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
                           {`${reporte.totalPedidos} pedidos • ${reporte.satisfaccion}/5 ⭐ • $${reporte.ingresos}`}
                         </p>
                       </div>
                     </div>
                     <button
                       onClick={() => abrirModal(reporte)}
-                      className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                      className="flex items-center gap-2 bg-blue-600 text-white px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs md:text-sm"
                     >
-                      <Eye size={16} />
-                      Ver Detalles
+                      <Eye size={14} className="md:w-4 md:h-4" />
+                      <span className="hidden sm:inline">Ver Detalles</span>
+                      <span className="sm:hidden">Ver</span>
                     </button>
                   </div>
                 ))}
                 {activeFilter === 'mes' && obtenerDatosReporte().length === 0 && (
-                  <div className="text-center text-gray-500 py-8">No hay reportes mensuales registrados.</div>
+                  <div className="text-center text-gray-500 py-6 md:py-8 text-sm md:text-base">No hay reportes mensuales registrados.</div>
                 )}
 
                 {activeFilter === 'satisfaccion' && obtenerDatosReporte().length > 0 && obtenerDatosReporte().map((reporte: any) => (
-                  <div key={reporte.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    <div className="flex items-center gap-4">
+                  <div key={reporte.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors gap-3">
+                    <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                        <Heart className="text-purple-600" size={20} />
+                        <Heart className="text-purple-600" size={18} className="md:w-5 md:h-5" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-900 dark:text-white">{reporte.periodo}</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <h4 className="font-medium text-gray-900 dark:text-white text-sm md:text-base">{reporte.periodo}</h4>
+                        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
                           {`${reporte.promedioGeneral}/5 ⭐ • ${reporte.totalReseñas} reseñas`}
                         </p>
                       </div>
                     </div>
                     <button
                       onClick={() => abrirModal(reporte)}
-                      className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                      className="flex items-center gap-2 bg-blue-600 text-white px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs md:text-sm"
                     >
-                      <Eye size={16} />
-                      Ver Detalles
+                      <Eye size={14} className="md:w-4 md:h-4" />
+                      <span className="hidden sm:inline">Ver Detalles</span>
+                      <span className="sm:hidden">Ver</span>
                     </button>
                   </div>
                 ))}
                 {activeFilter === 'satisfaccion' && obtenerDatosReporte().length === 0 && (
-                  <div className="text-center text-gray-500 py-8">No hay reportes de satisfacción registrados.</div>
+                  <div className="text-center text-gray-500 py-6 md:py-8 text-sm md:text-base">No hay reportes de satisfacción registrados.</div>
                 )}
                 {activeFilter === 'pedido' && errorPedidos && (
-                  <div className="text-center text-red-500 py-8">{errorPedidos}</div>
+                  <div className="text-center text-red-500 py-6 md:py-8 text-sm md:text-base">{errorPedidos}</div>
                 )}
                 {activeFilter === 'pedido' && !errorPedidos && reportesPedidos.length > 0 && reportesPedidos.map((pedido: ReportePedido) => (
-                  <div key={pedido.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-lg px-6 py-4 shadow-sm">
-                    <div className="flex items-center gap-4">
-                      <ShoppingCart size={32} className="text-blue-400" />
+                  <div key={pedido.id} className="flex flex-col md:flex-row items-start md:items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-lg px-4 md:px-6 py-3 md:py-4 shadow-sm gap-3">
+                    <div className="flex items-center gap-3 md:gap-4">
+                      <ShoppingCart size={24} className="md:w-8 md:h-8 text-blue-400" />
                       <div>
-                        <div className="font-bold text-lg text-[#202841] dark:text-white">{pedido.numeroPedido}</div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300">
+                        <div className="font-bold text-base md:text-lg text-[#202841] dark:text-white">{pedido.numeroPedido}</div>
+                        <div className="text-xs md:text-sm text-gray-700 dark:text-gray-300">
                           <span className="font-semibold">{pedido.productName}</span> &bull; {pedido.cliente} &bull; {pedido.estado} &bull; <span className="font-semibold">{pedido.valor}</span>
                           &bull; {pedido.satisfaccion !== null ? `${pedido.satisfaccion}/5` : 'Sin calificar'}
-                          {pedido.satisfaccion !== null && <Star size={16} className="inline ml-1 text-yellow-400" />}
+                          {pedido.satisfaccion !== null && <Star size={14} className="md:w-4 md:h-4 inline ml-1 text-yellow-400" />}
                         </div>
                       </div>
                     </div>
                     <button
                       onClick={() => abrirModal(pedido)}
-                      className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                      className="flex items-center gap-2 bg-blue-600 text-white px-2 md:px-4 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs md:text-sm"
                     >
-                      <Eye size={20} />
-                      Ver detalles
+                      <Eye size={16} className="md:w-5 md:h-5" />
+                      <span className="hidden sm:inline">Ver detalles</span>
+                      <span className="sm:hidden">Ver</span>
                     </button>
                   </div>
                 ))}
                 {activeFilter === 'pedido' && !errorPedidos && reportesPedidos.length === 0 && (
-                  <div className="text-center text-gray-500 py-8">No hay pedidos registrados.</div>
+                  <div className="text-center text-gray-500 py-6 md:py-8 text-sm md:text-base">No hay pedidos registrados.</div>
                 )}
                 {/*
                 {activeFilter === 'satisfaccion' && reportesSatisfaccion.map((reporte: any) => (
