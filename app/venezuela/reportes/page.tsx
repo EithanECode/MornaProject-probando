@@ -72,7 +72,12 @@ const Reportes = () => {
   const [metricasPedido, setMetricasPedido] = useState<MetricasPorPedido | null>(null);
   const [reportesPedidos, setReportesPedidos] = useState<ReportePedido[]>([]);
   const [errorPedidos, setErrorPedidos] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6);
   useEffect(() => {
+    // Resetear página cuando cambie el filtro
+    setCurrentPage(1);
+    
     if (activeFilter === 'mes') {
       getMetricasPorMes().then((res) => {
         if (Array.isArray(res)) {
@@ -130,6 +135,48 @@ const Reportes = () => {
     ));
   };
 
+  // Renderizar métricas clave para el filtro 'mes'
+  const renderMetricasMes = () => {
+    if (metricasMeses.length === 0) return null;
+    const totalPedidos = metricasMeses.reduce((acc, mes) => acc + mes.totalPedidos, 0);
+    const completados = metricasMeses.reduce((acc, mes) => acc + mes.completados, 0);
+    const ingresos = metricasMeses.reduce((acc, mes) => acc + mes.ingresos, 0);
+    const totalSatisfaccion = metricasMeses.reduce((acc, mes) => acc + (mes.satisfaccion * mes.totalPedidos), 0);
+    const totalPedidosConReputacion = metricasMeses.reduce((acc, mes) => acc + (mes.satisfaccion > 0 ? mes.totalPedidos : 0), 0);
+    const satisfaccionPromedio = totalPedidosConReputacion > 0 ? (totalSatisfaccion / totalPedidosConReputacion).toFixed(2) : '0';
+    
+    const metricas = [
+      { label: 'Pedidos Totales', value: totalPedidos, icon: Package, color: 'text-blue-600' },
+      { label: 'Completados', value: completados, icon: CheckCircle, color: 'text-green-600' },
+      { label: 'Satisfacción', value: `${satisfaccionPromedio}/5`, icon: Star, color: 'text-yellow-600' },
+      { label: 'Ingresos', value: `$${ingresos}`, icon: TrendingUp, color: 'text-purple-600' }
+    ];
+    return metricas.map(({ label, value, icon: Icon, color }, index) => (
+      <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <Icon className={`mx-auto mb-2 ${color}`} size={24} />
+        <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>
+      </div>
+    ));
+  };
+
+  // Renderizar métricas clave para el filtro 'satisfaccion'
+  const renderMetricasSatisfaccion = () => {
+    const metricas = [
+      { label: 'Promedio General', value: `${metricasSatisfaccion.promedioGeneral}/5`, icon: Star, color: 'text-yellow-600' },
+      { label: 'Total Reseñas', value: metricasSatisfaccion.totalResenas, icon: Users, color: 'text-blue-600' },
+      { label: '5 Estrellas', value: metricasSatisfaccion.cincoEstrellas, icon: Heart, color: 'text-green-600' },
+      { label: 'Satisfacción', value: `${metricasSatisfaccion.satisfechos}%`, icon: CheckCircle, color: 'text-purple-600' }
+    ];
+    return metricas.map(({ label, value, icon: Icon, color }, index) => (
+      <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <Icon className={`mx-auto mb-2 ${color}`} size={24} />
+        <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>
+      </div>
+    ));
+  };
+
   // Datos para reportes de satisfacción
   // ...eliminado: los datos hardcodeados, ahora solo se usa el estado reportesSatisfaccion
 
@@ -172,12 +219,27 @@ const Reportes = () => {
       : []
   };
 
+  // Funciones de paginación
+  const getPaginatedPedidos = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return reportesPedidos.slice(startIndex, endIndex);
+  };
+
+  const totalPages = Math.ceil(reportesPedidos.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll suave hacia arriba de la lista
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const obtenerDatosReporte = () => {
     switch (activeFilter) {
       case 'mes':
         return metricasMeses;
       case 'pedido':
-        return reportesPedidos;
+        return getPaginatedPedidos(); // Usar datos paginados
       case 'satisfaccion':
         return reportesSatisfaccion;
       default:
@@ -903,42 +965,9 @@ const Reportes = () => {
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="grid grid-cols-2 gap-3 md:gap-4 h-[250px] md:h-[300px] content-center">
-                  {activeFilter === 'mes' && metricasMeses.length > 0 && (() => {
-                    const totalPedidos = metricasMeses.reduce((acc, mes) => acc + mes.totalPedidos, 0);
-                    const completados = metricasMeses.reduce((acc, mes) => acc + mes.completados, 0);
-                    const ingresos = metricasMeses.reduce((acc, mes) => acc + mes.ingresos, 0);
-                    // Satisfacción promedio ponderada por cantidad de pedidos con reputación
-                    const totalSatisfaccion = metricasMeses.reduce((acc, mes) => acc + (mes.satisfaccion * mes.totalPedidos), 0);
-                    const totalPedidosConReputacion = metricasMeses.reduce((acc, mes) => acc + (mes.satisfaccion > 0 ? mes.totalPedidos : 0), 0);
-                    const satisfaccionPromedio = totalPedidosConReputacion > 0 ? (totalSatisfaccion / totalPedidosConReputacion).toFixed(2) : '0';
-                    return [
-                      { label: 'Pedidos Totales', value: totalPedidos, icon: Package, color: 'text-blue-600' },
-                      { label: 'Completados', value: completados, icon: CheckCircle, color: 'text-green-600' },
-                      { label: 'Satisfacción', value: `${satisfaccionPromedio}/5`, icon: Star, color: 'text-yellow-600' },
-                      { label: 'Ingresos', value: `$${ingresos}`, icon: TrendingUp, color: 'text-purple-600' }
-                    ].map(({ label, value, icon: Icon, color }, index) => (
-                      <div key={index} className="text-center p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <Icon className={`mx-auto mb-1 md:mb-2 ${color}`} size={20} className="md:w-6 md:h-6" />
-                        <p className="text-base md:text-lg font-bold text-gray-900 dark:text-white">{value}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>
-                      </div>
-                    ));
-                  })()}
-                  
+                  {activeFilter === 'mes' && renderMetricasMes()}
                   {activeFilter === 'pedido' && renderMetricasPedido()}
-                  
-                  {activeFilter === 'satisfaccion' && [
-                    { label: 'Promedio General', value: `${metricasSatisfaccion.promedioGeneral}/5`, icon: Star, color: 'text-yellow-600' },
-                    { label: 'Total Reseñas', value: metricasSatisfaccion.totalResenas, icon: Users, color: 'text-blue-600' },
-                    { label: '5 Estrellas', value: metricasSatisfaccion.cincoEstrellas, icon: Heart, color: 'text-green-600' },
-                    { label: 'Satisfacción', value: `${metricasSatisfaccion.satisfechos}%`, icon: CheckCircle, color: 'text-purple-600' }
-                  ].map(({ label, value, icon: Icon, color }, index) => (
-                    <div key={index} className="text-center p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <Icon className={`mx-auto mb-1 md:mb-2 ${color}`} size={20} className="md:w-6 md:h-6" />
-                      <p className="text-base md:text-lg font-bold text-gray-900 dark:text-white">{value}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">{label}</p>
-                    </div>
-                  ))}
+                  {activeFilter === 'satisfaccion' && renderMetricasSatisfaccion()}
                 </div>
               </CardContent>
             </Card>
@@ -1015,7 +1044,7 @@ const Reportes = () => {
                 {activeFilter === 'pedido' && errorPedidos && (
                   <div className="text-center text-red-500 py-6 md:py-8 text-sm md:text-base">{errorPedidos}</div>
                 )}
-                {activeFilter === 'pedido' && !errorPedidos && reportesPedidos.length > 0 && reportesPedidos.map((pedido: ReportePedido) => (
+                {activeFilter === 'pedido' && !errorPedidos && obtenerDatosReporte().length > 0 && obtenerDatosReporte().map((pedido: ReportePedido) => (
                   <div key={pedido.id} className="flex flex-col md:flex-row items-start md:items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-lg px-4 md:px-6 py-3 md:py-4 shadow-sm gap-3">
                     <div className="flex items-center gap-3 md:gap-4">
                       <ShoppingCart size={24} className="md:w-8 md:h-8 text-blue-400" />
@@ -1040,6 +1069,62 @@ const Reportes = () => {
                 ))}
                 {activeFilter === 'pedido' && !errorPedidos && reportesPedidos.length === 0 && (
                   <div className="text-center text-gray-500 py-6 md:py-8 text-sm md:text-base">No hay pedidos registrados.</div>
+                )}
+
+                {/* Paginación para pedidos */}
+                {activeFilter === 'pedido' && !errorPedidos && reportesPedidos.length > 0 && totalPages > 1 && (
+                  <div className="flex items-center justify-between mt-6 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, reportesPedidos.length)} de {reportesPedidos.length} pedidos
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="px-3 py-1 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Anterior
+                      </button>
+                      
+                      {/* Números de página */}
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                          let pageNum;
+                          if (totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (currentPage <= 3) {
+                            pageNum = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            pageNum = currentPage - 2 + i;
+                          }
+                          
+                          return (
+                            <button
+                              key={pageNum}
+                              onClick={() => handlePageChange(pageNum)}
+                              className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                                currentPage === pageNum
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      
+                      <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="px-3 py-1 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Siguiente
+                      </button>
+                    </div>
+                  </div>
                 )}
                 {/*
                 {activeFilter === 'satisfaccion' && reportesSatisfaccion.map((reporte: any) => (
