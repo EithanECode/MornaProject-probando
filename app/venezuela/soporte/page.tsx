@@ -163,7 +163,7 @@ export default function VenezuelaSoportePage() {
       
       <main className={`flex-1 transition-all duration-300 ${
         sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
-      }`}>
+      } w-full`}>
         <Header 
           notifications={stats.totalUnread}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

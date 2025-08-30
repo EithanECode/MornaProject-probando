@@ -302,7 +302,7 @@ export default function VenezuelaTrackingPage() {
       />
       
       <main className={`flex-1 transition-all duration-300 ${
-        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'
+        sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       }`}>
         <Header 
           notifications={stats.needsUpdate}
@@ -311,26 +311,26 @@ export default function VenezuelaTrackingPage() {
           subtitle="Sigue el estado de los pedidos en tiempo real"
         />
         
-        <div className="p-6 space-y-6">
+        <div className="p-4 md:p-5 lg:p-6 space-y-6">
           {/* Header de la página */}
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white">
-            <div className="flex items-center justify-between">
+          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-4 md:p-6 text-white">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
               <div>
-                <h1 className="text-2xl font-bold">Tracking de Pedidos</h1>
-                <p className="text-purple-100 mt-1">Sigue el estado de los pedidos en tiempo real</p>
+                <h1 className="text-xl md:text-2xl font-bold">Tracking de Pedidos</h1>
+                <p className="text-purple-100 mt-1 text-sm md:text-base">Sigue el estado de los pedidos en tiempo real</p>
               </div>
-              <div className="hidden md:flex items-center space-x-4">
+              <div className="grid grid-cols-3 md:flex md:items-center md:space-x-4 gap-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold">{stats.total}</p>
-                  <p className="text-sm text-purple-100">Total</p>
+                  <p className="text-xl md:text-2xl font-bold">{stats.total}</p>
+                  <p className="text-xs md:text-sm text-purple-100">Total</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold">{stats.inTransit}</p>
-                  <p className="text-sm text-purple-100">En Tránsito</p>
+                  <p className="text-xl md:text-2xl font-bold">{stats.inTransit}</p>
+                  <p className="text-xs md:text-sm text-purple-100">En Tránsito</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold">{stats.delivered}</p>
-                  <p className="text-sm text-purple-100">Entregados</p>
+                  <p className="text-xl md:text-2xl font-bold">{stats.delivered}</p>
+                  <p className="text-xs md:text-sm text-purple-100">Entregados</p>
                 </div>
               </div>
             </div>
@@ -339,21 +339,19 @@ export default function VenezuelaTrackingPage() {
           {/* Filtros y búsqueda */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
             <CardContent className="p-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                    <Input
-                      placeholder="Buscar por producto, cliente o ID..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
+              <div className="flex flex-col gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Input
+                    placeholder="Buscar por producto, cliente o ID..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
                 </div>
                 <div className="flex gap-2">
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-48">
+                    <SelectTrigger className="flex-1 md:w-48">
                       <Filter className="w-4 h-4 mr-2" />
                       <SelectValue placeholder="Filtrar por estado" />
                     </SelectTrigger>
@@ -376,7 +374,7 @@ export default function VenezuelaTrackingPage() {
           </Card>
 
           {/* Lista de Tracking */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5 lg:gap-6">
             {filteredTracking.map((tracking) => (
               <Card key={tracking.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
@@ -429,11 +427,14 @@ export default function VenezuelaTrackingPage() {
 
                   <div className="flex gap-2">
                     <Button className="bg-blue-600 gap-x-1 text-white hover:bg-blue-700 hover:text-white card-animate-liftbounce flex-1" variant="outline" size="sm">
-                      <Eye className="w-4 h-4" /> Ver
+                      <Eye className="w-4 h-4" /> 
+                      <span className="hidden sm:inline">Ver</span>
+                      <span className="sm:hidden">Ver</span>
                     </Button>
                     <Button size="sm" className="flex-1">
                       <Edit className="w-4 h-4 mr-2" />
-                      Actualizar
+                      <span className="hidden sm:inline">Actualizar</span>
+                      <span className="sm:hidden">Actualizar</span>
                     </Button>
                   </div>
                 </CardContent>
@@ -444,10 +445,10 @@ export default function VenezuelaTrackingPage() {
           {/* Estado vacío */}
           {filteredTracking.length === 0 && (
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardContent className="p-12 text-center">
-                <MapPin className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">No hay tracking activo</h3>
-                <p className="text-slate-600">Todos los pedidos han sido entregados o no hay coincidencias con los filtros.</p>
+              <CardContent className="p-8 md:p-12 text-center">
+                <MapPin className="w-12 h-12 md:w-16 md:h-16 text-slate-400 mx-auto mb-4" />
+                <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-2">No hay tracking activo</h3>
+                <p className="text-sm md:text-base text-slate-600">Todos los pedidos han sido entregados o no hay coincidencias con los filtros.</p>
               </CardContent>
             </Card>
           )}
