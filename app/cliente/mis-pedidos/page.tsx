@@ -1174,49 +1174,100 @@ export default function MisPedidosPage() {
                               <Image className="w-4 h-4 mr-2 text-blue-600" />
                               Imagen del Producto
                             </Label>
-                            <div 
-                              className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 bg-white/80 backdrop-blur-sm group cursor-pointer ${
-                                isDragOver 
-                                  ? 'border-blue-500 bg-blue-50 shadow-lg' 
-                                  : 'border-slate-300 hover:border-blue-400 hover:shadow-lg'
-                              }`}
-                              onMouseEnter={() => setIsFolderHovered(true)}
-                              onMouseLeave={() => setIsFolderHovered(false)}
-                              onDragOver={handleDragOver}
-                              onDragLeave={handleDragLeave}
-                              onDrop={handleDrop}
-                            >
-                              <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                                <Player
-                                  key={isFolderHovered ? 'folder-active' : 'folder-inactive'}
-                                  src={folderLottie}
-                                  className="w-6 h-6"
-                                  loop={false}
-                                  autoplay={isFolderHovered}
+                            
+                            {newOrderData.productImage ? (
+                              // Vista de imagen subida
+                              <div className="relative group">
+                                <div className="border-2 border-slate-200 rounded-xl overflow-hidden bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg">
+                                  <div className="relative">
+                                    <img
+                                      src={URL.createObjectURL(newOrderData.productImage)}
+                                      alt="Producto"
+                                      className="w-full h-48 object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                                      <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => document.getElementById('imageUpload')?.click()}
+                                          className="bg-white/90 hover:bg-white text-slate-700 border-0 shadow-lg"
+                                        >
+                                          <Upload className="w-4 h-4 mr-1" />
+                                          Cambiar
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => setNewOrderData({ ...newOrderData, productImage: undefined })}
+                                          className="bg-white/90 hover:bg-white text-red-600 border-0 shadow-lg hover:text-red-700"
+                                        >
+                                          <X className="w-4 h-4 mr-1" />
+                                          Eliminar
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="p-4">
+                                    <p className="text-sm font-medium text-slate-800 truncate">
+                                      {newOrderData.productImage.name}
+                                    </p>
+                                    <p className="text-xs text-slate-500">
+                                      {(newOrderData.productImage.size / 1024 / 1024).toFixed(2)} MB
+                                    </p>
+                                  </div>
+                                </div>
+                                <input
+                                  id="imageUpload"
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleImageUpload}
+                                  className="hidden"
                                 />
                               </div>
-                              <p className="text-sm text-slate-600 mb-4 font-medium">
-                                {newOrderData.productImage 
-                                  ? newOrderData.productImage.name 
-                                  : 'Arrastra una imagen aquí o haz clic para seleccionar'
-                                }
-                              </p>
-                              <Button
-                                variant="outline"
-                                onClick={() => document.getElementById('imageUpload')?.click()}
-                                className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
+                            ) : (
+                              // Vista de drag & drop
+                              <div 
+                                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 bg-white/80 backdrop-blur-sm group cursor-pointer ${
+                                  isDragOver 
+                                    ? 'border-blue-500 bg-blue-50 shadow-lg' 
+                                    : 'border-slate-300 hover:border-blue-400 hover:shadow-lg'
+                                }`}
+                                onMouseEnter={() => setIsFolderHovered(true)}
+                                onMouseLeave={() => setIsFolderHovered(false)}
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
                               >
-                                <Upload className="w-4 h-4 mr-2" />
-                                Seleccionar Imagen
-                              </Button>
-                              <input
-                                id="imageUpload"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                className="hidden"
-                              />
-                            </div>
+                                <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                  <Player
+                                    key={isFolderHovered ? 'folder-active' : 'folder-inactive'}
+                                    src={folderLottie}
+                                    className="w-6 h-6"
+                                    loop={false}
+                                    autoplay={isFolderHovered}
+                                  />
+                                </div>
+                                <p className="text-sm text-slate-600 mb-4 font-medium">
+                                  Arrastra una imagen aquí o haz clic para seleccionar
+                                </p>
+                                <Button
+                                  variant="outline"
+                                  onClick={() => document.getElementById('imageUpload')?.click()}
+                                  className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
+                                >
+                                  <Upload className="w-4 h-4 mr-2" />
+                                  Seleccionar Imagen
+                                </Button>
+                                <input
+                                  id="imageUpload"
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleImageUpload}
+                                  className="hidden"
+                                />
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
