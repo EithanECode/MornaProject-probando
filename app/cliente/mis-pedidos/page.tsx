@@ -847,7 +847,9 @@ export default function MisPedidosPage() {
         userRole="client"
       />
       
-      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
+      <main className={`flex-1 transition-all duration-300 ${
+        sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
+      }`}>
         <Header 
           notifications={stats.pending} 
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -855,12 +857,12 @@ export default function MisPedidosPage() {
           subtitle="Gestiona y sigue el estado de tus pedidos"
         />
         
-        <div className="p-6 space-y-6">
+        <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
           {/* Header de la página */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
             <div>
-              <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Mis Pedidos</h1>
-              <p className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Gestiona y sigue el estado de tus pedidos</p>
+              <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Mis Pedidos</h1>
+              <p className={`text-xs md:text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Gestiona y sigue el estado de tus pedidos</p>
             </div>
             
             {/* Botón Nuevo Pedido */}
@@ -1416,15 +1418,15 @@ export default function MisPedidosPage() {
           </div>
 
           {/* Estadísticas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-600">Total Pedidos</p>
-                    <p className="text-2xl font-bold">{stats.total}</p>
+                    <p className="text-xs md:text-sm text-slate-600">Total Pedidos</p>
+                    <p className="text-lg md:text-xl lg:text-2xl font-bold">{stats.total}</p>
                   </div>
-                  <Package className="h-8 w-8 text-blue-600" />
+                  <Package className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
                 </div>
               </CardContent>
             </Card>
@@ -1433,10 +1435,10 @@ export default function MisPedidosPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-600">Pendientes</p>
-                    <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+                    <p className="text-xs md:text-sm text-slate-600">Pendientes</p>
+                    <p className="text-lg md:text-xl lg:text-2xl font-bold text-yellow-600">{stats.pending}</p>
                   </div>
-                  <Clock className="h-8 w-8 text-yellow-600" />
+                  <Clock className="h-6 w-6 md:h-8 md:w-8 text-yellow-600" />
                 </div>
               </CardContent>
             </Card>
@@ -1445,10 +1447,10 @@ export default function MisPedidosPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-600">En Proceso</p>
-                    <p className="text-2xl font-bold text-blue-600">{stats.processing}</p>
+                    <p className="text-xs md:text-sm text-slate-600">En Proceso</p>
+                    <p className="text-lg md:text-xl lg:text-2xl font-bold text-blue-600">{stats.processing}</p>
                   </div>
-                  <Truck className="h-8 w-8 text-blue-600" />
+                  <Truck className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
                 </div>
               </CardContent>
             </Card>
@@ -1457,10 +1459,10 @@ export default function MisPedidosPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-600">Enviados</p>
-                    <p className="text-2xl font-bold text-purple-600">{stats.shipped}</p>
+                    <p className="text-xs md:text-sm text-slate-600">Enviados</p>
+                    <p className="text-lg md:text-xl lg:text-2xl font-bold text-purple-600">{stats.shipped}</p>
                   </div>
-                  <MapPin className="h-8 w-8 text-purple-600" />
+                  <MapPin className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
                 </div>
               </CardContent>
             </Card>
@@ -1469,10 +1471,10 @@ export default function MisPedidosPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-600">Total Gastado</p>
-                    <p className="text-2xl font-bold text-green-600">${stats.totalSpent.toLocaleString()}</p>
+                    <p className="text-xs md:text-sm text-slate-600">Total Gastado</p>
+                    <p className="text-lg md:text-xl lg:text-2xl font-bold text-green-600">${stats.totalSpent.toLocaleString()}</p>
                   </div>
-                  <DollarSign className="h-8 w-8 text-green-600" />
+                  <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
                 </div>
               </CardContent>
             </Card>
@@ -1481,7 +1483,7 @@ export default function MisPedidosPage() {
           {/* Filtros y búsqueda */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
             <CardContent className="p-4">
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex flex-col md:flex-row gap-3 md:gap-4">
                 <div className="flex-1">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -1494,7 +1496,7 @@ export default function MisPedidosPage() {
                   </div>
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-48">
+                  <SelectTrigger className="w-full md:w-48">
                     <SelectValue placeholder="Filtrar por estado" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1518,24 +1520,24 @@ export default function MisPedidosPage() {
             <CardContent>
               <div className="space-y-4">
                 {filteredOrders.map((order) => (
-                  <div key={order.id} className="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-4">
+                  <div key={order.id} className="p-3 md:p-4 rounded-lg bg-slate-50 border border-slate-200">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4 mb-4">
+                      <div className="flex items-center gap-3 md:gap-4">
                         <div className="flex flex-col">
-                          <p className="font-medium text-sm">{order.id}</p>
+                          <p className="font-medium text-xs md:text-sm">{order.id}</p>
                           <p className="text-xs text-slate-600">{order.product}</p>
                         </div>
-                        <Badge className={getStatusColor(order.status)}>
+                        <Badge className={`${getStatusColor(order.status)} text-xs md:text-sm`}>
                           {getStatusText(order.status)}
                         </Badge>
                       </div>
                       <div className="text-right">
-                        <p className="text-[11px] uppercase tracking-wide text-slate-500">
+                        <p className="text-[10px] md:text-[11px] uppercase tracking-wide text-slate-500">
                           {order.status === 'pending' && 'Presupuesto'}
                           {order.status === 'quoted' && 'Cotización a pagar'}
                           {order.status !== 'pending' && order.status !== 'quoted' && 'Monto'}
                         </p>
-                        <p className="font-medium text-lg">
+                        <p className="font-medium text-base md:text-lg">
                           {order.status === 'pending' && typeof order.estimatedBudget !== 'undefined' && order.estimatedBudget !== null
                             ? `$${Number(order.estimatedBudget).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
                             : order.status === 'quoted' && typeof order.totalQuote !== 'undefined' && order.totalQuote !== null
@@ -1547,23 +1549,23 @@ export default function MisPedidosPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs md:text-sm">
                         <span>Progreso</span>
                         <span>{order.progress}%</span>
                       </div>
-                      <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div className="w-full bg-slate-200 rounded-full h-1.5 md:h-2">
                         <div 
-                          className={`h-2 rounded-full ${getProgressColor(order.progress)}`} 
+                          className={`h-1.5 md:h-2 rounded-full ${getProgressColor(order.progress)}`} 
                           style={{ width: `${order.progress}%` }}
                         ></div>
                       </div>
-                      <div className="flex justify-between text-xs text-slate-600">
+                      <div className="flex flex-col md:flex-row md:justify-between gap-2 md:gap-0 text-xs text-slate-600">
                         <span>Entrega estimada: {order.estimatedDelivery}</span>
-                        <div className="flex gap-2">
+                        <div className="flex gap-1 md:gap-2">
                           {order.status === 'quoted' && (
                             <Button 
                               size="sm" 
-                              className="h-6 px-3 bg-green-600 hover:bg-green-700 text-white"
+                              className="h-5 md:h-6 px-2 md:px-3 bg-green-600 hover:bg-green-700 text-white text-xs"
                               onClick={() => handlePaymentClick(order)}
                             >
                               <DollarSign className="h-3 w-3 mr-1" />
@@ -1573,13 +1575,13 @@ export default function MisPedidosPage() {
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            className="h-6 px-2"
+                            className="h-5 md:h-6 px-1 md:px-2 text-xs"
                             onClick={() => handleViewDetails(order)}
                           >
                             <Eye className="h-3 w-3 mr-1" />
                             Ver detalles
                           </Button>
-                          <Button variant="ghost" size="sm" className="h-6 px-2">
+                          <Button variant="ghost" size="sm" className="h-5 md:h-6 px-1 md:px-2 text-xs">
                             <MessageSquare className="h-3 w-3 mr-1" />
                             Soporte
                           </Button>
@@ -1590,9 +1592,9 @@ export default function MisPedidosPage() {
                 ))}
                 
                 {filteredOrders.length === 0 && (
-                  <div className="text-center py-10">
-                    <Package className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <p className="text-slate-500">No se encontraron pedidos</p>
+                  <div className="text-center py-8 md:py-10">
+                    <Package className="h-10 w-10 md:h-12 md:w-12 text-slate-400 mx-auto mb-3 md:mb-4" />
+                    <p className="text-slate-500 text-sm md:text-base">No se encontraron pedidos</p>
                   </div>
                 )}
               </div>
