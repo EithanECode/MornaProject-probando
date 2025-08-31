@@ -225,6 +225,9 @@ export default function MisPedidosPage() {
   const [isCameraHovered, setIsCameraHovered] = useState(false);
   const [isLinkHovered, setIsLinkHovered] = useState(false);
   
+  // Estados para drag and drop
+  const [isDragOver, setIsDragOver] = useState(false);
+  
   // Estados para transiciones suaves
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [stepDirection, setStepDirection] = useState<'next' | 'prev'>('next');
@@ -782,6 +785,35 @@ export default function MisPedidosPage() {
     }
   };
 
+  // Funciones para drag and drop
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+      
+      if (!validTypes.includes(file.type)) {
+        alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
+        return;
+      }
+      
+      setNewOrderData({ ...newOrderData, productImage: file });
+    }
+  };
+
   // Validaciones de campos
   const isValidQuantity = (value: any) => {
     return /^[0-9]+$/.test(String(value)) && Number(value) > 0;
@@ -802,8 +834,8 @@ export default function MisPedidosPage() {
       case 1:
         if (!newOrderData.productName || !newOrderData.description) return false;
         if (!isValidQuantity(newOrderData.quantity)) return false;
-        if (newOrderData.requestType === 'link' && newOrderData.productUrl) {
-          if (!isValidUrl(newOrderData.productUrl)) return false;
+        if (newOrderData.requestType === 'link') {
+          if (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) return false;
         }
         return true;
       case 2:
@@ -1118,15 +1150,18 @@ export default function MisPedidosPage() {
 
                         {newOrderData.requestType === 'link' && (
                           <div className="space-y-2">
-                            <Label htmlFor="productUrl">URL del Producto</Label>
+                            <Label htmlFor="productUrl">URL del Producto *</Label>
                             <Input
                               id="productUrl"
                               type="url"
                               value={newOrderData.productUrl || ''}
                               onChange={(e) => setNewOrderData({ ...newOrderData, productUrl: e.target.value })}
                               placeholder="https://ejemplo.com/producto"
-                              className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
+                              className={`transition-all duration-200 focus:ring-2 focus:ring-blue-500 ${
+                                newOrderData.requestType === 'link' && !newOrderData.productUrl ? 'border-red-300 focus:ring-red-500' : ''
+                              }`}
                             />
+
                             {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (
                               <p className="text-xs text-red-500 mt-1">La URL no es válida.</p>
                             )}
@@ -1140,9 +1175,16 @@ export default function MisPedidosPage() {
                               Imagen del Producto
                             </Label>
                             <div 
-                              className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-blue-400 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:shadow-lg group"
+                              className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 bg-white/80 backdrop-blur-sm group cursor-pointer ${
+                                isDragOver 
+                                  ? 'border-blue-500 bg-blue-50 shadow-lg' 
+                                  : 'border-slate-300 hover:border-blue-400 hover:shadow-lg'
+                              }`}
                               onMouseEnter={() => setIsFolderHovered(true)}
                               onMouseLeave={() => setIsFolderHovered(false)}
+                              onDragOver={handleDragOver}
+                              onDragLeave={handleDragLeave}
+                              onDrop={handleDrop}
                             >
                               <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                                 <Player
@@ -1154,7 +1196,10 @@ export default function MisPedidosPage() {
                                 />
                               </div>
                               <p className="text-sm text-slate-600 mb-4 font-medium">
-                                {newOrderData.productImage ? newOrderData.productImage.name : 'Haz clic para subir una imagen'}
+                                {newOrderData.productImage 
+                                  ? newOrderData.productImage.name 
+                                  : 'Arrastra una imagen aquí o haz clic para seleccionar'
+                                }
                               </p>
                               <Button
                                 variant="outline"
@@ -1374,16 +1419,7 @@ export default function MisPedidosPage() {
                     )}
                   </Button>
                   
-                  <div className="flex space-x-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsNewOrderModalOpen(false)}
-                      className="transition-all duration-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600 transform hover:scale-105"
-                    >
-                      <X className="w-4 h-4 mr-2" />
-                      Cancelar
-                    </Button>
-                    
+                  <div className="flex justify-center">
                     {currentStep < 3 ? (
                       <Button
                         onClick={handleNextStep}
