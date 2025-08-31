@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { default as dynamicImport } from 'next/dynamic';
 import Sidebar from '@/components/layout/Sidebar';
+import Header from '@/components/layout/Header';
 import { 
   Search, 
   Filter, 
@@ -63,10 +64,10 @@ interface Order {
 
 // Memoizar las configuraciones para evitar recreaciones
 const STATUS_CONFIG = {
-  'pendiente-china': { label: 'Pendiente Cotización China', color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
-  'pendiente-vzla': { label: 'Pendiente Cotización Vzla', color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
-  'esperando-pago': { label: 'Esperando Pago Cliente', color: 'bg-orange-700 border-orange-800', icon: Clock },
-  'en-transito': { label: 'En Tránsito a Vzla', color: 'bg-blue-800 border-blue-900', icon: Plane },
+  'pendiente-china': { label: 'Pend. China', color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
+  'pendiente-vzla': { label: 'Pend. Vzla', color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
+  'esperando-pago': { label: 'Esperando Pago', color: 'bg-orange-700 border-orange-800', icon: Clock },
+  'en-transito': { label: 'En Tránsito', color: 'bg-blue-800 border-blue-900', icon: Plane },
   'entregado': { label: 'Entregado', color: 'bg-green-800 border-green-900', icon: CheckCircle },
   'cancelado': { label: 'Cancelado', color: 'bg-red-800 border-red-900', icon: AlertCircle }
 } as const;
@@ -78,10 +79,10 @@ const ASSIGNED_CONFIG = {
 
 // Light theme colors
 const STATUS_CONFIG_LIGHT = {
-  'pendiente-china': { label: 'Pendiente Cotización China', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
-  'pendiente-vzla': { label: 'Pendiente Cotización Vzla', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
-  'esperando-pago': { label: 'Esperando Pago Cliente', color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock },
-  'en-transito': { label: 'En Tránsito a Vzla', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Plane },
+  'pendiente-china': { label: 'Pend. China', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
+  'pendiente-vzla': { label: 'Pend. Vzla', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
+  'esperando-pago': { label: 'Esperando Pago', color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock },
+  'en-transito': { label: 'En Tránsito', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Plane },
   'entregado': { label: 'Entregado', color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle },
   'cancelado': { label: 'Cancelado', color: 'bg-red-100 text-red-800 border-red-200', icon: AlertCircle }
 } as const;
@@ -138,6 +139,7 @@ const useOrdersFilter = (orders: Order[]) => {
 
 export default function PedidosPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
@@ -445,57 +447,62 @@ export default function PedidosPage() {
       }
     >
       {/* Sidebar */}
-      <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="admin" />
+      <Sidebar 
+        isExpanded={sidebarExpanded} 
+        setIsExpanded={setSidebarExpanded}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onMobileMenuClose={() => setIsMobileMenuOpen(false)}
+        userRole="admin" 
+      />
 
       {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
-        {/* Header */}
-        <header className={mounted && theme === 'dark' ? 'bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-40' : 'bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40'}>
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className={`text-2xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Gestión de Pedidos</h1>
-                <p className={mounted && theme === 'dark' ? 'text-sm text-slate-300' : 'text-sm text-slate-600'}>Administra y da seguimiento a todos los pedidos</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <LazyExportButton onClick={handleExport} />
-                <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Nuevo Pedido
-                </Button>
-              </div>
-            </div>
-          </div>
-        </header>
+      <main className={`flex-1 transition-all duration-300 min-w-0 ${sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-20 lg:w-[calc(100%-5rem)]'}`}>
+        <Header 
+          notifications={3}
+          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          title="Gestión de Pedidos"
+          subtitle="Administra y da seguimiento a todos los pedidos"
+        />
 
-        <div className={mounted && theme === 'dark' ? 'p-6 space-y-6 bg-slate-900' : 'p-6 space-y-6'}>
+        <div className={mounted && theme === 'dark' ? 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6 bg-slate-900' : 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6'}>
           {/* Stats Cards */}
           {statsCards}
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <LazyExportButton onClick={handleExport} />
+              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-sm md:text-base">
+                <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                Nuevo Pedido
+              </Button>
+            </div>
+          </div>
 
           {/* Table Card */}
           <Card className={mounted && theme === 'dark' ? 'shadow-lg border-0 bg-slate-800/80 backdrop-blur-sm' : 'shadow-lg border-0 bg-white/70 backdrop-blur-sm'}>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>
-                  <CardTitle className={mounted && theme === 'dark' ? 'text-xl font-bold text-white' : 'text-xl font-bold text-slate-900'}>Lista de Pedidos</CardTitle>
-                  <CardDescription className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>
+                  <CardTitle className={`text-lg md:text-xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Lista de Pedidos</CardTitle>
+                  <CardDescription className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                     {filteredOrders.length} pedidos encontrados
                   </CardDescription>
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 w-full lg:w-auto">
                   {/* Search */}
-                  <div className="relative">
+                  <div className="relative w-full sm:w-auto">
                     <Search className={mounted && theme === 'dark' ? 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4' : 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4'} />
                     <Input
                       placeholder="Buscar pedidos..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className={`pl-10 w-64 focus:border-blue-500 focus:ring-blue-500 ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400' : 'bg-white/50 border-slate-200'}`}
+                      className={`pl-10 w-full sm:w-64 focus:border-blue-500 focus:ring-blue-500 ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400' : 'bg-white/50 border-slate-200'}`}
                     />
                   </div>
                   {/* Status Filter */}
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className={`w-48 ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white/50 border-slate-200'}`}>
+                    <SelectTrigger className={`w-full sm:w-auto ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white/50 border-slate-200'}`}>
                       <Filter className="w-4 h-4 mr-2" />
                       <SelectValue placeholder="Filtrar por estado" />
                     </SelectTrigger>
@@ -513,12 +520,16 @@ export default function PedidosPage() {
               </div>
             </CardHeader>
             <CardContent>
-              {/* Table */}
-              <div className="overflow-x-auto">
+              {/* Vista Desktop - Tabla */}
+              <div className="hidden lg:block overflow-x-auto">
                 <table className={mounted && theme === 'dark' ? 'w-full bg-slate-800' : 'w-full'}>
                   <thead>
                     <tr className={mounted && theme === 'dark' ? 'border-b border-slate-700' : 'border-b border-slate-200'}>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Tiempo Transcurrido</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>ID</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Cliente</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Estado</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Asignado</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Tiempo</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Acciones</th>
                     </tr>
                   </thead>
@@ -527,13 +538,56 @@ export default function PedidosPage() {
                   </tbody>
                 </table>
               </div>
+
+              {/* Vista Mobile/Tablet - Cards */}
+              <div className="lg:hidden space-y-3 md:space-y-4">
+                {paginatedOrders.map((order) => {
+                  const status = statusConfig[order.status];
+                  const assigned = assignedConfig[order.assignedTo];
+                  const StatusIcon = status.icon;
+                  
+                  return (
+                                         <div
+                       key={order.id}
+                       className={`bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 p-4 md:p-5 hover:shadow-lg transition-all duration-300 group cursor-pointer ${mounted && theme === 'dark' ? 'bg-slate-800/80 border-slate-700' : ''}`}
+                       onClick={() => setSelectedOrder(order)}
+                     >
+                       <div className="flex flex-col gap-3 md:gap-4">
+                         <div className="flex items-center gap-3 md:gap-4">
+                           <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                             <Package className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                           </div>
+                           <div className="min-w-0 flex-1">
+                             <div className="font-semibold text-slate-900 group-hover:text-blue-900 transition-colors text-sm md:text-base dark:text-white">{order.id}</div>
+                             <div className="text-xs md:text-sm text-slate-600 dark:text-slate-300 mt-1">{order.client}</div>
+                             <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{order.description}</div>
+                           </div>
+                           <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">
+                             <Clock className="w-3 h-3" />
+                             <span>{order.daysElapsed} días</span>
+                           </div>
+                         </div>
+                         <div className="flex items-center gap-2 flex-wrap">
+                           <Badge className={`${status.color} border text-xs`}>
+                             <StatusIcon className="w-3 h-3 mr-1" />
+                             {status.label}
+                           </Badge>
+                           <Badge className={`${assigned.color} border text-xs`}>
+                             {assigned.label}
+                           </Badge>
+                         </div>
+                       </div>
+                     </div>
+                  );
+                })}
+              </div>
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className={mounted && theme === 'dark' ? 'flex items-center justify-between mt-6 pt-6 border-t border-slate-700' : 'flex items-center justify-between mt-6 pt-6 border-t border-slate-200'}>
-                  <div className={mounted && theme === 'dark' ? 'text-sm text-slate-300' : 'text-sm text-slate-600'}>
+                <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t ${mounted && theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}>
+                  <div className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                     Mostrando {startIndex + 1} a {Math.min(startIndex + 8, filteredOrders.length)} de {filteredOrders.length} resultados
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
