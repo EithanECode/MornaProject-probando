@@ -830,7 +830,7 @@ const PaymentValidationDashboard: React.FC = () => {
                   onClick={exportarGeneral}
                   className="flex items-center gap-2 bg-[#202841] text-white px-3 md:px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
                 >
-                  <Download size={18} className="md:w-5 md:h-5" />
+                                      <Download className="md:w-5 md:h-5" />
                   <span className="hidden sm:inline">Exportar</span>
                   <span className="sm:hidden">Export</span>
                 </button>
@@ -847,7 +847,7 @@ const PaymentValidationDashboard: React.FC = () => {
             <div className={mounted && theme === 'dark' ? 'px-4 md:px-6 py-3 md:py-4 border-b border-slate-700 bg-gradient-to-r from-slate-900 to-slate-800' : 'px-4 md:px-6 py-3 md:py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white'}>
               <h2 className={`text-lg md:text-xl font-semibold flex items-center gap-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 <AnimatedIcon animation="float">
-                  <Package size={20} className="md:w-6 md:h-6 text-blue-500" />
+                                      <Package className="md:w-6 md:h-6 text-blue-500" />
                 </AnimatedIcon>
                 {selectedTab === 'pendientes' ? 'Pagos Pendientes de Aprobación' :
                  'Lista de Pedidos'}
@@ -972,7 +972,7 @@ const PaymentValidationDashboard: React.FC = () => {
             {filteredPayments.length === 0 && (
               <div className="text-center py-8 md:py-16">
                 <AnimatedIcon animation="bounce">
-                  <Package size={32} className="md:w-12 md:h-12 mx-auto text-gray-400 mb-4" />
+                  <Package className="md:w-12 md:h-12 mx-auto text-gray-400 mb-4" />
                 </AnimatedIcon>
                 <p className="text-gray-500 text-base md:text-lg font-medium">No se encontraron pagos</p>
                 <p className="text-gray-400 text-sm mt-2">Intenta ajustar los filtros o términos de búsqueda</p>

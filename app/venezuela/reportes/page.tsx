@@ -1020,7 +1020,7 @@ const Reportes = () => {
                   <div key={reporte.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors gap-3">
                     <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                        <Calendar className="text-blue-600" size={18} className="md:w-5 md:h-5" />
+                        <Calendar className="text-blue-600 md:w-5 md:h-5" />
                       </div>
                       <div>
                         <h4 className="font-medium text-gray-900 dark:text-white text-sm md:text-base">{reporte.mes}</h4>
@@ -1033,7 +1033,7 @@ const Reportes = () => {
                       onClick={() => abrirModal(reporte)}
                       className="flex items-center gap-2 bg-blue-600 text-white px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs md:text-sm"
                     >
-                      <Eye size={14} className="md:w-4 md:h-4" />
+                      <Eye className="md:w-4 md:h-4" />
                       <span className="hidden sm:inline">Ver Detalles</span>
                       <span className="sm:hidden">Ver</span>
                     </button>
@@ -1047,7 +1047,7 @@ const Reportes = () => {
                   <div key={reporte.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors gap-3">
                     <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                        <Heart className="text-purple-600" size={18} className="md:w-5 md:h-5" />
+                        <Heart className="text-purple-600 md:w-5 md:h-5" />
                       </div>
                       <div>
                         <h4 className="font-medium text-gray-900 dark:text-white text-sm md:text-base">{reporte.periodo}</h4>
@@ -1060,7 +1060,7 @@ const Reportes = () => {
                       onClick={() => abrirModal(reporte)}
                       className="flex items-center gap-2 bg-blue-600 text-white px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs md:text-sm"
                     >
-                      <Eye size={14} className="md:w-4 md:h-4" />
+                      <Eye className="md:w-4 md:h-4" />
                       <span className="hidden sm:inline">Ver Detalles</span>
                       <span className="sm:hidden">Ver</span>
                     </button>
@@ -1072,16 +1072,16 @@ const Reportes = () => {
                 {activeFilter === 'pedido' && errorPedidos && (
                   <div className="text-center text-red-500 py-6 md:py-8 text-sm md:text-base">{errorPedidos}</div>
                 )}
-                {activeFilter === 'pedido' && !errorPedidos && obtenerDatosReporte().length > 0 && obtenerDatosReporte().map((pedido: ReportePedido) => (
+                {activeFilter === 'pedido' && !errorPedidos && reportesPedidos.length > 0 && reportesPedidos.map((pedido: ReportePedido) => (
                   <div key={pedido.id} className="flex flex-col md:flex-row items-start md:items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-lg px-4 md:px-6 py-3 md:py-4 shadow-sm gap-3">
                     <div className="flex items-center gap-3 md:gap-4">
-                      <ShoppingCart size={24} className="md:w-8 md:h-8 text-blue-400" />
+                      <ShoppingCart className="md:w-8 md:h-8 text-blue-400" />
                       <div>
                         <div className="font-bold text-base md:text-lg text-[#202841] dark:text-white">{pedido.numeroPedido}</div>
                         <div className="text-xs md:text-sm text-gray-700 dark:text-gray-300">
                           <span className="font-semibold">{pedido.productName}</span> &bull; {pedido.cliente} &bull; {pedido.estado} &bull; <span className="font-semibold">{pedido.valor}</span>
                           &bull; {pedido.satisfaccion !== null ? `${pedido.satisfaccion}/5` : 'Sin calificar'}
-                          {pedido.satisfaccion !== null && <Star size={14} className="md:w-4 md:h-4 inline ml-1 text-yellow-400" />}
+                          {pedido.satisfaccion !== null && <Star className="md:w-4 md:h-4 inline ml-1 text-yellow-400" />}
                         </div>
                       </div>
                     </div>
@@ -1089,7 +1089,7 @@ const Reportes = () => {
                       onClick={() => abrirModal(pedido)}
                       className="flex items-center gap-2 bg-blue-600 text-white px-2 md:px-4 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs md:text-sm"
                     >
-                      <Eye size={16} className="md:w-5 md:h-5" />
+                      <Eye className="md:w-5 md:h-5" />
                       <span className="hidden sm:inline">Ver detalles</span>
                       <span className="sm:hidden">Ver</span>
                     </button>
@@ -1117,7 +1117,7 @@ const Reportes = () => {
                       {/* Números de página */}
                       <div className="flex items-center gap-1">
                         {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                          let pageNum;
+                          let pageNum: number;
                           if (totalPages <= 5) {
                             pageNum = i + 1;
                           } else if (currentPage <= 3) {
