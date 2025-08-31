@@ -346,6 +346,8 @@ export default function FormPanel(props: Props) {
         <button
           onClick={(e) => {
             e.preventDefault();
+            // Marcar que regresamos de PasswordReset
+            sessionStorage.setItem('fromPasswordReset', 'true');
             onNavigateToAuth?.();
           }}
           className="back-to-login-btn"

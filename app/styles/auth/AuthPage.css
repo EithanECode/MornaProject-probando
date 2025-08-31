@@ -66,7 +66,25 @@ html, body, #root, .App {
   border-radius: 12px;
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
   overflow: hidden;
-  animation: fadeInUp 0.5s ease-out;
+  transform-origin: center;
+}
+
+/* Animación de expansión/contracción para mobile/tablet */
+@media (max-width: 1023px) {
+  .mobile-form-container.animating {
+    animation: expandContainer 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .mobile-form-container.returning-from-password-reset {
+    animation: expandContainer 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Animación de expansión para desktop */
+@media (min-width: 1024px) {
+  .auth-container.returning-from-password-reset {
+    animation: expandContainer 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
 .mobile-form {
@@ -103,6 +121,18 @@ html, body, #root, .App {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes expandContainer {
+  0% {
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 

@@ -14,6 +14,9 @@ export default function AuthPage({
 }: Props) {
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [overlayAnimation, setOverlayAnimation] = useState<any | null>(null);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  const [isReturningFromPasswordReset, setIsReturningFromPasswordReset] = useState<boolean>(false);
+
 
   // Cargar JSON de Lottie desde public en cliente
   React.useEffect(() => {
@@ -42,7 +45,36 @@ export default function AuthPage({
       }
     : null;
 
-  const handleToggle = (toLogin: boolean): void => setIsLogin(toLogin);
+  const handleToggle = (toLogin: boolean): void => {
+    if (isAnimating) return; // Prevenir múltiples clics durante la animación
+    
+    setIsAnimating(true);
+    setIsLogin(toLogin);
+    
+    // Resetear el estado de animación después de que termine
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 500); // Duración de la animación
+  };
+
+  // Efecto para detectar cuando regresa de PasswordReset
+  React.useEffect(() => {
+    // Verificar si venimos de PasswordReset (por ejemplo, por URL o estado)
+    const isFromPasswordReset = window.location.search.includes('from=password-reset') || 
+                               sessionStorage.getItem('fromPasswordReset') === 'true';
+    
+    if (isFromPasswordReset) {
+      setIsReturningFromPasswordReset(true);
+      sessionStorage.removeItem('fromPasswordReset'); // Limpiar el flag
+      
+      // Resetear el estado después de la animación
+      setTimeout(() => {
+        setIsReturningFromPasswordReset(false);
+      }, 500);
+    }
+  }, []);
+
+
   const handleLottieClick = (): void => {};
 
   return (
@@ -63,15 +95,15 @@ export default function AuthPage({
         </button>
       </div>
 
-      {/* Desktop Sliding Panel */}
-      <div className={`auth-container ${!isLogin ? "right-panel-active" : ""}`}>
+             {/* Desktop Sliding Panel */}
+       <div className={`auth-container ${!isLogin ? "right-panel-active" : ""} ${isReturningFromPasswordReset ? 'returning-from-password-reset' : ''}`}>
         <div className="form-container sign-up-container">
           <RegisterForm />
         </div>
 
-        <div className="form-container sign-in-container">
-          <LoginForm onNavigateToPasswordReset={onNavigateToPasswordReset} />
-        </div>
+                 <div className="form-container sign-in-container">
+                         <LoginForm onNavigateToPasswordReset={onNavigateToPasswordReset} />
+         </div>
 
         <div className="overlay-container">
           <div className="overlay">
@@ -121,7 +153,7 @@ export default function AuthPage({
 
       {/* Mobile/Tablet Forms */}
       <div className="auth-mobile-forms">
-        <div className={`mobile-form-container ${isLogin ? 'active' : ''}`}>
+                                   <div className={`mobile-form-container ${isLogin ? 'active' : ''} ${isAnimating ? 'animating' : ''} ${isReturningFromPasswordReset ? 'returning-from-password-reset' : ''}`}>
           {isLogin ? (
             <div className="mobile-form">
               <div className="mobile-form-header">
@@ -138,7 +170,7 @@ export default function AuthPage({
                 <h2>¡Bienvenido de Nuevo!</h2>
                 <p>Para mantenerte conectado, por favor inicia sesión con tu información personal.</p>
               </div>
-              <LoginForm onNavigateToPasswordReset={onNavigateToPasswordReset} />
+                             <LoginForm onNavigateToPasswordReset={onNavigateToPasswordReset} />
             </div>
           ) : (
             <div className="mobile-form">

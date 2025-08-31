@@ -19,6 +19,7 @@ export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) 
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isExpanding, setIsExpanding] = useState<boolean>(true);
 
   const handleSendCode = async (): Promise<void> => {
     if (!contactValue) return;
@@ -88,6 +89,8 @@ export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) 
       setVerificationCode(["", "", "", "", "", ""]);
       setNewPassword("");
       setConfirmPassword("");
+      // Marcar que regresamos de PasswordReset
+      sessionStorage.setItem('fromPasswordReset', 'true');
       onNavigateToAuth?.();
     } catch (err) {
       alert("Ocurrió un error al restablecer la contraseña.");
@@ -112,8 +115,18 @@ export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) 
     setTimeout(() => setIsLoading(false), 1000);
   };
 
+  // Efecto para manejar la animación de entrada
+  React.useEffect(() => {
+    // La animación se ejecuta al montar el componente
+    const timer = setTimeout(() => {
+      setIsExpanding(false);
+    }, 500); // Duración de la animación
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="main-card">
+    <div className={`main-card ${isExpanding ? 'expanding' : ''}`}>
       <div className="panels-container">
         <FormPanel
           step={step}
