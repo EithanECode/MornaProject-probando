@@ -109,6 +109,7 @@ export default function ClienteSoporte() {
   const [openFaqId, setOpenFaqId] = useState<number | undefined>(undefined);
   const [faqSearch, setFaqSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [isFiltering, setIsFiltering] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -202,6 +203,19 @@ export default function ClienteSoporte() {
     const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  // Función para manejar cambios de filtro con animación
+  const handleCategoryChange = (category: string) => {
+    setIsFiltering(true);
+    setSelectedCategory(category);
+    setTimeout(() => setIsFiltering(false), 100);
+  };
+
+  const handleSearchChange = (search: string) => {
+    setIsFiltering(true);
+    setFaqSearch(search);
+    setTimeout(() => setIsFiltering(false), 100);
+  };
 
   const categories = ['all', ...Array.from(new Set(faqData.map(faq => faq.category)))];
 
@@ -384,7 +398,7 @@ export default function ClienteSoporte() {
                     <Input
                       placeholder="Buscar en preguntas frecuentes..."
                       value={faqSearch}
-                      onChange={(e) => setFaqSearch(e.target.value)}
+                      onChange={(e) => handleSearchChange(e.target.value)}
                       className="pl-10"
                     />
                   </div>
@@ -396,7 +410,7 @@ export default function ClienteSoporte() {
                         key={category}
                         variant={selectedCategory === category ? "default" : "outline"}
                         className="cursor-pointer hover:bg-slate-100 transition-colors text-xs md:text-sm"
-                        onClick={() => setSelectedCategory(category)}
+                        onClick={() => handleCategoryChange(category)}
                       >
                         {category === 'all' ? 'Todas' : category}
                       </Badge>
@@ -407,10 +421,16 @@ export default function ClienteSoporte() {
                 {/* Lista de FAQ */}
                 <div className="space-y-3">
                   {filteredFaq.length > 0 ? (
-                    filteredFaq.map(faq => (
+                    filteredFaq.map((faq, index) => (
                       <div
                         key={faq.id}
-                        className="border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:shadow-md transition-all duration-200"
+                        className={`border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:shadow-md transition-all duration-500 ease-out ${
+                          isFiltering ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+                        }`}
+                        style={{
+                          animationDelay: `${index * 100}ms`,
+                          animation: isFiltering ? 'none' : 'fadeInUp 0.6s ease-out forwards'
+                        }}
                         onClick={() => setOpenFaqId(openFaqId === faq.id ? undefined : faq.id)}
                       >
                         <div className="flex items-center justify-between">
@@ -459,8 +479,8 @@ export default function ClienteSoporte() {
                         variant="outline" 
                         className="mt-2"
                         onClick={() => {
-                          setFaqSearch('');
-                          setSelectedCategory('all');
+                          handleSearchChange('');
+                          handleCategoryChange('all');
                         }}
                       >
                         Limpiar filtros
@@ -578,6 +598,24 @@ export default function ClienteSoporte() {
           </div>
         </div>
       )}
+      
+      {/* Estilos CSS para animaciones */}
+      <style jsx>{`
+        @keyframes fadeInUp {
+          0% {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+          }
+          50% {
+            opacity: 0.5;
+            transform: translateY(15px) scale(0.98);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+      `}</style>
     </>
   );
 }
