@@ -806,6 +806,81 @@ html, body, #root, .App {
   flex-direction: column;
 }
 
+/* Password Reset Responsive Styles */
+/* Mobile Password Reset */
+@media (max-width: 1023px) {
+  .main-card {
+    width: 100%;
+    max-width: 400px;
+    min-height: auto;
+    border-radius: 12px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  }
+  
+  .panels-container {
+    flex-direction: column;
+    min-height: auto;
+  }
+  
+  .form-panel {
+    width: 100%;
+    padding: 30px 20px;
+    order: 1;
+  }
+  
+  .animated-panel {
+    display: none !important; /* Ocultar completamente en mobile/tablet */
+  }
+  
+  .form-panel h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .form-panel p {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-group input {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .btn-primary {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 16px;
+    height: 48px;
+  }
+  
+  .btn-back {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+/* Desktop Password Reset */
+@media (min-width: 1024px) {
+  .main-card {
+    width: 800px;
+    min-height: 550px;
+  }
+  
+  .form-panel {
+    padding: 50px 40px;
+  }
+  
+  .animated-panel {
+    display: block !important; /* Mostrar en desktop */
+    height: 300px;
+  }
+}
+
 .lottie-panel-icon {
   margin-bottom: 20px;
   pointer-events: none;
