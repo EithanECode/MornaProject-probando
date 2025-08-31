@@ -327,12 +327,11 @@ export default function AjustesPage() {
                             <SelectTrigger>
                               <SelectValue placeholder="Selecciona un idioma" />
                             </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="es">Español</SelectItem>
-                              <SelectItem value="en">English</SelectItem>
-                              <SelectItem value="pt">Português</SelectItem>
-                              {userRole === 'china' && <SelectItem value="zh">中文</SelectItem>}
-                            </SelectContent>
+                                                       <SelectContent>
+                             <SelectItem value="es">🇪🇸 Español</SelectItem>
+                             <SelectItem value="en">🇺🇸 English</SelectItem>
+                             <SelectItem value="zh">🇨🇳 中文</SelectItem>
+                           </SelectContent>
                           </Select>
                         </div>
                       </div>

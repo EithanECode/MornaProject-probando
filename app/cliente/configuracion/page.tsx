@@ -26,7 +26,10 @@ import {
   Upload,
   Trash2,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Sun,
+  Moon,
+  Monitor
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -266,19 +269,19 @@ export default function ConfiguracionPage() {
                             placeholder="+58 412-123-4567"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="idioma">Idioma</Label>
-                          <Select value={formData.idioma} onValueChange={(value) => handleInputChange('idioma', value)}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecciona un idioma" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="es">Español</SelectItem>
-                              <SelectItem value="en">English</SelectItem>
-                              <SelectItem value="pt">Português</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                                                 <div className="space-y-2">
+                           <Label htmlFor="idioma">Idioma</Label>
+                           <Select value={formData.idioma} onValueChange={(value) => handleInputChange('idioma', value)}>
+                             <SelectTrigger>
+                               <SelectValue placeholder="Selecciona un idioma" />
+                             </SelectTrigger>
+                             <SelectContent>
+                               <SelectItem value="es">🇪🇸 Español</SelectItem>
+                               <SelectItem value="en">🇺🇸 English</SelectItem>
+                               <SelectItem value="zh">🇨🇳 中文</SelectItem>
+                             </SelectContent>
+                           </Select>
+                         </div>
                       </div>
                       <Button onClick={handleSaveProfile} className="w-full md:w-auto">
                         <Save className="w-4 h-4 mr-2" />
@@ -674,29 +677,40 @@ export default function ConfiguracionPage() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label>Tema</Label>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
                         <Button
-                          variant={theme === 'light' ? 'default' : 'outline'}
+                          variant={mounted && theme === 'light' ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => setTheme('light')}
+                          className="flex-1 min-w-0 flex items-center gap-2"
                         >
+                          <Sun className="w-4 h-4" />
                           Claro
                         </Button>
                         <Button
-                          variant={theme === 'dark' ? 'default' : 'outline'}
+                          variant={mounted && theme === 'dark' ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => setTheme('dark')}
+                          className="flex-1 min-w-0 flex items-center gap-2"
                         >
+                          <Moon className="w-4 h-4" />
                           Oscuro
                         </Button>
                         <Button
-                          variant={theme === 'system' ? 'default' : 'outline'}
+                          variant={mounted && theme === 'system' ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => setTheme('system')}
+                          className="flex-1 min-w-0 flex items-center gap-2"
                         >
+                          <Monitor className="w-4 h-4" />
                           Sistema
                         </Button>
                       </div>
+                      {mounted && (
+                        <p className="text-xs text-slate-600 dark:text-slate-400">
+                          Tema actual: {theme === 'light' ? 'Claro' : theme === 'dark' ? 'Oscuro' : 'Sistema'}
+                        </p>
+                      )}
                     </div>
                     <Separator />
                     <div className="space-y-2">
