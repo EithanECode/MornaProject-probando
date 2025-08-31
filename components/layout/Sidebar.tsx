@@ -397,16 +397,21 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
   // Memoizar los cálculos responsivos con optimización
   const responsiveConfig = useMemo(() => {
+    // Breakpoints específicos para evitar gaps
+    const isMobile = screenWidth < 768;           // Mobile: < 768px
+    const isTablet = screenWidth >= 768 && screenWidth < 1024;  // Tablet: 768px - 1023px
+    const isDesktop = screenWidth >= 1024;        // Desktop: ≥ 1024px
     const isSmallScreen = screenWidth < 1366;
     const isMediumScreen = screenWidth < 1600;
-    const isMobile = screenWidth < 768;
 
-    // Simplificar cálculos
+    // Cálculos específicos por breakpoint
     const sidebarWidth = isMobile 
       ? (isMobileMenuOpen ? 'w-80' : 'w-16')
-      : isExpanded 
-        ? (screenWidth < 1440 ? 'w-64' : 'w-72')
-        : 'w-20';
+      : isTablet
+        ? (isExpanded ? 'w-64' : 'w-20')
+        : isExpanded 
+          ? (screenWidth < 1440 ? 'w-64' : 'w-72')
+          : 'w-20';
     
     const iconSize = 'w-4 h-4';
   const logoSize: 'sm' | 'md' | 'lg' | 'xl' = isExpanded ? (screenWidth < 1440 ? 'sm' : 'md') : 'md';
@@ -428,36 +433,44 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       userTextSize: isSmallScreen ? 'text-xs' : 'text-sm',
       userSubtextSize: 'text-xs',
       userPadding: isSmallScreen ? 'p-2' : 'p-3',
-      isMobile
+      isMobile,
+      isTablet,
+      isDesktop
     };
   }, [screenWidth, isExpanded, isMobileMenuOpen]);
 
   // Actualizar isExpanded automáticamente cuando cambie la resolución
   useEffect(() => {
     const isMobile = screenWidth < 768;
+    const isTablet = screenWidth >= 768 && screenWidth < 1024;
+    
     if (isMobile) {
       // En mobile, isExpanded debe seguir a isMobileMenuOpen
       setIsExpanded(isMobileMenuOpen || false);
+    } else if (isTablet) {
+      // En tablet, mantener expandido por defecto para mejor usabilidad
+      setIsExpanded(true);
     }
+    // En desktop, mantener el comportamiento actual (controlado por hover)
   }, [screenWidth, isMobileMenuOpen, setIsExpanded]);
 
   // Optimizar el manejo del hover (solo en desktop)
   const handleMouseEnter = useCallback(() => {
-    if (responsiveConfig.isMobile) return;
+    if (responsiveConfig.isMobile || responsiveConfig.isTablet) return;
     if (hoverTimeout) {
       clearTimeout(hoverTimeout);
       setHoverTimeout(null);
     }
     setIsExpanded(true);
-  }, [hoverTimeout, setIsExpanded, responsiveConfig.isMobile]);
+  }, [hoverTimeout, setIsExpanded, responsiveConfig.isMobile, responsiveConfig.isTablet]);
 
   const handleMouseLeave = useCallback(() => {
-    if (responsiveConfig.isMobile) return;
+    if (responsiveConfig.isMobile || responsiveConfig.isTablet) return;
     const timeout = setTimeout(() => {
       setIsExpanded(false);
     }, 300);
     setHoverTimeout(timeout);
-  }, [setIsExpanded, responsiveConfig.isMobile]);
+  }, [setIsExpanded, responsiveConfig.isMobile, responsiveConfig.isTablet]);
 
 
 
@@ -472,7 +485,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           href={item.path}
           prefetch={true}
           className={`
-            w-full flex items-center ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`) : (isExpanded ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`)} rounded-xl
+            w-full flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`) : (isExpanded ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`)} rounded-xl
             transition-all duration-100 ease-out group relative
             active:scale-95
             ${isActive 
@@ -508,7 +521,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           </div>
         </div>
         
-        {!responsiveConfig.isMobile && !isExpanded && item.badge && (
+                    {!responsiveConfig.isMobile && !responsiveConfig.isTablet && !isExpanded && item.badge && (
           <div className={`absolute top-1 right-1 ${screenWidth < 1366 ? 'w-4 h-4' : 'w-5 h-5'} bg-red-500 rounded-full flex items-center justify-center animate-pulse`}>
             <span className={`${responsiveConfig.badgeSize} text-white font-bold`}>{item.badge}</span>
           </div>
@@ -522,7 +535,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     <>
       
       {/* Overlay para móviles */}
-      {responsiveConfig.isMobile && isMobileMenuOpen && (
+              {(responsiveConfig.isMobile || responsiveConfig.isTablet) && isMobileMenuOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-40"
           onClick={onMobileMenuClose}
@@ -534,21 +547,21 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 
           border-r border-slate-700/50 shadow-2xl backdrop-blur-sm z-50
           transition-all duration-200 ease-out flex flex-col
-          ${responsiveConfig.isMobile 
+          ${(responsiveConfig.isMobile || responsiveConfig.isTablet)
             ? 'w-80' 
             : responsiveConfig.sidebarWidth
           }
         `}
         style={{
-          transform: responsiveConfig.isMobile && !isMobileMenuOpen ? 'translateX(-100%)' : 'translateX(0)',
-          visibility: responsiveConfig.isMobile && !isMobileMenuOpen ? 'hidden' : 'visible'
+          transform: (responsiveConfig.isMobile || responsiveConfig.isTablet) && !isMobileMenuOpen ? 'translateX(-100%)' : 'translateX(0)',
+          visibility: (responsiveConfig.isMobile || responsiveConfig.isTablet) && !isMobileMenuOpen ? 'hidden' : 'visible'
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         {/* Header */}
                   <div className={`${responsiveConfig.padding} border-b border-slate-700/50 flex-shrink-0`}>
-            <div className={`flex items-center ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : (isExpanded ? 'space-x-3' : 'justify-center')}`}>
+            <div className={`flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : (isExpanded ? 'space-x-3' : 'justify-center')}`}>
               <PitaLogo size={responsiveConfig.logoSize} animated={true} />
               <div className={`
                 transition-all duration-150 ease-out overflow-hidden
@@ -571,7 +584,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         {/* Bottom Section */}
         <div className={`${responsiveConfig.padding} border-t border-slate-700/50 space-y-4 flex-shrink-0`}>
           {/* User Profile */}
-          <div className={`flex items-center ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : 'space-x-3'} ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
+          <div className={`flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : 'space-x-3'} ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
             <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center`}>
               {userRole === 'client' ? (
                 <VenezuelaFlag size={"sm"} animated={true} />
@@ -603,7 +616,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
                 <Link
                   href={item.path}
                   prefetch={true}
-                  className={`w-full flex items-center ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : 'justify-center p-2') : 'space-x-3 px-4 py-3'} rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-150 ease-out group`}
+                  className={`w-full flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : 'justify-center p-2') : 'space-x-3 px-4 py-3'} rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-150 ease-out group`}
                 >
                   <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-slate-600/50`}>
                     <Icon className={`${responsiveConfig.iconSize} ${item.color}`} />
@@ -621,7 +634,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
           {/* Logout */}
           <button
-            className={`w-full flex items-center ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : 'justify-center p-2') : 'space-x-3 px-4 py-3'} rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ease-out group border border-red-500/20`}
+            className={`w-full flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : 'justify-center p-2') : 'space-x-3 px-4 py-3'} rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ease-out group border border-red-500/20`}
             onClick={() => {
               // Elimina el token del almacenamiento local
               localStorage.removeItem('token');
