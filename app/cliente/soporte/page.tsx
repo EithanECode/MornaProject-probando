@@ -221,7 +221,7 @@ export default function ClienteSoporte() {
         />
         
         <main className={`flex-1 transition-all duration-300 ${
-          sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'
+          sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
         }`}>
           <Header 
             notifications={0}
@@ -230,49 +230,49 @@ export default function ClienteSoporte() {
             subtitle="¿Necesitas ayuda? Estamos aquí para ti"
           />
           
-          <div className="p-6 space-y-6">
+          <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
             {/* Header de la página con animación */}
-            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-6 text-white relative overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-4 md:p-6 text-white relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 animate-pulse"></div>
-              <div className="relative flex items-center justify-between">
+              <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
                 <div className="space-y-2">
-                  <h1 className="text-3xl font-bold">Soporte al Cliente</h1>
-                  <p className="text-blue-100 text-lg">¿Tienes alguna pregunta? Nuestro equipo está listo para ayudarte</p>
-                  <div className="flex items-center space-x-4 text-sm">
+                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">Soporte al Cliente</h1>
+                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">¿Tienes alguna pregunta? Nuestro equipo está listo para ayudarte</p>
+                  <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 text-xs md:text-sm">
                     <div className="flex items-center space-x-1">
                       <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                       <span>En línea ahora</span>
                     </div>
-                                         <div className="flex items-center space-x-1">
-                       <Clock className="w-4 h-4" />
-                       <span>Tiempo de respuesta: &lt; 2 min</span>
-                     </div>
+                    <div className="flex items-center space-x-1">
+                      <Clock className="w-3 h-3 md:w-4 md:h-4" />
+                      <span>Tiempo de respuesta: &lt; 2 min</span>
+                    </div>
                   </div>
                 </div>
-                <div className="hidden md:flex items-center space-x-4">
+                <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold">24/7</div>
-                    <div className="text-sm text-blue-100">Soporte</div>
+                    <div className="text-lg md:text-xl lg:text-2xl font-bold">24/7</div>
+                    <div className="text-xs md:text-sm text-blue-100">Soporte</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold">98%</div>
-                    <div className="text-sm text-blue-100">Satisfacción</div>
+                    <div className="text-lg md:text-xl lg:text-2xl font-bold">98%</div>
+                    <div className="text-xs md:text-sm text-blue-100">Satisfacción</div>
                   </div>
                 </div>
               </div>
             </div>
 
                         {/* Canales de Soporte con animaciones */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer" onClick={openChat}>
                 <CardHeader className="text-center">
-                  <div className="mx-auto p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
-                    <MessageSquare className="h-8 w-8 text-white" />
+                  <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                    <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
                   <CardTitle className="group-hover:text-green-600 transition-colors">Chat en Línea</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-sm text-slate-600 mb-4">Chatea con nuestro equipo de soporte en tiempo real</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">Chatea con nuestro equipo de soporte en tiempo real</p>
                   <Badge className="bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                     Disponible
@@ -282,40 +282,40 @@ export default function ClienteSoporte() {
 
               <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
-                  <div className="mx-auto p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
-                    <Phone className="h-8 w-8 text-white" />
+                  <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                    <Phone className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
                   <CardTitle className="group-hover:text-blue-600 transition-colors">Teléfono</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-sm text-slate-600 mb-4">Llámanos directamente para atención inmediata</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">Llámanos directamente para atención inmediata</p>
                   <Button 
                     variant="outline" 
                     className="w-full group-hover:border-blue-300 group-hover:text-blue-600 transition-colors"
                     onClick={() => window.open('https://wa.me/584121234567', '_blank')}
                   >
-                    <Phone className="w-4 h-4 mr-2" />
-                    +58 412-123-4567
+                    <Phone className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">+58 412-123-4567</span>
                   </Button>
                 </CardContent>
               </Card>
 
               <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
-                  <div className="mx-auto p-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
-                    <Mail className="h-8 w-8 text-white" />
+                  <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                    <Mail className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
                   <CardTitle className="group-hover:text-purple-600 transition-colors">Email</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-sm text-slate-600 mb-4">Envíanos un email y te responderemos en 24 horas</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">Envíanos un email y te responderemos en 24 horas</p>
                   <Button 
                     variant="outline" 
                     className="w-full group-hover:border-purple-300 group-hover:text-purple-600 transition-colors"
                     onClick={() => window.open('mailto:soporte@morna.com?subject=Soporte Morna&body=Hola, necesito ayuda con...', '_blank')}
                   >
-                    <Mail className="w-4 h-4 mr-2" />
-                    soporte@morna.com
+                    <Mail className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">soporte@morna.com</span>
                   </Button>
                 </CardContent>
               </Card>
@@ -330,38 +330,38 @@ export default function ClienteSoporte() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                      <div>
-                        <h4 className="font-semibold text-slate-800">Lunes a Viernes</h4>
-                        <p className="text-slate-600">8:00 AM - 6:00 PM (GMT-4)</p>
+                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-blue-50 rounded-lg gap-2 md:gap-0">
+                        <div>
+                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Lunes a Viernes</h4>
+                          <p className="text-slate-600 text-xs md:text-sm">8:00 AM - 6:00 PM (GMT-4)</p>
+                        </div>
+                        <Badge className="bg-green-100 text-green-800 text-xs md:text-sm w-fit">Abierto</Badge>
                       </div>
-                      <Badge className="bg-green-100 text-green-800">Abierto</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                      <div>
-                        <h4 className="font-semibold text-slate-800">Sábados</h4>
-                        <p className="text-slate-600">9:00 AM - 2:00 PM (GMT-4)</p>
+                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-orange-50 rounded-lg gap-2 md:gap-0">
+                        <div>
+                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Sábados</h4>
+                          <p className="text-slate-600 text-xs md:text-sm">9:00 AM - 2:00 PM (GMT-4)</p>
+                        </div>
+                        <Badge className="bg-orange-100 text-orange-800 text-xs md:text-sm w-fit">Limitado</Badge>
                       </div>
-                      <Badge className="bg-orange-100 text-orange-800">Limitado</Badge>
-                    </div>
                   </div>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                      <div>
-                        <h4 className="font-semibold text-slate-800">Domingos</h4>
-                        <p className="text-slate-600">Cerrado</p>
+                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-red-50 rounded-lg gap-2 md:gap-0">
+                        <div>
+                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Domingos</h4>
+                          <p className="text-slate-600 text-xs md:text-sm">Cerrado</p>
+                        </div>
+                        <Badge className="bg-red-100 text-red-800 text-xs md:text-sm w-fit">Cerrado</Badge>
                       </div>
-                      <Badge className="bg-red-100 text-red-800">Cerrado</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                      <div>
-                        <h4 className="font-semibold text-slate-800">Chat 24/7</h4>
-                        <p className="text-slate-600">Soporte automático</p>
+                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-purple-50 rounded-lg gap-2 md:gap-0">
+                        <div>
+                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Chat 24/7</h4>
+                          <p className="text-slate-600 text-xs md:text-sm">Soporte automático</p>
+                        </div>
+                        <Badge className="bg-purple-100 text-purple-800 text-xs md:text-sm w-fit">Disponible</Badge>
                       </div>
-                      <Badge className="bg-purple-100 text-purple-800">Disponible</Badge>
-                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -374,7 +374,7 @@ export default function ClienteSoporte() {
                   <HelpCircle className="h-5 w-5 text-orange-600" />
                   Preguntas Frecuentes
                 </CardTitle>
-                <p className="text-sm text-slate-600">Encuentra respuestas rápidas a las preguntas más comunes</p>
+                <p className="text-xs md:text-sm text-slate-600">Encuentra respuestas rápidas a las preguntas más comunes</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Búsqueda y filtros */}
@@ -390,12 +390,12 @@ export default function ClienteSoporte() {
                   </div>
                   
                   {/* Filtros por categoría */}
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1 md:gap-2">
                     {categories.map(category => (
                       <Badge
                         key={category}
                         variant={selectedCategory === category ? "default" : "outline"}
-                        className="cursor-pointer hover:bg-slate-100 transition-colors"
+                        className="cursor-pointer hover:bg-slate-100 transition-colors text-xs md:text-sm"
                         onClick={() => setSelectedCategory(category)}
                       >
                         {category === 'all' ? 'Todas' : category}
@@ -420,13 +420,13 @@ export default function ClienteSoporte() {
                                 {faq.category}
                               </Badge>
                             </div>
-                            <h4 className="font-medium text-gray-900">{faq.question}</h4>
+                            <h4 className="font-medium text-gray-900 text-sm md:text-base">{faq.question}</h4>
                           </div>
-                          <div className="ml-4 transition-transform duration-200">
+                          <div className="ml-2 md:ml-4 transition-transform duration-200">
                             {openFaqId === faq.id ? (
-                              <ChevronUp className="w-5 h-5 text-slate-400" />
+                              <ChevronUp className="w-4 h-4 md:w-5 md:h-5 text-slate-400" />
                             ) : (
-                              <ChevronDown className="w-5 h-5 text-slate-400" />
+                              <ChevronDown className="w-4 h-4 md:w-5 md:h-5 text-slate-400" />
                             )}
                           </div>
                         </div>
@@ -438,7 +438,7 @@ export default function ClienteSoporte() {
                               : 'max-h-0 opacity-0'
                           }`}
                         >
-                          <div className="text-gray-700 whitespace-pre-line border-t pt-4">
+                          <div className="text-gray-700 whitespace-pre-line border-t pt-4 text-xs md:text-sm">
                             {faq.answer}
                           </div>
                           <div className="flex flex-wrap gap-1 mt-3">
@@ -452,9 +452,9 @@ export default function ClienteSoporte() {
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8">
-                      <HelpCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                      <p className="text-slate-600">No se encontraron preguntas que coincidan con tu búsqueda.</p>
+                    <div className="text-center py-6 md:py-8">
+                      <HelpCircle className="w-8 h-8 md:w-12 md:h-12 text-slate-400 mx-auto mb-3 md:mb-4" />
+                      <p className="text-slate-600 text-sm md:text-base">No se encontraron preguntas que coincidan con tu búsqueda.</p>
                       <Button 
                         variant="outline" 
                         className="mt-2"
@@ -476,22 +476,22 @@ export default function ClienteSoporte() {
 
       {/* Chat Modal Moderno */}
       {isChatOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-end justify-end p-4">
-          <div className={`bg-white rounded-2xl shadow-2xl max-w-md w-full flex flex-col h-[600px] transition-all duration-300 ease-out ${
+        <div className="fixed inset-0 z-[9999] flex items-end justify-end p-2 md:p-4">
+          <div className={`bg-white rounded-2xl shadow-2xl max-w-md w-full flex flex-col h-[500px] md:h-[600px] transition-all duration-300 ease-out ${
             isChatClosing 
               ? 'translate-y-full scale-95 opacity-0' 
               : 'animate-in slide-in-from-bottom-4 duration-500 ease-out scale-in-95'
           }`}>
             {/* Header del chat */}
-            <div className="p-4 border-b bg-gradient-to-r from-green-500 to-green-600 rounded-t-2xl text-white">
+            <div className="p-3 md:p-4 border-b bg-gradient-to-r from-green-500 to-green-600 rounded-t-2xl text-white">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <Bot className="w-5 h-5" />
+                <div className="flex items-center space-x-2 md:space-x-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <Bot className="w-4 h-4 md:w-5 md:h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">Chat con Soporte</h3>
-                    <p className="text-sm text-green-100 flex items-center">
+                    <h3 className="font-semibold text-sm md:text-base">Chat con Soporte</h3>
+                    <p className="text-xs md:text-sm text-green-100 flex items-center">
                       <div className="w-2 h-2 bg-green-300 rounded-full mr-2 animate-pulse"></div>
                       Carlos - En línea
                     </p>
@@ -499,26 +499,26 @@ export default function ClienteSoporte() {
                 </div>
                 <button 
                   onClick={closeChat}
-                  className="text-white/80 hover:text-white transition-colors"
+                  className="text-white/80 hover:text-white transition-colors p-1 md:p-2"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 md:w-5 md:h-5" />
                 </button>
               </div>
             </div>
 
             {/* Mensajes */}
-            <div className="flex-1 p-4 space-y-4 overflow-y-auto bg-gray-50">
+            <div className="flex-1 p-3 md:p-4 space-y-3 md:space-y-4 overflow-y-auto bg-gray-50">
               {chatMessages.map((msg) => (
                 <div 
                   key={msg.id} 
                   className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <div className={`max-w-xs px-4 py-3 rounded-2xl ${
+                  <div className={`max-w-xs px-3 md:px-4 py-2 md:py-3 rounded-2xl ${
                     msg.sender === "user" 
                       ? "bg-green-600 text-white rounded-br-md" 
                       : "bg-white text-gray-900 rounded-bl-md shadow-sm"
                   }`}>
-                    <p className="text-sm">{msg.message}</p>
+                    <p className="text-xs md:text-sm">{msg.message}</p>
                     <p className={`text-xs mt-1 ${
                       msg.sender === "user" ? "text-green-100" : "text-gray-500"
                     }`}>
@@ -530,7 +530,7 @@ export default function ClienteSoporte() {
               
               {isAgentTyping && (
                 <div className="flex justify-start">
-                  <div className="bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm px-4 py-3">
+                  <div className="bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm px-3 md:px-4 py-2 md:py-3">
                     <div className="flex items-center space-x-1">
                       <div className="flex space-x-1">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
@@ -547,16 +547,16 @@ export default function ClienteSoporte() {
             </div>
 
             {/* Input del chat */}
-            <div className="p-4 border-t bg-white rounded-b-2xl">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (chatInput.trim()) {
-                    sendMessage(chatInput);
-                  }
-                }}
-                className="flex space-x-2"
-              >
+            <div className="p-3 md:p-4 border-t bg-white rounded-b-2xl">
+                              <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (chatInput.trim()) {
+                      sendMessage(chatInput);
+                    }
+                  }}
+                  className="flex space-x-1 md:space-x-2"
+                >
                 <Input
                   type="text"
                   placeholder="Escribe tu mensaje..."
@@ -571,7 +571,7 @@ export default function ClienteSoporte() {
                   disabled={!chatInput.trim() || isAgentTyping}
                   className="bg-green-600 hover:bg-green-700"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-3 h-3 md:w-4 md:h-4" />
                 </Button>
               </form>
             </div>
