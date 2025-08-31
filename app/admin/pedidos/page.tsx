@@ -468,56 +468,63 @@ export default function PedidosPage() {
           {/* Stats Cards */}
           {statsCards}
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-              <LazyExportButton onClick={handleExport} />
-              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-sm md:text-base">
-                <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                Nuevo Pedido
-              </Button>
-            </div>
-          </div>
+
 
           {/* Table Card */}
           <Card className={mounted && theme === 'dark' ? 'shadow-lg border-0 bg-slate-800/80 backdrop-blur-sm' : 'shadow-lg border-0 bg-white/70 backdrop-blur-sm'}>
             <CardHeader>
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div>
-                  <CardTitle className={`text-lg md:text-xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Lista de Pedidos</CardTitle>
-                  <CardDescription className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
-                    {filteredOrders.length} pedidos encontrados
-                  </CardDescription>
-                </div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 w-full lg:w-auto">
-                  {/* Search */}
-                  <div className="relative w-full sm:w-auto">
-                    <Search className={mounted && theme === 'dark' ? 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4' : 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4'} />
-                    <Input
-                      placeholder="Buscar pedidos..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className={`pl-10 w-full sm:w-64 focus:border-blue-500 focus:ring-blue-500 ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400' : 'bg-white/50 border-slate-200'}`}
-                    />
+                                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div>
+                      <CardTitle className={`text-lg md:text-xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Lista de Pedidos</CardTitle>
+                      <CardDescription className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
+                        {filteredOrders.length} pedidos encontrados
+                      </CardDescription>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 w-full lg:w-auto">
+                      {/* Search */}
+                      <div className="relative w-full sm:w-auto">
+                        <Search className={mounted && theme === 'dark' ? 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4' : 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4'} />
+                        <Input
+                          placeholder="Buscar pedidos..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className={`pl-10 w-full sm:w-64 focus:border-blue-500 focus:ring-blue-500 ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400' : 'bg-white/50 border-slate-200'}`}
+                        />
+                      </div>
+                      {/* Status Filter */}
+                      <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger className={`w-full sm:w-auto ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white/50 border-slate-200'}`}>
+                          <Filter className="w-4 h-4 mr-2" />
+                          <SelectValue placeholder="Filtrar por estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todos los estados</SelectItem>
+                          <SelectItem value="pendiente-china">Pendiente China</SelectItem>
+                          <SelectItem value="pendiente-vzla">Pendiente Vzla</SelectItem>
+                          <SelectItem value="esperando-pago">Esperando Pago</SelectItem>
+                          <SelectItem value="en-transito">En Tránsito</SelectItem>
+                          <SelectItem value="entregado">Entregado</SelectItem>
+                          <SelectItem value="cancelado">Cancelado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  {/* Status Filter */}
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className={`w-full sm:w-auto ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white/50 border-slate-200'}`}>
-                      <Filter className="w-4 h-4 mr-2" />
-                      <SelectValue placeholder="Filtrar por estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos los estados</SelectItem>
-                      <SelectItem value="pendiente-china">Pendiente China</SelectItem>
-                      <SelectItem value="pendiente-vzla">Pendiente Vzla</SelectItem>
-                      <SelectItem value="esperando-pago">Esperando Pago</SelectItem>
-                      <SelectItem value="en-transito">En Tránsito</SelectItem>
-                      <SelectItem value="entregado">Entregado</SelectItem>
-                      <SelectItem value="cancelado">Cancelado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex flex-col items-center gap-4 mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <Button className="w-full max-w-xs px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-sm md:text-base font-medium">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Nuevo Pedido
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={handleExport}
+                      className="w-full max-w-xs px-8 py-3 bg-white hover:bg-gray-50 border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-800 shadow-sm hover:shadow-md transition-all duration-300 text-sm md:text-base font-medium"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Exportar a PDF
+                    </Button>
+                  </div>
             </CardHeader>
             <CardContent>
               {/* Vista Desktop - Tabla */}
@@ -639,57 +646,57 @@ export default function PedidosPage() {
           >
             <div className="flex flex-col md:flex-row">
               {/* Sección izquierda - Detalles del pedido */}
-              <div className={mounted && theme === 'dark' ? 'md:w-2/3 p-8 border-b md:border-b-0 md:border-r border-slate-700' : 'md:w-2/3 p-8 border-b md:border-b-0 md:border-r border-gray-200'}>
+              <div className={mounted && theme === 'dark' ? 'md:w-2/3 p-4 md:p-6 lg:p-8 border-b md:border-b-0 md:border-r border-slate-700' : 'md:w-2/3 p-4 md:p-6 lg:p-8 border-b md:border-b-0 md:border-r border-gray-200'}>
                 <DialogHeader>
-                  <DialogTitle className={mounted && theme === 'dark' ? 'text-2xl font-bold text-white' : 'text-2xl font-bold text-slate-900'}>
+                  <DialogTitle className={`text-lg md:text-xl lg:text-2xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                     Detalles del Pedido: {selectedOrder.id}
                   </DialogTitle>
-                  <DialogDescription className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-500'}>
+                  <DialogDescription className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-500'}`}>
                     Información detallada sobre el pedido y su estado actual.
                   </DialogDescription>
                 </DialogHeader>
 
-                <div className="mt-6 space-y-4">
+                <div className="mt-4 md:mt-6 space-y-3 md:space-y-4">
                   {/* Detalles de la tarjeta */}
                   <div className="flex items-center space-x-3">
-                    <div className={mounted && theme === 'dark' ? 'w-10 h-10 rounded-full bg-blue-900 flex items-center justify-center' : 'w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center'}>
-                      <Package className={mounted && theme === 'dark' ? 'w-5 h-5 text-blue-300' : 'w-5 h-5 text-blue-600'} />
+                    <div className={mounted && theme === 'dark' ? 'w-8 h-8 md:w-10 md:h-10 rounded-full bg-blue-900 flex items-center justify-center' : 'w-8 h-8 md:w-10 md:h-10 rounded-full bg-blue-100 flex items-center justify-center'}>
+                      <Package className={mounted && theme === 'dark' ? 'w-4 h-4 md:w-5 md:h-5 text-blue-300' : 'w-4 h-4 md:w-5 md:h-5 text-blue-600'} />
                     </div>
                     <div>
-                      <p className={mounted && theme === 'dark' ? 'font-semibold text-lg text-white' : 'font-semibold text-lg text-slate-900'}>Cliente</p>
-                      <p className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}>{selectedOrder.client}</p>
+                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Cliente</p>
+                      <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>{selectedOrder.client}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-3">
-                    <div className={mounted && theme === 'dark' ? 'w-10 h-10 rounded-full bg-purple-900 flex items-center justify-center' : 'w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center'}>
-                      <MapPin className={mounted && theme === 'dark' ? 'w-5 h-5 text-purple-300' : 'w-5 h-5 text-purple-600'} />
+                    <div className={mounted && theme === 'dark' ? 'w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-900 flex items-center justify-center' : 'w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-100 flex items-center justify-center'}>
+                      <MapPin className={mounted && theme === 'dark' ? 'w-4 h-4 md:w-5 md:h-5 text-purple-300' : 'w-4 h-4 md:w-5 md:h-5 text-purple-600'} />
                     </div>
                     <div>
-                      <p className={mounted && theme === 'dark' ? 'font-semibold text-lg text-white' : 'font-semibold text-lg text-slate-900'}>Asignado a</p>
-                      <Badge className={`${assignedConfig[selectedOrder.assignedTo].color} border`}>
+                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Asignado a</p>
+                      <Badge className={`${assignedConfig[selectedOrder.assignedTo].color} border text-xs md:text-sm`}>
                         {assignedConfig[selectedOrder.assignedTo].label}
                       </Badge>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-3">
-                    <div className={mounted && theme === 'dark' ? 'w-10 h-10 rounded-full bg-green-900 flex items-center justify-center' : 'w-10 h-10 rounded-full bg-green-100 flex items-center justify-center'}>
-                      <Clock className={mounted && theme === 'dark' ? 'w-5 h-5 text-green-300' : 'w-5 h-5 text-green-600'} />
+                    <div className={mounted && theme === 'dark' ? 'w-8 h-8 md:w-10 md:h-10 rounded-full bg-green-900 flex items-center justify-center' : 'w-8 h-8 md:w-10 md:h-10 rounded-full bg-green-100 flex items-center justify-center'}>
+                      <Clock className={mounted && theme === 'dark' ? 'w-4 h-4 md:w-5 md:h-5 text-green-300' : 'w-4 h-4 md:w-5 md:h-5 text-green-600'} />
                     </div>
                     <div>
-                      <p className={mounted && theme === 'dark' ? 'font-semibold text-lg text-white' : 'font-semibold text-lg text-slate-900'}>Tiempo Transcurrido</p>
-                      <p className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}>{selectedOrder.daysElapsed} días</p>
+                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Tiempo Transcurrido</p>
+                      <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>{selectedOrder.daysElapsed} días</p>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-3">
-                    <div className={mounted && theme === 'dark' ? 'w-10 h-10 rounded-full bg-orange-900 flex items-center justify-center' : 'w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center'}>
-                      <Calendar className={mounted && theme === 'dark' ? 'w-5 h-5 text-orange-300' : 'w-5 h-5 text-orange-600'} />
+                    <div className={mounted && theme === 'dark' ? 'w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-900 flex items-center justify-center' : 'w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-100 flex items-center justify-center'}>
+                      <Calendar className={mounted && theme === 'dark' ? 'w-4 h-4 md:w-5 md:h-5 text-orange-300' : 'w-4 h-4 md:w-5 md:h-5 text-orange-600'} />
                     </div>
                     <div>
-                      <p className={mounted && theme === 'dark' ? 'font-semibold text-lg text-white' : 'font-semibold text-lg text-slate-900'}>Estado Actual</p>
-                      <Badge className={`${statusConfig[selectedOrder.status].color} border`}>
+                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Estado Actual</p>
+                      <Badge className={`${statusConfig[selectedOrder.status].color} border text-xs md:text-sm`}>
                         {
                           (() => {
                             const StatusIcon = statusConfig[selectedOrder.status].icon;
@@ -702,17 +709,17 @@ export default function PedidosPage() {
                   </div>
                 </div>
 
-                <div className="mt-8">
-                  <p className={mounted && theme === 'dark' ? 'font-semibold text-xl text-white' : 'font-semibold text-xl text-slate-900'}>Descripción del Pedido</p>
-                  <p className={mounted && theme === 'dark' ? 'mt-2 text-slate-300' : 'mt-2 text-gray-600'}>{selectedOrder.description}</p>
+                <div className="mt-6 md:mt-8">
+                  <p className={`font-semibold text-lg md:text-xl ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Descripción del Pedido</p>
+                  <p className={`mt-2 text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>{selectedOrder.description}</p>
                 </div>
               </div>
 
               {/* Sección derecha - Historial y Acciones */}
-              <div className={mounted && theme === 'dark' ? 'md:w-1/3 p-8 bg-slate-800 flex flex-col justify-between' : 'md:w-1/3 p-8 bg-gray-50 flex flex-col justify-between'}>
+              <div className={mounted && theme === 'dark' ? 'md:w-1/3 p-4 md:p-6 lg:p-8 bg-slate-800 flex flex-col justify-between' : 'md:w-1/3 p-4 md:p-6 lg:p-8 bg-gray-50 flex flex-col justify-between'}>
                 <div>
-                  <h3 className={mounted && theme === 'dark' ? 'font-bold text-lg text-white' : 'font-bold text-lg text-slate-900'}>Historial del Pedido</h3>
-                  <div className="mt-4 space-y-4">
+                  <h3 className={`font-bold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Historial del Pedido</h3>
+                  <div className="mt-3 md:mt-4 space-y-3 md:space-y-4">
                     {/* Placeholder para el historial */}
                     <div className={mounted && theme === 'dark' ? 'flex items-center' : 'flex items-center'}>
                       <div className={mounted && theme === 'dark' ? 'w-2 h-2 rounded-full bg-blue-400 mr-4' : 'w-2 h-2 rounded-full bg-blue-500 mr-4'}></div>
@@ -725,7 +732,7 @@ export default function PedidosPage() {
                   </div>
                 </div>
 
-                <div className="mt-8 flex flex-col space-y-2">
+                <div className="mt-6 md:mt-8 flex flex-col space-y-2">
                   <Button 
                     className={mounted && theme === 'dark' ? 'w-full bg-blue-600 text-white hover:bg-blue-700' : 'w-full bg-blue-600 text-white hover:bg-blue-700'}
                     onClick={() => handleOpenEditModal(selectedOrder)}
