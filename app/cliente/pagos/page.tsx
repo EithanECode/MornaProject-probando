@@ -334,7 +334,7 @@ export default function PagosPage() {
       />
       
       <main className={`flex-1 transition-all duration-300 ${
-        sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'
+        sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       }`}>
         <Header 
           notifications={stats.pending}
@@ -343,26 +343,26 @@ export default function PagosPage() {
           subtitle="Consulta y gestiona todos tus pagos realizados"
         />
         
-        <div className="p-6 space-y-8">
+        <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
           {/* Header del Dashboard con Bienvenida */}
-          <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl p-8 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative z-10">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
                 <div>
-                  <h2 className="text-3xl font-bold mb-2">Historial de Pagos</h2>
-                  <p className="text-green-100 text-lg">Panel de Control - Pagos</p>
-                  <p className="text-green-200 mt-2">Consulta y gestiona todos tus pagos realizados</p>
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">Historial de Pagos</h2>
+                  <p className="text-green-100 text-sm md:text-base lg:text-lg">Panel de Control - Pagos</p>
+                  <p className="text-green-200 mt-2 text-xs md:text-sm">Consulta y gestiona todos tus pagos realizados</p>
                 </div>
-                <div className="hidden lg:flex items-center space-x-6">
+                <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
                   <div className="text-center">
-                    <div className="text-4xl font-bold">{stats.total}</div>
-                    <p className="text-green-100">Total Pagos</p>
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{stats.total}</div>
+                    <p className="text-green-100 text-xs md:text-sm">Total Pagos</p>
                   </div>
-                  <div className="w-px h-16 bg-white/20"></div>
+                  <div className="hidden md:block w-px h-12 md:h-16 bg-white/20"></div>
                   <div className="text-center">
-                    <div className="text-4xl font-bold">{formatCurrency(stats.paidAmount, 'USD')}</div>
-                    <p className="text-green-100">Total Pagado</p>
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{formatCurrency(stats.paidAmount, 'USD')}</div>
+                    <p className="text-green-100 text-xs md:text-sm">Total Pagado</p>
                   </div>
                 </div>
               </div>
@@ -370,9 +370,9 @@ export default function PagosPage() {
           </div>
 
           {/* Dashboard Principal */}
-          <div className="space-y-8">
+          <div className="space-y-6 md:space-y-6 lg:space-y-8">
             {/* Estadísticas Principales */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-green-800">Pagados</CardTitle>
@@ -381,7 +381,7 @@ export default function PagosPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-green-900">{stats.paid}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{stats.paid}</div>
                   <p className="text-xs text-green-700">Transacciones exitosas</p>
                   <div className="mt-2 w-full bg-green-200 rounded-full h-2">
                     <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.paid / stats.total) * 100}%`}}></div>
@@ -397,7 +397,7 @@ export default function PagosPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-yellow-900">{stats.pending}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-900">{stats.pending}</div>
                   <p className="text-xs text-yellow-700">Esperando confirmación</p>
                   <div className="mt-2 w-full bg-yellow-200 rounded-full h-2">
                     <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(stats.pending / stats.total) * 100}%`}}></div>
@@ -413,7 +413,7 @@ export default function PagosPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-900">{stats.processing}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.processing}</div>
                   <p className="text-xs text-blue-700">En proceso</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                     <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.processing / stats.total) * 100}%`}}></div>
@@ -429,7 +429,7 @@ export default function PagosPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-red-900">{stats.failed}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-red-900">{stats.failed}</div>
                   <p className="text-xs text-red-700">Transacciones fallidas</p>
                   <div className="mt-2 w-full bg-red-200 rounded-full h-2">
                     <div className="bg-red-500 h-2 rounded-full" style={{width: `${(stats.failed / stats.total) * 100}%`}}></div>
@@ -445,7 +445,7 @@ export default function PagosPage() {
                 <p className="text-sm text-slate-600">Encuentra rápidamente tus transacciones</p>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex flex-col gap-3 md:gap-4">
                   <div className="flex-1">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -457,9 +457,10 @@ export default function PagosPage() {
                       />
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col md:flex-row gap-3 md:gap-2">
+                    <div className="grid grid-cols-1 md:flex md:gap-2 gap-3">
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-40">
+                      <SelectTrigger className="w-full md:w-40">
                         <Filter className="w-4 h-4 mr-2" />
                         <SelectValue placeholder="Estado" />
                       </SelectTrigger>
@@ -473,7 +474,7 @@ export default function PagosPage() {
                       </SelectContent>
                     </Select>
                     <Select value={methodFilter} onValueChange={setMethodFilter}>
-                      <SelectTrigger className="w-40">
+                      <SelectTrigger className="w-full md:w-40">
                         <CreditCard className="w-4 h-4 mr-2" />
                         <SelectValue placeholder="Método" />
                       </SelectTrigger>
@@ -488,7 +489,7 @@ export default function PagosPage() {
                       </SelectContent>
                     </Select>
                     <Select value={dateFilter} onValueChange={setDateFilter}>
-                      <SelectTrigger className="w-40">
+                      <SelectTrigger className="w-full md:w-40">
                         <CalendarDays className="w-4 h-4 mr-2" />
                         <SelectValue placeholder="Fecha" />
                       </SelectTrigger>
@@ -499,7 +500,8 @@ export default function PagosPage() {
                         <SelectItem value="month">Este mes</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="outline" className="flex items-center gap-2">
+                    </div>
+                    <Button variant="outline" className="flex items-center gap-2 w-full md:w-auto">
                       <RefreshCw className="w-4 h-4" />
                       Actualizar
                     </Button>
@@ -510,52 +512,52 @@ export default function PagosPage() {
 
             {/* Lista de Pagos */}
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold">Transacciones ({filteredPayments.length})</h3>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Download className="w-4 h-4" />
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+                <h3 className="text-lg md:text-xl font-semibold">Transacciones ({filteredPayments.length})</h3>
+                <Button variant="outline" className="flex items-center gap-2 text-xs md:text-sm">
+                  <Download className="w-3 h-3 md:w-4 md:h-4" />
                   Exportar Historial
                 </Button>
               </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 {filteredPayments.map((payment) => (
                   <Card key={payment.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-all duration-300 group">
                     <CardHeader>
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
                         <div className="flex items-center gap-3">
                           <div className="p-2 bg-slate-100 rounded-lg group-hover:bg-slate-200 transition-colors">
                             {getMethodIcon(payment.paymentMethod)}
                           </div>
                           <div>
-                            <CardTitle className="text-lg">{payment.product}</CardTitle>
-                            <p className="text-sm text-slate-600">{payment.id} - {payment.orderId}</p>
+                            <CardTitle className="text-base md:text-lg">{payment.product}</CardTitle>
+                            <p className="text-xs md:text-sm text-slate-600">{payment.id} - {payment.orderId}</p>
                           </div>
                         </div>
-                        <Badge className={getStatusColor(payment.status)}>
+                        <Badge className={`${getStatusColor(payment.status)} text-xs md:text-sm`}>
                           {getStatusText(payment.status)}
                         </Badge>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-3">
-                        <p className="text-sm text-slate-600">{payment.description}</p>
-                        <div className="flex items-center justify-between text-sm">
+                        <p className="text-xs md:text-sm text-slate-600">{payment.description}</p>
+                        <div className="flex items-center justify-between text-xs md:text-sm">
                           <span className="text-slate-600">Monto:</span>
-                          <span className="font-bold text-xl text-slate-800">{formatCurrency(payment.amount, payment.currency)}</span>
+                          <span className="font-bold text-lg md:text-xl text-slate-800">{formatCurrency(payment.amount, payment.currency)}</span>
                         </div>
-                        <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center justify-between text-xs md:text-sm">
                           <span className="text-slate-600">Método:</span>
                           <div className="flex items-center gap-2">
                             <span className="font-medium">{getMethodText(payment.paymentMethod)}</span>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center justify-between text-xs md:text-sm">
                           <span className="text-slate-600">Fecha de pago:</span>
                           <span className="font-medium">{formatDate(payment.createdAt)}</span>
                         </div>
                         {payment.paidAt && (
-                          <div className="flex items-center justify-between text-sm">
+                          <div className="flex items-center justify-between text-xs md:text-sm">
                             <span className="text-slate-600">Confirmado:</span>
                             <span className="font-medium text-green-600">{formatDate(payment.paidAt)}</span>
                           </div>
@@ -563,8 +565,8 @@ export default function PagosPage() {
                       </div>
 
                       {payment.paymentDetails && (
-                        <div className="p-4 bg-slate-50 rounded-xl space-y-3">
-                          <p className="text-sm font-medium text-slate-700">Detalles de Pago:</p>
+                        <div className="p-3 md:p-4 bg-slate-50 rounded-xl space-y-3">
+                          <p className="text-xs md:text-sm font-medium text-slate-700">Detalles de Pago:</p>
                           <div className="space-y-2 text-xs">
                             {payment.paymentDetails.bankName && (
                               <div className="flex justify-between">
@@ -604,25 +606,25 @@ export default function PagosPage() {
                         </div>
                       )}
 
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1 group-hover:bg-slate-50 transition-colors">
-                          <Eye className="w-4 h-4 mr-2" />
+                      <div className="flex flex-wrap gap-2">
+                        <Button variant="outline" size="sm" className="flex-1 group-hover:bg-slate-50 transition-colors text-xs">
+                          <Eye className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
                           Ver Detalles
                         </Button>
                         {payment.status === 'pending' && (
-                          <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700">
-                            <DollarSign className="w-4 h-4 mr-2" />
+                          <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700 text-xs">
+                            <DollarSign className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
                             Realizar Pago
                           </Button>
                         )}
                         {payment.status === 'paid' && payment.receiptUrl && (
-                          <Button variant="outline" size="sm" className="hover:bg-green-50 hover:border-green-300 transition-colors">
-                            <Download className="w-4 h-4" />
+                          <Button variant="outline" size="sm" className="hover:bg-green-50 hover:border-green-300 transition-colors text-xs">
+                            <Download className="w-3 h-3 md:w-4 md:h-4" />
                           </Button>
                         )}
                         {payment.status === 'failed' && (
-                          <Button variant="outline" size="sm" className="flex-1 hover:bg-red-50 hover:border-red-300 transition-colors">
-                            <RefreshCw className="w-4 h-4 mr-2" />
+                          <Button variant="outline" size="sm" className="flex-1 hover:bg-red-50 hover:border-red-300 transition-colors text-xs">
+                            <RefreshCw className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
                             Reintentar
                           </Button>
                         )}
@@ -636,10 +638,10 @@ export default function PagosPage() {
             {/* Estado vacío */}
             {filteredPayments.length === 0 && (
               <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-                <CardContent className="p-12 text-center">
-                  <Receipt className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">No hay transacciones</h3>
-                  <p className="text-slate-600">No hay pagos disponibles o no hay coincidencias con los filtros aplicados.</p>
+                <CardContent className="p-8 md:p-12 text-center">
+                  <Receipt className="w-12 h-12 md:w-16 md:h-16 text-slate-400 mx-auto mb-3 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-2">No hay transacciones</h3>
+                  <p className="text-slate-600 text-sm md:text-base">No hay pagos disponibles o no hay coincidencias con los filtros aplicados.</p>
                 </CardContent>
               </Card>
             )}
