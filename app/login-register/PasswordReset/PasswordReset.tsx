@@ -73,7 +73,7 @@ export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) 
     };
 
     const passwordStrength = getPasswordStrengthLevel(newPassword);
-    if (passwordStrength !== "very-strong") {
+    if (passwordStrength === "low" || passwordStrength === "none") {
       alert('La contraseña debe ser "Muy Fuerte" para continuar.');
       return;
     }

@@ -155,8 +155,8 @@ export default function RegisterForm() {
       setPasswordMatchError(true);
       valid = false;
     }
-    if (passwordStrength !== "very-strong") {
-      alert('La contraseña debe ser "Muy Fuerte" para registrarse.');
+    if (passwordStrength === "low" || passwordStrength === "none") {
+      alert('La contraseña debe ser al menos "Normal" para registrarse.');
       valid = false;
     }
     if (!valid) return;
