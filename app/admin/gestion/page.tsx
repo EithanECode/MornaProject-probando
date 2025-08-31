@@ -128,7 +128,7 @@ export default function ConfiguracionPage() {
   return (
     <div
       className={
-        `min-h-screen flex ` +
+        `min-h-screen flex overflow-x-hidden ` +
         (mounted && theme === 'dark'
           ? 'bg-slate-900'
           : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50')
@@ -136,18 +136,18 @@ export default function ConfiguracionPage() {
     >
       <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="admin" />
 
-      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72' : 'ml-20'}`}>
+      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'}`}>
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
+        <header className={mounted && theme === 'dark' ? 'bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-40' : 'bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40'}>
+          <div className="px-4 md:px-5 lg:px-6 py-4">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Gestión del Sistema</h1>
-                <p className="text-sm text-slate-600">Ajuste los parametros de gestión del sistema</p>
+                <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Gestión del Sistema</h1>
+                <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Ajuste los parametros de gestión del sistema</p>
               </div>
-              <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                 {lastSaved && (
-                  <div className="text-sm text-slate-600">
+                  <div className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                     <Clock className="w-4 h-4 inline mr-1" />
                     Guardado: {lastSaved.toLocaleString('es-VE')}
                   </div>
@@ -156,7 +156,7 @@ export default function ConfiguracionPage() {
                 <Button 
                   onClick={handleSave}
                   disabled={isLoading}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   {isLoading ? (
                     <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -170,7 +170,7 @@ export default function ConfiguracionPage() {
           </div>
         </header>
 
-        <div className="p-6 space-y-6">
+        <div className={`p-4 md:p-5 lg:p-6 space-y-6 md:space-y-8 ${mounted && theme === 'dark' ? 'bg-slate-900' : ''}`}>
           {/* Alert de advertencia */}
           <Alert className="border-orange-200 bg-orange-50">
             <AlertTriangle className="h-4 w-4 text-orange-600" />
@@ -180,39 +180,39 @@ export default function ConfiguracionPage() {
             </AlertDescription>
           </Alert>
 
-          <Tabs defaultValue="shipping" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 bg-white/60 backdrop-blur-sm place-items-center">
-              <TabsTrigger value="shipping" className="flex items-center space-x-2">
+          <Tabs defaultValue="shipping" className="space-y-6 md:space-y-8">
+            <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 bg-white/60 backdrop-blur-sm place-items-center">
+              <TabsTrigger value="shipping" className="flex items-center space-x-2 text-xs md:text-sm">
                 <Package className="w-4 h-4" />
                 <span>Envíos</span>
               </TabsTrigger>
-              <TabsTrigger value="financial" className="flex items-center space-x-2">
+              <TabsTrigger value="financial" className="flex items-center space-x-2 text-xs md:text-sm">
                 <DollarSign className="w-4 h-4" />
                 <span>Financiero</span>
               </TabsTrigger>
-              <TabsTrigger value="notifications" className="flex items-center space-x-2">
+              <TabsTrigger value="notifications" className="flex items-center space-x-2 text-xs md:text-sm">
                 <Bell className="w-4 h-4" />
                 <span>Notificaciones</span>
               </TabsTrigger>
             </TabsList>
 
             {/* TAB: Configuración de Envíos */}
-            <TabsContent value="shipping" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <TabsContent value="shipping" className="space-y-6 md:space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 {/* Envío Aéreo */}
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center text-black">
+                    <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Plane className="w-5 h-5 mr-2 text-blue-600" />
                       Envío Aéreo Express
                     </CardTitle>
-                    <CardDescription className="text-black">
+                    <CardDescription className="text-black text-sm">
                       Tarifas y tiempos para envíos rápidos por avión
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="airRate">Tarifa por Kg Volumétrico</Label>
+                      <Label htmlFor="airRate" className="text-sm md:text-base">Tarifa por Kg Volumétrico</Label>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                         <Input
@@ -237,7 +237,7 @@ export default function ConfiguracionPage() {
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="airMin">Días Mínimos</Label>
+                        <Label htmlFor="airMin" className="text-sm">Días Mínimos</Label>
                         <Input
                           id="airMin"
                           type="number"
@@ -255,7 +255,7 @@ export default function ConfiguracionPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="airMax">Días Máximos</Label>
+                        <Label htmlFor="airMax" className="text-sm">Días Máximos</Label>
                         <Input
                           id="airMax"
                           type="number"
@@ -283,17 +283,17 @@ export default function ConfiguracionPage() {
                 {/* Envío Marítimo */}
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center text-black">
+                    <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Ship className="w-5 h-5 mr-2 text-teal-600" />
                       Envío Marítimo Económico
                     </CardTitle>
-                    <CardDescription className="text-black">
+                    <CardDescription className="text-black text-sm">
                       Opciones y costos para envíos por barco
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="seaRate">Tarifa por Metro Cúbico</Label>
+                      <Label htmlFor="seaRate" className="text-sm md:text-base">Tarifa por Metro Cúbico</Label>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                         <Input
@@ -318,7 +318,7 @@ export default function ConfiguracionPage() {
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="seaMin">Días Mínimos</Label>
+                        <Label htmlFor="seaMin" className="text-sm">Días Mínimos</Label>
                         <Input
                           id="seaMin"
                           type="number"
@@ -336,7 +336,7 @@ export default function ConfiguracionPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="seaMax">Días Máximos</Label>
+                        <Label htmlFor="seaMax" className="text-sm">Días Máximos</Label>
                         <Input
                           id="seaMax"
                           type="number"
@@ -364,21 +364,21 @@ export default function ConfiguracionPage() {
             </TabsContent>
 
             {/* TAB: Configuración Financiera */}
-            <TabsContent value="financial" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <TabsContent value="financial" className="space-y-6 md:space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center text-black">
+                    <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Globe className="w-5 h-5 mr-2 text-green-600" />
                       Tasa de Cambio
                     </CardTitle>
-                    <CardDescription className="text-black">
+                    <CardDescription className="text-black text-sm">
                       Valor del dólar estadounidense
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="usdRate">1 USD = X Bs</Label>
+                      <Label htmlFor="usdRate" className="text-sm md:text-base">1 USD = X Bs</Label>
                       <Input
                         id="usdRate"
                         type="number"
@@ -404,17 +404,17 @@ export default function ConfiguracionPage() {
 
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center text-black">
+                    <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Percent className="w-5 h-5 mr-2 text-purple-600" />
                       Márgenes y Descuentos
                     </CardTitle>
-                    <CardDescription className="text-black">
+                    <CardDescription className="text-black text-sm">
                       Configuración de rentabilidad
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="profit">Margen de Ganancia (%)</Label>
+                      <Label htmlFor="profit" className="text-sm md:text-base">Margen de Ganancia (%)</Label>
                       <Input
                         id="profit"
                         type="number"
@@ -429,7 +429,7 @@ export default function ConfiguracionPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="discount">Descuento por Pago en USD (%)</Label>
+                      <Label htmlFor="discount" className="text-sm md:text-base">Descuento por Pago en USD (%)</Label>
                       <Input
                         id="discount"
                         type="number"
@@ -449,24 +449,24 @@ export default function ConfiguracionPage() {
             </TabsContent>
 
             {/* TAB: Notificaciones */}
-            <TabsContent value="notifications" className="space-y-6">
+            <TabsContent value="notifications" className="space-y-6 md:space-y-8">
               <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-black">
+                  <CardTitle className="flex items-center text-black text-base md:text-lg">
                     <Bell className="w-5 h-5 mr-2 text-red-600" />
                     Sistema de Notificaciones
                   </CardTitle>
-                  <CardDescription className="text-black">
+                  <CardDescription className="text-black text-sm">
                     Configuración de alertas y comunicaciones
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                          <Label htmlFor="email-notifications">Notificaciones por Email</Label>
-                          <p className="text-sm text-slate-500">Enviar alertas por correo electrónico</p>
+                          <Label htmlFor="email-notifications" className="text-sm md:text-base">Notificaciones por Email</Label>
+                          <p className="text-xs md:text-sm text-slate-500">Enviar alertas por correo electrónico</p>
                         </div>
                         <Switch
                           id="email-notifications"
@@ -477,8 +477,8 @@ export default function ConfiguracionPage() {
                       
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                          <Label htmlFor="whatsapp-notifications">Notificaciones por WhatsApp</Label>
-                          <p className="text-sm text-slate-500">Enviar alertas por WhatsApp</p>
+                          <Label htmlFor="whatsapp-notifications" className="text-sm md:text-base">Notificaciones por WhatsApp</Label>
+                          <p className="text-xs md:text-sm text-slate-500">Enviar alertas por WhatsApp</p>
                         </div>
                         <Switch
                           id="whatsapp-notifications"
@@ -489,7 +489,7 @@ export default function ConfiguracionPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="alertDays">Alertar después de (días)</Label>
+                      <Label htmlFor="alertDays" className="text-sm md:text-base">Alertar después de (días)</Label>
                       <Input
                         id="alertDays"
                         type="number"
@@ -515,7 +515,7 @@ export default function ConfiguracionPage() {
           {/* Panel de Resumen */}
           <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center text-black">
+              <CardTitle className="flex items-center text-black text-base md:text-lg">
                 <Calculator className="w-5 h-5 mr-2 text-blue-600" />
                 Resumen de Configuración Actual
               </CardTitle>

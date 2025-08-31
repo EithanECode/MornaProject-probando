@@ -5,6 +5,9 @@ import { getPriorityBadge } from '@/lib/badges';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { getTypeIcon } from '@/lib/icons';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Eye, X, CheckCircle } from 'lucide-react';
 
 interface AlertCardProps {
   alert: Alert;
@@ -24,60 +27,87 @@ const AlertCard: React.FC<AlertCardProps> = ({ alert, onResolve, onView }) => {
     });
   };
 
-  return (
-    <div className="px-6 py-4 flex items-start space-x-4">
-      <div className={`flex-shrink-0 w-1 rounded-md ${
-        alert.type === 'critical' ? 'bg-red-500' :
-        alert.type === 'warning' ? 'bg-yellow-500' :
-        'bg-blue-500'
-      }`} />
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'critical': return 'border-red-500 bg-red-50 dark:bg-red-900/20';
+      case 'warning': return 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20';
+      default: return 'border-blue-500 bg-blue-50 dark:bg-blue-900/20';
+    }
+  };
 
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-start mb-2">
-          <div className="flex items-center space-x-2">
-            {getTypeIcon(alert.type)}
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-              {alert.title}
-            </h3>
-            {getPriorityBadge(alert.priority)}
+  return (
+    <div className={`p-4 md:p-6 border-l-4 ${getTypeColor(alert.type)} hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors duration-200`}>
+      <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+        {/* Contenido principal */}
+        <div className="flex-1 min-w-0 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              {getTypeIcon(alert.type)}
+              <h3 className="text-sm md:text-base font-semibold text-gray-900 dark:text-white">
+                {alert.title}
+              </h3>
+              {getPriorityBadge(alert.priority)}
               {alert.category && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                <Badge variant="outline" className="text-xs">
                   {alert.category}
-                </span>
+                </Badge>
               )}
+            </div>
+          </div>
+          
+          <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+            {alert.message}
+          </p>
+          
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+              {timeAgo}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+              {alert.pedidoId}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+              {alert.usuario}
+            </span>
           </div>
         </div>
-          <p className="text-gray-500 dark:text-gray-200 text-sm truncate mb-1">{alert.message}</p>
-          <div className="text-gray-500 dark:text-gray-300 text-xs flex items-center space-x-4">
-          <span>{timeAgo}</span>
-          <span>{alert.pedidoId}</span>
-          <span>{alert.usuario}</span>
-        </div>
-      </div>
 
-      <div className="flex flex-col space-y-1 flex-shrink-0 ml-2">
-        <button
-          className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-all duration-200 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${alert.type}-500 ${
-            alert.type === 'critical' ? 'bg-red-600 hover:bg-red-700' :
-            alert.type === 'warning' ? 'bg-yellow-500 hover:bg-yellow-600 text-black' :
-            'bg-blue-600 hover:bg-blue-700'
-          }`}
-          onClick={handleResolve}
-        >
-          {alert.action}
-        </button>
-        <button
-          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
-          onClick={() => onView(alert)}
-        >
-          Ver
-        </button>
-        <button
-          onClick={() => onResolve(alert.id)}
-          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
-        >
-          Descartar
-        </button>
+        {/* Botones de acción */}
+        <div className="flex flex-col sm:flex-row gap-2 lg:flex-shrink-0">
+          <Button
+            onClick={() => onView(alert)}
+            variant="outline"
+            size="sm"
+            className="w-full sm:w-auto"
+          >
+            <Eye className="w-4 h-4 mr-2" />
+            Ver
+          </Button>
+          <Button
+            onClick={handleResolve}
+            size="sm"
+            className={`w-full sm:w-auto ${
+              alert.type === 'critical' ? 'bg-red-600 hover:bg-red-700' :
+              alert.type === 'warning' ? 'bg-yellow-600 hover:bg-yellow-700' :
+              'bg-blue-600 hover:bg-blue-700'
+            } text-white`}
+          >
+            <CheckCircle className="w-4 h-4 mr-2" />
+            {alert.action}
+          </Button>
+          <Button
+            onClick={() => onResolve(alert.id)}
+            variant="outline"
+            size="sm"
+            className="w-full sm:w-auto border-gray-300 hover:bg-gray-50"
+          >
+            <X className="w-4 h-4 mr-2" />
+            Descartar
+          </Button>
+        </div>
       </div>
     </div>
   );

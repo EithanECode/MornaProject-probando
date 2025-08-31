@@ -116,19 +116,19 @@ const AlertasPage: React.FC = () => {
           : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50')
       }
     >
-              <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="admin" />
+      <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="admin" />
 
-      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
+      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'}`}>
         {/* Header sticky superior solo con el título */}
         <header className={mounted && theme === 'dark' ? 'bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-40' : 'bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40'}>
-          <div className="px-6 py-4">
-            <h1 className={`text-2xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Alertas</h1>
-            <p className={mounted && theme === 'dark' ? 'text-sm text-slate-300' : 'text-sm text-slate-600'}>Notificaciones críticas para atención inmediata</p>
+          <div className="px-4 md:px-5 lg:px-6 py-4">
+            <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Alertas</h1>
+            <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Notificaciones críticas para atención inmediata</p>
           </div>
         </header>
 
         {/* Dashboard avanzado de alertas */}
-        <div className={mounted && theme === 'dark' ? 'p-6 space-y-6 bg-slate-900' : 'p-6 space-y-6'}>
+        <div className={`p-4 md:p-5 lg:p-6 space-y-6 md:space-y-8 ${mounted && theme === 'dark' ? 'bg-slate-900' : ''}`}>
           <StatsDashboard stats={stats} />
           <ControlPanel
             onGenerateNewAlert={() => setIsModalOpen(true)}
