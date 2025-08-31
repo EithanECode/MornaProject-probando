@@ -324,7 +324,9 @@ export default function TrackingPage() {
           userRole="client"
         />
         
-        <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-24 w-[calc(100%-6rem)]'}`}>
+        <main className={`flex-1 transition-all duration-300 ${
+          sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
+        }`}>
           <Header 
             notifications={stats.inTransit} 
             onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -332,26 +334,26 @@ export default function TrackingPage() {
             subtitle="Sigue el estado de tus pedidos en tiempo real"
           />
           
-          <div className="p-6 space-y-6">
+          <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
             {/* Header de la página */}
-            <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white">
-              <div className="flex items-center justify-between">
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-4 md:p-6 text-white">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
                 <div>
-                  <h1 className="text-2xl font-bold">Tracking de Pedidos</h1>
-                  <p className="text-purple-100 mt-1">Sigue el estado de tus pedidos en tiempo real</p>
+                  <h1 className="text-xl md:text-2xl font-bold">Tracking de Pedidos</h1>
+                  <p className="text-purple-100 mt-1 text-xs md:text-sm">Sigue el estado de tus pedidos en tiempo real</p>
                 </div>
-                <div className="hidden md:flex items-center space-x-4">
+                <div className="grid grid-cols-3 md:flex md:items-center md:space-x-4 gap-4">
                   <div className="text-center">
-                    <p className="text-2xl font-bold">{stats.total}</p>
-                    <p className="text-sm text-purple-100">Total Pedidos</p>
+                    <p className="text-lg md:text-xl lg:text-2xl font-bold">{stats.total}</p>
+                    <p className="text-xs md:text-sm text-purple-100">Total Pedidos</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold">{stats.inTransit}</p>
-                    <p className="text-sm text-purple-100">En Tránsito</p>
+                    <p className="text-lg md:text-xl lg:text-2xl font-bold">{stats.inTransit}</p>
+                    <p className="text-xs md:text-sm text-purple-100">En Tránsito</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold">{stats.delivered}</p>
-                    <p className="text-sm text-purple-100">Entregados</p>
+                    <p className="text-lg md:text-xl lg:text-2xl font-bold">{stats.delivered}</p>
+                    <p className="text-xs md:text-sm text-purple-100">Entregados</p>
                   </div>
                 </div>
               </div>
@@ -360,7 +362,7 @@ export default function TrackingPage() {
             {/* Filtros y búsqueda */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
               <CardContent className="p-4">
-                <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex flex-col md:flex-row gap-3 md:gap-4">
                   <div className="flex-1">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -372,9 +374,9 @@ export default function TrackingPage() {
                       />
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col md:flex-row gap-2">
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-48">
+                      <SelectTrigger className="w-full md:w-48">
                         <Filter className="w-4 h-4 mr-2" />
                         <SelectValue placeholder="Filtrar por estado" />
                       </SelectTrigger>
@@ -388,7 +390,7 @@ export default function TrackingPage() {
                         <SelectItem value="cancelled">Cancelado</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="outline" className="flex items-center gap-2">
+                    <Button variant="outline" className="flex items-center gap-2 w-full md:w-auto">
                       <RefreshCw className="w-4 h-4" />
                       Actualizar
                     </Button>
@@ -398,16 +400,16 @@ export default function TrackingPage() {
             </Card>
 
             {/* Lista de pedidos */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {filteredOrders.map((order) => (
                 <Card key={order.id} className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
                   <CardHeader>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
                       <div>
-                        <CardTitle className="text-lg">{order.product}</CardTitle>
-                        <p className="text-sm text-slate-600">{order.id}</p>
+                        <CardTitle className="text-base md:text-lg">{order.product}</CardTitle>
+                        <p className="text-xs md:text-sm text-slate-600">{order.id}</p>
                       </div>
-                      <Badge className={getStatusColor(order.status)}>
+                      <Badge className={`${getStatusColor(order.status)} text-xs md:text-sm`}>
                         {getStatusText(order.status)}
                       </Badge>
                     </div>
@@ -415,15 +417,15 @@ export default function TrackingPage() {
                   <CardContent className="space-y-4">
                     {/* Información de tracking */}
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center justify-between text-xs md:text-sm">
                         <span className="text-slate-600">Número de Tracking:</span>
                         <span className="font-mono font-medium">{order.trackingNumber}</span>
                       </div>
-                      <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center justify-between text-xs md:text-sm">
                         <span className="text-slate-600">Transportista:</span>
                         <span className="font-medium">{order.carrier}</span>
                       </div>
-                      <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center justify-between text-xs md:text-sm">
                         <span className="text-slate-600">Entrega Estimada:</span>
                         <span className="font-medium">{order.estimatedDelivery}</span>
                       </div>
@@ -431,18 +433,18 @@ export default function TrackingPage() {
 
                     {/* Progreso */}
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center justify-between text-xs md:text-sm">
                         <span className="text-slate-600">Progreso</span>
                         <span className="font-bold">{order.progress}%</span>
                       </div>
-                      <Progress value={order.progress} className="h-2" />
+                      <Progress value={order.progress} className="h-1.5 md:h-2" />
                     </div>
 
                     {/* Ubicación actual */}
                     <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
                       <MapPin className="w-4 h-4 text-blue-600" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium">{order.currentLocation}</p>
+                        <p className="text-xs md:text-sm font-medium">{order.currentLocation}</p>
                         <p className="text-xs text-slate-500">{order.lastUpdate}</p>
                       </div>
                     </div>
@@ -452,14 +454,14 @@ export default function TrackingPage() {
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="flex-1"
+                        className="flex-1 text-xs"
                         onClick={() => openModal(order)}
                       >
-                        <Eye className="w-4 h-4 mr-2" />
+                        <Eye className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
                         Ver Detalles
                       </Button>
-                      <Button variant="outline" size="sm">
-                        <Share2 className="w-4 h-4" />
+                      <Button variant="outline" size="sm" className="text-xs">
+                        <Share2 className="w-3 h-3 md:w-4 md:h-4" />
                       </Button>
                     </div>
                   </CardContent>
