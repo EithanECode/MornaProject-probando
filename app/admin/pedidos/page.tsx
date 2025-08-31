@@ -511,15 +511,15 @@ export default function PedidosPage() {
                   </div>
                   
                   {/* Action Buttons */}
-                  <div className="flex flex-col items-center gap-4 mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <Button className="w-full max-w-xs px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-sm md:text-base font-medium">
+                  <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-4 mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <Button className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-sm md:text-base font-medium">
                       <Plus className="w-4 h-4 mr-2" />
                       Nuevo Pedido
                     </Button>
                     <Button 
                       variant="outline"
                       onClick={handleExport}
-                      className="w-full max-w-xs px-8 py-3 bg-white hover:bg-gray-50 border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-800 shadow-sm hover:shadow-md transition-all duration-300 text-sm md:text-base font-medium"
+                      className="w-full sm:w-auto px-8 py-3 bg-white hover:bg-gray-50 border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-800 shadow-sm hover:shadow-md transition-all duration-300 text-sm md:text-base font-medium"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Exportar a PDF
