@@ -47,6 +47,23 @@ export default function AuthPage({
 
   return (
     <div className="auth-wrapper">
+      {/* Mobile/Tablet Tabs Navigation */}
+      <div className="auth-tabs">
+        <button 
+          className={`auth-tab ${isLogin ? 'active' : ''}`}
+          onClick={() => handleToggle(true)}
+        >
+          Iniciar Sesión
+        </button>
+        <button 
+          className={`auth-tab ${!isLogin ? 'active' : ''}`}
+          onClick={() => handleToggle(false)}
+        >
+          Registrarse
+        </button>
+      </div>
+
+      {/* Desktop Sliding Panel */}
       <div className={`auth-container ${!isLogin ? "right-panel-active" : ""}`}>
         <div className="form-container sign-up-container">
           <RegisterForm />
@@ -63,15 +80,15 @@ export default function AuthPage({
                 {defaultOptions && (
                   <Lottie
                     options={defaultOptions}
-                    height={150}
-                    width={150}
+                    height={120}
+                    width={120}
                     pointerEvents="none"
                     onClick={handleLottieClick}
                   />
                 )}
               </div>
-              <h2 style={{ fontWeight:"bold", fontSize: "1.5rem" }}>¡Bienvenido de Nuevo!</h2>
-              <p>
+              <h2 style={{ fontWeight:"bold", fontSize: "1.25rem" }}>¡Bienvenido de Nuevo!</h2>
+              <p className="text-sm">
                 Para mantenerte conectado, por favor inicia sesión con tu
                 información personal.
               </p>
@@ -85,20 +102,63 @@ export default function AuthPage({
                 {defaultOptions && (
                   <Lottie
                     options={defaultOptions}
-                    height={150}
-                    width={150}
+                    height={120}
+                    width={120}
                     pointerEvents="none"
                     onClick={handleLottieClick}
                   />
                 )}
               </div>
-              <h2 style={{ fontWeight: "bold", fontSize: "1.5rem" }}>¡Hola Amigo!</h2>
-              <p>Introduce tus datos personales y comienza tu viaje con nosotros.</p>
+              <h2 style={{ fontWeight: "bold", fontSize: "1.25rem" }}>¡Hola Amigo!</h2>
+              <p className="text-sm">Introduce tus datos personales y comienza tu viaje con nosotros.</p>
               <button className="ghost-button" onClick={() => handleToggle(false)}>
                 Registrarse
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Mobile/Tablet Forms */}
+      <div className="auth-mobile-forms">
+        <div className={`mobile-form-container ${isLogin ? 'active' : ''}`}>
+          {isLogin ? (
+            <div className="mobile-form">
+              <div className="mobile-form-header">
+                <div className="lottie-mobile-icon">
+                  {defaultOptions && (
+                    <Lottie
+                      options={defaultOptions}
+                      height={80}
+                      width={80}
+                      pointerEvents="none"
+                    />
+                  )}
+                </div>
+                <h2>¡Bienvenido de Nuevo!</h2>
+                <p>Para mantenerte conectado, por favor inicia sesión con tu información personal.</p>
+              </div>
+              <LoginForm onNavigateToPasswordReset={onNavigateToPasswordReset} />
+            </div>
+          ) : (
+            <div className="mobile-form">
+              <div className="mobile-form-header">
+                <div className="lottie-mobile-icon">
+                  {defaultOptions && (
+                    <Lottie
+                      options={defaultOptions}
+                      height={80}
+                      width={80}
+                      pointerEvents="none"
+                    />
+                  )}
+                </div>
+                <h2>¡Hola Amigo!</h2>
+                <p>Introduce tus datos personales y comienza tu viaje con nosotros.</p>
+              </div>
+              <RegisterForm />
+            </div>
+          )}
         </div>
       </div>
     </div>

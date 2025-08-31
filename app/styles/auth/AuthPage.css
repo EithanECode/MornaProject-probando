@@ -9,6 +9,7 @@ html, body, #root, .App {
 /* auth-wrapper: Contenedor principal para centrar el 'auth-container' */
 .auth-wrapper {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
@@ -16,6 +17,93 @@ html, body, #root, .App {
   overflow: hidden;
   padding: 20px;
   box-sizing: border-box;
+}
+
+/* Mobile/Tablet Tabs Navigation */
+.auth-tabs {
+  display: flex;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #514f4f;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-tab.active {
+  background: linear-gradient(to right, #514f4f, #202841);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.auth-tab:hover:not(.active) {
+  background: rgba(81, 79, 79, 0.1);
+}
+
+/* Mobile/Tablet Forms */
+.auth-mobile-forms {
+  width: 100%;
+  max-width: 400px;
+}
+
+.mobile-form-container {
+  background: #f7fafd;
+  border-radius: 12px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.mobile-form {
+  padding: 30px 20px;
+}
+
+.mobile-form-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.lottie-mobile-icon {
+  margin-bottom: 20px;
+}
+
+.mobile-form-header h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #202841;
+  margin-bottom: 10px;
+}
+
+.mobile-form-header p {
+  font-size: 0.9rem;
+  color: #514f4f;
+  line-height: 1.5;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* auth-container: La "caja" principal que contiene los formularios y el overlay */
@@ -28,6 +116,68 @@ html, body, #root, .App {
   width: 900px; /* Ancho del contenedor */
   max-width: 95%;
   min-height: 550px; /* Altura mínima del contenedor */
+  display: block; /* Mostrar por defecto en desktop */
+}
+
+
+
+/* Tablet and Desktop optimizations */
+@media (min-width: 768px) {
+  .auth-wrapper {
+    flex-direction: row;
+    padding: 20px;
+  }
+  
+  .auth-container {
+    display: block !important; /* Show desktop version on tablet and desktop */
+  }
+  
+  .auth-tabs,
+  .auth-mobile-forms {
+    display: none;
+  }
+  
+  .auth-container {
+    width: 700px;
+    min-height: 500px;
+  }
+  
+  .form-container {
+    padding: 0 30px;
+  }
+  
+  .overlay-panel {
+    padding: 0 40px;
+  }
+  
+  .lottie-panel-icon {
+    margin-bottom: 20px;
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1024px) {
+  .auth-wrapper {
+    padding: 40px;
+  }
+  
+  .auth-container {
+    width: 900px;
+    min-height: 550px;
+    display: block !important; /* Forzar display block en desktop */
+  }
+  
+  .form-container {
+    padding: 0 40px;
+  }
+  
+  .overlay-panel {
+    padding: 0 60px;
+  }
+  
+  .lottie-panel-icon {
+    margin-bottom: 30px;
+  }
 }
 
 /* form-container: Contenedor para cada formulario (Login o Register) */
@@ -43,7 +193,7 @@ html, body, #root, .App {
   align-items: center;
   padding: 0 40px; /* Padding horizontal para el contenido del formulario */
   box-sizing: border-box;
-  transition: all 0.6s ease-in-out; /* Transición para el movimiento y opacidad */
+  transition: all 0.6s ease-in-out !important; /* Transición para el movimiento y opacidad */
 }
 
 /* Posición y visibilidad inicial del formulario de inicio de sesión */
@@ -66,16 +216,16 @@ html, body, #root, .App {
 
 /* Mueve el formulario de inicio de sesión fuera de vista y lo oculta */
 .auth-container.right-panel-active .sign-in-container {
-  transform: translateX(-100%); /* Lo mueve completamente a la izquierda */
-  opacity: 0; /* Oculta */
-  z-index: 1; /* Lo pone por debajo */
+  transform: translateX(-100%) !important; /* Lo mueve completamente a la izquierda */
+  opacity: 0 !important; /* Oculta */
+  z-index: 1 !important; /* Lo pone por debajo */
 }
 
 /* Mueve el formulario de registro a la vista y lo hace visible */
 .auth-container.right-panel-active .sign-up-container {
-  transform: translateX(0%); /* CRÍTICO: Lo mueve de vuelta a la posición 0% (visible en la mitad derecha) */
-  opacity: 1; /* Lo hace visible */
-  z-index: 3; /* Lo pone por encima */
+  transform: translateX(0%) !important; /* CRÍTICO: Lo mueve de vuelta a la posición 0% (visible en la mitad derecha) */
+  opacity: 1 !important; /* Lo hace visible */
+  z-index: 3 !important; /* Lo pone por encima */
 }
 
 /* overlay-container: Contenedor para el panel lateral que se desliza */
@@ -86,13 +236,13 @@ html, body, #root, .App {
   width: 50%;
   height: 100%;
   overflow: hidden;
-  transition: transform 0.6s ease-in-out; /* Transición para el movimiento */
+  transition: transform 0.6s ease-in-out !important; /* Transición para el movimiento */
   z-index: 2; /* Z-index intermedio, entre formularios activos e inactivos */
 }
 
 /* CAMBIO CLAVE: Mueve el overlay-container a la izquierda cuando right-panel-active está presente */
 .auth-container.right-panel-active .overlay-container {
-  transform: translateX(-100%);
+  transform: translateX(-100%) !important;
 }
 
 /* overlay: El panel interno que se desliza dentro del overlay-container */
@@ -107,13 +257,13 @@ html, body, #root, .App {
   height: 100%;
   width: 200%; /* El doble de ancho para contener ambos overlay-panels */
   transform: translateX(0);
-  transition: transform 0.6s ease-in-out;
+  transition: transform 0.6s ease-in-out !important;
   display: flex;
 }
 
 /* CAMBIO CLAVE: Mueve el overlay interno a la derecha cuando right-panel-active está presente */
 .auth-container.right-panel-active .overlay {
-  transform: translateX(50%);
+  transform: translateX(50%) !important;
 }
 
 /* overlay-panel: Los paneles individuales dentro del overlay */
@@ -124,7 +274,7 @@ html, body, #root, .App {
   padding: 0 60px; /* Padding horizontal para dar espacio a los lados */
   height: 100%;
   width: 50%; /* Cada panel ocupa la mitad del overlay (que es 200% del contenedor) */
-  transition: all 0.6s ease-in-out; /* Transición para opacidad y visibilidad */
+  transition: all 0.6s ease-in-out !important; /* Transición para opacidad y visibilidad */
 
   /* Centrado horizontal para el contenido de los paneles */
   align-items: center;
@@ -144,13 +294,13 @@ html, body, #root, .App {
 
 /* auth-container.right-panel-active: Cambia la visibilidad de los paneles del overlay */
 .auth-container.right-panel-active .overlay-left {
-  opacity: 1; /* Lo hace visible */
-  z-index: 2;
+  opacity: 1 !important; /* Lo hace visible */
+  z-index: 2 !important;
 }
 
 .auth-container.right-panel-active .overlay-right {
-  opacity: 0; /* Lo oculta */
-  z-index: 1;
+  opacity: 0 !important; /* Lo oculta */
+  z-index: 1 !important;
 }
 
 
@@ -528,94 +678,121 @@ html, body, #root, .App {
     margin-top: 0px !important; /* Asegura que no haya margen superior en este label */
 }
 
-/* Adaptación responsiva para pantallas pequeñas */
-@media (max-width: 768px) {
+/* Mobile Responsive Design */
+@media (max-width: 767px) {
+  .auth-wrapper {
+    padding: 10px;
+  }
+  
   .auth-container {
-    width: 100%;
-    min-height: 600px;
-    flex-direction: column;
-    border-radius: 0;
-    box-shadow: none;
+    display: none !important; /* Hide desktop version on mobile */
   }
-
-  .form-container, .overlay-container {
+  
+  .auth-tabs {
+    max-width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .auth-tab {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .auth-mobile-forms {
+    max-width: 100%;
+  }
+  
+  .mobile-form {
+    padding: 20px 15px;
+  }
+  
+  .mobile-form-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .mobile-form-header p {
+    font-size: 0.85rem;
+  }
+  
+  .lottie-mobile-icon {
+    margin-bottom: 15px;
+  }
+  
+  /* Responsive form inputs */
+  .auth-form input {
+    padding: 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .auth-form button {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+  
+  .auth-form h2 {
+    font-size: 1.25rem;
+  }
+  
+  /* Mobile form improvements */
+  .auth-form {
     width: 100%;
+  }
+  
+  .auth-form label {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .password-input-container {
     position: relative;
-    left: 0;
-    transform: none !important;
-    padding: 20px;
-  }
-
-  .overlay-container {
-    order: -1;
-    height: auto;
-  }
-
-  .overlay {
     width: 100%;
-    left: 0;
-    transform: none !important;
-    height: auto;
-    padding: 20px 0;
-    display: flex;
-    flex-direction: column;
   }
-
-  .overlay-panel {
+  
+  .password-toggle-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #514f4f;
+    font-size: 16px;
+  }
+  
+  /* Mobile button improvements */
+  .auth-form button[type="submit"] {
     width: 100%;
-    position: relative;
-    transform: none !important;
-    padding: 20px;
-    align-items: center;
+    margin-top: 20px;
+    height: 48px;
+    font-weight: 600;
+  }
+  
+  /* Mobile animation adjustments */
+  .login-lottie-icon,
+  .register-lottie-icon {
+    margin-bottom: 20px;
     text-align: center;
   }
+}
 
-  .overlay-left, .overlay-right {
-    display: none;
-  }
 
-  .auth-container:not(.right-panel-active) .overlay-right {
-    display: flex;
-  }
 
-  .auth-container.right-panel-active .overlay-left {
-    display: flex;
-  }
+.overlay-content h2 {
+  font-size: 24px;
+}
 
-  .sign-in-container, .sign-up-container {
-    position: relative;
-    width: 100%;
-    transform: none !important;
-    height: auto;
-    opacity: 1;
-  }
+.overlay-content p {
+  margin: 15px 0 25px;
+}
 
-  .auth-container:not(.right-panel-active) .sign-up-container {
-    display: none;
-  }
+.ghost-button {
+  margin-top: 10px;
+}
 
-  .auth-container.right-panel-active .sign-in-container {
-    display: none;
-  }
-
-  .overlay-content h2 {
-    font-size: 24px;
-  }
-
-  .overlay-content p {
-    margin: 15px 0 25px;
-  }
-
-  .ghost-button {
-    margin-top: 10px;
-  }
-
-  /* Ajuste para los mensajes emergentes en móvil si se superponen */
-  .password-strength-feedback,
-  .password-error-message {
-    left: 5%;
-    width: 90%;
-  }
+/* Ajuste para los mensajes emergentes en móvil si se superponen */
+.password-strength-feedback,
+.password-error-message {
+  left: 5%;
+  width: 90%;
 }
 
 /* Estilos para el div #root, donde se monta tu aplicación React */
