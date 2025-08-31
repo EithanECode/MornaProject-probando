@@ -103,6 +103,14 @@ const CLIENT_MENU_ITEMS = [
     badge: null,
     color: 'text-green-500',
     path: '/cliente/soporte'
+  },
+  {
+    id: 'ajustes',
+    label: 'Configuración',
+    icon: Settings,
+    badge: null,
+    color: 'text-gray-500',
+    path: '/cliente/configuracion'
   }
 ];
 
@@ -154,6 +162,14 @@ const VENEZUELA_MENU_ITEMS = [
     badge: null,
     color: 'text-indigo-500',
     path: '/venezuela/reportes'
+  },
+  {
+    id: 'ajustes',
+    label: 'Configuración',
+    icon: Settings,
+    badge: null,
+    color: 'text-gray-500',
+    path: '/venezuela/configuracion'
   }
 ];
 
@@ -173,6 +189,14 @@ const CHINA_MENU_ITEMS = [
     badge: 12,
     color: 'text-orange-500',
     path: '/china/pedidos'
+  },
+  {
+    id: 'ajustes',
+    label: 'Configuración',
+    icon: Settings,
+    badge: null,
+    color: 'text-gray-500',
+    path: '/china/configuracion'
   }
 ];
 
@@ -259,6 +283,14 @@ const ADMIN_MENU_ITEMS = [
     badge: null,
     color: 'text-gray-500',
     path: '/admin/gestion'
+  },
+  {
+    id: 'ajustes',
+    label: 'Configuración',
+    icon: Settings,
+    badge: null,
+    color: 'text-gray-500',
+    path: '/admin/configuracion'
   }
 ];
 

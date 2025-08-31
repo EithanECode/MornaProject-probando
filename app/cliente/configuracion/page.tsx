@@ -37,13 +37,13 @@ export default function ConfiguracionPage() {
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
 
-  // Datos específicos para admin
+  // Datos específicos para cliente
   const roleData = {
-    nombre: 'Administrador Principal',
-    email: 'admin@morna.com',
-    telefono: '+58 412-123-4567',
-    rol: 'Administrador',
-    color: 'bg-purple-500'
+    nombre: 'Cliente Morna',
+    email: 'cliente@morna.com',
+    telefono: '+58 412-555-1234',
+    rol: 'Cliente',
+    color: 'bg-blue-500'
   };
 
   // Estados del formulario
@@ -67,12 +67,12 @@ export default function ConfiguracionPage() {
     showConfirmPassword: false
   });
 
-  // Estados de notificaciones (específicas para admin)
+  // Estados de notificaciones (específicas para cliente)
   const [notifications, setNotifications] = useState({
     emailNotifications: true,
     pushNotifications: true,
-    alertasCriticas: true,
-    reportesDiarios: true,
+    notificacionesMarketing: true,
+    notificacionesPedidos: true,
     actualizacionesSistema: true
   });
 
@@ -175,7 +175,7 @@ export default function ConfiguracionPage() {
         setIsExpanded={setSidebarExpanded}
         isMobileMenuOpen={isMobileMenuOpen}
         onMobileMenuClose={() => setIsMobileMenuOpen(false)}
-        userRole="admin"
+        userRole="client"
       />
 
       <main className={`transition-all duration-300 flex-1 ${
@@ -276,7 +276,6 @@ export default function ConfiguracionPage() {
                               <SelectItem value="es">Español</SelectItem>
                               <SelectItem value="en">English</SelectItem>
                               <SelectItem value="pt">Português</SelectItem>
-                              <SelectItem value="zh">中文</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -566,27 +565,27 @@ export default function ConfiguracionPage() {
                     <Separator />
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <Label>Alertas críticas</Label>
+                        <Label>Notificaciones de marketing</Label>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Notificaciones urgentes sobre el sistema
+                          Ofertas especiales y contenido promocional
                         </p>
                       </div>
                       <Switch
-                        checked={notifications.alertasCriticas}
-                        onCheckedChange={(checked) => handleNotificationChange('alertasCriticas', checked)}
+                        checked={notifications.notificacionesMarketing}
+                        onCheckedChange={(checked) => handleNotificationChange('notificacionesMarketing', checked)}
                       />
                     </div>
                     <Separator />
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <Label>Reportes diarios</Label>
+                        <Label>Notificaciones de pedidos</Label>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Resumen diario de actividades del sistema
+                          Actualizaciones sobre el estado de tus pedidos
                         </p>
                       </div>
                       <Switch
-                        checked={notifications.reportesDiarios}
-                        onCheckedChange={(checked) => handleNotificationChange('reportesDiarios', checked)}
+                        checked={notifications.notificacionesPedidos}
+                        onCheckedChange={(checked) => handleNotificationChange('notificacionesPedidos', checked)}
                       />
                     </div>
                     <Separator />

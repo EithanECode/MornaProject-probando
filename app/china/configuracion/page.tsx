@@ -37,13 +37,13 @@ export default function ConfiguracionPage() {
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
 
-  // Datos específicos para admin
+  // Datos específicos para china
   const roleData = {
-    nombre: 'Administrador Principal',
-    email: 'admin@morna.com',
-    telefono: '+58 412-123-4567',
-    rol: 'Administrador',
-    color: 'bg-purple-500'
+    nombre: 'Empleado China',
+    email: 'china@morna.com',
+    telefono: '+86 138-1234-5678',
+    rol: 'China',
+    color: 'bg-red-500'
   };
 
   // Estados del formulario
@@ -51,8 +51,8 @@ export default function ConfiguracionPage() {
     nombre: roleData.nombre,
     email: roleData.email,
     telefono: roleData.telefono,
-    idioma: 'es',
-    zonaHoraria: 'America/Caracas',
+    idioma: 'zh',
+    zonaHoraria: 'Asia/Shanghai',
     fotoPerfil: null as File | null,
     fotoPreview: '/images/logos/logo.png'
   });
@@ -67,12 +67,11 @@ export default function ConfiguracionPage() {
     showConfirmPassword: false
   });
 
-  // Estados de notificaciones (específicas para admin)
+  // Estados de notificaciones (específicas para china)
   const [notifications, setNotifications] = useState({
     emailNotifications: true,
     pushNotifications: true,
-    alertasCriticas: true,
-    reportesDiarios: true,
+    notificacionesCotizaciones: true,
     actualizacionesSistema: true
   });
 
@@ -80,7 +79,7 @@ export default function ConfiguracionPage() {
   const [security, setSecurity] = useState({
     autenticacionDosFactores: false,
     sesionesActivas: Math.floor(Math.random() * 3) + 1,
-    ultimoAcceso: new Date().toLocaleString('es-VE'),
+    ultimoAcceso: new Date().toLocaleString('zh-CN'),
     ipUltimoAcceso: `192.168.1.${Math.floor(Math.random() * 255)}`
   });
 
@@ -175,7 +174,7 @@ export default function ConfiguracionPage() {
         setIsExpanded={setSidebarExpanded}
         isMobileMenuOpen={isMobileMenuOpen}
         onMobileMenuClose={() => setIsMobileMenuOpen(false)}
-        userRole="admin"
+        userRole="china"
       />
 
       <main className={`transition-all duration-300 flex-1 ${
@@ -263,7 +262,7 @@ export default function ConfiguracionPage() {
                             id="telefono"
                             value={formData.telefono}
                             onChange={(e) => handleInputChange('telefono', e.target.value)}
-                            placeholder="+58 412-123-4567"
+                            placeholder="+86 138-1234-5678"
                           />
                         </div>
                         <div className="space-y-2">
@@ -273,10 +272,9 @@ export default function ConfiguracionPage() {
                               <SelectValue placeholder="Selecciona un idioma" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="es">Español</SelectItem>
-                              <SelectItem value="en">English</SelectItem>
-                              <SelectItem value="pt">Português</SelectItem>
                               <SelectItem value="zh">中文</SelectItem>
+                              <SelectItem value="en">English</SelectItem>
+                              <SelectItem value="es">Español</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -566,27 +564,14 @@ export default function ConfiguracionPage() {
                     <Separator />
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <Label>Alertas críticas</Label>
+                        <Label>Notificaciones de cotizaciones</Label>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Notificaciones urgentes sobre el sistema
+                          Nuevas solicitudes de cotización y actualizaciones
                         </p>
                       </div>
                       <Switch
-                        checked={notifications.alertasCriticas}
-                        onCheckedChange={(checked) => handleNotificationChange('alertasCriticas', checked)}
-                      />
-                    </div>
-                    <Separator />
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <Label>Reportes diarios</Label>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Resumen diario de actividades del sistema
-                        </p>
-                      </div>
-                      <Switch
-                        checked={notifications.reportesDiarios}
-                        onCheckedChange={(checked) => handleNotificationChange('reportesDiarios', checked)}
+                        checked={notifications.notificacionesCotizaciones}
+                        onCheckedChange={(checked) => handleNotificationChange('notificacionesCotizaciones', checked)}
                       />
                     </div>
                     <Separator />
@@ -629,24 +614,24 @@ export default function ConfiguracionPage() {
                           <SelectValue placeholder="Selecciona tu zona horaria" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="Asia/Shanghai">Shanghai (UTC+8)</SelectItem>
+                          <SelectItem value="Asia/Beijing">Beijing (UTC+8)</SelectItem>
+                          <SelectItem value="Asia/Hong_Kong">Hong Kong (UTC+8)</SelectItem>
                           <SelectItem value="America/Caracas">Caracas (UTC-4)</SelectItem>
                           <SelectItem value="America/New_York">Nueva York (UTC-5)</SelectItem>
-                          <SelectItem value="America/Los_Angeles">Los Ángeles (UTC-8)</SelectItem>
-                          <SelectItem value="Europe/Madrid">Madrid (UTC+1)</SelectItem>
-                          <SelectItem value="Asia/Shanghai">Shanghai (UTC+8)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="formatoFecha">Formato de fecha</Label>
-                      <Select defaultValue="dd/mm/yyyy">
+                      <Select defaultValue="yyyy-mm-dd">
                         <SelectTrigger>
                           <SelectValue placeholder="Selecciona el formato" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="yyyy-mm-dd">YYYY-MM-DD</SelectItem>
                           <SelectItem value="dd/mm/yyyy">DD/MM/YYYY</SelectItem>
                           <SelectItem value="mm/dd/yyyy">MM/DD/YYYY</SelectItem>
-                          <SelectItem value="yyyy-mm-dd">YYYY-MM-DD</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
