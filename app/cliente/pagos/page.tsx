@@ -457,8 +457,7 @@ export default function PagosPage() {
                       />
                     </div>
                   </div>
-                  <div className="flex flex-col md:flex-row gap-3 md:gap-2">
-                    <div className="grid grid-cols-1 md:flex md:gap-2 gap-3">
+                                    <div className="grid grid-cols-1 md:flex md:gap-2 gap-3">
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
                       <SelectTrigger className="w-full md:w-40">
                         <Filter className="w-4 h-4 mr-2" />
@@ -500,11 +499,6 @@ export default function PagosPage() {
                         <SelectItem value="month">Este mes</SelectItem>
                       </SelectContent>
                     </Select>
-                    </div>
-                    <Button variant="outline" className="flex items-center gap-2 w-full md:w-auto">
-                      <RefreshCw className="w-4 h-4" />
-                      Actualizar
-                    </Button>
                   </div>
                 </div>
               </CardContent>
