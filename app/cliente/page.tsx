@@ -208,7 +208,9 @@ export default function DashboardPage() {
         userRole="client"
       />
       
-      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'ml-72 w-[calc(100%-18rem)]' : 'ml-20 w-[calc(100%-5rem)]'}`}>
+      <main className={`flex-1 transition-all duration-300 ${
+        sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
+      }`}>
         <Header 
           notifications={CLIENT_STATS.pendingOrders} 
           onMenuToggle={handleMobileMenuToggle}
@@ -216,21 +218,21 @@ export default function DashboardPage() {
           subtitle="Bienvenido de vuelta, aquí tienes un resumen de tu actividad"
         />
         
-        <div className="p-6 space-y-8">
+        <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
           {/* Header del Dashboard con Bienvenida */}
-          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-8 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative z-10">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
                 <div>
-                  <h2 className="text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
-                  <p className="text-blue-100 text-lg">Panel de Control - Cliente</p>
-                  <p className="text-blue-200 mt-2">Gestiona tus pedidos, tracking y pagos desde un solo lugar</p>
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
+                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">Panel de Control - Cliente</p>
+                  <p className="text-blue-200 mt-2 text-xs md:text-sm">Gestiona tus pedidos, tracking y pagos desde un solo lugar</p>
                 </div>
-                <div className="hidden lg:flex items-center space-x-6">
+                <div className="grid grid-cols-1 md:flex md:items-center md:space-x-4 gap-4">
                   <div className="text-center">
-                    <div className="text-4xl font-bold">{pedidosEnTransito + pedidosPendientes}</div>
-                    <p className="text-blue-100">Envíos Activos</p>
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{pedidosEnTransito + pedidosPendientes}</div>
+                    <p className="text-blue-100 text-xs md:text-sm">Envíos Activos</p>
                   </div>
                 </div>
               </div>
@@ -238,9 +240,9 @@ export default function DashboardPage() {
           </div>
 
           {/* Dashboard Principal */}
-          <div className="space-y-8">
+          <div className="space-y-6 md:space-y-6 lg:space-y-8">
             {/* Estadísticas Principales */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-blue-800">Total Pedidos</CardTitle>
@@ -249,7 +251,7 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-900">{totalPedidos}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{totalPedidos}</div>
                   <p className="text-xs text-blue-700">Pedidos realizados</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                     <div className="bg-blue-500 h-2 rounded-full" style={{width: `100%`}}></div>
@@ -265,7 +267,7 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-green-900">{pedidosEnTransito}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{pedidosEnTransito}</div>
                   <p className="text-xs text-green-700">Envíos activos</p>
                   <div className="mt-2 w-full bg-green-200 rounded-full h-2">
                     <div className="bg-green-500 h-2 rounded-full" style={{width: `${(pedidosEnTransito / totalPedidos) * 100}%`}}></div>
@@ -281,7 +283,7 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-purple-900">${totalGastado}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">${totalGastado}</div>
                   <p className="text-xs text-purple-700">Inversión total</p>
                   <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
                     <div className="bg-purple-500 h-2 rounded-full" style={{width: `100%`}}></div>
@@ -297,7 +299,7 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-orange-900">{pedidosCompletados}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{pedidosCompletados}</div>
                   <p className="text-xs text-orange-700">Pedidos entregados</p>
                   <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
                     <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(pedidosCompletados / totalPedidos) * 100}%`}}></div>
@@ -313,16 +315,16 @@ export default function DashboardPage() {
                 <p className="text-sm text-slate-600">Accede rápidamente a las funciones más utilizadas</p>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
                   {QUICK_ACTIONS.map((action) => {
                     const Icon = action.icon;
                     return (
                       <Link key={action.id} href={action.href}>
-                        <Button variant="outline" className={`h-24 flex flex-col gap-3 ${action.hoverBg} ${action.hoverBorder} transition-all duration-300 group w-full`}>
-                          <div className={`p-3 ${action.bgColor} rounded-lg group-hover:scale-110 transition-all duration-300`}>
-                            <Icon className={`h-8 w-8 ${action.textColor}`} />
-                          </div>
-                          <span className="text-sm font-medium">{action.title}</span>
+                        <Button variant="outline" className={`h-20 md:h-24 flex flex-col gap-2 md:gap-3 ${action.hoverBg} ${action.hoverBorder} transition-all duration-300 group w-full`}>
+                                                      <div className={`p-2 md:p-3 ${action.bgColor} rounded-lg group-hover:scale-110 transition-all duration-300`}>
+                              <Icon className={`h-6 w-6 md:h-8 md:w-8 ${action.textColor}`} />
+                            </div>
+                            <span className="text-xs md:text-sm font-medium">{action.title}</span>
                         </Button>
                       </Link>
                     );
@@ -343,34 +345,34 @@ export default function DashboardPage() {
                     <div className="text-center text-slate-500">No hay pedidos recientes.</div>
                   ) : (
                     pedidosRecientes.map((order, idx) => (
-                      <div key={order.id} className="border border-slate-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-slate-50 to-white">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-4">
-                            <div className="p-3 bg-slate-100 rounded-lg">
-                              <Truck className="h-6 w-6 text-slate-600" />
+                      <div key={order.id} className="border border-slate-200 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-slate-50 to-white">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+                          <div className="flex items-center gap-3 md:gap-4">
+                            <div className="p-2 md:p-3 bg-slate-100 rounded-lg">
+                              <Truck className="h-5 w-5 md:h-6 md:w-6 text-slate-600" />
                             </div>
                             <div>
-                              <p className="font-bold text-sm text-slate-600">{order.id}</p>
-                              <p className="font-semibold text-xl text-slate-800">{order.productName}</p>
+                              <p className="font-bold text-xs md:text-sm text-slate-600">{order.id}</p>
+                              <p className="font-semibold text-lg md:text-xl text-slate-800">{order.productName}</p>
                             </div>
                           </div>
-                          <Badge className={`font-medium border`}>
+                          <Badge className={`font-medium border text-xs md:text-sm`}>
                             Estado: {order.state}
                           </Badge>
                         </div>
                         <div className="mb-4">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-slate-600">PRESUPUESTO</span>
-                            <span className="text-sm font-bold">${order.estimatedBudget?.toLocaleString() ?? 'N/A'}</span>
+                            <span className="text-xs md:text-sm font-medium text-slate-600">PRESUPUESTO</span>
+                            <span className="text-xs md:text-sm font-bold">${order.estimatedBudget?.toLocaleString() ?? 'N/A'}</span>
                           </div>
                         </div>
                         <Button 
                           variant="outline" 
-                          className="w-full hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group"
+                          className="w-full hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group text-xs md:text-sm"
                           onClick={() => window.location.href = '/cliente/mis-pedidos'}
                         >
                           <span className="group-hover:scale-105 transition-transform">VER DETALLES</span>
-                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                          <ArrowRight className="ml-2 h-3 w-3 md:h-4 md:w-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
                       </div>
                     ))
