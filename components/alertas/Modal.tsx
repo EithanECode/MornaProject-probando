@@ -31,8 +31,17 @@ const Modal: React.FC<ModalProps> = ({ onClose, onCreateAlert }) => {
     onCreateAlert(formData);
   };
 
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-50 flex items-center justify-center">
+    <div 
+      className="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-50 flex items-center justify-center"
+      onClick={handleOverlayClick}
+    >
       <div className="bg-white rounded-lg shadow-xl max-w-lg w-full p-6">
         <div className="flex justify-between items-center border-b pb-3">
           <h3 className="text-lg font-medium text-gray-900">Crear Nueva Alerta</h3>

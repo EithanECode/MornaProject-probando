@@ -23,8 +23,17 @@ const statusIcon = (type: Alert["type"]) => {
 };
 
 const AlertDetailsModal: React.FC<AlertDetailsModalProps> = ({ alert, onClose }) => {
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in"
+      onClick={handleOverlayClick}
+    >
       <div className="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-7 border border-slate-200 animate-slide-up">
         <div className="flex justify-between items-center pb-3 border-b border-slate-200 mb-5">
           <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
