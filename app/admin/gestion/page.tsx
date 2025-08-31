@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
+import Header from '@/components/layout/Header';
 import { 
   Save, 
   RefreshCw, 
@@ -63,6 +64,7 @@ interface BusinessConfig {
 
 export default function ConfiguracionPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [config, setConfig] = useState<BusinessConfig>({
@@ -96,6 +98,14 @@ export default function ConfiguracionPage() {
     setMounted(true);
   }, []);
 
+  const handleMobileMenuToggle = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleMobileMenuClose = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   const handleSave = async () => {
     setIsLoading(true);
     
@@ -125,6 +135,17 @@ export default function ConfiguracionPage() {
     }).format(amount);
   };
 
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={
@@ -134,17 +155,38 @@ export default function ConfiguracionPage() {
           : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50')
       }
     >
-      <Sidebar isExpanded={sidebarExpanded} setIsExpanded={setSidebarExpanded} userRole="admin" />
+      <Sidebar 
+        isExpanded={sidebarExpanded} 
+        setIsExpanded={setSidebarExpanded}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onMobileMenuClose={handleMobileMenuClose}
+        userRole="admin" 
+      />
 
       <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'}`}>
-        {/* Header */}
+        {/* Header personalizado con botón de guardar */}
         <header className={mounted && theme === 'dark' ? 'bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-40' : 'bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40'}>
           <div className="px-4 md:px-5 lg:px-6 py-4">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
-              <div>
-                <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Gestión del Sistema</h1>
-                <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Ajuste los parametros de gestión del sistema</p>
+              <div className="flex items-center gap-4">
+                {/* Mobile Menu Button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleMobileMenuToggle}
+                  className="lg:hidden p-2 hover:bg-slate-100 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </Button>
+                
+                <div>
+                  <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Gestión del Sistema</h1>
+                  <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Ajuste los parametros de gestión del sistema</p>
+                </div>
               </div>
+              
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                 {lastSaved && (
                   <div className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
@@ -152,7 +194,6 @@ export default function ConfiguracionPage() {
                     Guardado: {lastSaved.toLocaleString('es-VE')}
                   </div>
                 )}
-                {/* Switch tema claro/oscuro removido, el tema es global */}
                 <Button 
                   onClick={handleSave}
                   disabled={isLoading}
