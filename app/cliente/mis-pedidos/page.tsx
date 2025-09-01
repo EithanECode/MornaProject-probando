@@ -50,7 +50,8 @@ import {
   Settings,
   Image,
   Target,
-  X
+  X,
+  Filter
 } from 'lucide-react';
 
 // Rutas de animaciones Lottie (desde /public)
@@ -338,13 +339,13 @@ export default function MisPedidosPage() {
   // Funciones helper
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'quoted': return 'bg-green-100 text-green-800 border-green-200';
-      case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'shipped': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'delivered': return 'bg-green-100 text-green-800 border-green-200';
-      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'pending': return 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm';
+      case 'quoted': return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm';
+      case 'processing': return 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm';
+      case 'shipped': return 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border-purple-300 shadow-sm';
+      case 'delivered': return 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-sm';
+      case 'cancelled': return 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm';
+      default: return 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-sm';
     }
   };
 
@@ -361,10 +362,10 @@ export default function MisPedidosPage() {
   };
 
   const getProgressColor = (progress: number) => {
-    if (progress >= 80) return 'bg-green-500';
-    if (progress >= 50) return 'bg-blue-500';
-    if (progress >= 25) return 'bg-yellow-500';
-    return 'bg-gray-300';
+    if (progress >= 80) return 'bg-gradient-to-r from-green-500 to-emerald-500';
+    if (progress >= 50) return 'bg-gradient-to-r from-blue-500 to-indigo-500';
+    if (progress >= 25) return 'bg-gradient-to-r from-yellow-500 to-orange-500';
+    return 'bg-gradient-to-r from-slate-400 to-slate-500';
   };
 
   // Métodos de pago disponibles
@@ -891,13 +892,33 @@ export default function MisPedidosPage() {
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
           {/* Header de la página */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
-            <div>
-              <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Mis Pedidos</h1>
-              <p className={`text-xs md:text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Gestiona y sigue el estado de tus pedidos</p>
+          <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="relative z-10">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
+                <div>
+                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">Mis Pedidos</h1>
+                  <p className="text-green-100 text-sm md:text-base lg:text-lg">Panel de Control - Pedidos</p>
+                  <p className="text-green-200 mt-2 text-xs md:text-sm">Gestiona y sigue el estado de tus pedidos</p>
+                </div>
+                
+                <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{stats.total}</div>
+                    <p className="text-green-100 text-xs md:text-sm">Total Pedidos</p>
+                  </div>
+                  <div className="hidden md:block w-px h-12 md:h-16 bg-white/20"></div>
+                  <div className="text-center">
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">${stats.totalSpent.toLocaleString()}</div>
+                    <p className="text-green-100 text-xs md:text-sm">Total Gastado</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            {/* Botón Nuevo Pedido */}
+          </div>
+
+          {/* Botón Nuevo Pedido */}
+          <div className="flex justify-end">
             <Dialog open={isNewOrderModalOpen} onOpenChange={setIsNewOrderModalOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
@@ -1506,71 +1527,95 @@ export default function MisPedidosPage() {
 
           {/* Estadísticas */}
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs md:text-sm text-slate-600">Total Pedidos</p>
-                    <p className="text-lg md:text-xl lg:text-2xl font-bold">{stats.total}</p>
-                  </div>
-                  <Package className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
+            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-blue-800">Total Pedidos</CardTitle>
+                <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <Package className="h-4 w-4 text-white" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.total}</div>
+                <p className="text-xs text-blue-700">Todos los pedidos</p>
+                <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                  <div className="bg-blue-500 h-2 rounded-full" style={{width: '100%'}}></div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs md:text-sm text-slate-600">Pendientes</p>
-                    <p className="text-lg md:text-xl lg:text-2xl font-bold text-yellow-600">{stats.pending}</p>
-                  </div>
-                  <Clock className="h-6 w-6 md:h-8 md:w-8 text-yellow-600" />
+            <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:shadow-lg transition-all duration-300 group">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-yellow-800">Pendientes</CardTitle>
+                <div className="p-2 bg-yellow-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <Clock className="h-4 w-4 text-white" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-900">{stats.pending}</div>
+                <p className="text-xs text-yellow-700">Esperando confirmación</p>
+                <div className="mt-2 w-full bg-yellow-200 rounded-full h-2">
+                  <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(stats.pending / stats.total) * 100}%`}}></div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs md:text-sm text-slate-600">En Proceso</p>
-                    <p className="text-lg md:text-xl lg:text-2xl font-bold text-blue-600">{stats.processing}</p>
-                  </div>
-                  <Truck className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
+            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-blue-800">En Proceso</CardTitle>
+                <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <Truck className="h-4 w-4 text-white" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.processing}</div>
+                <p className="text-xs text-blue-700">En proceso</p>
+                <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                  <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.processing / stats.total) * 100}%`}}></div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs md:text-sm text-slate-600">Enviados</p>
-                    <p className="text-lg md:text-xl lg:text-2xl font-bold text-purple-600">{stats.shipped}</p>
-                  </div>
-                  <MapPin className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
+            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-purple-800">Enviados</CardTitle>
+                <div className="p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <MapPin className="h-4 w-4 text-white" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{stats.shipped}</div>
+                <p className="text-xs text-purple-700">En tránsito</p>
+                <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
+                  <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(stats.shipped / stats.total) * 100}%`}}></div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs md:text-sm text-slate-600">Total Gastado</p>
-                    <p className="text-lg md:text-xl lg:text-2xl font-bold text-green-600">${stats.totalSpent.toLocaleString()}</p>
-                  </div>
-                  <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
+            <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:shadow-lg transition-all duration-300 group">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-emerald-800">Total Gastado</CardTitle>
+                <div className="p-2 bg-emerald-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <DollarSign className="h-4 w-4 text-white" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-emerald-900">${stats.totalSpent.toLocaleString()}</div>
+                <p className="text-xs text-emerald-700">Inversión total</p>
+                <div className="mt-2 w-full bg-emerald-200 rounded-full h-2">
+                  <div className="bg-emerald-500 h-2 rounded-full" style={{width: '100%'}}></div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Filtros y búsqueda */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-            <CardContent className="p-4">
-              <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">Filtros y Búsqueda</CardTitle>
+              <p className="text-sm text-slate-600">Encuentra rápidamente tus pedidos</p>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-3 md:gap-4">
                 <div className="flex-1">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -1578,81 +1623,85 @@ export default function MisPedidosPage() {
                       placeholder="Buscar por producto, ID o tracking..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-full md:w-48">
-                    <SelectValue placeholder="Filtrar por estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos los estados</SelectItem>
-                    <SelectItem value="pending">Pendientes</SelectItem>
-                    <SelectItem value="processing">En proceso</SelectItem>
-                    <SelectItem value="shipped">Enviados</SelectItem>
-                    <SelectItem value="delivered">Entregados</SelectItem>
-                    <SelectItem value="cancelled">Cancelados</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex flex-col md:flex-row gap-3">
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-full md:w-48">
+                      <Filter className="w-4 h-4 mr-2" />
+                      <SelectValue placeholder="Filtrar por estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos los estados</SelectItem>
+                      <SelectItem value="pending">Pendientes</SelectItem>
+                      <SelectItem value="processing">En proceso</SelectItem>
+                      <SelectItem value="shipped">Enviados</SelectItem>
+                      <SelectItem value="delivered">Entregados</SelectItem>
+                      <SelectItem value="cancelled">Cancelados</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Lista de pedidos */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
             <CardHeader>
-              <CardTitle>Mis Pedidos</CardTitle>
+              <CardTitle className="text-xl font-semibold">Mis Pedidos</CardTitle>
+              <p className="text-sm text-slate-600">Lista de todos tus pedidos y su estado actual</p>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {filteredOrders.map((order) => (
-                  <div key={order.id} className="p-3 md:p-4 rounded-lg bg-slate-50 border border-slate-200">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4 mb-4">
-                      <div className="flex items-center gap-3 md:gap-4">
+                  <div key={order.id} className="p-4 md:p-6 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300 group">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6 mb-4">
+                      <div className="flex items-center gap-4 md:gap-6">
                         <div className="flex flex-col">
-                          <p className="font-medium text-xs md:text-sm">{order.id}</p>
-                          <p className="text-xs text-slate-600">{order.product}</p>
+                          <p className="font-bold text-sm md:text-base text-slate-800">{order.id}</p>
+                          <p className="text-sm text-slate-600 font-medium">{order.product}</p>
                         </div>
-                        <Badge className={`${getStatusColor(order.status)} text-xs md:text-sm`}>
+                        <Badge className={`${getStatusColor(order.status)} text-xs md:text-sm font-semibold px-3 py-1`}>
                           {getStatusText(order.status)}
                         </Badge>
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] md:text-[11px] uppercase tracking-wide text-slate-500">
+                        <p className="text-[10px] md:text-[11px] uppercase tracking-wide text-slate-500 font-medium">
                           {order.status === 'pending' && 'Presupuesto'}
                           {order.status === 'quoted' && 'Cotización a pagar'}
                           {order.status !== 'pending' && order.status !== 'quoted' && 'Monto'}
                         </p>
-                        <p className="font-medium text-base md:text-lg">
+                        <p className="font-bold text-lg md:text-xl text-slate-800">
                           {order.status === 'pending' && typeof order.estimatedBudget !== 'undefined' && order.estimatedBudget !== null
                             ? `$${Number(order.estimatedBudget).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
                             : order.status === 'quoted' && typeof order.totalQuote !== 'undefined' && order.totalQuote !== null
                               ? `$${Number(order.totalQuote).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
                               : order.amount}
                         </p>
-                        <p className="text-xs text-slate-600">Tracking: {order.tracking || '-'}</p>
+                        <p className="text-xs text-slate-600 font-medium">Tracking: {order.tracking || '-'}</p>
                       </div>
                     </div>
                     
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-xs md:text-sm">
-                        <span>Progreso</span>
-                        <span>{order.progress}%</span>
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm font-medium">
+                        <span className="text-slate-700">Progreso del pedido</span>
+                        <span className="text-slate-800">{order.progress}%</span>
                       </div>
-                      <div className="w-full bg-slate-200 rounded-full h-1.5 md:h-2">
+                      <div className="w-full bg-slate-200 rounded-full h-2 md:h-3 overflow-hidden">
                         <div 
-                          className={`h-1.5 md:h-2 rounded-full ${getProgressColor(order.progress)}`} 
+                          className={`h-2 md:h-3 rounded-full transition-all duration-500 ${getProgressColor(order.progress)}`} 
                           style={{ width: `${order.progress}%` }}
                         ></div>
                       </div>
-                      <div className="flex flex-col md:flex-row md:justify-between gap-2 md:gap-0 text-xs text-slate-600">
-                        <span>Entrega estimada: {order.estimatedDelivery}</span>
-                        <div className="flex gap-1 md:gap-2">
+                      <div className="flex flex-col md:flex-row md:justify-between gap-3 md:gap-0 text-sm">
+                        <span className="text-slate-600 font-medium">Entrega estimada: {order.estimatedDelivery}</span>
+                        <div className="flex gap-2 md:gap-3">
                           {order.status === 'quoted' && (
                             <Button 
                               size="sm" 
-                              className="h-5 md:h-6 px-2 md:px-3 bg-green-600 hover:bg-green-700 text-white text-xs"
+                              className="h-7 md:h-8 px-3 md:px-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-xs font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                               onClick={() => handlePaymentClick(order)}
                             >
                               <DollarSign className="h-3 w-3 mr-1" />
@@ -1660,15 +1709,19 @@ export default function MisPedidosPage() {
                             </Button>
                           )}
                           <Button 
-                            variant="ghost" 
+                            variant="outline" 
                             size="sm" 
-                            className="h-5 md:h-6 px-1 md:px-2 text-xs"
+                            className="h-7 md:h-8 px-3 md:px-4 text-xs font-semibold border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300"
                             onClick={() => handleViewDetails(order)}
                           >
                             <Eye className="h-3 w-3 mr-1" />
                             Ver detalles
                           </Button>
-                          <Button variant="ghost" size="sm" className="h-5 md:h-6 px-1 md:px-2 text-xs">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-7 md:h-8 px-3 md:px-4 text-xs font-semibold border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300"
+                          >
                             <MessageSquare className="h-3 w-3 mr-1" />
                             Soporte
                           </Button>
@@ -1679,9 +1732,12 @@ export default function MisPedidosPage() {
                 ))}
                 
                 {filteredOrders.length === 0 && (
-                  <div className="text-center py-8 md:py-10">
-                    <Package className="h-10 w-10 md:h-12 md:w-12 text-slate-400 mx-auto mb-3 md:mb-4" />
-                    <p className="text-slate-500 text-sm md:text-base">No se encontraron pedidos</p>
+                  <div className="text-center py-12 md:py-16">
+                    <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center">
+                      <Package className="h-8 w-8 md:h-10 md:w-10 text-slate-400" />
+                    </div>
+                    <p className="text-slate-500 text-base md:text-lg font-medium">No se encontraron pedidos</p>
+                    <p className="text-slate-400 text-sm mt-2">Intenta ajustar los filtros de búsqueda</p>
                   </div>
                 )}
               </div>
