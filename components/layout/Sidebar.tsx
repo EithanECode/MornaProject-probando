@@ -103,14 +103,6 @@ const CLIENT_MENU_ITEMS = [
     badge: null,
     color: 'text-green-500',
     path: '/cliente/soporte'
-  },
-  {
-    id: 'ajustes',
-    label: 'Configuración',
-    icon: Settings,
-    badge: null,
-    color: 'text-gray-500',
-    path: '/cliente/configuracion'
   }
 ];
 
@@ -162,14 +154,6 @@ const VENEZUELA_MENU_ITEMS = [
     badge: null,
     color: 'text-indigo-500',
     path: '/venezuela/reportes'
-  },
-  {
-    id: 'ajustes',
-    label: 'Configuración',
-    icon: Settings,
-    badge: null,
-    color: 'text-gray-500',
-    path: '/venezuela/configuracion'
   }
 ];
 
@@ -189,14 +173,6 @@ const CHINA_MENU_ITEMS = [
     badge: 12,
     color: 'text-orange-500',
     path: '/china/pedidos'
-  },
-  {
-    id: 'ajustes',
-    label: 'Configuración',
-    icon: Settings,
-    badge: null,
-    color: 'text-gray-500',
-    path: '/china/configuracion'
   }
 ];
 
@@ -283,26 +259,27 @@ const ADMIN_MENU_ITEMS = [
     badge: null,
     color: 'text-gray-500',
     path: '/admin/gestion'
-  },
-  {
-    id: 'ajustes',
-    label: 'Configuración',
-    icon: Settings,
-    badge: null,
-    color: 'text-gray-500',
-    path: '/admin/configuracion'
   }
 ];
 
-const BOTTOM_ITEMS = [
-  {
-    id: 'settings',
-    label: 'Configuración',
-    icon: Settings,
-    color: 'text-gray-500',
-    path: '/admin/configuracion'
-  }
-];
+// Función para obtener los items del bottom según el rol
+const getBottomItemsByRole = (role?: string) => {
+  const basePath = role === 'admin' ? '/admin' : 
+                   role === 'venezuela' ? '/venezuela' : 
+                   role === 'china' ? '/china' : 
+                   role === 'pagos' ? '/pagos' : 
+                   '/cliente';
+  
+  return [
+    {
+      id: 'settings',
+      label: 'Configuración',
+      icon: Settings,
+      color: 'text-gray-500',
+      path: `${basePath}/configuracion`
+    }
+  ];
+};
 
 // Función para obtener el menú según el rol
 const getMenuItemsByRole = (role?: string) => {
@@ -374,14 +351,14 @@ const useScreenSize = () => {
 };
 
 // Hook personalizado para detectar la página activa
-const useActivePage = (menuItems: any[]) => {
-  const pathname = usePathname();
-  
+const useActivePage = (menuItems: any[], userRole?: string, pathname?: string) => {
   return useMemo(() => {
+    if (!pathname) return 'dashboard';
     const currentItem = menuItems.find(item => item.path === pathname);
-    const currentBottomItem = BOTTOM_ITEMS.find(item => item.path === pathname);
+    const bottomItems = getBottomItemsByRole(userRole);
+    const currentBottomItem = bottomItems.find(item => item.path === pathname);
     return currentItem?.id || currentBottomItem?.id || 'dashboard';
-  }, [pathname, menuItems]);
+  }, [pathname, menuItems, userRole]);
 };
 
 export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = false, onMobileMenuClose, userRole = 'client' }: SidebarProps) {
@@ -424,7 +401,8 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     }
   }
   
-  const activeItem = useActivePage(menuItems);
+  const pathname = usePathname();
+  const activeItem = useActivePage(menuItems, userRole, pathname);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Memoizar los cálculos responsivos con optimización
@@ -640,18 +618,28 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           </div>
 
           {/* Settings */}
-          {BOTTOM_ITEMS.map((item) => {
-            const Icon = item.icon;
+          {(() => {
+            const bottomItems = getBottomItemsByRole(userRole);
             
-            return (
-              <div key={item.id}>
+            return bottomItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = item.path === pathname;
+              
+              return (
                 <Link
+                  key={item.id}
                   href={item.path}
                   prefetch={true}
-                  className={`w-full flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : 'justify-center p-2') : 'space-x-3 px-4 py-3'} rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-150 ease-out group`}
+                  className={`
+                    w-full flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : 'justify-center p-2') : 'space-x-3 px-4 py-3'} rounded-xl transition-all duration-150 ease-out group
+                    ${isActive 
+                      ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-white shadow-lg border border-blue-500/30' 
+                      : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                    }
+                  `}
                 >
                   <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-slate-600/50`}>
-                    <Icon className={`${responsiveConfig.iconSize} ${item.color}`} />
+                    <Icon className={`${responsiveConfig.iconSize} ${item.color} transition-all duration-150 ease-out ${isActive ? 'scale-105' : 'scale-100'}`} />
                   </div>
                   <div className={`
                     transition-all duration-150 ease-out overflow-hidden
@@ -660,9 +648,9 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
                     <span className="font-medium whitespace-nowrap">{item.label}</span>
                   </div>
                 </Link>
-              </div>
-            );
-          })}
+              );
+            });
+          })()}
 
           {/* Logout */}
           <button
