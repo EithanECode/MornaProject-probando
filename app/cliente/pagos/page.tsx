@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useClientContext } from '@/lib/ClientContext';
 import { 
   CreditCard, 
   DollarSign,
@@ -39,7 +41,7 @@ import {
 interface Payment {
   id: string;
   orderId: string;
-  product: string;
+  product: string;  
   amount: number;
   currency: 'USD' | 'BS';
   status: 'pending' | 'paid' | 'failed' | 'refunded' | 'processing';
@@ -57,6 +59,17 @@ interface Payment {
     email?: string;
   };
   receiptUrl?: string;
+}
+
+// Tipo parcial para la tabla orders (ajustado a lo que usamos aquí)
+interface DbOrder {
+  id: string;
+  productName: string | null;
+  description: string | null;
+  estimatedBudget: number | null;
+  totalQuote: number | null;
+  state: number | null;
+  created_at: string | null;
 }
 
 // Datos mock mejorados
@@ -202,6 +215,8 @@ const PAYMENTS: Payment[] = [
 ];
 
 export default function PagosPage() {
+  const { clientId } = useClientContext();
+  const supabase = getSupabaseBrowserClient();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -210,10 +225,56 @@ export default function PagosPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [methodFilter, setMethodFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Cargar órdenes del cliente con state === 5 y mapear a pagos
+  useEffect(() => {
+    const load = async () => {
+      if (!clientId) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('id, productName, description, estimatedBudget, totalQuote, state, created_at')
+          .eq('client_id', clientId)
+          .eq('state', 5)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+
+        const mapped: Payment[] = (data as DbOrder[] | null)?.map((row) => {
+          const amountNum = (row.totalQuote ?? row.estimatedBudget ?? 0) as number;
+          return {
+            id: `PAY-${row.id}`,
+            orderId: String(row.id),
+            product: row.productName || 'Pedido',
+            amount: Number(amountNum || 0),
+            currency: 'USD',
+            // En state 5, lo tratamos como pendiente hasta tener confirmación
+            status: 'pending',
+            // Método desconocido al no tener campo específico; default transferencia
+            paymentMethod: 'transfer',
+            dueDate: row.created_at || new Date().toISOString(),
+            createdAt: row.created_at || new Date().toISOString(),
+            description: row.description || `Orden ${row.id}`,
+          };
+        }) || [];
+
+        setPayments(mapped);
+      } catch (e: any) {
+        setError(e?.message || 'Error cargando pagos');
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [clientId, supabase]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -275,7 +336,7 @@ export default function PagosPage() {
     });
   };
 
-  const filteredPayments = PAYMENTS.filter(payment => {
+  const filteredPayments = payments.filter(payment => {
     const matchesSearch = 
       payment.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
       payment.orderId.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -308,15 +369,15 @@ export default function PagosPage() {
   });
 
   const stats = {
-    total: PAYMENTS.length,
-    pending: PAYMENTS.filter(p => p.status === 'pending').length,
-    paid: PAYMENTS.filter(p => p.status === 'paid').length,
-    failed: PAYMENTS.filter(p => p.status === 'failed').length,
-    processing: PAYMENTS.filter(p => p.status === 'processing').length,
-    refunded: PAYMENTS.filter(p => p.status === 'refunded').length,
-    totalAmount: PAYMENTS.reduce((sum, p) => sum + p.amount, 0),
-    paidAmount: PAYMENTS.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0),
-    pendingAmount: PAYMENTS.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0)
+    total: payments.length,
+    pending: payments.filter(p => p.status === 'pending').length,
+    paid: payments.filter(p => p.status === 'paid').length,
+    failed: payments.filter(p => p.status === 'failed').length,
+    processing: payments.filter(p => p.status === 'processing').length,
+    refunded: payments.filter(p => p.status === 'refunded').length,
+    totalAmount: payments.reduce((sum, p) => sum + p.amount, 0),
+    paidAmount: payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0),
+    pendingAmount: payments.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0)
   };
 
   if (!mounted) return null;

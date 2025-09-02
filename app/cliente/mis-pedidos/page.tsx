@@ -19,6 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import { useClientContext } from '@/lib/ClientContext';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -180,6 +181,7 @@ export default function MisPedidosPage() {
 
   // Supabase client (navegador)
   const supabase = getSupabaseBrowserClient();
+  const { toast } = useToast();
   // Estados básicos
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
@@ -241,6 +243,7 @@ export default function MisPedidosPage() {
   const [paymentStep, setPaymentStep] = useState(1);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
   const [selectedOrderForPayment, setSelectedOrderForPayment] = useState<Order | null>(null);
+  const [isConfirmingPayment, setIsConfirmingPayment] = useState(false);
 
   // Inicialización
   useEffect(() => {
@@ -462,13 +465,39 @@ export default function MisPedidosPage() {
     }
   };
 
-  const handlePaymentConfirm = () => {
-    // Aquí iría la lógica de confirmación del pago
-    console.log('Pago confirmado:', selectedOrderForPayment, selectedPaymentMethod);
-    setIsPaymentModalOpen(false);
-    setSelectedOrderForPayment(null);
-    setSelectedPaymentMethod(null);
-    setPaymentStep(1);
+  const handlePaymentConfirm = async () => {
+    if (!selectedOrderForPayment) return;
+    if (!clientId) {
+      toast({ title: 'No autenticado', description: 'Debes iniciar sesión para confirmar el pago.', variant: 'destructive', duration: 4000 });
+      return;
+    }
+    setIsConfirmingPayment(true);
+    try {
+      const rawId = selectedOrderForPayment.id;
+      const orderId = isNaN(Number(rawId)) ? rawId : Number(rawId);
+      const { error } = await supabase
+        .from('orders')
+        .update({ state: 4 })
+        .eq('id', orderId as any)
+        .eq('client_id', clientId);
+      if (error) {
+        console.error('Error actualizando estado del pedido:', error);
+        toast({ title: 'Error al confirmar pago', description: error.message || 'Intenta nuevamente.', variant: 'destructive', duration: 5000 });
+        return;
+      }
+      // Refrescar pedidos y cerrar modal
+      await fetchOrders();
+  toast({ title: 'Pago confirmado', description: 'Tu pedido ha sido marcado como pagado. Estado actualizado a 4.', duration: 4000 });
+      setIsPaymentModalOpen(false);
+      setSelectedOrderForPayment(null);
+      setSelectedPaymentMethod(null);
+      setPaymentStep(1);
+    } catch (e: any) {
+      console.error('Excepción confirmando pago:', e);
+      toast({ title: 'Error inesperado', description: e?.message || 'Ocurrió un problema al confirmar el pago.', variant: 'destructive', duration: 5000 });
+    } finally {
+      setIsConfirmingPayment(false);
+    }
   };
 
   const handleNextStep = () => {
@@ -2009,10 +2038,20 @@ export default function MisPedidosPage() {
                   {paymentStep === 2 && (
                     <Button 
                       onClick={handlePaymentConfirm}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      disabled={isConfirmingPayment}
+                      className="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      <Check className="h-4 w-4 mr-2" />
-                      Confirmar Pago
+                      {isConfirmingPayment ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                          Procesando...
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-4 w-4 mr-2" />
+                          Confirmar Pago
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>
