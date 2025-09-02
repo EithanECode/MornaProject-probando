@@ -117,6 +117,27 @@ interface PaymentMethod {
   };
 }
 
+// Tipos para modal de tracking (copiados del tracking)
+interface TrackingOrder {
+  id: string;
+  product: string;
+  trackingNumber: string;
+  status: 'pending' | 'processing' | 'shipped' | 'in-transit' | 'delivered' | 'cancelled';
+  progress: number;
+  estimatedDelivery: string;
+  currentLocation: string;
+  lastUpdate: string;
+  carrier: string;
+  timeline: Array<{
+    id: string;
+    status: string;
+    description: string;
+    location: string;
+    timestamp: string;
+    completed: boolean;
+  }>;
+}
+
 // Datos mock
 const MOCK_ORDERS: Order[] = [
   {
@@ -194,6 +215,9 @@ export default function MisPedidosPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  // Estado del modal de seguimiento
+  const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
+  const [selectedTrackingOrder, setSelectedTrackingOrder] = useState<TrackingOrder | null>(null);
 
   // Estados del modal de nuevo pedido
   const [isNewOrderModalOpen, setIsNewOrderModalOpen] = useState(false);
@@ -337,6 +361,94 @@ export default function MisPedidosPage() {
     totalSpent: orders
       .filter(o => o.status === 'processing' || o.status === 'shipped' || o.status === 'delivered')
       .reduce((sum, order) => sum + Number(order.totalQuote ?? 0), 0)
+  };
+
+  // Helpers específicos para el modal de tracking (colores simples)
+  const getTrackingStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'shipped': return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'in-transit': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'delivered': return 'bg-green-100 text-green-800 border-green-200';
+      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getTrackingStatusText = (status: string) => {
+    switch (status) {
+      case 'pending': return 'Pendiente';
+      case 'processing': return 'Procesando';
+      case 'shipped': return 'Enviado';
+      case 'in-transit': return 'En Tránsito';
+      case 'delivered': return 'Entregado';
+      case 'cancelled': return 'Cancelado';
+      default: return 'Desconocido';
+    }
+  };
+
+  // Construir objeto de tracking a partir de un pedido
+  const buildTrackingFromOrder = (order: Order): TrackingOrder => {
+    const mapStatus = (s: Order['status']): TrackingOrder['status'] => {
+      if (s === 'shipped') return 'in-transit';
+      if (s === 'delivered') return 'delivered';
+      if (s === 'processing') return 'processing';
+      if (s === 'cancelled') return 'cancelled';
+      return 'pending';
+    };
+
+    const status = mapStatus(order.status);
+    const steps = [
+      { id: '1', key: 'Pedido Creado' },
+      { id: '2', key: 'En Procesamiento' },
+      { id: '3', key: 'Enviado' },
+      { id: '4', key: 'En Tránsito' },
+      { id: '5', key: 'En Aduana' },
+      { id: '6', key: 'Entregado' },
+    ];
+    const statusIndexMap: Record<TrackingOrder['status'], number> = {
+      pending: 0,
+      processing: 1,
+      shipped: 2,
+      'in-transit': 3,
+      delivered: 5,
+      cancelled: 0,
+    };
+    const idx = statusIndexMap[status] ?? 0;
+
+    const timeline: TrackingOrder['timeline'] = steps.map((s, i) => ({
+      id: s.id,
+      status: s.key,
+      description: s.key,
+      location: i <= idx ? (i === 3 ? 'En ruta' : '—') : '—',
+      timestamp: '—',
+      completed: i <= idx && status !== 'cancelled',
+    }));
+
+    return {
+      id: order.id,
+      product: order.product,
+      trackingNumber: order.tracking || 'N/A',
+      status,
+      progress: order.progress ?? 0,
+      estimatedDelivery: order.estimatedDelivery || '—',
+      currentLocation: status === 'in-transit' || status === 'delivered' ? 'En tránsito' : '—',
+      lastUpdate: '—',
+      carrier: '—',
+      timeline,
+    };
+  };
+
+  const openTrackingModal = (order: Order) => {
+    const t = buildTrackingFromOrder(order);
+    setSelectedTrackingOrder(t);
+    setTimeout(() => setIsTrackingModalOpen(true), 10);
+  };
+
+  const closeTrackingModal = () => {
+    setIsTrackingModalOpen(false);
+    setTimeout(() => setSelectedTrackingOrder(null), 300);
   };
 
   // Funciones helper
@@ -1665,6 +1777,7 @@ export default function MisPedidosPage() {
                     <SelectContent>
                       <SelectItem value="all">Todos los estados</SelectItem>
                       <SelectItem value="pending">Pendientes</SelectItem>
+                      <SelectItem value="quoted">Cotizado</SelectItem>
                       <SelectItem value="processing">En proceso</SelectItem>
                       <SelectItem value="shipped">Enviados</SelectItem>
                       <SelectItem value="delivered">Entregados</SelectItem>
@@ -1750,9 +1863,10 @@ export default function MisPedidosPage() {
                             variant="outline" 
                             size="sm" 
                             className="h-7 md:h-8 px-3 md:px-4 text-xs font-semibold border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300"
+                            onClick={() => openTrackingModal(order)}
                           >
-                            <MessageSquare className="h-3 w-3 mr-1" />
-                            Soporte
+                            <MapPin className="h-3 w-3 mr-1" />
+                            Seguimiento
                           </Button>
                         </div>
                       </div>
@@ -1866,9 +1980,9 @@ export default function MisPedidosPage() {
 
                 {/* Acciones */}
                 <div className="flex gap-2 pt-4 border-t">
-                  <Button className="flex-1">
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    Contactar Soporte
+                  <Button className="flex-1" onClick={() => selectedOrder && openTrackingModal(selectedOrder)}>
+                    <MapPin className="h-4 w-4 mr-2" />
+                    Seguimiento
                   </Button>
                   <Button variant="outline" className="flex-1">
                     Descargar Factura
@@ -1878,6 +1992,97 @@ export default function MisPedidosPage() {
             </DialogContent>
           )}
         </Dialog>
+
+        {/* Modal de Seguimiento (copiado del tracking) */}
+        {selectedTrackingOrder && (
+          <div 
+            className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 transition-all duration-300 ease-out ${
+              isTrackingModalOpen 
+                ? 'bg-black/50 backdrop-blur-sm opacity-100' 
+                : 'bg-black/0 backdrop-blur-none opacity-0'
+            }`}
+            onClick={closeTrackingModal}
+          >
+            <div 
+              className={`bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ease-out transform ${
+                isTrackingModalOpen 
+                  ? 'scale-100 opacity-100 translate-y-0' 
+                  : 'scale-95 opacity-0 translate-y-8'
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold">{selectedTrackingOrder.product}</h2>
+                    <p className="text-slate-600">{selectedTrackingOrder.id}</p>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={closeTrackingModal}
+                  >
+                    ✕
+                  </Button>
+                </div>
+
+                {/* Información del tracking */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div className="space-y-2">
+                    <p className="text-sm text-slate-600">Número de Tracking</p>
+                    <p className="font-mono font-medium">{selectedTrackingOrder.trackingNumber}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm text-slate-600">Transportista</p>
+                    <p className="font-medium">{selectedTrackingOrder.carrier}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm text-slate-600">Entrega Estimada</p>
+                    <p className="font-medium">{selectedTrackingOrder.estimatedDelivery}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm text-slate-600">Estado Actual</p>
+                    <Badge className={getTrackingStatusColor(selectedTrackingOrder.status)}>
+                      {getTrackingStatusText(selectedTrackingOrder.status)}
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Timeline */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Historial de Seguimiento</h3>
+                  <div className="space-y-4">
+                    {selectedTrackingOrder.timeline.map((step, index) => (
+                      <div key={step.id} className="flex items-start space-x-4">
+                        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                          step.completed 
+                            ? 'bg-green-500 text-white' 
+                            : 'bg-slate-200 text-slate-600'
+                        }`}>
+                          {step.completed ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <span className="text-xs font-bold">{index + 1}</span>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium">{step.status}</p>
+                          <p className="text-sm text-slate-600">{step.description}</p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <MapPin className="w-3 h-3 text-slate-400" />
+                            <span className="text-xs text-slate-500">{step.location}</span>
+                            <span className="text-xs text-slate-400">•</span>
+                            <span className="text-xs text-slate-500">{step.timestamp}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Modal de Pago */}
         <Dialog open={isPaymentModalOpen} onOpenChange={setIsPaymentModalOpen}>

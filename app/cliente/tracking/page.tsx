@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -244,10 +245,24 @@ export default function TrackingPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState<TrackingOrder | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Abrir modal automáticamente si viene orderId en query
+  useEffect(() => {
+    if (!mounted) return;
+    const orderId = searchParams?.get('orderId');
+    if (orderId) {
+      const order = TRACKING_ORDERS.find(o => o.id === orderId);
+      if (order) {
+        setSelectedOrder(order);
+        setTimeout(() => setIsModalOpen(true), 10);
+      }
+    }
+  }, [mounted, searchParams]);
 
   const openModal = (order: TrackingOrder) => {
     setSelectedOrder(order);
