@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import Lottie from "react-lottie";
+import { Eye, EyeOff } from "lucide-react";
 
 type Props = {
   onNavigateToPasswordReset: () => void;
@@ -156,7 +157,7 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
         )}
         {animError && (
           <div style={{ color: 'red', fontSize: 14, textAlign: 'center' }}>
-            <i className="fas fa-exclamation-triangle" style={{ fontSize: 24 }}></i>
+            <span style={{ fontSize: 24 }}>⚠️</span>
             <div>No se pudo cargar la animación</div>
           </div>
         )}
@@ -186,7 +187,7 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
           required
         />
         <span className="password-toggle-icon" onClick={toggleShowPassword}>
-          <i className={showPassword ? "fas fa-eye-slash" : "fas fa-eye"}></i>
+          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
         </span>
       </div>
       {passwordError && (
