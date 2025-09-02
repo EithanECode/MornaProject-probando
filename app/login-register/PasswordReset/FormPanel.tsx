@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Mail, ChevronRight, ArrowLeft, Check } from "lucide-react";
+import { Mail, ChevronRight, ArrowLeft, Check, Eye, EyeOff } from "lucide-react";
 import Lottie from "react-lottie";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { STEPS } from "@/lib/constants/auth";
@@ -289,7 +289,7 @@ export default function FormPanel(props: Props) {
                 required
               />
               <span className="password-toggle-icon" onClick={toggleShowNewPassword}>
-                <i className={showNewPassword ? "fas fa-eye-slash" : "fas fa-eye"}></i>
+                {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </span>
               {showFeedbackDiv && (
                 <div className={`password-strength-feedback ${animateFeedback ? "active" : ""}`}>
@@ -312,7 +312,7 @@ export default function FormPanel(props: Props) {
                 required
               />
               <span className={`password-toggle-icon ${showCheckmark ? "hidden" : ""}`} onClick={toggleShowConfirmPassword}>
-                <i className={showConfirmPassword ? "fas fa-eye-slash" : "fas fa-eye"}></i>
+                {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </span>
               {showMatchErrorDiv && (
                 <p className={`password-error-message ${animateMatchError ? "active" : ""}`}>Las contraseñas no coinciden.</p>

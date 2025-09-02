@@ -30,6 +30,7 @@ export default function RootLayout({
         <link rel="icon" href="/pita_icon.svg" type="image/svg+xml" />
         <link rel="shortcut icon" href="/pita_icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/pita_icon.svg" />
+
       </head>
       <body className={inter.className}>
         {children}

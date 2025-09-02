@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import Lottie from "react-lottie";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function RegisterForm() {
   const [registerAnim, setRegisterAnim] = useState<any | null>(null);
@@ -278,7 +279,7 @@ export default function RegisterForm() {
         )}
         {registerAnimError && (
           <div style={{ color: 'red', fontSize: 14, textAlign: 'center' }}>
-            <i className="fas fa-exclamation-triangle" style={{ fontSize: 24 }}></i>
+            <span style={{ fontSize: 24 }}>⚠️</span>
             <div>No se pudo cargar la animación de registro</div>
           </div>
         )}
@@ -329,7 +330,7 @@ export default function RegisterForm() {
           }`}
         />
         <span className="password-toggle-icon" onClick={toggleShowPassword}>
-          <i className={showPassword ? "fas fa-eye-slash" : "fas fa-eye"}></i>
+          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
         </span>
         {showFeedbackDiv && (
           <div className={`password-strength-feedback ${animateFeedback ? "active" : ""}`}>
@@ -361,7 +362,7 @@ export default function RegisterForm() {
           className={`password-toggle-icon ${showCheckmark ? "hidden" : ""}`}
           onClick={toggleShowConfirmPassword}
         >
-          <i className={showConfirmPassword ? "fas fa-eye-slash" : "fas fa-eye"}></i>
+          {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
         </span>
         {showMatchErrorDiv && (
           <p className={`password-error-message ${animateMatchError ? "active" : ""}`}>
