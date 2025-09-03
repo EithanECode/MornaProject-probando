@@ -6,6 +6,9 @@ import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useAdminContext } from '@/lib/AdminContext';
+import { useAdminOrders } from '@/hooks/use-admin-orders';
+import { useAdminUsers } from '@/hooks/use-admin-users';
 import { 
   Users, 
   Package, 
@@ -37,6 +40,16 @@ export default function AdminDashboard() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { adminId } = useAdminContext();
+
+    // Datos de pedidos desde la tabla orders
+  const { data: adminOrdersData, error: adminOrdersError } = useAdminOrders();
+    const totalPedidos = adminOrdersData?.totalPedidos ?? 0;
+    const totalIngresos = adminOrdersData?.totalIngresos ?? 0;
+
+    // Datos de usuarios desde la tabla userlevel
+  const { data: adminUsersData, error: adminUsersError } = useAdminUsers();
+  const totalUsuarios = Array.isArray(adminUsersData) ? adminUsersData.length : 0;
 
   useEffect(() => {
     setMounted(true);
@@ -125,8 +138,8 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex md:hidden lg:flex items-center space-x-4 md:space-x-6">
                   <div className="text-center">
-                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{stats.criticalAlerts + stats.pendingPayments}</div>
-                    <p className="text-blue-100 text-xs md:text-sm">Tareas Críticas</p>
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{totalUsuarios}</div>
+                    <p className="text-blue-100 text-xs md:text-sm">Usuarios Totales</p>
                   </div>
                 </div>
               </div>
@@ -145,7 +158,7 @@ export default function AdminDashboard() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.totalUsers}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{totalUsuarios}</div>
                   <p className="text-xs text-blue-700">Usuarios activos</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                     <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.totalUsers / 100) * 100}%`}}></div>
@@ -161,7 +174,7 @@ export default function AdminDashboard() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{stats.activeOrders}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{totalPedidos}</div>
                   <p className="text-xs text-green-700">En proceso</p>
                   <div className="mt-2 w-full bg-green-200 rounded-full h-2">
                     <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.activeOrders / 200) * 100}%`}}></div>
@@ -193,8 +206,7 @@ export default function AdminDashboard() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{stats.totalRevenue}</div>
-                  <p className="text-xs text-purple-700">{stats.monthlyGrowth} este mes</p>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{totalIngresos}$</div>
                   <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
                     <div className="bg-purple-500 h-2 rounded-full" style={{width: '85%'}}></div>
                   </div>
@@ -234,7 +246,7 @@ export default function AdminDashboard() {
                       <span className="text-xs md:text-sm font-medium">Alertas</span>
                     </Button>
                   </Link>
-                  <Link href="/admin/pedidos">
+                  <Link href="/admin/reportes">
                     <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
                       <div className="p-2 md:p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
                         <BarChart3 className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from 'react';
+import { useAdminUsers } from '@/hooks/use-admin-users';
 
 // Estilos para animaciones
 const animationStyles = `
@@ -66,12 +67,14 @@ import {
   Eye,
   Edit3,
   Archive,
-  RefreshCw
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import Header from '@/components/layout/Header';
 
 type UserStatus = 'activo' | 'inactivo';
-type UserRole = 'Cliente' | 'Empleado China' | 'Empleado Vzla' | 'Validador Pagos' | 'Admin';
+type UserRole = 'Cliente' | 'Empleado China' | 'Empleado Vzla' | 'Admin';
 
 interface User {
   id: string;
@@ -86,7 +89,6 @@ const ROLE_COLORS: Record<UserRole, string> = {
   'Cliente': 'bg-slate-100 text-slate-800 border-slate-200',
   'Empleado China': 'bg-red-100 text-red-800 border-red-200',
   'Empleado Vzla': 'bg-blue-100 text-blue-800 border-blue-200',
-  'Validador Pagos': 'bg-emerald-100 text-emerald-800 border-emerald-200',
   'Admin': 'bg-purple-100 text-purple-800 border-purple-200',
 };
 
@@ -97,19 +99,45 @@ export default function UsuariosPage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
-  const [users, setUsers] = useState<User[]>([
-    { id: 'USR-001', fullName: 'María González', email: 'maria@empresa.com', role: 'Admin', status: 'activo', createdAt: '2024-04-01T10:00:00Z' },
-    { id: 'USR-002', fullName: 'Carlos Pérez', email: 'carlos@empresa.com', role: 'Empleado Vzla', status: 'activo', createdAt: '2024-05-12T14:30:00Z' },
-    { id: 'USR-003', fullName: 'Ana Rodríguez', email: 'ana@empresa.com', role: 'Empleado China', status: 'inactivo', createdAt: '2024-03-22T08:15:00Z' },
-    { id: 'USR-004', fullName: 'Luis Martínez', email: 'luis@empresa.com', role: 'Validador Pagos', status: 'activo', createdAt: '2024-06-05T09:45:00Z' },
-    { id: 'USR-005', fullName: 'Pedro López', email: 'pedro@empresa.com', role: 'Cliente', status: 'activo', createdAt: '2024-07-10T12:05:00Z' },
-    { id: 'USR-006', fullName: 'Lucía Méndez', email: 'lucia@empresa.com', role: 'Empleado Vzla', status: 'activo', createdAt: '2024-07-18T16:20:00Z' },
-  ]);
+  const { data: fetchedUsers } = useAdminUsers();
+  const [users, setUsers] = useState<User[]>([]);
+
+  // Mapear datos reales del hook a la estructura de la tabla
+  useEffect(() => {
+    if (Array.isArray(fetchedUsers)) {
+      const mapped: User[] = fetchedUsers.map(u => {
+        // Preferir user_level para distinguir China/Vzla/Client/Admin
+        const lvl = (u as any).user_level?.toLowerCase?.() ?? '';
+        let uiRole: UserRole;
+        if (lvl === 'admin') uiRole = 'Admin';
+        else if (lvl === 'client') uiRole = 'Cliente';
+        else if (lvl === 'china') uiRole = 'Empleado China';
+        else if (lvl === 'vzla' || lvl === 'venezuela') uiRole = 'Empleado Vzla';
+        else {
+          // fallback to old mapping
+          uiRole = u.role === 'administrator' ? 'Admin' : u.role === 'employee' ? 'Empleado Vzla' : 'Cliente';
+        }
+        return {
+          id: u.id,
+          fullName: u.name || 'Sin nombre',
+          email: u.email || '—',
+          role: uiRole,
+          status: (u as any).status === 'inactivo' ? 'inactivo' : 'activo',
+          createdAt: u.created_at || '',
+        };
+      });
+      setUsers(mapped);
+    }
+  }, [fetchedUsers]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | UserStatus>('all');
   const [animationKey, setAnimationKey] = useState(0);
+
+  // Paginación
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   // Handlers para actualizar filtros con animación
   const handleSearchChange = (value: string) => {
@@ -146,6 +174,17 @@ export default function UsuariosPage() {
     return filtered;
   }, [users, searchTerm, roleFilter, statusFilter]);
 
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(filteredUsers.length / pageSize)), [filteredUsers.length, pageSize]);
+  const pagedUsers = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredUsers.slice(start, start + pageSize);
+  }, [filteredUsers, page, pageSize]);
+
+  // Resetear a la primera página al cambiar filtros o dataset
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, roleFilter, statusFilter, users.length]);
+
   function handleOpenCreate() {
     setEditingUser({
       id: `USR-${Math.floor(100 + Math.random() * 900)}`,
@@ -164,15 +203,48 @@ export default function UsuariosPage() {
   }
 
   function handleToggleStatus(user: User) {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === user.id ? { ...u, status: u.status === 'activo' ? 'inactivo' : 'activo' } : u))
-    );
-    toast({ title: 'Estado actualizado', description: `${user.fullName} ahora está ${user.status === 'activo' ? 'inactivo' : 'activo'}.` });
+    const next = user.status === 'activo' ? 'inactivo' : 'activo';
+    // Optimistic update
+    setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, status: next } : u)));
+    fetch('/api/admin/users', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: user.id, status: next }),
+    }).then(async (res) => {
+      if (!res.ok) {
+        const { error } = await res.json().catch(() => ({ error: 'Error' }));
+        // Rollback
+        setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, status: user.status } : u)));
+        toast({ title: 'Error al actualizar', description: error || 'No se pudo cambiar el estado' });
+        return;
+      }
+      toast({ title: 'Estado actualizado', description: `${user.fullName} ahora está ${next}.` });
+    }).catch(() => {
+      setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, status: user.status } : u)));
+      toast({ title: 'Error al actualizar', description: 'No se pudo cambiar el estado' });
+    });
   }
 
   function handleDelete(user: User) {
+    const prevUsers = users;
+    // Optimistic remove
     setUsers((prev) => prev.filter((u) => u.id !== user.id));
-    toast({ title: 'Usuario eliminado', description: `${user.fullName} fue eliminado del sistema.` });
+    fetch('/api/admin/users', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: user.id, hard: false }),
+    }).then(async (res) => {
+      if (!res.ok) {
+        const { error } = await res.json().catch(() => ({ error: 'Error' }));
+        setUsers(prevUsers);
+        toast({ title: 'Error al eliminar', description: error || 'No se pudo eliminar' });
+        return;
+      }
+      toast({ title: 'Usuario eliminado', description: `${user.fullName} fue eliminado del sistema.` });
+    }).catch(() => {
+      setUsers(prevUsers);
+      toast({ title: 'Error al eliminar', description: 'No se pudo eliminar' });
+    });
   }
 
   function handleSave() {
@@ -182,16 +254,77 @@ export default function UsuariosPage() {
       toast({ title: 'Datos incompletos', description: 'Nombre y correo son obligatorios.' });
       return;
     }
-    setUsers((prev) => {
-      const exists = prev.some((u) => u.id === editingUser.id);
-      if (exists) {
-        return prev.map((u) => (u.id === editingUser.id ? editingUser : u));
+    const isNew = !/^[0-9a-fA-F-]{36}$/.test(editingUser.id); // id temporal no UUID
+    const dbRole: 'administrator' | 'client' | 'employee' = editingUser.role === 'Admin' ? 'administrator' : editingUser.role === 'Cliente' ? 'client' : 'employee';
+    const userLevel = editingUser.role === 'Admin'
+      ? 'Admin'
+      : editingUser.role === 'Cliente'
+      ? 'Client'
+      : (editingUser.role === 'Empleado China' ? 'China' : 'Vzla');
+    const prevUsers = users;
+
+    if (isNew) {
+      // Crear usuario nuevo
+      fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullName: editingUser.fullName, email: editingUser.email, role: dbRole, userLevel }),
+      }).then(async (res) => {
+        if (!res.ok) {
+          const { error } = await res.json().catch(() => ({ error: 'Error' }));
+          toast({ title: 'Error al crear', description: error || 'No se pudo crear el usuario' });
+          return;
+        }
+        const created = await res.json();
+        // Insertar en lista con datos reales
+        const mapped: User = {
+          id: created.id,
+          fullName: created.name || editingUser.fullName,
+          email: created.email || editingUser.email,
+          role: (created.user_level?.toLowerCase?.() === 'china') ? 'Empleado China'
+                : (created.user_level?.toLowerCase?.() === 'vzla' || created.user_level?.toLowerCase?.() === 'venezuela') ? 'Empleado Vzla'
+                : (dbRole === 'administrator' ? 'Admin' : dbRole === 'client' ? 'Cliente' : 'Empleado Vzla'),
+          status: 'activo',
+          createdAt: created.created_at || new Date().toISOString(),
+        };
+        setUsers((prev) => [mapped, ...prev]);
+        setIsDialogOpen(false);
+        setEditingUser(null);
+        toast({ title: 'Usuario creado', description: 'Se envió invitación al correo.' });
+      }).catch(() => {
+        toast({ title: 'Error al crear', description: 'No se pudo crear el usuario' });
+      });
+      return;
+    }
+
+    // Actualizar usuario existente
+    const payload: any = {
+      id: editingUser.id,
+      fullName: editingUser.fullName,
+      email: editingUser.email,
+      role: dbRole,
+      userLevel,
+    };
+    // Optimistic apply
+    setUsers((prev) => prev.map((u) => (u.id === editingUser.id ? editingUser : u)));
+    fetch('/api/admin/users', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).then(async (res) => {
+      if (!res.ok) {
+        const { error } = await res.json().catch(() => ({ error: 'Error' }));
+        setUsers(prevUsers);
+        toast({ title: 'Error al guardar', description: error || 'No se pudo guardar' });
+        return;
       }
-      return [editingUser, ...prev];
+      setIsDialogOpen(false);
+      setEditingUser(null);
+      toast({ title: 'Cambios guardados', description: 'La información del usuario ha sido actualizada.' });
+    }).catch(() => {
+      setUsers(prevUsers);
+      toast({ title: 'Error al guardar', description: 'No se pudo guardar' });
     });
-    setIsDialogOpen(false);
-    setEditingUser(null);
-    toast({ title: 'Cambios guardados', description: 'La información del usuario ha sido actualizada.' });
   }
 
   return (
@@ -250,12 +383,12 @@ export default function UsuariosPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">Todos los roles</SelectItem>
-                          {(['Cliente','Empleado China','Empleado Vzla','Validador Pagos','Admin'] as UserRole[]).map((r) => (
+                          {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
                             <SelectItem key={r} value={r}>{r}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                      <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
+                      {/* <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
                         <SelectTrigger className="w-full sm:w-auto bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500">
                           <UserCheck className="w-4 h-4 mr-2 text-slate-400" />
                           <SelectValue placeholder="Filtrar por estado" />
@@ -265,7 +398,7 @@ export default function UsuariosPage() {
                           <SelectItem value="activo">Activos</SelectItem>
                           <SelectItem value="inactivo">Inactivos</SelectItem>
                         </SelectContent>
-                      </Select>
+                      </Select> */}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -308,13 +441,13 @@ export default function UsuariosPage() {
                                 <SelectValue placeholder="Seleccionar rol" />
                               </SelectTrigger>
                               <SelectContent>
-                                {(['Cliente','Empleado China','Empleado Vzla','Validador Pagos','Admin'] as UserRole[]).map((r) => (
+                                {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
                                   <SelectItem key={r} value={r}>{r}</SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>
                           </div>
-                          <div className="space-y-2">
+                          {/* <div className="space-y-2">
                             <Label>Estado</Label>
                             <div className="flex items-center justify-between rounded-md border p-2">
                               <span className="text-sm text-slate-600">Activo</span>
@@ -323,7 +456,7 @@ export default function UsuariosPage() {
                                 onCheckedChange={(checked: boolean) => setEditingUser((prev) => prev ? { ...prev, status: checked ? 'activo' : 'inactivo' } : prev)}
                               />
                             </div>
-                          </div>
+                          </div> */}
                         </div>
                         <DialogFooter>
                           <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
@@ -356,12 +489,6 @@ export default function UsuariosPage() {
                                       </th>
                                       <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
                                         <div className="flex items-center gap-2">
-                                          <UserCheck className="w-4 h-4" />
-                                          Estado
-                                        </div>
-                                      </th>
-                                      <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
-                                        <div className="flex items-center gap-2">
                                           <Calendar className="w-4 h-4" />
                                           Creado
                                         </div>
@@ -375,7 +502,7 @@ export default function UsuariosPage() {
                                     </tr>
                                   </thead>
                                   <tbody className="divide-y divide-slate-100">
-                                    {filteredUsers.map((user, index) => (
+                                    {pagedUsers.map((user, index) => (
                                       <tr 
                                         key={`${user.id}-${animationKey}`}
                                         className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-300 ease-out group"
@@ -411,20 +538,9 @@ export default function UsuariosPage() {
                                           </Badge>
                                         </td>
                                         <td className="py-4 px-6" style={{width: '15%'}}>
-                                          {user.status === 'activo' ? (
-                                            <Badge className="bg-green-100 text-green-800 border border-green-200 font-medium px-3 py-1">
-                                              <CheckCircle className="w-3 h-3 mr-1" /> Activo
-                                            </Badge>
-                                          ) : (
-                                            <Badge className="bg-red-100 text-red-800 border border-red-200 font-medium px-3 py-1">
-                                              <XCircle className="w-3 h-3 mr-1" /> Inactivo
-                                            </Badge>
-                                          )}
-                                        </td>
-                                        <td className="py-4 px-6" style={{width: '15%'}}>
                                           <div className="flex items-center gap-2">
                                             <Calendar className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                                            <span className="truncate">{new Date(user.createdAt).toLocaleDateString('es-VE')}</span>
+                                            <span className="truncate">{user.createdAt ? new Date(user.createdAt).toLocaleDateString('es-VE') : '—'}</span>
                                           </div>
                                         </td>
                                         <td className="py-4 px-6" style={{width: '15%'}}>
@@ -437,7 +553,7 @@ export default function UsuariosPage() {
                                             >
                                               <Edit3 className="w-4 h-4" />
                                             </Button>
-                                            <Button
+                                            {/* <Button
                                               variant="ghost"
                                               size="sm"
                                               onClick={() => handleToggleStatus(user)}
@@ -448,7 +564,7 @@ export default function UsuariosPage() {
                                               }`}
                                             >
                                               {user.status === 'activo' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                                            </Button>
+                                            </Button> */}
                                             <Button
                                               variant="ghost"
                                               size="sm"
@@ -468,7 +584,7 @@ export default function UsuariosPage() {
 
                             {/* Vista Mobile/Tablet - Cards */}
                             <div className="lg:hidden space-y-3 md:space-y-4">
-                              {filteredUsers.map((user, index) => (
+                              {pagedUsers.map((user, index) => (
                                 <div
                                   key={`${user.id}-${animationKey}`}
                                   className="bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 p-4 md:p-5 hover:shadow-lg transition-all duration-300 group"
@@ -564,6 +680,39 @@ export default function UsuariosPage() {
                                   <Users className="w-10 h-10 md:w-12 md:h-12 text-slate-300" />
                                   <p className="text-base md:text-lg font-medium">No se encontraron usuarios</p>
                                   <p className="text-xs md:text-sm">Intenta ajustar los filtros de búsqueda</p>
+                                </div>
+                              </div>
+                            )}
+                            {/* Controles de paginación */}
+                            {filteredUsers.length > 0 && (
+                              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
+                                <div className="text-xs text-slate-600">
+                                  Mostrando {Math.min((page - 1) * pageSize + 1, filteredUsers.length)}–{Math.min(page * pageSize, filteredUsers.length)} de {filteredUsers.length}
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-slate-600">Por página</span>
+                                    <Select value={String(pageSize)} onValueChange={(v) => setPageSize(parseInt(v))}>
+                                      <SelectTrigger className="h-8 w-[84px]">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="5">5</SelectItem>
+                                        <SelectItem value="10">10</SelectItem>
+                                        <SelectItem value="20">20</SelectItem>
+                                        <SelectItem value="50">50</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+                                      <ChevronLeft className="w-4 h-4" />
+                                    </Button>
+                                    <span className="text-xs text-slate-600 w-14 text-center">{page}/{totalPages}</span>
+                                    <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
+                                      <ChevronRight className="w-4 h-4" />
+                                    </Button>
+                                  </div>
                                 </div>
                               </div>
                             )}
