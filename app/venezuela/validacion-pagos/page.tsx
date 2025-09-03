@@ -35,6 +35,8 @@ import {
   Menu,
   RotateCcw
 } from 'lucide-react';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useVzlaContext } from '@/lib/VzlaContext';
 
 // ================================
 // TIPOS DE DATOS TYPESCRIPT
@@ -57,6 +59,18 @@ interface PaymentStats {
   pagosTotales: number;
   completados: number;
   pendientes: number;
+}
+
+// Tipo parcial de la tabla orders necesario para mapear a Payment
+interface DbOrder {
+  id: string | number;
+  client_id: string;
+  productName: string | null;
+  description: string | null;
+  totalQuote: number | null;
+  estimatedBudget: number | null;
+  created_at: string | null;
+  state: number;
 }
 
 // ================================
@@ -512,19 +526,115 @@ const PaymentValidationDashboard: React.FC = () => {
   const { toast } = useToast();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [payments, setPayments] = useState<Payment[]>(mockPayments);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('todos');
   const [selectedTab, setSelectedTab] = useState<'todos' | 'pendientes'>('todos');
   const [rejectionConfirmation, setRejectionConfirmation] = useState<{ isOpen: boolean; paymentId: string | null }>({ isOpen: false, paymentId: null });
   const [detailsModal, setDetailsModal] = useState<{ isOpen: boolean; payment: Payment | null }>({ isOpen: false, payment: null });
+  const [refreshIndex, setRefreshIndex] = useState(0);
   const [lastAction, setLastAction] = useState<{
     type: 'approve' | 'reject';
     paymentId: string;
     previousStatus: string;
   } | null>(null);
   const [mounted, setMounted] = useState(false);
+  const supabase = useMemo(() => getSupabaseBrowserClient(), []);
+  const { vzlaId } = useVzlaContext();
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!vzlaId) return;
+      setLoading(true);
+      setError(null);
+      // Guard de timeout para evitar 'Cargando...' infinito
+      const timeoutMs = 15000; // 15s
+      let timeoutHandle: any;
+      const startTimeout = () => {
+        timeoutHandle = setTimeout(() => {
+          setError('La consulta está tardando demasiado (timeout). Verifica conexión y políticas RLS.');
+          setLoading(false);
+        }, timeoutMs);
+      };
+      const clearTimeoutSafe = () => {
+        if (timeoutHandle) clearTimeout(timeoutHandle);
+      };
+      startTimeout();
+      try {
+        const selectCols = 'id, client_id, productName, description, totalQuote, estimatedBudget, created_at, state';
+        // Filtro principal: columna "asigned" (id de usuario de Supabase)
+        let { data, error } = await supabase
+          .from('orders')
+          .select(selectCols)
+          .eq('asigned', vzlaId)
+          .eq('state', 4)
+          .order('created_at', { ascending: false });
+
+  // Fallback 1: "asignnedEVzla" (solo si el error es de columna)
+  const isColumnError1 = error && /column|does not exist|42703/i.test(error.message || '');
+  if (isColumnError1) {
+          const fb1 = await supabase
+            .from('orders')
+            .select(selectCols)
+            .eq('asignnedEVzla', vzlaId)
+            .eq('state', 4)
+            .order('created_at', { ascending: false });
+          data = fb1.data as any[] | null;
+          error = fb1.error as any;
+        }
+
+  // Fallback 2: "asignedEVzla" (solo si persiste error de columna)
+  const isColumnError2 = error && /column|does not exist|42703/i.test(error.message || '');
+  if (isColumnError2) {
+          const fb2 = await supabase
+            .from('orders')
+            .select(selectCols)
+            .eq('asignedEVzla', vzlaId)
+            .eq('state', 4)
+            .order('created_at', { ascending: false });
+          data = fb2.data as any[] | null;
+          error = fb2.error as any;
+        }
+
+        if (error) throw error;
+
+        const clientIds = (data || []).map((o: any) => o.client_id);
+        let clientMap = new Map<string, string>();
+        if (clientIds.length) {
+          const { data: clients, error: cErr } = await supabase
+            .from('clients')
+            .select('user_id, name')
+            .in('user_id', clientIds);
+          if (cErr) throw cErr;
+          clientMap = new Map((clients || []).map((c: any) => [c.user_id, c.name || 'Cliente']));
+        }
+
+  const mapped: Payment[] = (data as DbOrder[] | null)?.map((o) => ({
+          id: String(o.id),
+          usuario: clientMap.get(o.client_id) || 'Cliente',
+          fecha: o.created_at || new Date().toISOString(),
+          idProducto: o.productName ? `#${o.productName}` : `#ORD-${o.id}`,
+          monto: Number(o.totalQuote ?? o.estimatedBudget ?? 0),
+          referencia: `ORD-${o.id}`,
+          estado: 'pendiente',
+          metodo: 'Transferencia',
+          destino: 'Venezuela',
+          descripcion: o.description || 'Pedido en proceso de pago'
+        })) || [];
+
+  setPayments(mapped);
+      } catch (e: any) {
+        setError(e?.message || 'Error al cargar pedidos');
+      } finally {
+  clearTimeoutSafe();
+        setLoading(false);
+      }
+    };
+    load();
+  }, [vzlaId, refreshIndex, supabase]);
 
   // Calcular estadísticas
   const stats = useMemo((): PaymentStats => {
@@ -565,56 +675,153 @@ const PaymentValidationDashboard: React.FC = () => {
     return filtered;
   }, [payments, searchTerm, filterStatus, selectedTab]);
 
-  // Función para deshacer la última acción
-  const handleUndo = () => {
-    if (lastAction) {
-      setPayments(prev => prev.map(p => 
-        p.id === lastAction.paymentId ? { ...p, estado: lastAction.previousStatus as 'completado' | 'pendiente' | 'rechazado' } : p
-      ));
-      setLastAction(null);
+  // Deshacer con parámetros explícitos (recomendado para toasts)
+  const handleUndoFor = async (
+    paymentId: string,
+    previousStatus: 'completado' | 'pendiente' | 'rechazado',
+    type: 'approve' | 'reject'
+  ) => {
+    // UI optimista: revertir estado visual al previo
+    setPayments(prev => prev.map(p =>
+      p.id === paymentId ? { ...p, estado: previousStatus } : p
+    ));
+
+    try {
+      if (type === 'approve') {
+        const idFilter: any = isNaN(Number(paymentId)) ? paymentId : Number(paymentId);
+        const { error } = await supabase
+          .from('orders')
+          .update({ state: 4 })
+          .eq('id', idFilter);
+        if (error) throw error;
+      }
       toast({
-        title: "Acción deshecha",
-        description: `El pago ha vuelto a su estado anterior.`,
-        variant: "default",
+        title: 'Acción deshecha',
+        description: 'El pago ha vuelto a su estado anterior.',
+        variant: 'default',
         duration: 3000,
       });
+    } catch (e: any) {
+      // Si falla la reversión en BD, informamos y reintentamos devolver UI al estado post-aprobación
+      toast({
+        title: 'No se pudo deshacer',
+        description: e?.message || 'Error al revertir en la base de datos.',
+        variant: 'destructive',
+        duration: 4000,
+      });
+      if (type === 'approve') {
+        setPayments(prev => prev.map(p =>
+          p.id === paymentId ? { ...p, estado: 'completado' } : p
+        ));
+      }
+    }
+  };
+
+  // Función para deshacer la última acción (fallback legado)
+  const handleUndo = async () => {
+    if (!lastAction) return;
+
+    const { paymentId, previousStatus, type } = lastAction;
+
+    // UI optimista: revertir estado visual
+    setPayments(prev => prev.map(p =>
+      p.id === paymentId ? { ...p, estado: previousStatus as 'completado' | 'pendiente' | 'rechazado' } : p
+    ));
+
+    // Persistencia: si el último fue aprobar, regresamos a state=4
+    try {
+      if (type === 'approve') {
+        const idFilter: any = isNaN(Number(paymentId)) ? paymentId : Number(paymentId);
+        const { error } = await supabase
+          .from('orders')
+          .update({ state: 4 })
+          .eq('id', idFilter);
+        if (error) throw error;
+      }
+      // Si en el futuro agregamos persistencia para reject, manejar aquí
+      toast({
+        title: 'Acción deshecha',
+        description: 'El pago ha vuelto a su estado anterior.',
+        variant: 'default',
+        duration: 3000,
+      });
+      setLastAction(null);
+    } catch (e: any) {
+      // Si falla la reversión en BD, informamos y reintentamos devolver UI al estado post-aprobación
+      toast({
+        title: 'No se pudo deshacer',
+        description: e?.message || 'Error al revertir en la base de datos.',
+        variant: 'destructive',
+        duration: 4000,
+      });
+      // Recolocar UI al estado que tenía tras la acción previa (approve => completado)
+      if (type === 'approve') {
+        setPayments(prev => prev.map(p =>
+          p.id === paymentId ? { ...p, estado: 'completado' } : p
+        ));
+      }
     }
   };
 
   // Manejar aprobación
-  const handleApprove = (id: string) => {
+  const handleApprove = async (id: string) => {
     const payment = payments.find(p => p.id === id);
-    if (payment) {
-      setLastAction({
-        type: 'approve',
-        paymentId: id,
-        previousStatus: payment.estado
-      });
-      
-      setPayments(prev => prev.map(p => 
-        p.id === id ? { ...p, estado: 'completado' as const } : p
-      ));
+    if (!payment) return;
 
+    // Guardamos acción previa para permitir deshacer
+    setLastAction({
+      type: 'approve',
+      paymentId: id,
+      previousStatus: payment.estado,
+    });
+
+    // UI optimista
+    setPayments(prev => prev.map(p =>
+      p.id === id ? { ...p, estado: 'completado' as const } : p
+    ));
+
+    // Persistir: state = 5 (verificado)
+    try {
+      const idFilter: any = isNaN(Number(id)) ? id : Number(id);
+      const { error } = await supabase
+        .from('orders')
+        .update({ state: 5 })
+        .eq('id', idFilter);
+      if (error) throw error;
+    } catch (e: any) {
+      // Revertir UI si falla
+      setPayments(prev => prev.map(p =>
+        p.id === id ? { ...p, estado: payment.estado } : p
+      ));
+      setLastAction(null);
       toast({
-        title: "Pago aprobado",
-        description: `El pago ${id} ha sido aprobado exitosamente.`,
-        variant: "default",
-        duration: 3000,
-        action: (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleUndo();
-            }}
-            className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
-          >
-            <RotateCcw size={14} />
-            Deshacer
-          </button>
-        ),
+        title: 'Error al aprobar',
+        description: e?.message || 'No fue posible actualizar el pedido.',
+        variant: 'destructive',
+        duration: 4000,
       });
+      return;
     }
+
+    toast({
+      title: 'Pago aprobado',
+      description: `El pago ${id} ha sido aprobado exitosamente.`,
+      variant: 'default',
+      duration: 3000,
+      action: (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleUndoFor(id, payment.estado as any, 'approve');
+          }}
+          className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+        >
+          <RotateCcw size={14} />
+          Deshacer
+        </button>
+      ),
+    });
   };
 
   // Manejar rechazo
@@ -747,7 +954,26 @@ const PaymentValidationDashboard: React.FC = () => {
           subtitle="Administra y da seguimiento a todos los pedidos"
         />
         <div className="p-4 md:p-5 lg:p-6">
-          
+          {/* Error visible */}
+          {error && (
+            <div className="mb-4 md:mb-6 flex items-start justify-between gap-3 rounded-lg border border-red-300 bg-red-50 p-3 text-red-800">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="mt-0.5" size={18} />
+                <div>
+                  <p className="font-semibold">Error al cargar pedidos</p>
+                  <p className="text-sm break-all">{error}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setRefreshIndex((i) => i + 1)}
+                disabled={loading}
+                className="inline-flex items-center gap-2 rounded-md bg-red-600 px-3 py-2 text-white hover:bg-red-700 disabled:opacity-60"
+              >
+                <RotateCcw size={16} />
+                Reintentar
+              </button>
+            </div>
+          )}
 
           {/* ================================ */}
           {/* TARJETAS DE ESTADÍSTICAS */}
@@ -761,8 +987,8 @@ const PaymentValidationDashboard: React.FC = () => {
             <div className={mounted && theme === 'dark' ? 'border-b border-slate-700' : 'border-b border-gray-200'}>
               <nav className="-mb-px flex space-x-4 md:space-x-8">
                 {[
-                  { id: 'todos', label: 'Lista de Pedidos', count: payments.length },
-                  { id: 'pendientes', label: 'Pagos Pendientes', count: stats.pendientes },
+                  { id: 'todos', label: 'Lista de Pedidos', count: loading ? 0 : payments.length },
+                  { id: 'pendientes', label: 'Pagos Pendientes', count: loading ? 0 : stats.pendientes },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -827,6 +1053,15 @@ const PaymentValidationDashboard: React.FC = () => {
                   </SelectContent>
                 </Select>
                 <button
+                  onClick={() => setRefreshIndex((i) => i + 1)}
+                  className="flex items-center gap-2 bg-gray-200 text-gray-800 px-3 md:px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                  disabled={loading}
+                >
+                  <RotateCcw className="md:w-5 md:h-5" />
+                  <span className="hidden sm:inline">Actualizar</span>
+                  <span className="sm:hidden">Refrescar</span>
+                </button>
+                <button
                   onClick={exportarGeneral}
                   className="flex items-center gap-2 bg-[#202841] text-white px-3 md:px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
                 >
@@ -853,13 +1088,13 @@ const PaymentValidationDashboard: React.FC = () => {
                  'Lista de Pedidos'}
               </h2>
               <p className={mounted && theme === 'dark' ? 'text-slate-300 text-xs md:text-sm mt-1' : 'text-gray-600 text-xs md:text-sm mt-1'}>
-                {filteredPayments.length} pedidos encontrados
+                {loading ? 'Cargando...' : `${filteredPayments.length} pedidos encontrados`}
               </p>
             </div>
 
             {/* Vista Mobile - Cards */}
             <div className="block lg:hidden p-4 space-y-4">
-              {filteredPayments.map((payment) => (
+              {!loading && filteredPayments.map((payment) => (
                 <PaymentCard
                   key={payment.id}
                   payment={payment}

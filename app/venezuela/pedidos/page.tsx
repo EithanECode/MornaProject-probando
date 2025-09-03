@@ -342,8 +342,17 @@ export default function VenezuelaPedidosPage() {
                                       }
                                     }}
                                   >
-                                    <Send className="w-4 h-4 mr-2" />
-                                    Enviar a China
+                                    {order.state >= 2 ? (
+                                      <>
+                                        <Clock className="w-4 h-4 mr-2" />
+                                        Esperando
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Send className="w-4 h-4 mr-2" />
+                                        Enviar a China
+                                      </>
+                                    )}
                                   </Button>
                                 </div>
                               </CardContent>
