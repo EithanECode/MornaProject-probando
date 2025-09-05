@@ -1,8 +1,8 @@
 "use client";
 
 import { useLanguage } from '@/lib/LanguageContext';
-import esTranslations from '../lib/translations/es.json';
-import enTranslations from '../lib/translations/en.json';
+import esTranslations from '@/lib/translations/es.json';
+import enTranslations from '@/lib/translations/en.json';
 
 type TranslationKey = string;
 
@@ -18,6 +18,7 @@ export function useTranslation() {
   const t = (key: TranslationKey, options?: Record<string, any>): string => {
     const keys = key.split('.');
     let current: any = translations[language];
+    let usedLanguage = language;
 
     for (const k of keys) {
       if (current && typeof current === 'object' && k in current) {
@@ -25,10 +26,12 @@ export function useTranslation() {
       } else {
         // Fallback al español si no se encuentra la traducción
         current = translations.es;
+        usedLanguage = 'es';
         for (const fallbackKey of keys) {
           if (current && typeof current === 'object' && fallbackKey in current) {
             current = current[fallbackKey];
           } else {
+            console.log('[i18n][MISS]', { lang: language, key, tried: keys });
             return key; // Devolver la clave si no se encuentra
           }
         }
@@ -45,6 +48,7 @@ export function useTranslation() {
       });
     }
 
+    console.log('[i18n][HIT]', { lang: usedLanguage, key, result });
     return result;
   };
 
