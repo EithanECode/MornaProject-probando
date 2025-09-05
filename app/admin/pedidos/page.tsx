@@ -105,32 +105,32 @@ interface NewOrderData {
 
 // Memoizar las configuraciones para evitar recreaciones
 const STATUS_CONFIG = {
-  'pendiente-china': { label: 'Pend. China', color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
-  'pendiente-vzla': { label: 'Pend. Vzla', color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
-  'esperando-pago': { label: 'Esperando Pago', color: 'bg-orange-700 border-orange-800', icon: Clock },
-  'en-transito': { label: 'En Tránsito', color: 'bg-blue-800 border-blue-900', icon: Plane },
-  'entregado': { label: 'Entregado', color: 'bg-green-800 border-green-900', icon: CheckCircle },
-  'cancelado': { label: 'Cancelado', color: 'bg-red-800 border-red-900', icon: AlertCircle }
+  'pendiente-china': { label: t('admin.orders.status.pendiente-china'), color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
+  'pendiente-vzla': { label: t('admin.orders.status.pendiente-vzla'), color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
+  'esperando-pago': { label: t('admin.orders.status.esperando-pago'), color: 'bg-orange-700 border-orange-800', icon: Clock },
+  'en-transito': { label: t('admin.orders.status.en-transito'), color: 'bg-blue-800 border-blue-900', icon: Plane },
+  'entregado': { label: t('admin.orders.status.entregado'), color: 'bg-green-800 border-green-900', icon: CheckCircle },
+  'cancelado': { label: t('admin.orders.status.cancelado'), color: 'bg-red-800 border-red-900', icon: AlertCircle }
 } as const;
 
 const ASSIGNED_CONFIG = {
-  'china': { label: 'China', color: 'bg-red-800 border-red-900' },
-  'vzla': { label: 'Vzla', color: 'bg-blue-800 border-blue-900' }
+  'china': { label: t('admin.orders.assigned.china'), color: 'bg-red-800 border-red-900' },
+  'vzla': { label: t('admin.orders.assigned.vzla'), color: 'bg-blue-800 border-blue-900' }
 } as const;
 
 // Light theme colors
 const STATUS_CONFIG_LIGHT = {
-  'pendiente-china': { label: 'Pend. China', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
-  'pendiente-vzla': { label: 'Pend. Vzla', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
-  'esperando-pago': { label: 'Esperando Pago', color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock },
-  'en-transito': { label: 'En Tránsito', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Plane },
-  'entregado': { label: 'Entregado', color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle },
-  'cancelado': { label: 'Cancelado', color: 'bg-red-100 text-red-800 border-red-200', icon: AlertCircle }
+  'pendiente-china': { label: t('admin.orders.status.pendiente-china'), color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
+  'pendiente-vzla': { label: t('admin.orders.status.pendiente-vzla'), color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
+  'esperando-pago': { label: t('admin.orders.status.esperando-pago'), color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock },
+  'en-transito': { label: t('admin.orders.status.en-transito'), color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Plane },
+  'entregado': { label: t('admin.orders.status.entregado'), color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle },
+  'cancelado': { label: t('admin.orders.status.cancelado'), color: 'bg-red-100 text-red-800 border-red-200', icon: AlertCircle }
 } as const;
 
 const ASSIGNED_CONFIG_LIGHT = {
-  'china': { label: 'China', color: 'bg-red-100 text-red-800 border-red-200' },
-  'vzla': { label: 'Vzla', color: 'bg-blue-100 text-blue-800 border-blue-200' }
+  'china': { label: t('admin.orders.assigned.china'), color: 'bg-red-100 text-red-800 border-red-200' },
+  'vzla': { label: t('admin.orders.assigned.vzla'), color: 'bg-blue-100 text-blue-800 border-blue-200' }
 } as const;
 
 // Hook personalizado para manejar el filtrado y paginación
@@ -572,7 +572,14 @@ export default function PedidosPage() {
     
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
-    const headers = ["ID", "Cliente", "Descripción", "Estado", "Asignado a", "Tiempo (días)"];
+    const headers = [
+      t('admin.orders.table.id'),
+      t('admin.orders.table.client'),
+      t('admin.orders.table.description'),
+      t('admin.orders.table.status'),
+      t('admin.orders.table.assigned'),
+      t('admin.orders.table.time', { unit: t('admin.orders.table.days') })
+    ];
     headers.forEach(text => {
       const th = document.createElement('th');
       th.innerText = text;
@@ -598,7 +605,7 @@ export default function PedidosPage() {
         order.description,
         STATUS_CONFIG[order.status].label,
         ASSIGNED_CONFIG[order.assignedTo].label,
-        `${order.daysElapsed} días`
+  t('admin.orders.table.daysElapsed', { count: order.daysElapsed })
       ];
 
       rowData.forEach(text => {
@@ -834,7 +841,7 @@ export default function PedidosPage() {
           <td className="py-4 px-6">
             <div className="flex items-center space-x-2">
               <Clock className="w-4 h-4" />
-              <span>{order.daysElapsed} días</span>
+              <span>{t('admin.orders.table.daysElapsed', { count: order.daysElapsed })}</span>
             </div>
           </td>
           <td className="py-4 px-6">
@@ -846,7 +853,7 @@ export default function PedidosPage() {
                 onClick={() => setSelectedOrder(order)}
               >
                 <Eye className="w-4 h-4 mr-1" />
-                Ver
+                {t('admin.orders.actions.view')}
               </Button>
             </div>
           </td>
@@ -1360,7 +1367,7 @@ export default function PedidosPage() {
                     </div>
                     <div>
                       <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Tiempo Transcurrido</p>
-                      <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>{selectedOrder.daysElapsed} días</p>
+                      <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>{t('admin.orders.table.daysElapsed', { count: selectedOrder.daysElapsed })}</p>
                     </div>
                   </div>
 
@@ -1397,7 +1404,7 @@ export default function PedidosPage() {
                     {/* Placeholder para el historial */}
                     <div className={mounted && theme === 'dark' ? 'flex items-center' : 'flex items-center'}>
                       <div className={mounted && theme === 'dark' ? 'w-2 h-2 rounded-full bg-blue-400 mr-4' : 'w-2 h-2 rounded-full bg-blue-500 mr-4'}></div>
-                      <span className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}>Creado por {selectedOrder.client} ({selectedOrder.daysElapsed} días)</span>
+                      <span className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}>{t('admin.orders.history.createdBy', { client: selectedOrder.client, days: selectedOrder.daysElapsed })}</span>
                     </div>
                     <div className={mounted && theme === 'dark' ? 'flex items-center' : 'flex items-center'}>
                       <div className={mounted && theme === 'dark' ? 'w-2 h-2 rounded-full bg-yellow-400 mr-4' : 'w-2 h-2 rounded-full bg-yellow-500 mr-4'}></div>
@@ -1497,7 +1504,7 @@ export default function PedidosPage() {
                 </Select>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="daysElapsed" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>Días Transcurridos</Label>
+                <Label htmlFor="daysElapsed" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>{t('admin.orders.form.daysElapsed')}</Label>
                 <Input 
                   id="daysElapsed" 
                   type="number"
