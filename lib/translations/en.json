@@ -1,4 +1,5 @@
 {
+  "client": {
     "configuration": {
       "notifications": {
         "title": "Notification Preferences",
@@ -92,8 +93,8 @@
           "confirm": "Confirm your new password"
         }
       }
-    },
-    "dashboard": {
+  },
+  "dashboard": {
       "title": "Client Dashboard",
       "subtitle": "Welcome back, here is a summary of your activity",
       "welcome": "Welcome back!",
@@ -108,8 +109,8 @@
       "totalInvestment": "Total investment",
       "completed": "Completed",
       "ordersDelivered": "Orders delivered"
-    },
-    "quickActions": {
+  },
+  "quickActions": {
       "title": "Quick Actions",
       "subtitle": "Quickly access the most used functions",
       "newOrder": "Create New Order",
@@ -120,8 +121,8 @@
       "supportDesc": "Get help when you need it",
       "payments": "My Payments",
       "paymentsDesc": "Manage your transactions"
-    },
-    "recentOrders": {
+  },
+  "recentOrders": {
       "title": "My Recent Orders",
       "subtitle": "Track your most recent shipments",
       "noOrders": "No recent orders.",

@@ -468,15 +468,15 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Shield className="w-5 h-5" />
-                      {t('admin.configuration.security.title')}
+                      {t('client.configuration.security.title')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <Label>{t('admin.configuration.security.twoFactor')}</Label>
+                        <Label>{t('client.configuration.security.twoFactor')}</Label>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          {t('admin.configuration.security.twoFactorDesc')}
+                          {t('client.configuration.security.twoFactorDesc')}
                         </p>
                       </div>
                       <Switch
@@ -486,17 +486,17 @@ export default function ConfiguracionPage() {
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <Label>{t('admin.configuration.security.activeSessions')}</Label>
+                      <Label>{t('client.configuration.security.activeSessions')}</Label>
                       <p className="text-sm text-slate-600 dark:text-slate-400">
-                        {t('admin.configuration.security.devicesConnected', { count: security.sesionesActivas })}
+                        {t('client.configuration.security.devicesConnected', { count: security.sesionesActivas })}
                       </p>
                       <Button variant="outline" size="sm">
-                        {t('admin.configuration.security.viewAllSessions')}
+                        {t('client.configuration.security.viewAllSessions')}
                       </Button>
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <Label>{t('admin.configuration.security.lastAccessIP')}</Label>
+                      <Label>{t('client.configuration.security.lastAccessIP')}</Label>
                       <p className="text-sm font-mono text-slate-600 dark:text-slate-400">
                         {security.ipUltimoAcceso}
                       </p>
