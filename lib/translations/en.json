@@ -1,6 +1,37 @@
 {
   "client": {
     "configuration": {
+      "security": {
+        "title": "Security Settings",
+        "subtitle": "Manage your account security",
+        "twoFactor": "Two-factor authentication",
+        "twoFactorDesc": "Add an extra layer of security to your account",
+        "activeSessions": "Active sessions",
+        "lastAccess": "Last access",
+        "ipAddress": "IP address",
+        "sessionInfo": "Session information",
+        "closeAllSessions": "Close all sessions",
+        "closeAllSessionsDesc": "Close all active sessions except the current one",
+        "devicesConnected": "{{count}} devices connected",
+        "deviceConnected": "1 device connected",
+        "viewAllSessions": "View all sessions",
+        "lastAccessIP": "Last access IP",
+        "saveButton": "Save configuration",
+        "recentActivity": {
+          "title": "Recent Activity",
+          "loginSuccess": "Successful login",
+          "passwordChange": "Password change",
+          "newDevice": "New device detected",
+          "timeAgo": {
+            "hours": "{{count}} hours ago",
+            "hour": "1 hour ago",
+            "days": "{{count}} days ago",
+            "day": "1 day ago",
+            "weeks": "{{count}} weeks ago",
+            "week": "1 week ago"
+          }
+        }
+      },
       "notifications": {
         "title": "Notification Preferences",
         "subtitle": "Control which notifications you want to receive",
