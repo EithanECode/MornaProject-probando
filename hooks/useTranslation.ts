@@ -1,3 +1,4 @@
+export type TFunction = (key: string, options?: Record<string, any>) => string;
 "use client";
 
 import { useLanguage } from '@/lib/LanguageContext';

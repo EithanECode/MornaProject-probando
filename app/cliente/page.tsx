@@ -62,7 +62,8 @@ const CLIENT_STATS = {
 
 import { useTranslation } from '@/hooks/useTranslation';
 
-const QUICK_ACTIONS = (t) => ([
+import { TFunction } from '@/hooks/useTranslation';
+const QUICK_ACTIONS = (t: TFunction) => ([
   {
     id: 'new_order',
     title: t('client.quickActions.newOrder'),
