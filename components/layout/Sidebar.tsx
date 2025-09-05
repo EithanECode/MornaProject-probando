@@ -215,7 +215,7 @@ const PAGOS_MENU_ITEMS = [
 const getAdminMenuItems = (t: (key: string) => string) => [
   {
     id: 'dashboard',
-    label: t('admin.sidebar.dashboard'),
+    label: t && typeof t === 'function' ? t('admin.sidebar.dashboard') : 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
@@ -223,7 +223,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
   },
   {
     id: 'usuarios',
-    label: t('admin.sidebar.users'),
+    label: t && typeof t === 'function' ? t('admin.sidebar.users') : 'Usuarios',
     icon: Users,
     badge: null,
     color: 'text-green-500',
@@ -231,7 +231,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
   },
   {
     id: 'pedidos',
-    label: t('admin.sidebar.orders'),
+    label: t && typeof t === 'function' ? t('admin.sidebar.orders') : 'Pedidos',
     icon: Package,
     badge: null,
     color: 'text-orange-500',
@@ -239,7 +239,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
   },
   {
     id: 'reportes',
-    label: t('admin.sidebar.reports'),
+    label: t && typeof t === 'function' ? t('admin.sidebar.reports') : 'Reportes',
     icon: BarChart3,
     badge: null,
     color: 'text-purple-500',
@@ -247,7 +247,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
   },
   {
     id: 'alertas',
-    label: t('admin.sidebar.alerts'),
+    label: t && typeof t === 'function' ? t('admin.sidebar.alerts') : 'Alertas',
     icon: AlertTriangle,
     badge: 5,
     color: 'text-red-500',
@@ -255,7 +255,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
   },
   {
     id: 'gestion',
-    label: t('admin.sidebar.management'),
+    label: t && typeof t === 'function' ? t('admin.sidebar.management') : 'Gestión',
     icon: Settings,
     badge: null,
     color: 'text-gray-500',
