@@ -1,6 +1,24 @@
 {
-  "client": {
     "configuration": {
+      "notifications": {
+        "title": "Notification Preferences",
+        "subtitle": "Control which notifications you want to receive",
+        "email": "Email notifications",
+        "emailDesc": "Receive important notifications via email",
+        "push": "Push notifications",
+        "pushDesc": "Receive push notifications in the browser",
+        "critical": "Critical alerts",
+        "criticalDesc": "Notifications about critical system issues",
+        "marketing": "Marketing notifications",
+        "marketingDesc": "Special offers and promotional content",
+        "orders": "Order notifications",
+        "ordersDesc": "Updates about your order status",
+        "dailyReports": "Daily reports",
+        "dailyReportsDesc": "Receive daily activity summaries",
+        "systemUpdates": "System updates",
+        "systemUpdatesDesc": "Notifications about new features and updates",
+        "saveButton": "Save preferences"
+      },
       "title": "Configuration",
       "subtitle": "Manage your profile, security and preferences",
       "tabs": {
@@ -9,6 +27,7 @@
         "notifications": "Notifications",
         "preferences": "Preferences"
       },
+      "profile": {
       "profile": {
         "title": "Personal Information",
         "fields": {

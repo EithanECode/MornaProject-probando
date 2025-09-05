@@ -1,5 +1,26 @@
 {
   "client": {
+    "configuration": {
+      "notifications": {
+        "title": "Preferencias de Notificaciones",
+        "subtitle": "Controla qué notificaciones quieres recibir",
+        "email": "Notificaciones por email",
+        "emailDesc": "Recibir notificaciones importantes por correo electrónico",
+        "push": "Notificaciones push",
+        "pushDesc": "Recibir notificaciones push en el navegador",
+        "critical": "Alertas críticas",
+        "criticalDesc": "Notificaciones sobre problemas críticos del sistema",
+        "marketing": "Notificaciones de marketing",
+        "marketingDesc": "Ofertas especiales y contenido promocional",
+        "orders": "Notificaciones de pedidos",
+        "ordersDesc": "Actualizaciones sobre el estado de tus pedidos",
+        "dailyReports": "Reportes diarios",
+        "dailyReportsDesc": "Recibir resumen diario de actividades",
+        "systemUpdates": "Actualizaciones del sistema",
+        "systemUpdatesDesc": "Notificaciones sobre nuevas funciones y actualizaciones",
+        "saveButton": "Guardar preferencias"
+      }
+    },
     "dashboard": {
       "title": "Dashboard Cliente",
       "subtitle": "Bienvenido de vuelta, aquí tienes un resumen de tu actividad",
