@@ -429,8 +429,7 @@
       "pagination": {
         "previous": "Previous",
         "next": "Next",
-        "showing": "Showing",
-        "of": "of",
+        "results": "Showing {{from}} to {{to}} of {{total}} results",
         "perPage": "per page"
       },
       "time": {

@@ -276,7 +276,8 @@
       },
       "pagination": {
         "previous": "Anterior",
-        "next": "Siguiente"
+        "next": "Siguiente",
+        "results": "Mostrando {{from}} a {{to}} de {{total}} resultados"
       },
       "actions": {
         "edit": "Editar",
@@ -440,9 +441,7 @@
       "pagination": {
         "previous": "Anterior",
         "next": "Siguiente",
-        "showing": "Mostrando",
-        "of": "de",
-        "perPage": "por página"
+        "results": "Mostrando {{from}} a {{to}} de {{total}} resultados"
       },
       "time": {
         "days": "{{count}} días"
