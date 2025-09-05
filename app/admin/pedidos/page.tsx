@@ -829,7 +829,7 @@ export default function PedidosPage() {
           <td className="py-4 px-6">
             <div className="flex items-center space-x-2">
               <Clock className="w-4 h-4" />
-              <span>{t('admin.orders.table.daysElapsed', { count: order.daysElapsed })}</span>
+              <span>{t('admin.orders.time.days', { count: order.daysElapsed })}</span>
             </div>
           </td>
           <td className="py-4 px-6">
