@@ -1,4 +1,4 @@
-{
+  },
   "admin": {
     "sidebar": {
       "dashboard": "Dashboard",
@@ -634,9 +634,12 @@
     "han": "Have",
     "sido": "Been",
     "actualizados": "Updated",
-  "actualizada": "Updated",
-  "del": "Of the",
+    "actualizada": "Updated",
+    "del": "Of the",
     "se": "Have",
     "actualizado": "Updated"
   }
+},
+"header": {
+  "notifications": "Notifications"
 }
