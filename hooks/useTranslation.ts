@@ -1,8 +1,8 @@
 "use client";
 
 import { useLanguage } from '@/lib/LanguageContext';
-import esTranslations from '@/lib/translations/es.json';
-import enTranslations from '@/lib/translations/en.json';
+import esTranslations from '../lib/translations/es.json';
+import enTranslations from '../lib/translations/en.json';
 
 type TranslationKey = string;
 
