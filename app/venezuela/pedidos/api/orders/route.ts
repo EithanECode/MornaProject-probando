@@ -1,24 +1,24 @@
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseServiceRoleClient } from '@/lib/supabase/server';
 
 function getSupabaseClient() {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_ANON_KEY;
-  
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase environment variables');
-  }
-  
-  return createClient(supabaseUrl, supabaseKey);
+  // Usamos Service Role en el servidor para evitar problemas de variables ausentes y políticas RLS
+  return getSupabaseServiceRoleClient();
 }
 
 // Esta función obtiene los pedidos con el nombre del cliente
-async function getOrdersWithClientName() {
+async function getOrdersWithClientName(asignedEVzla?: string) {
   const supabase = getSupabaseClient();
   
   // Traer pedidos
-  const { data: orders, error: ordersError } = await supabase
+  let ordersQuery = supabase
     .from('orders')
     .select('id, quantity, productName, deliveryType, shippingType, state, client_id, asignedEVzla, description, pdfRoutes');
+
+  if (asignedEVzla) {
+    ordersQuery = ordersQuery.eq('asignedEVzla', asignedEVzla);
+  }
+
+  const { data: orders, error: ordersError } = await ordersQuery;
   if (ordersError) throw ordersError;
 
   // Traer clientes
@@ -51,8 +51,8 @@ import { NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-    // Obtener todos los pedidos, sin filtrar por asignedEVzla
-    const orders = await getOrdersWithClientName();
+  const asignedEVzla = request.nextUrl.searchParams.get('asignedEVzla') || undefined;
+  const orders = await getOrdersWithClientName(asignedEVzla);
     return Response.json(orders);
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });

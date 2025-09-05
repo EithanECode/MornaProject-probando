@@ -95,6 +95,43 @@ export default function PedidosChina() {
     return 'pendiente';
   }
 
+  // Badges estandarizados para pedidos según estado numérico
+  function getOrderBadge(stateNum?: number) {
+    const s = Number(stateNum ?? 0);
+    // Colores utilitarios tailwind para Badges
+    const base = 'border';
+    if (s <= 0 || isNaN(s)) return { label: 'Desconocido', className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    if (s === 3) return { label: 'Cotizado', className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+    if (s === 4) return { label: 'Procesando', className: `${base} bg-purple-100 text-purple-800 border-purple-200` };
+    if (s === 5) return { label: 'Listo para empaquetar', className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
+    if (s === 6) return { label: 'En caja', className: `${base} bg-indigo-100 text-indigo-800 border-indigo-200` };
+    if (s === 7) return { label: 'En contenedor', className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
+    if (s >= 9) return { label: 'Enviado a Venezuela', className: `${base} bg-green-100 text-green-800 border-green-200` };
+    // Para otros (por si se usa 8 u otros intermedios)
+    return { label: `Estado ${s}`, className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  }
+
+  // Badges estandarizados para cajas
+  function getBoxBadge(stateNum?: number) {
+    const s = Number(stateNum ?? 0);
+    const base = 'border';
+    if (s <= 1) return { label: 'Nueva', className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+    if (s === 2) return { label: 'Empaquetada', className: `${base} bg-green-100 text-green-800 border-green-200` };
+    if (s === 3) return { label: 'En contenedor', className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
+    if (s >= 4) return { label: 'Enviada', className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    return { label: `Estado ${s}`, className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  }
+
+  // Badges estandarizados para contenedores
+  function getContainerBadge(stateNum?: number) {
+    const s = Number(stateNum ?? 0);
+    const base = 'border';
+    if (s <= 1) return { label: 'Nuevo', className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+    if (s === 2) return { label: 'Cargando', className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
+    if (s >= 3) return { label: 'Enviado', className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    return { label: `Estado ${s}`, className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  }
+
   // Fetch pedidos reales filtrando por asignedEChina
   async function fetchPedidos() {
     setLoading(true);
@@ -570,6 +607,7 @@ export default function PedidosChina() {
         deliveryType: order.deliveryType || '',
         shippingType: order.shippingType || '',
         totalQuote: order.totalQuote ?? null,
+        numericState: typeof order.state === 'number' ? order.state : Number(order.state || 0),
       }));
       setOrdersByBox(mapped);
     } finally {
@@ -586,6 +624,12 @@ export default function PedidosChina() {
     }
     try {
       const supabase = getSupabaseBrowserClient();
+      // No permitir asignar a contenedor enviado
+      const contStateNum = (container.state ?? 1) as number;
+      if (contStateNum >= 3) {
+        toast({ title: 'No permitido', description: 'No puedes asignar cajas a un contenedor enviado.' });
+        return;
+      }
       // 1) Actualizar la caja: asignar contenedor y cambiar state=2 (empaquetada)
       const { error: boxUpdateError } = await supabase
         .from('boxes')
@@ -604,12 +648,25 @@ export default function PedidosChina() {
       if (ordersUpdateError) {
         console.error('Error actualizando pedidos a estado 7:', ordersUpdateError);
       }
+      // 3) Asegurar que el contenedor pase a estado 2 al cargarse una caja
+      const { error: contStateErr } = await supabase
+        .from('containers')
+        .update({ state: 2 })
+        .eq('container_id', containerId);
+      if (contStateErr) {
+        console.error('Error actualizando contenedor a estado 2:', contStateErr);
+      }
       toast({ title: 'Caja asignada', description: `La caja #BOX-${boxId} fue asignada al contenedor #CONT-${containerId}.` });
       // Actualizar UI local
       setBoxes(prev => prev.map(b => {
         const id = b.box_id ?? b.boxes_id ?? b.id;
         if (String(id) === String(boxId)) return { ...b, container_id: containerId, state: 2 };
         return b;
+      }));
+      setContainers(prev => prev.map(c => {
+        const cid = c.container_id ?? c.containers_id ?? c.id;
+        if (String(cid) === String(containerId)) return { ...c, state: 2 };
+        return c;
       }));
       closeModalEmpaquetarCaja();
     } catch (e) {
@@ -622,6 +679,23 @@ export default function PedidosChina() {
   const handleUnpackBox = async (boxId: number | string, options?: { containerId?: number | string }) => {
     try {
       const supabase = getSupabaseBrowserClient();
+      // Si la caja pertenece a un contenedor enviado, bloquear
+      const contId = options?.containerId;
+      if (contId !== undefined) {
+        const { data: contRow, error: contErr } = await supabase
+          .from('containers')
+          .select('state')
+          .eq('container_id', contId)
+          .maybeSingle();
+        if (contErr) {
+          console.error('Error verificando contenedor:', contErr);
+        }
+        const contState = (contRow?.state ?? 1) as number;
+        if (contState >= 3) {
+          toast({ title: 'No permitido', description: 'No puedes desempaquetar una caja de un contenedor enviado.' });
+          return;
+        }
+      }
       // 1) Actualizar pedidos: remover box_id y regresar a estado 5 (enviado)
       const { error: ordersErr } = await supabase
         .from('orders')
@@ -706,25 +780,7 @@ export default function PedidosChina() {
   setIsModalCotizarClosing(false);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pendiente': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'cotizado': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'procesando': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'enviado': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'pendiente': return 'Pendiente';
-      case 'cotizado': return 'Cotizado';
-      case 'procesando': return 'Procesando';
-  case 'enviado': return 'Esperando envío';
-      default: return 'Desconocido';
-    }
-  };
+  // getStatusColor/Text ya no se usan; sustituido por getOrderBadge basado en estado numérico
 
   // Asignar pedido a caja (empaquetar)
   const handleSelectCajaForPedido = async (pedidoId: number, box: BoxItem) => {
@@ -735,6 +791,27 @@ export default function PedidosChina() {
     }
     try {
       const supabase = getSupabaseBrowserClient();
+      // No permitir empaquetar en cajas enviadas o contenedores enviados
+      const boxStateNumCheck = (box.state ?? 1) as number;
+      if (boxStateNumCheck >= 3) {
+        toast({ title: 'No permitido', description: 'No puedes empaquetar en una caja enviada.' });
+        return;
+      }
+      if ((box as any)?.container_id) {
+        const { data: contRow, error: contErr } = await supabase
+          .from('containers')
+          .select('state')
+          .eq('container_id', (box as any).container_id)
+          .maybeSingle();
+        if (contErr) {
+          console.error('Error verificando contenedor:', contErr);
+        }
+        const contState = (contRow?.state ?? 1) as number;
+        if (contState >= 3) {
+          toast({ title: 'No permitido', description: 'No puedes empaquetar en cajas de un contenedor enviado.' });
+          return;
+        }
+      }
       // Si la caja ya está empaquetada (state=2), el pedido debe pasar a state=7 (en contenedor)
       const boxStateNum = (box.state ?? 1) as number;
       const nextOrderState = boxStateNum === 2 ? 7 : 6;
@@ -795,6 +872,35 @@ export default function PedidosChina() {
       if (!boxId) {
         toast({ title: 'Pedido sin caja', description: 'Este pedido no tiene caja asignada.' });
         return;
+      }
+      // Si la caja está dentro de un contenedor enviado o la caja fue enviada, bloquear
+      const { data: boxRow, error: boxErr } = await supabase
+        .from('boxes')
+        .select('state, container_id')
+        .eq('box_id', boxId)
+        .maybeSingle();
+      if (boxErr) {
+        console.error('Error verificando caja:', boxErr);
+      }
+      const bState = (boxRow?.state ?? 1) as number;
+      if (bState >= 3) {
+        toast({ title: 'No permitido', description: 'No puedes desempaquetar pedidos de una caja enviada.' });
+        return;
+      }
+      if (boxRow?.container_id) {
+        const { data: cRow, error: cErr } = await supabase
+          .from('containers')
+          .select('state')
+          .eq('container_id', boxRow.container_id)
+          .maybeSingle();
+        if (cErr) {
+          console.error('Error verificando contenedor:', cErr);
+        }
+        const cState = (cRow?.state ?? 1) as number;
+        if (cState >= 3) {
+          toast({ title: 'No permitido', description: 'No puedes desempaquetar pedidos de un contenedor enviado.' });
+          return;
+        }
       }
       // Limpiar relación y bajar a estado 5
       const { error: updErr } = await supabase
@@ -1048,8 +1154,8 @@ export default function PedidosChina() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge className={`${getStatusColor(pedido.estado)} border`}>
-                          {getStatusText(pedido.estado)}
+                        <Badge className={`${getOrderBadge(pedido.numericState).className}`}>
+                          {getOrderBadge(pedido.numericState).label}
                         </Badge>
                         {pedido.precio && (
                           <div className="text-right">
@@ -1075,8 +1181,12 @@ export default function PedidosChina() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="flex items-center gap-1 text-amber-700 border-amber-300 hover:bg-amber-50"
-                              onClick={() => handleUnpackOrder(pedido.id)}
+                              className="flex items-center gap-1 text-amber-700 border-amber-300 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={(pedido.numericState ?? 0) >= 9}
+                              onClick={() => {
+                                if ((pedido.numericState ?? 0) >= 9) return;
+                                handleUnpackOrder(pedido.id)
+                              }}
                             >
                               Desempaquetar
                             </Button>
@@ -1196,37 +1306,47 @@ export default function PedidosChina() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                            {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Empaquetada' : `Estado ${stateNum}`}
+                          <Badge className={`${getBoxBadge(stateNum).className}`}>
+                            {getBoxBadge(stateNum).label}
                           </Badge>
-                          {stateNum !== 2 && (
-                          <Button
-                            size="sm"
-                            className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700"
-                            onClick={() => {
-                              const currentBoxId = box.box_id ?? box.boxes_id ?? box.id;
-                              setModalEmpaquetarCaja({ open: true, boxId: currentBoxId });
-                              if (containers.length === 0) fetchContainers();
-                            }}
-                          >
-                            <Boxes className="h-4 w-4" />
-                            Empaquetar
-                          </Button>
+                          {stateNum === 1 && (
+                            <Button
+                              size="sm"
+                              className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700"
+                              onClick={() => {
+                                const currentBoxId = box.box_id ?? box.boxes_id ?? box.id;
+                                setModalEmpaquetarCaja({ open: true, boxId: currentBoxId });
+                                if (containers.length === 0) fetchContainers();
+                              }}
+                            >
+                              <Boxes className="h-4 w-4" />
+                              Empaquetar
+                            </Button>
                           )}
                           {stateNum === 2 && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex items-center gap-1 text-amber-700 border-amber-300 hover:bg-amber-50"
-                            onClick={() => {
-                              const currentBoxId = box.box_id ?? box.boxes_id ?? box.id;
-                              if (currentBoxId !== undefined) {
-                                handleUnpackBox(currentBoxId as any);
-                              }
-                            }}
-                          >
-                            Desempaquetar
-                          </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center gap-1 text-amber-700 border-amber-300 hover:bg-amber-50"
+                              onClick={() => {
+                                const currentBoxId = box.box_id ?? box.boxes_id ?? box.id;
+                                if (currentBoxId !== undefined) {
+                                  handleUnpackBox(currentBoxId as any);
+                                }
+                              }}
+                            >
+                              Desempaquetar
+                            </Button>
+                          )}
+                          {stateNum >= 3 && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center gap-1 text-amber-700 border-amber-300 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled
+                            >
+                              Desempaquetar
+                            </Button>
                           )}
                           <Button
                             variant="outline"
@@ -1244,8 +1364,16 @@ export default function PedidosChina() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="flex items-center gap-1 text-red-600 border-red-300 hover:bg-red-50"
-                            onClick={() => setModalEliminarCaja({ open: true, box })}
+                            className="flex items-center gap-1 text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={(box.state ?? 1) >= 3}
+                            onClick={() => {
+                              const st = (box.state ?? 1) as number;
+                              if (st >= 3) {
+                                toast({ title: 'No permitido', description: 'No puedes eliminar una caja enviada.' });
+                                return;
+                              }
+                              setModalEliminarCaja({ open: true, box })
+                            }}
                           >
                             <Trash2 className="h-4 w-4" />
                             Eliminar caja
@@ -1328,9 +1456,81 @@ export default function PedidosChina() {
                               </div>
                             </div>
                             <div className="flex items-center gap-3">
-                              <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                                {stateNum === 1 ? 'Nuevo' : `Estado ${stateNum}`}
+                              <Badge className={`${getContainerBadge(stateNum).className}`}>
+                                {getContainerBadge(stateNum).label}
                               </Badge>
+                              {/* Botón Enviar contenedor: marca container.state=3 y pedidos de sus cajas a state=8 */}
+                              <Button
+                                size="sm"
+                                className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white"
+                                disabled={stateNum !== 2}
+                                onClick={async () => {
+                                  try {
+                                    const supabase = getSupabaseBrowserClient();
+                                    const containerId = container.container_id ?? container.containers_id ?? container.id;
+                                    if (!containerId) return;
+                                    if (stateNum !== 2) return;
+                                    // 1) Marcar contenedor como enviado (state = 3)
+                                    const { error: contErr } = await supabase
+                                      .from('containers')
+                                      .update({ state: 3 })
+                                      .eq('container_id', containerId);
+                                    if (contErr) throw contErr;
+                                    // 2) Obtener cajas del contenedor
+                                    const { data: boxRows, error: boxErr } = await supabase
+                                      .from('boxes')
+                                      .select('box_id')
+                                      .eq('container_id', containerId);
+                                    if (boxErr) throw boxErr;
+                                    const boxIds = (boxRows || []).map((r: any) => r.box_id).filter((v: any) => v !== null && v !== undefined);
+                  // 3) Marcar cajas como enviadas (state=4)
+                                    if (boxIds.length > 0) {
+                                      const { error: boxesErr } = await supabase
+                                        .from('boxes')
+                    .update({ state: 4 })
+                                        .in('box_id', boxIds as any);
+                                      if (boxesErr) throw boxesErr;
+                                    }
+                  // 4) Actualizar pedidos a state=9 (Enviado a Vzla)
+                                    if (boxIds.length > 0) {
+                                      const { error: ordErr } = await supabase
+                                        .from('orders')
+                    .update({ state: 9 })
+                                        .in('box_id', boxIds as any);
+                                      if (ordErr) throw ordErr;
+                                    }
+                                    toast({ title: 'Contenedor enviado', description: `El contenedor #CONT-${String(containerId)} fue marcado como enviado.` });
+                                    // Refrescar UI local
+                                    setContainers(prev => prev.map(c => {
+                                      const cid = c.container_id ?? c.containers_id ?? c.id;
+                                      if (String(cid) === String(containerId)) return { ...c, state: 3 };
+                                      return c;
+                                    }));
+                                    // Actualizar UI de cajas principales si están cargadas
+                                    setBoxes(prev => prev.map(b => {
+                                      const bid = b.box_id ?? b.boxes_id ?? b.id;
+                                      // Si la caja pertenece a este contenedor, pasa a estado 3
+                                      if (String((b as any)?.container_id) === String(containerId)) {
+                                        return { ...b, state: 4 };
+                                      }
+                                      return b;
+                                    }));
+                                    // Actualizar UI de cajas dentro del modal de contenedor
+                                    setBoxesByContainer(prev => prev.map(b => {
+                                      if (String((b as any)?.container_id) === String(containerId)) {
+                                        return { ...b, state: 4 };
+                                      }
+                                      return b;
+                                    }));
+                                  } catch (e) {
+                                    console.error(e);
+                                    toast({ title: 'No se pudo enviar', description: 'Intenta nuevamente más tarde.' });
+                                  }
+                                }}
+                              >
+                                <Truck className="h-4 w-4" />
+                                Enviar
+                              </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -1347,8 +1547,16 @@ export default function PedidosChina() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="flex items-center gap-1 text-red-600 border-red-300 hover:bg-red-50"
-                                onClick={() => setModalEliminarContenedor({ open: true, container })}
+                                className="flex items-center gap-1 text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={(container.state ?? 1) >= 3}
+                                onClick={() => {
+                                  const st = (container.state ?? 1) as number;
+                                  if (st >= 3) {
+                                    toast({ title: 'No permitido', description: 'No puedes eliminar un contenedor enviado.' });
+                                    return;
+                                  }
+                                  setModalEliminarContenedor({ open: true, container })
+                                }}
                               >
                                 <Trash2 className="h-4 w-4" />
                                 Eliminar contenedor
@@ -1513,8 +1721,8 @@ export default function PedidosChina() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                            {stateNum === 1 ? 'Nuevo' : `Estado ${stateNum}`}
+                          <Badge className={`${getContainerBadge(stateNum).className}`}>
+                            {getContainerBadge(stateNum).label}
                           </Badge>
                           <Button
                             size="sm"
@@ -1617,22 +1825,32 @@ export default function PedidosChina() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                            {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Empaquetada' : `Estado ${stateNum}`}
+                          <Badge className={`${getBoxBadge(stateNum).className}`}>
+                            {getBoxBadge(stateNum).label}
                           </Badge>
                           {stateNum === 2 && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex items-center gap-1 text-amber-700 border-amber-300 hover:bg-amber-50"
-                            onClick={() => {
-                              const boxId = box.box_id ?? box.boxes_id ?? box.id;
-                              const containerId = modalVerPedidosCont.containerId;
-                              handleUnpackBox(boxId as any, { containerId });
-                            }}
-                          >
-                            Desempaquetar
-                          </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center gap-1 text-amber-700 border-amber-300 hover:bg-amber-50"
+                              onClick={() => {
+                                const boxId = box.box_id ?? box.boxes_id ?? box.id;
+                                const containerId = modalVerPedidosCont.containerId;
+                                handleUnpackBox(boxId as any, { containerId });
+                              }}
+                            >
+                              Desempaquetar
+                            </Button>
+                          )}
+                          {stateNum >= 3 && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center gap-1 text-amber-700 border-amber-300 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled
+                            >
+                              Desempaquetar
+                            </Button>
                           )}
                           <Button
                             variant="outline"
@@ -1810,8 +2028,8 @@ export default function PedidosChina() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge className={`${getStatusColor(pedido.estado)} border`}>
-                          {getStatusText(pedido.estado)}
+                        <Badge className={`${getOrderBadge(pedido.numericState).className}`}>
+                          {getOrderBadge(pedido.numericState).label}
                         </Badge>
                         <Button
                           variant="outline"
