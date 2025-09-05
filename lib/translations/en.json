@@ -1,4 +1,4 @@
-  },
+{
   "admin": {
     "sidebar": {
       "dashboard": "Dashboard",
@@ -234,14 +234,6 @@
       }
     },
     "users": {
-    "pagination": {
-      "showing": "Showing {{from}} to {{to}} of {{total}} results",
-      "perPage": "per page"
-    },
-    "messages": {
-      "invalidUrlTitle": "Invalid URL",
-      "invalidUrlDesc": "The URL is not valid."
-    },
       "title": "User Management",
       "subtitle": "Security and access",
       "description": "User and access management",
@@ -637,8 +629,8 @@
     "del": "Of the",
     "se": "Have",
     "actualizado": "Updated"
+  },
+  "header": {
+    "notifications": "Notifications"
   }
-},
-"header": {
-  "notifications": "Notifications"
 }
