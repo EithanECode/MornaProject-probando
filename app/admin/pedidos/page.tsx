@@ -1008,7 +1008,7 @@ export default function PedidosPage() {
                       className={mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800 hover:border-blue-800' : 'bg-white/50 border-slate-200 hover:bg-blue-50 hover:border-blue-300'}
                     >
                       <ChevronLeft className="w-4 h-4 mr-1" />
-                      Anterior
+                      {t('admin.orders.pagination.previous')}
                     </Button>
                     <div className="flex items-center space-x-1">
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -1032,7 +1032,7 @@ export default function PedidosPage() {
                       disabled={currentPage === totalPages}
                       className={mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800 hover:border-blue-800' : 'bg-white/50 border-slate-200 hover:bg-blue-50 hover:border-blue-300'}
                     >
-                      Siguiente
+                      {t('admin.orders.pagination.next')}
                       <ChevronRight className="w-4 h-4 ml-1" />
                     </Button>
                   </div>
@@ -1149,29 +1149,29 @@ export default function PedidosPage() {
                   {newOrderData.requestType === 'link' && (
                     <div className="space-y-2">
                       <Label htmlFor="productUrl">{t('admin.orders.form.productUrl')} *</Label>
-                      <Input id="productUrl" type="url" value={newOrderData.productUrl || ''} onChange={(e) => setNewOrderData({ ...newOrderData, productUrl: e.target.value })} placeholder="https://ejemplo.com/producto" />
+                      <Input id="productUrl" type="url" value={newOrderData.productUrl || ''} onChange={(e) => setNewOrderData({ ...newOrderData, productUrl: e.target.value })} placeholder={t('admin.orders.form.productUrlPlaceholder')} />
                       {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (<p className="text-xs text-red-500">La URL no es válida.</p>)}
                     </div>
                   )}
 
                   {newOrderData.requestType === 'photo' && (
                     <div className="space-y-3">
-                      <Label className="text-sm font-semibold text-slate-700 flex items-center"><Image className="w-4 h-4 mr-2 text-blue-600" />Imagen del Producto</Label>
+                      <Label className="text-sm font-semibold text-slate-700 flex items-center"><Image className="w-4 h-4 mr-2 text-blue-600" />{t('admin.orders.form.productImage')}</Label>
                       {newOrderData.productImage ? (
                         <div className="relative">
                           <div className="border-2 border-slate-200 rounded-xl overflow-hidden bg-white">
                             <img src={URL.createObjectURL(newOrderData.productImage)} alt="Producto" className="w-full h-48 object-cover" />
                             <div className="p-3 flex gap-2">
-                              <Button variant="outline" size="sm" onClick={() => document.getElementById('imageUpload')?.click()}><Upload className="w-4 h-4 mr-1" />Cambiar</Button>
-                              <Button variant="outline" size="sm" onClick={() => setNewOrderData({ ...newOrderData, productImage: undefined })} className="text-red-600"><X className="w-4 h-4 mr-1" />Eliminar</Button>
+                              <Button variant="outline" size="sm" onClick={() => document.getElementById('imageUpload')?.click()}><Upload className="w-4 h-4 mr-1" />{t('admin.orders.form.change')}</Button>
+                              <Button variant="outline" size="sm" onClick={() => setNewOrderData({ ...newOrderData, productImage: undefined })} className="text-red-600"><X className="w-4 h-4 mr-1" />{t('admin.orders.form.remove')}</Button>
                             </div>
                           </div>
                           <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                         </div>
                       ) : (
                         <div className={`border-2 border-dashed rounded-xl p-8 text-center bg-white ${isDragOver ? 'border-blue-500 bg-blue-50' : 'border-slate-300'}`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
-                          <p className="text-sm text-slate-600 mb-4">Arrastra una imagen aquí o haz clic para seleccionar</p>
-                          <Button variant="outline" onClick={() => document.getElementById('imageUpload')?.click()}><Upload className="w-4 h-4 mr-2" />Seleccionar Imagen</Button>
+                          <p className="text-sm text-slate-600 mb-4">{t('admin.orders.form.dragImageHere')}</p>
+                          <Button variant="outline" onClick={() => document.getElementById('imageUpload')?.click()}><Upload className="w-4 h-4 mr-2" />{t('admin.orders.form.selectImage')}</Button>
                           <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                         </div>
                       )}
@@ -1221,9 +1221,9 @@ export default function PedidosPage() {
                       <SelectValue placeholder={t('admin.orders.form.selectDelivery')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pickup">Recoger en oficina</SelectItem>
-                      <SelectItem value="delivery">Entrega a domicilio</SelectItem>
-                      <SelectItem value="express">Entrega express</SelectItem>
+                      <SelectItem value="pickup">{t('admin.orders.form.pickupOffice')}</SelectItem>
+                      <SelectItem value="delivery">{t('admin.orders.form.homeDelivery')}</SelectItem>
+                      <SelectItem value="express">{t('admin.orders.form.expressDelivery')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
