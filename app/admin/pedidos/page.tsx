@@ -184,18 +184,7 @@ const useOrdersFilter = (orders: Order[]) => {
 export default function PedidosPage() {
   const { t } = useTranslation();
 
-  // Función para traducir estados dinámicamente
-  const getTranslatedStatus = (status: string) => {
-    const statusMap: { [key: string]: string } = {
-      'pendiente-china': t('admin.orders.status.pendiente-china'),
-      'pendiente-vzla': t('admin.orders.status.pendiente-vzla'),
-      'esperando-pago': t('admin.orders.status.esperando-pago'),
-      'en-transito': t('admin.orders.status.en-transito'),
-      'entregado': t('admin.orders.status.entregado'),
-      'cancelado': t('admin.orders.status.cancelado')
-    };
-    return statusMap[status] || status;
-  };
+  // Todas las traducciones de status se hacen directamente en el renderizado con t(`admin.orders.status.${status}`)
   // Datos desde Supabase (stats/admin)
   const { data: adminStats, loading: adminLoading, error: adminError, refetch: refetchStats } = useAdminOrders();
   // Lista de pedidos reales
@@ -923,12 +912,12 @@ export default function PedidosPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">{t('admin.orders.filters.allStates')}</SelectItem>
-                          <SelectItem value="pendiente-china">{getTranslatedStatus('pendiente-china')}</SelectItem>
-                          <SelectItem value="pendiente-vzla">{getTranslatedStatus('pendiente-vzla')}</SelectItem>
-                          <SelectItem value="esperando-pago">{getTranslatedStatus('esperando-pago')}</SelectItem>
-                          <SelectItem value="en-transito">{getTranslatedStatus('en-transito')}</SelectItem>
-                          <SelectItem value="entregado">{getTranslatedStatus('entregado')}</SelectItem>
-                          <SelectItem value="cancelado">{getTranslatedStatus('cancelado')}</SelectItem>
+                          <SelectItem value="pendiente-china">{t('admin.orders.status.pendiente-china')}</SelectItem>
+                          <SelectItem value="pendiente-vzla">{t('admin.orders.status.pendiente-vzla')}</SelectItem>
+                          <SelectItem value="esperando-pago">{t('admin.orders.status.esperando-pago')}</SelectItem>
+                          <SelectItem value="en-transito">{t('admin.orders.status.en-transito')}</SelectItem>
+                          <SelectItem value="entregado">{t('admin.orders.status.entregado')}</SelectItem>
+                          <SelectItem value="cancelado">{t('admin.orders.status.cancelado')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1001,7 +990,7 @@ export default function PedidosPage() {
                          <div className="flex items-center gap-2 flex-wrap">
                            <Badge className={`${status.color} border text-xs`}>
                              <StatusIcon className="w-3 h-3 mr-1" />
-                             {getTranslatedStatus(order.status)}
+                             {t(`admin.orders.status.${order.status}`)}
                            </Badge>
                            <Badge className={`${assigned.color} border text-xs`}>
                             {t(`admin.orders.assigned.${order.assignedTo}`)}
