@@ -1,5 +1,13 @@
 {
   "admin": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "orders": "Orders",
+      "reports": "Reports",
+      "alerts": "Alerts",
+      "management": "Management"
+    },
     "configuration": {
       "title": "Configuration",
       "subtitle": "Manage your profile, security and preferences",

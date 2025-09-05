@@ -11,6 +11,14 @@
     "success": "Éxito"
   },
   "admin": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "users": "Usuarios",
+      "orders": "Pedidos",
+      "reports": "Reportes",
+      "alerts": "Alertas",
+      "management": "Gestión"
+    },
     "configuration": {
       "title": "Configuración",
       "subtitle": "Gestiona tu perfil, seguridad y preferencias",
