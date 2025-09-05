@@ -1102,15 +1102,15 @@ export default function PedidosPage() {
                 <div className="space-y-3">
                   <Label className="text-sm font-semibold text-slate-700 flex items-center">
                     <FileText className="w-4 h-4 mr-2 text-blue-600" />
-                    Descripción del Producto
+{t('admin.orders.form.productDescription')}
                   </Label>
-                  <Textarea value={newOrderData.description} onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value })} rows={4} placeholder="Describe el producto..." />
+                  <Textarea value={newOrderData.description} onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value })} rows={4} placeholder={t('admin.orders.form.productDescriptionPlaceholder')} />
                 </div>
 
                 <div className="space-y-3">
                   <Label className="text-sm font-semibold text-slate-700 flex items-center">
                     <Hash className="w-4 h-4 mr-2 text-blue-600" />
-                    Cantidad
+{t('admin.orders.form.quantity')}
                   </Label>
                   <Input type="number" min="1" value={newOrderData.quantity === 0 ? '' : newOrderData.quantity} onChange={(e) => {
                     const val = e.target.value; if (val === '') setNewOrderData({ ...newOrderData, quantity: 0 }); else if (/^[0-9]+$/.test(val)) setNewOrderData({ ...newOrderData, quantity: parseInt(val) });
@@ -1120,7 +1120,7 @@ export default function PedidosPage() {
 
                 {/* Tipo de Solicitud */}
                 <div className="space-y-4">
-                  <Label className="text-sm font-semibold text-slate-700 flex items-center"><Target className="w-4 h-4 mr-2 text-blue-600" />Tipo de Solicitud</Label>
+                  <Label className="text-sm font-semibold text-slate-700 flex items-center"><Target className="w-4 h-4 mr-2 text-blue-600" />{t('admin.orders.form.requestType')}</Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className={`p-4 border-2 rounded-xl cursor-pointer ${newOrderData.requestType === 'link' ? 'border-blue-500 bg-blue-50' : 'border-slate-200'}`} onClick={() => setNewOrderData({ ...newOrderData, requestType: 'link' })} onMouseEnter={() => setIsLinkHovered(true)} onMouseLeave={() => setIsLinkHovered(false)}>
                       <div className="flex items-center gap-3">
@@ -1128,8 +1128,8 @@ export default function PedidosPage() {
                           <Player key={isLinkHovered ? 'link-active' : 'link-inactive'} src={'/animations/wired-flat-11-link-unlink-hover-bounce.json'} className="w-5 h-5" loop={false} autoplay={isLinkHovered} />
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-800">Link del Producto</p>
-                          <p className="text-sm text-slate-600">Pega el enlace de la tienda</p>
+                          <p className="font-semibold text-slate-800">{t('admin.orders.form.productLink')}</p>
+                          <p className="text-sm text-slate-600">{t('admin.orders.form.productLinkDescription')}</p>
                         </div>
                       </div>
                     </div>
@@ -1139,8 +1139,8 @@ export default function PedidosPage() {
                           <Player key={isCameraHovered ? 'camera-active' : 'camera-inactive'} src={'/animations/wired-flat-61-camera-hover-flash.json'} className="w-5 h-5" loop={false} autoplay={isCameraHovered} />
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-800">Foto + Descripción</p>
-                          <p className="text-sm text-slate-600">Sube una imagen del producto</p>
+                          <p className="font-semibold text-slate-800">{t('admin.orders.form.photoDescription')}</p>
+                          <p className="text-sm text-slate-600">{t('admin.orders.form.photoDescriptionDetail')}</p>
                         </div>
                       </div>
                     </div>
@@ -1148,7 +1148,7 @@ export default function PedidosPage() {
 
                   {newOrderData.requestType === 'link' && (
                     <div className="space-y-2">
-                      <Label htmlFor="productUrl">URL del Producto *</Label>
+                      <Label htmlFor="productUrl">{t('admin.orders.form.productUrl')} *</Label>
                       <Input id="productUrl" type="url" value={newOrderData.productUrl || ''} onChange={(e) => setNewOrderData({ ...newOrderData, productUrl: e.target.value })} placeholder="https://ejemplo.com/producto" />
                       {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (<p className="text-xs text-red-500">La URL no es válida.</p>)}
                     </div>
@@ -1185,14 +1185,14 @@ export default function PedidosPage() {
             {currentStep === 2 && (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label>Tipo de Envío</Label>
+                  <Label>{t('admin.orders.form.deliveryType')}</Label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className={`p-4 border-2 rounded-lg cursor-pointer ${newOrderData.deliveryType === 'doorToDoor' ? 'border-blue-500 bg-blue-50' : 'border-slate-200'}`} onClick={() => setNewOrderData({ ...newOrderData, deliveryType: 'doorToDoor' })} onMouseEnter={() => setHoveredDeliveryOption('doorToDoor')} onMouseLeave={() => setHoveredDeliveryOption(null)}>
                       <div className="text-center">
                         <div className="w-8 h-8 mx-auto">
                           <Player key={hoveredDeliveryOption === 'doorToDoor' ? 'truck-active' : 'truck-inactive'} src={'/animations/wired-flat-18-delivery-truck.json'} className="w-full h-full" loop={false} autoplay={hoveredDeliveryOption === 'doorToDoor'} />
                         </div>
-                        <p className="font-medium mt-2">Puerta a Puerta</p>
+                        <p className="font-medium mt-2">{t('admin.orders.deliveryTypes.doorToDoor')}</p>
                       </div>
                     </div>
                     <div className={`p-4 border-2 rounded-lg cursor-pointer ${newOrderData.deliveryType === 'air' ? 'border-blue-500 bg-blue-50' : 'border-slate-200'}`} onClick={() => setNewOrderData({ ...newOrderData, deliveryType: 'air' })} onMouseEnter={() => setHoveredDeliveryOption('air')} onMouseLeave={() => setHoveredDeliveryOption(null)}>
@@ -1200,7 +1200,7 @@ export default function PedidosPage() {
                         <div className="w-8 h-8 mx-auto">
                           <Player key={hoveredDeliveryOption === 'air' ? 'airplane-active' : 'airplane-inactive'} src={'/animations/FTQoLAnxbj.json'} className="w-full h-full" loop={false} autoplay={hoveredDeliveryOption === 'air'} />
                         </div>
-                        <p className="font-medium mt-2">Envío Aéreo</p>
+                        <p className="font-medium mt-2">{t('admin.orders.deliveryTypes.air')}</p>
                       </div>
                     </div>
                     <div className={`p-4 border-2 rounded-lg cursor-pointer ${newOrderData.deliveryType === 'maritime' ? 'border-blue-500 bg-blue-50' : 'border-slate-200'}`} onClick={() => setNewOrderData({ ...newOrderData, deliveryType: 'maritime' })} onMouseEnter={() => setHoveredDeliveryOption('maritime')} onMouseLeave={() => setHoveredDeliveryOption(null)}>
@@ -1208,17 +1208,17 @@ export default function PedidosPage() {
                         <div className="w-8 h-8 mx-auto">
                           <Player key={hoveredDeliveryOption === 'maritime' ? 'ship-active' : 'ship-inactive'} src={'/animations/wired-flat-1337-cargo-ship-hover-pinch.json'} className="w-full h-full" loop={false} autoplay={hoveredDeliveryOption === 'maritime'} />
                         </div>
-                        <p className="font-medium mt-2">Envío Marítimo</p>
+                        <p className="font-medium mt-2">{t('admin.orders.deliveryTypes.maritime')}</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="deliveryVenezuela">Opción de Entrega en Venezuela</Label>
+                  <Label htmlFor="deliveryVenezuela">{t('admin.orders.form.deliveryVenezuela')}</Label>
                   <Select value={newOrderData.deliveryVenezuela} onValueChange={(value) => setNewOrderData({ ...newOrderData, deliveryVenezuela: value })}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona cómo quieres recibir tu pedido" />
+                      <SelectValue placeholder={t('admin.orders.form.selectDelivery')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="pickup">Recoger en oficina</SelectItem>
@@ -1229,7 +1229,7 @@ export default function PedidosPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="estimatedBudget">Presupuesto Estimado (USD)</Label>
+                  <Label htmlFor="estimatedBudget">{t('admin.orders.form.estimatedBudgetUsd')}</Label>
                   <Input id="estimatedBudget" type="number" min="0" value={newOrderData.estimatedBudget} onChange={(e) => {
                     const val = e.target.value; if (/^[0-9]*\.?[0-9]{0,2}$/.test(val)) { setNewOrderData({ ...newOrderData, estimatedBudget: val }); }
                   }} placeholder="Ej: 500" />
@@ -1242,35 +1242,35 @@ export default function PedidosPage() {
             {currentStep === 3 && (
               <div className="space-y-6">
                 <div className="bg-slate-50 rounded-lg p-6 space-y-4">
-                  <h4 className="font-semibold text-lg">Resumen de la Solicitud</h4>
+                  <h4 className="font-semibold text-lg">{t('admin.orders.summary.title')}</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-slate-600">Cliente</p>
+                      <p className="text-sm text-slate-600">{t('admin.orders.summary.client')}</p>
                       <p className="font-medium">{newOrderData.client_name} ({newOrderData.client_id})</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">Producto</p>
+                      <p className="text-sm text-slate-600">{t('admin.orders.summary.product')}</p>
                       <p className="font-medium">{newOrderData.productName}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">Cantidad</p>
+                      <p className="text-sm text-slate-600">{t('admin.orders.summary.quantity')}</p>
                       <p className="font-medium">{newOrderData.quantity}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">Tipo de Envío</p>
+                      <p className="text-sm text-slate-600">{t('admin.orders.summary.shippingType')}</p>
                       <p className="font-medium">
-                        {newOrderData.deliveryType === 'doorToDoor' && 'Puerta a Puerta'}
-                        {newOrderData.deliveryType === 'air' && 'Envío Aéreo'}
-                        {newOrderData.deliveryType === 'maritime' && 'Envío Marítimo'}
+                        {newOrderData.deliveryType === 'doorToDoor' && t('admin.orders.deliveryTypes.doorToDoor')}
+                        {newOrderData.deliveryType === 'air' && t('admin.orders.deliveryTypes.air')}
+                        {newOrderData.deliveryType === 'maritime' && t('admin.orders.deliveryTypes.maritime')}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">Presupuesto Estimado</p>
+                      <p className="text-sm text-slate-600">{t('admin.orders.summary.estimatedBudget')}</p>
                       <p className="font-medium">${newOrderData.estimatedBudget}</p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm text-slate-600">Descripción</p>
+                    <p className="text-sm text-slate-600">{t('admin.orders.summary.description')}</p>
                     <p className="text-sm">{newOrderData.description}</p>
                   </div>
                 </div>
@@ -1282,17 +1282,17 @@ export default function PedidosPage() {
           <div className="flex justify-between pt-8 border-t border-slate-200/50">
             <Button variant="outline" onClick={handlePrevStep} disabled={currentStep === 1 || isTransitioning}>
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Anterior
+              {t('admin.orders.steps.previous')}
             </Button>
             {currentStep < 3 ? (
               <Button onClick={handleNextStep} disabled={!canProceedToNext() || isTransitioning} className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                Siguiente
+                {t('admin.orders.steps.next')}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             ) : (
               <Button onClick={handleSubmitOrder} className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
                 <Check className="w-4 h-4 mr-2" />
-                Crear Pedido
+                {t('admin.orders.summary.createOrder')}
               </Button>
             )}
           </div>
