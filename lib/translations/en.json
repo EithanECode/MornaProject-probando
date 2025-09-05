@@ -117,6 +117,10 @@
         "sessionInfo": "Session information",
         "closeAllSessions": "Close all sessions",
         "closeAllSessionsDesc": "Close all active sessions except the current one",
+        "devicesConnected": "{{count}} devices connected",
+        "deviceConnected": "1 device connected",
+        "viewAllSessions": "View all sessions",
+        "lastAccessIP": "Last access IP",
         "recentActivity": {
           "title": "Recent Activity",
           "loginSuccess": "Successful login",
@@ -135,12 +139,29 @@
       "preferences": {
         "title": "Application Preferences",
         "subtitle": "Customize your application experience",
+        "regional": {
+          "title": "Regional Settings"
+        },
         "theme": {
           "title": "Application theme",
           "subtitle": "Choose your preferred interface theme",
           "light": "Light",
           "dark": "Dark",
-          "system": "System"
+          "system": "System",
+          "appearance": "Appearance",
+          "currentTheme": "Current theme",
+          "fontSize": "Font size",
+          "interfaceDensity": "Interface density",
+          "fontSizes": {
+            "small": "Small",
+            "medium": "Medium",
+            "large": "Large"
+          },
+          "densities": {
+            "compact": "Compact",
+            "comfortable": "Comfortable",
+            "spacious": "Spacious"
+          }
         },
         "language": {
           "title": "Language",
@@ -148,7 +169,18 @@
         },
         "timezone": {
           "title": "Timezone",
-          "subtitle": "Set your local timezone"
+          "subtitle": "Set your local timezone",
+          "placeholder": "Select your timezone"
+        },
+        "dateFormat": {
+          "title": "Date format",
+          "placeholder": "Select format"
+        },
+        "timeFormat": {
+          "title": "Time format",
+          "placeholder": "Select format",
+          "24h": "24 hours",
+          "12h": "12 hours (AM/PM)"
         }
       },
       "messages": {

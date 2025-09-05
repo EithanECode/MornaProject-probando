@@ -502,15 +502,18 @@ export default function ConfiguracionPage() {
                     <div className="space-y-2">
                       <Label>{t('admin.configuration.security.activeSessions')}</Label>
                       <p className="text-sm text-slate-600 dark:text-slate-400">
-                        {security.sesionesActivas} dispositivos conectados
+                        {security.sesionesActivas === 1 
+                          ? t('admin.configuration.security.deviceConnected')
+                          : t('admin.configuration.security.devicesConnected', { count: security.sesionesActivas })
+                        }
                       </p>
                       <Button variant="outline" size="sm">
-                        {t('admin.configuration.security.sessionInfo')}
+                        {t('admin.configuration.security.viewAllSessions')}
                       </Button>
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <Label>{t('admin.configuration.security.ipAddress')}</Label>
+                      <Label>{t('admin.configuration.security.lastAccessIP')}</Label>
                       <p className="text-sm font-mono text-slate-600 dark:text-slate-400">
                         {security.ipUltimoAcceso}
                       </p>
@@ -649,7 +652,7 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Globe className="w-5 h-5" />
-                      {t('admin.configuration.preferences.title')}
+                      {t('admin.configuration.preferences.regional.title')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -657,7 +660,7 @@ export default function ConfiguracionPage() {
                       <Label htmlFor="zonaHoraria">{t('admin.configuration.preferences.timezone.title')}</Label>
                       <Select value={formData.zonaHoraria} onValueChange={(value) => handleInputChange('zonaHoraria', value)}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecciona tu zona horaria" />
+                          <SelectValue placeholder={t('admin.configuration.preferences.timezone.placeholder')} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="America/Caracas">Caracas (UTC-4)</SelectItem>
@@ -669,10 +672,10 @@ export default function ConfiguracionPage() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="formatoFecha">Formato de fecha</Label>
+                      <Label htmlFor="formatoFecha">{t('admin.configuration.preferences.dateFormat.title')}</Label>
                       <Select defaultValue="dd/mm/yyyy">
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecciona el formato" />
+                          <SelectValue placeholder={t('admin.configuration.preferences.dateFormat.placeholder')} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="dd/mm/yyyy">DD/MM/YYYY</SelectItem>
@@ -682,14 +685,14 @@ export default function ConfiguracionPage() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="formatoHora">Formato de hora</Label>
+                      <Label htmlFor="formatoHora">{t('admin.configuration.preferences.timeFormat.title')}</Label>
                       <Select defaultValue="24h">
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecciona el formato" />
+                          <SelectValue placeholder={t('admin.configuration.preferences.timeFormat.placeholder')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="24h">24 horas</SelectItem>
-                          <SelectItem value="12h">12 horas (AM/PM)</SelectItem>
+                          <SelectItem value="24h">{t('admin.configuration.preferences.timeFormat.24h')}</SelectItem>
+                          <SelectItem value="12h">{t('admin.configuration.preferences.timeFormat.12h')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -700,7 +703,7 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Palette className="w-5 h-5" />
-                      {t('admin.configuration.preferences.theme.title')}
+                      {t('admin.configuration.preferences.theme.appearance')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -737,35 +740,35 @@ export default function ConfiguracionPage() {
                       </div>
                       {mounted && (
                         <p className="text-xs text-slate-600 dark:text-slate-400">
-                          Tema actual: {theme === 'light' ? 'Claro' : theme === 'dark' ? 'Oscuro' : 'Sistema'}
+                          {t('admin.configuration.preferences.theme.currentTheme')}: {theme === 'light' ? t('admin.configuration.preferences.theme.light') : theme === 'dark' ? t('admin.configuration.preferences.theme.dark') : t('admin.configuration.preferences.theme.system')}
                         </p>
                       )}
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <Label>Tamaño de fuente</Label>
+                      <Label>{t('admin.configuration.preferences.theme.fontSize')}</Label>
                       <Select defaultValue="medium">
                         <SelectTrigger>
                           <SelectValue placeholder="Selecciona el tamaño" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="small">Pequeño</SelectItem>
-                          <SelectItem value="medium">Mediano</SelectItem>
-                          <SelectItem value="large">Grande</SelectItem>
+                          <SelectItem value="small">{t('admin.configuration.preferences.theme.fontSizes.small')}</SelectItem>
+                          <SelectItem value="medium">{t('admin.configuration.preferences.theme.fontSizes.medium')}</SelectItem>
+                          <SelectItem value="large">{t('admin.configuration.preferences.theme.fontSizes.large')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <Label>Densidad de la interfaz</Label>
+                      <Label>{t('admin.configuration.preferences.theme.interfaceDensity')}</Label>
                       <Select defaultValue="comfortable">
                         <SelectTrigger>
                           <SelectValue placeholder="Selecciona la densidad" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="compact">Compacta</SelectItem>
-                          <SelectItem value="comfortable">Cómoda</SelectItem>
-                          <SelectItem value="spacious">Espaciosa</SelectItem>
+                          <SelectItem value="compact">{t('admin.configuration.preferences.theme.densities.compact')}</SelectItem>
+                          <SelectItem value="comfortable">{t('admin.configuration.preferences.theme.densities.comfortable')}</SelectItem>
+                          <SelectItem value="spacious">{t('admin.configuration.preferences.theme.densities.spacious')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

@@ -117,6 +117,10 @@
         "sessionInfo": "Información de sesiones",
         "closeAllSessions": "Cerrar todas las sesiones",
         "closeAllSessionsDesc": "Cierra todas las sesiones activas excepto la actual",
+        "devicesConnected": "{{count}} dispositivos conectados",
+        "deviceConnected": "1 dispositivo conectado",
+        "viewAllSessions": "Ver todas las sesiones",
+        "lastAccessIP": "IP del último acceso",
         "recentActivity": {
           "title": "Actividad Reciente",
           "loginSuccess": "Inicio de sesión exitoso",
@@ -135,12 +139,29 @@
       "preferences": {
         "title": "Preferencias de la Aplicación",
         "subtitle": "Personaliza tu experiencia en la aplicación",
+        "regional": {
+          "title": "Configuración Regional"
+        },
         "theme": {
           "title": "Tema de la aplicación",
           "subtitle": "Elige el tema que prefieras para la interfaz",
           "light": "Claro",
           "dark": "Oscuro",
-          "system": "Sistema"
+          "system": "Sistema",
+          "appearance": "Apariencia",
+          "currentTheme": "Tema actual",
+          "fontSize": "Tamaño de fuente",
+          "interfaceDensity": "Densidad de la interfaz",
+          "fontSizes": {
+            "small": "Pequeño",
+            "medium": "Mediano",
+            "large": "Grande"
+          },
+          "densities": {
+            "compact": "Compacta",
+            "comfortable": "Cómoda",
+            "spacious": "Espaciosa"
+          }
         },
         "language": {
           "title": "Idioma",
@@ -148,7 +169,18 @@
         },
         "timezone": {
           "title": "Zona horaria",
-          "subtitle": "Configura tu zona horaria local"
+          "subtitle": "Configura tu zona horaria local",
+          "placeholder": "Selecciona tu zona horaria"
+        },
+        "dateFormat": {
+          "title": "Formato de fecha",
+          "placeholder": "Selecciona el formato"
+        },
+        "timeFormat": {
+          "title": "Formato de hora",
+          "placeholder": "Selecciona el formato",
+          "24h": "24 horas",
+          "12h": "12 horas (AM/PM)"
         }
       },
       "messages": {
