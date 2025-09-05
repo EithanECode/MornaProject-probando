@@ -1,0 +1,167 @@
+{
+  "common": {
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "admin": {
+    "configuration": {
+      "title": "Configuration",
+      "subtitle": "Manage your profile, security and preferences",
+      "tabs": {
+        "profile": "Profile",
+        "security": "Security",
+        "notifications": "Notifications",
+        "preferences": "Preferences"
+      },
+      "profile": {
+        "title": "Personal Information",
+        "subtitle": "Update your personal information and profile picture",
+        "fields": {
+          "name": "Full name",
+          "email": "Email address",
+          "phone": "Phone",
+          "language": "Language",
+          "timezone": "Timezone",
+          "profilePicture": "Profile picture"
+        },
+        "placeholders": {
+          "name": "Your full name",
+          "email": "you@email.com",
+          "phone": "+1 555-123-4567",
+          "selectLanguage": "Select a language"
+        },
+        "profilePicture": {
+          "title": "Profile Picture",
+          "subtitle": "Update your profile image",
+          "altText": "Profile picture",
+          "uploadButton": "Change photo",
+          "deleteButton": "Remove photo",
+          "supportedFormats": "JPG, PNG or GIF (max. 2MB)"
+        },
+        "accountInfo": {
+          "title": "Account Information",
+          "role": "Role",
+          "memberSince": "Member since",
+          "accountStatus": "Account status",
+          "lastLogin": "Last login",
+          "roles": {
+            "Administrador": "Administrator",
+            "Cliente": "Client",
+            "Empleado China": "China Employee",
+            "Empleado Vzla": "Venezuela Employee"
+          },
+          "statuses": {
+            "Activo": "Active",
+            "Inactivo": "Inactive"
+          },
+          "months": {
+            "Enero": "January",
+            "Febrero": "February",
+            "Marzo": "March",
+            "Abril": "April",
+            "Mayo": "May",
+            "Junio": "June",
+            "Julio": "July",
+            "Agosto": "August",
+            "Septiembre": "September",
+            "Octubre": "October",
+            "Noviembre": "November",
+            "Diciembre": "December"
+          }
+        }
+      },
+      "password": {
+        "title": "Change Password",
+        "subtitle": "Keep your account secure with a strong password",
+        "fields": {
+          "current": "Current password",
+          "new": "New password",
+          "confirm": "Confirm new password"
+        },
+        "placeholders": {
+          "current": "Enter your current password",
+          "new": "Enter your new password",
+          "confirm": "Confirm your new password"
+        }
+      },
+      "notifications": {
+        "title": "Notification Preferences",
+        "subtitle": "Control which notifications you want to receive",
+        "email": "Email notifications",
+        "emailDesc": "Receive important notifications via email",
+        "push": "Push notifications",
+        "pushDesc": "Receive push notifications in the browser",
+        "critical": "Critical alerts",
+        "criticalDesc": "Notifications about critical system issues",
+        "dailyReports": "Daily reports",
+        "dailyReportsDesc": "Receive daily activity summaries",
+        "systemUpdates": "System updates",
+        "systemUpdatesDesc": "Notifications about new features and updates",
+        "saveButton": "Save preferences"
+      },
+      "security": {
+        "title": "Security Settings",
+        "subtitle": "Manage your account security",
+        "twoFactor": "Two-factor authentication",
+        "twoFactorDesc": "Add an extra layer of security to your account",
+        "activeSessions": "Active sessions",
+        "lastAccess": "Last access",
+        "ipAddress": "IP address",
+        "sessionInfo": "Session information",
+        "closeAllSessions": "Close all sessions",
+        "closeAllSessionsDesc": "Close all active sessions except the current one",
+        "recentActivity": {
+          "title": "Recent Activity",
+          "loginSuccess": "Successful login",
+          "passwordChange": "Password change",
+          "newDevice": "New device detected",
+          "timeAgo": {
+            "hours": "{{count}} hours ago",
+            "hour": "1 hour ago",
+            "days": "{{count}} days ago",
+            "day": "1 day ago",
+            "weeks": "{{count}} weeks ago",
+            "week": "1 week ago"
+          }
+        }
+      },
+      "preferences": {
+        "title": "Application Preferences",
+        "subtitle": "Customize your application experience",
+        "theme": {
+          "title": "Application theme",
+          "subtitle": "Choose your preferred interface theme",
+          "light": "Light",
+          "dark": "Dark",
+          "system": "System"
+        },
+        "language": {
+          "title": "Language",
+          "subtitle": "Select your preferred language"
+        },
+        "timezone": {
+          "title": "Timezone",
+          "subtitle": "Set your local timezone"
+        }
+      },
+      "messages": {
+        "profileUpdated": "Profile updated",
+        "profileUpdatedDesc": "Changes have been saved successfully, including the application language.",
+        "passwordUpdated": "Password updated",
+        "passwordUpdatedDesc": "Your password has been changed successfully.",
+        "passwordMismatch": "Passwords do not match.",
+        "notificationsUpdated": "Notifications updated",
+        "notificationsUpdatedDesc": "Your notification preferences have been saved.",
+        "securityUpdated": "Security settings updated",
+        "securityUpdatedDesc": "Security changes have been applied successfully."
+      }
+    }
+  }
+}

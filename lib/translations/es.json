@@ -1,0 +1,167 @@
+{
+  "common": {
+    "save": "Guardar cambios",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "admin": {
+    "configuration": {
+      "title": "Configuración",
+      "subtitle": "Gestiona tu perfil, seguridad y preferencias",
+      "tabs": {
+        "profile": "Perfil",
+        "security": "Seguridad",
+        "notifications": "Notificaciones",
+        "preferences": "Preferencias"
+      },
+      "profile": {
+        "title": "Información Personal",
+        "subtitle": "Actualiza tu información personal y foto de perfil",
+        "fields": {
+          "name": "Nombre completo",
+          "email": "Correo electrónico",
+          "phone": "Teléfono",
+          "language": "Idioma",
+          "timezone": "Zona horaria",
+          "profilePicture": "Foto de perfil"
+        },
+        "placeholders": {
+          "name": "Tu nombre completo",
+          "email": "tu@email.com",
+          "phone": "+58 412-123-4567",
+          "selectLanguage": "Selecciona un idioma"
+        },
+        "profilePicture": {
+          "title": "Foto de Perfil",
+          "subtitle": "Actualiza tu imagen de perfil",
+          "altText": "Foto de perfil",
+          "uploadButton": "Cambiar foto",
+          "deleteButton": "Eliminar foto",
+          "supportedFormats": "JPG, PNG o GIF (máx. 2MB)"
+        },
+        "accountInfo": {
+          "title": "Información de la Cuenta",
+          "role": "Rol",
+          "memberSince": "Miembro desde",
+          "accountStatus": "Estado de la cuenta",
+          "lastLogin": "Último acceso",
+          "roles": {
+            "Administrador": "Administrador",
+            "Cliente": "Cliente",
+            "Empleado China": "Empleado China",
+            "Empleado Vzla": "Empleado Vzla"
+          },
+          "statuses": {
+            "Activo": "Activo",
+            "Inactivo": "Inactivo"
+          },
+          "months": {
+            "Enero": "Enero",
+            "Febrero": "Febrero",
+            "Marzo": "Marzo",
+            "Abril": "Abril",
+            "Mayo": "Mayo",
+            "Junio": "Junio",
+            "Julio": "Julio",
+            "Agosto": "Agosto",
+            "Septiembre": "Septiembre",
+            "Octubre": "Octubre",
+            "Noviembre": "Noviembre",
+            "Diciembre": "Diciembre"
+          }
+        }
+      },
+      "password": {
+        "title": "Cambiar Contraseña",
+        "subtitle": "Mantén tu cuenta segura con una contraseña fuerte",
+        "fields": {
+          "current": "Contraseña actual",
+          "new": "Nueva contraseña",
+          "confirm": "Confirmar nueva contraseña"
+        },
+        "placeholders": {
+          "current": "Ingresa tu contraseña actual",
+          "new": "Ingresa tu nueva contraseña",
+          "confirm": "Confirma tu nueva contraseña"
+        }
+      },
+      "notifications": {
+        "title": "Preferencias de Notificaciones",
+        "subtitle": "Controla qué notificaciones quieres recibir",
+        "email": "Notificaciones por email",
+        "emailDesc": "Recibir notificaciones importantes por correo electrónico",
+        "push": "Notificaciones push",
+        "pushDesc": "Recibir notificaciones push en el navegador",
+        "critical": "Alertas críticas",
+        "criticalDesc": "Notificaciones sobre problemas críticos del sistema",
+        "dailyReports": "Reportes diarios",
+        "dailyReportsDesc": "Recibir resumen diario de actividades",
+        "systemUpdates": "Actualizaciones del sistema",
+        "systemUpdatesDesc": "Notificaciones sobre nuevas funciones y actualizaciones",
+        "saveButton": "Guardar preferencias"
+      },
+      "security": {
+        "title": "Configuración de Seguridad",
+        "subtitle": "Gestiona la seguridad de tu cuenta",
+        "twoFactor": "Autenticación de dos factores",
+        "twoFactorDesc": "Añade una capa extra de seguridad a tu cuenta",
+        "activeSessions": "Sesiones activas",
+        "lastAccess": "Último acceso",
+        "ipAddress": "Dirección IP",
+        "sessionInfo": "Información de sesiones",
+        "closeAllSessions": "Cerrar todas las sesiones",
+        "closeAllSessionsDesc": "Cierra todas las sesiones activas excepto la actual",
+        "recentActivity": {
+          "title": "Actividad Reciente",
+          "loginSuccess": "Inicio de sesión exitoso",
+          "passwordChange": "Cambio de contraseña",
+          "newDevice": "Nuevo dispositivo detectado",
+          "timeAgo": {
+            "hours": "Hace {{count}} horas",
+            "hour": "Hace 1 hora",
+            "days": "Hace {{count}} días",
+            "day": "Hace 1 día",
+            "weeks": "Hace {{count}} semanas",
+            "week": "Hace 1 semana"
+          }
+        }
+      },
+      "preferences": {
+        "title": "Preferencias de la Aplicación",
+        "subtitle": "Personaliza tu experiencia en la aplicación",
+        "theme": {
+          "title": "Tema de la aplicación",
+          "subtitle": "Elige el tema que prefieras para la interfaz",
+          "light": "Claro",
+          "dark": "Oscuro",
+          "system": "Sistema"
+        },
+        "language": {
+          "title": "Idioma",
+          "subtitle": "Selecciona tu idioma preferido"
+        },
+        "timezone": {
+          "title": "Zona horaria",
+          "subtitle": "Configura tu zona horaria local"
+        }
+      },
+      "messages": {
+        "profileUpdated": "Perfil actualizado",
+        "profileUpdatedDesc": "Los cambios se han guardado correctamente, incluyendo el idioma de la aplicación.",
+        "passwordUpdated": "Contraseña actualizada",
+        "passwordUpdatedDesc": "Tu contraseña se ha cambiado exitosamente.",
+        "passwordMismatch": "Las contraseñas no coinciden.",
+        "notificationsUpdated": "Notificaciones actualizadas",
+        "notificationsUpdatedDesc": "Tus preferencias de notificación se han guardado.",
+        "securityUpdated": "Configuración de seguridad actualizada",
+        "securityUpdatedDesc": "Los cambios de seguridad se han aplicado correctamente."
+      }
+    }
+  }
+}
