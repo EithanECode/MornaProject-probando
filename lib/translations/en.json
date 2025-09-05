@@ -28,7 +28,6 @@
         "preferences": "Preferences"
       },
       "profile": {
-      "profile": {
         "title": "Personal Information",
         "fields": {
           "name": "Full name",
