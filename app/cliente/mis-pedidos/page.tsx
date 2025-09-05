@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useClientContext } from '@/lib/ClientContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -199,6 +200,7 @@ const MOCK_ORDERS: Order[] = [
 ];
 
 export default function MisPedidosPage() {
+  const { t } = useTranslation();
   const { clientId, clientName, clientEmail, clientRole } = useClientContext();
 
   // Supabase client (navegador)
@@ -473,15 +475,7 @@ export default function MisPedidosPage() {
   };
 
   const getStatusText = (status: string) => {
-    switch (status) {
-      case 'pending': return 'Pendiente';
-      case 'quoted': return 'Cotizado';
-      case 'processing': return 'Procesando';
-      case 'shipped': return 'Enviado';
-      case 'delivered': return 'Entregado';
-      case 'cancelled': return 'Cancelado';
-      default: return 'Desconocido';
-    }
+    return t(`client.recentOrders.statuses.${status}`) || status;
   };
 
   const getProgressColor = (progress: number) => {
@@ -1769,7 +1763,7 @@ export default function MisPedidosPage() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <Input
-                      placeholder="Buscar por producto, ID o tracking..."
+                      placeholder={t('client.recentOrders.search')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -1780,7 +1774,7 @@ export default function MisPedidosPage() {
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="w-full md:w-48">
                       <Filter className="w-4 h-4 mr-2" />
-                      <SelectValue placeholder="Filtrar por estado" />
+                      <SelectValue placeholder={t('client.recentOrders.filter')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Todos los estados</SelectItem>
@@ -1828,17 +1822,17 @@ export default function MisPedidosPage() {
                             order.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
                             'bg-yellow-100 text-yellow-800 border-yellow-200'
                           }`}>
-                            {order.stateNum === 13 ? 'Entregado' :
-                             order.stateNum === 12 ? 'Listo para entrega' :
-                             order.stateNum === 11 ? 'Recibido' :
-                             order.stateNum === 10 ? 'En aduana' :
-                             order.stateNum === 9 ? 'llegando a Vzla' :
-                             order.stateNum === 8 ? 'Enviado a vzla' :
-                             (order.stateNum >= 5 && order.stateNum <= 7) ? 'En proceso' :
-                             order.stateNum === 4 ? 'Procesando' :
-                             order.stateNum === 3 ? 'Cotizado' :
-                             order.stateNum === 2 ? 'Pendiente' :
-                             'Pendiente'}
+                            {order.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
+                             order.stateNum === 12 ? t('client.recentOrders.statuses.processing') :
+                             order.stateNum === 11 ? t('client.recentOrders.statuses.processing') :
+                             order.stateNum === 10 ? t('client.recentOrders.statuses.processing') :
+                             order.stateNum === 9 ? t('client.recentOrders.statuses.processing') :
+                             order.stateNum === 8 ? t('client.recentOrders.statuses.shipped') :
+                             (order.stateNum >= 5 && order.stateNum <= 7) ? t('client.recentOrders.statuses.processing') :
+                             order.stateNum === 4 ? t('client.recentOrders.statuses.processing') :
+                             order.stateNum === 3 ? t('client.recentOrders.statuses.quoted') :
+                             order.stateNum === 2 ? t('client.recentOrders.statuses.pending') :
+                             t('client.recentOrders.statuses.pending')}
                           </Badge>
                         ) : (
                           <Badge className={`${getStatusColor(order.status)} text-xs md:text-sm font-semibold px-3 py-1`}>
@@ -1848,9 +1842,9 @@ export default function MisPedidosPage() {
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] md:text-[11px] uppercase tracking-wide text-slate-500 font-medium">
-                          {order.status === 'pending' && 'Presupuesto'}
-                          {order.status === 'quoted' && 'Cotización a pagar'}
-                          {order.status !== 'pending' && order.status !== 'quoted' && 'Monto'}
+                          {order.status === 'pending' && t('client.recentOrders.budget')}
+                          {order.status === 'quoted' && t('client.recentOrders.statuses.quoted')}
+                          {order.status !== 'pending' && order.status !== 'quoted' && t('client.recentOrders.table.amount')}
                         </p>
                         <p className="font-bold text-lg md:text-xl text-slate-800">
                           {order.status === 'pending' && typeof order.estimatedBudget !== 'undefined' && order.estimatedBudget !== null
@@ -1884,7 +1878,7 @@ export default function MisPedidosPage() {
                               onClick={() => handlePaymentClick(order)}
                             >
                               <DollarSign className="h-3 w-3 mr-1" />
-                              Pagar
+                              {t('client.recentOrders.actions.pay')}
                             </Button>
                           )}
                           <Button 
@@ -1894,7 +1888,7 @@ export default function MisPedidosPage() {
                             onClick={() => handleViewDetails(order)}
                           >
                             <Eye className="h-3 w-3 mr-1" />
-                            Ver detalles
+                            {t('client.recentOrders.actions.view')}
                           </Button>
                           <Button 
                             variant="outline" 
@@ -1903,7 +1897,7 @@ export default function MisPedidosPage() {
                             onClick={() => openTrackingModal(order)}
                           >
                             <MapPin className="h-3 w-3 mr-1" />
-                            Seguimiento
+                            {t('client.recentOrders.actions.track')}
                           </Button>
                         </div>
                       </div>
@@ -1916,7 +1910,7 @@ export default function MisPedidosPage() {
                     <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center">
                       <Package className="h-8 w-8 md:h-10 md:w-10 text-slate-400" />
                     </div>
-                    <p className="text-slate-500 text-base md:text-lg font-medium">No se encontraron pedidos</p>
+                    <p className="text-slate-500 text-base md:text-lg font-medium">{t('client.recentOrders.noOrders')}</p>
                     <p className="text-slate-400 text-sm mt-2">Intenta ajustar los filtros de búsqueda</p>
                   </div>
                 )}

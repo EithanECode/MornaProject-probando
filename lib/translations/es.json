@@ -50,12 +50,37 @@
       "paymentsDesc": "Gestiona tus transacciones"
     },
     "recentOrders": {
-      "title": "Mis Pedidos Recientes",
-      "subtitle": "Seguimiento de tus envíos más recientes",
-      "noOrders": "No hay pedidos recientes.",
+      "title": "Mis Pedidos",
+      "subtitle": "Consulta y gestiona todos tus pedidos realizados",
+      "noOrders": "No tienes pedidos registrados.",
       "status": "Estado:",
-      "budget": "PRESUPUESTO",
-      "details": "VER DETALLES"
+      "budget": "Presupuesto",
+      "details": "Ver detalles",
+      "search": "Buscar pedido, producto o tracking...",
+      "filter": "Filtrar por estado",
+      "table": {
+        "id": "ID Pedido",
+        "product": "Producto",
+        "description": "Descripción",
+        "amount": "Monto",
+        "status": "Estado",
+        "createdAt": "Fecha de creación",
+        "actions": "Acciones"
+      },
+      "statuses": {
+        "pending": "Pendiente",
+        "quoted": "Cotizado",
+        "processing": "Procesando",
+        "shipped": "Enviado",
+        "delivered": "Entregado",
+        "cancelled": "Cancelado"
+      },
+      "actions": {
+        "view": "Ver detalles",
+        "track": "Ver tracking",
+        "pay": "Pagar",
+        "download": "Descargar PDF"
+      }
     }
   },
   "common": {

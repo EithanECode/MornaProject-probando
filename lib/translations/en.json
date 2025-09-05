@@ -153,13 +153,38 @@
       "payments": "My Payments",
       "paymentsDesc": "Manage your transactions"
   },
-  "recentOrders": {
-      "title": "My Recent Orders",
-      "subtitle": "Track your most recent shipments",
-      "noOrders": "No recent orders.",
+    "recentOrders": {
+      "title": "My Orders",
+      "subtitle": "View and manage all your placed orders",
+      "noOrders": "You have no orders registered.",
       "status": "Status:",
-      "budget": "BUDGET",
-      "details": "VIEW DETAILS"
+      "budget": "Budget",
+      "details": "View details",
+      "search": "Search order, product or tracking...",
+      "filter": "Filter by status",
+      "table": {
+        "id": "Order ID",
+        "product": "Product",
+        "description": "Description",
+        "amount": "Amount",
+        "status": "Status",
+        "createdAt": "Created at",
+        "actions": "Actions"
+      },
+      "statuses": {
+        "pending": "Pending",
+        "quoted": "Quoted",
+        "processing": "Processing",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      },
+      "actions": {
+        "view": "View details",
+        "track": "Track order",
+        "pay": "Pay",
+        "download": "Download PDF"
+      }
     }
   },
   "admin": {
