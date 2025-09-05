@@ -78,6 +78,7 @@ interface Order {
   category: string;
   estimatedBudget?: number | null;
   totalQuote?: number | null;
+  stateNum?: number; // estado numérico 1..13 desde BD para badges detallados
   documents?: Array<{
     type: 'image' | 'link';
     url: string;
@@ -276,26 +277,32 @@ export default function MisPedidosPage() {
 
   // Mapeos de estado numérico de la BD a estados de UI y progreso
   const mapStateToStatus = (state?: number | null): Order['status'] => {
-    switch (state) {
-      case 3: return 'quoted';
-      case 4: return 'processing';
-      case 5: return 'shipped';
-      case 6: return 'delivered';
-      case 2: return 'pending';
-      case 1:
-      default:
-        return 'pending';
-    }
+    if (!state) return 'pending';
+    // Coarse mapping para UI del cliente
+    if (state === 3) return 'quoted';
+    if (state >= 4 && state <= 7) return 'processing';
+    if (state === 8 || state === 9) return 'shipped';
+    if (state === 10 || state === 11 || state === 12) return 'processing';
+    if (state >= 13) return 'delivered';
+    if (state === 2) return 'pending';
+    return 'pending';
   };
 
   const mapStateToProgress = (state?: number | null): number => {
     switch (state) {
       case 1: return 10; // creado
       case 2: return 20; // recibido
-      case 3: return 25; // cotizado
+      case 3: return 30; // cotizado
       case 4: return 60; // procesando
-      case 5: return 85; // enviado
-      case 6: return 100; // entregado
+      case 5: return 70; // en proceso
+      case 6: return 75; // en proceso
+      case 7: return 80; // en proceso
+  case 8: return 85; // enviado a vzla
+  case 9: return 90; // llegando a Vzla
+      case 10: return 92; // en aduana
+      case 11: return 95; // recibido
+      case 12: return 98; // listo para entrega
+      case 13: return 100; // entregado
       default: return 0;
     }
   };
@@ -306,7 +313,7 @@ export default function MisPedidosPage() {
     try {
       const { data, error } = await supabase
         .from('orders')
-        .select('id, productName, description, estimatedBudget, totalQuote, state, created_at, pdfRoutes, quantity')
+  .select('id, productName, description, estimatedBudget, totalQuote, state, created_at, pdfRoutes, quantity')
         .eq('client_id', clientId)
         .order('created_at', { ascending: false });
       if (error) {
@@ -328,6 +335,7 @@ export default function MisPedidosPage() {
           category: '',
           estimatedBudget: typeof row.estimatedBudget === 'number' ? row.estimatedBudget : (row.estimatedBudget ? Number(row.estimatedBudget) : null),
           totalQuote: typeof row.totalQuote === 'number' ? row.totalQuote : (row.totalQuote ? Number(row.totalQuote) : null),
+          stateNum: typeof row.state === 'number' ? row.state : (row.state ? Number(row.state) : undefined),
           documents: row.pdfRoutes ? [{ type: 'link' as const, url: row.pdfRoutes, label: 'Resumen PDF' }] : []
         };
       });
@@ -1805,9 +1813,38 @@ export default function MisPedidosPage() {
                           <p className="font-bold text-sm md:text-base text-slate-800">{order.id}</p>
                           <p className="text-sm text-slate-600 font-medium">{order.product}</p>
                         </div>
-                        <Badge className={`${getStatusColor(order.status)} text-xs md:text-sm font-semibold px-3 py-1`}>
-                          {getStatusText(order.status)}
-                        </Badge>
+                        {/* Un solo badge basado en stateNum; fallback al badge de status si no hay stateNum */}
+                        {typeof order.stateNum === 'number' ? (
+                          <Badge className={`text-xs md:text-sm font-semibold px-3 py-1 ${
+                            order.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                            order.stateNum === 12 ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                            order.stateNum === 11 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                            order.stateNum === 10 ? 'bg-indigo-100 text-indigo-800 border-indigo-200' :
+                            order.stateNum === 9 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                            order.stateNum === 8 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                            (order.stateNum >= 5 && order.stateNum <= 7) ? 'bg-gray-100 text-gray-800 border-gray-200' :
+                            order.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                            order.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200' :
+                            order.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
+                            'bg-yellow-100 text-yellow-800 border-yellow-200'
+                          }`}>
+                            {order.stateNum === 13 ? 'Entregado' :
+                             order.stateNum === 12 ? 'Listo para entrega' :
+                             order.stateNum === 11 ? 'Recibido' :
+                             order.stateNum === 10 ? 'En aduana' :
+                             order.stateNum === 9 ? 'llegando a Vzla' :
+                             order.stateNum === 8 ? 'Enviado a vzla' :
+                             (order.stateNum >= 5 && order.stateNum <= 7) ? 'En proceso' :
+                             order.stateNum === 4 ? 'Procesando' :
+                             order.stateNum === 3 ? 'Cotizado' :
+                             order.stateNum === 2 ? 'Pendiente' :
+                             'Pendiente'}
+                          </Badge>
+                        ) : (
+                          <Badge className={`${getStatusColor(order.status)} text-xs md:text-sm font-semibold px-3 py-1`}>
+                            {getStatusText(order.status)}
+                          </Badge>
+                        )}
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] md:text-[11px] uppercase tracking-wide text-slate-500 font-medium">
@@ -1922,9 +1959,37 @@ export default function MisPedidosPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-600">Estado</p>
-                    <Badge className={getStatusColor(selectedOrder.status)}>
-                      {getStatusText(selectedOrder.status)}
-                    </Badge>
+                    {typeof selectedOrder.stateNum === 'number' ? (
+                      <Badge className={`text-xs font-semibold px-3 py-1 ${
+                        selectedOrder.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                        selectedOrder.stateNum === 12 ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                        selectedOrder.stateNum === 11 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                        selectedOrder.stateNum === 10 ? 'bg-indigo-100 text-indigo-800 border-indigo-200' :
+                        selectedOrder.stateNum === 9 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                        selectedOrder.stateNum === 8 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                        (selectedOrder.stateNum >= 5 && selectedOrder.stateNum <= 7) ? 'bg-gray-100 text-gray-800 border-gray-200' :
+                        selectedOrder.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                        selectedOrder.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200' :
+                        selectedOrder.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
+                        'bg-yellow-100 text-yellow-800 border-yellow-200'
+                      }`}>
+                        {selectedOrder.stateNum === 13 ? 'Entregado' :
+                         selectedOrder.stateNum === 12 ? 'Listo para entrega' :
+                         selectedOrder.stateNum === 11 ? 'Recibido' :
+                         selectedOrder.stateNum === 10 ? 'En aduana' :
+                         selectedOrder.stateNum === 9 ? 'llegando a Vzla' :
+                         selectedOrder.stateNum === 8 ? 'Enviado a vzla' :
+                         (selectedOrder.stateNum >= 5 && selectedOrder.stateNum <= 7) ? 'En proceso' :
+                         selectedOrder.stateNum === 4 ? 'Procesando' :
+                         selectedOrder.stateNum === 3 ? 'Cotizado' :
+                         selectedOrder.stateNum === 2 ? 'Pendiente' :
+                         'Pendiente'}
+                      </Badge>
+                    ) : (
+                      <Badge className={getStatusColor(selectedOrder.status)}>
+                        {getStatusText(selectedOrder.status)}
+                      </Badge>
+                    )}
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-600">Tracking</p>

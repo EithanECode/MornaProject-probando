@@ -11,45 +11,26 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Package, 
-  Eye,
-  Search,
-  Filter,
-  RefreshCw,
-  Send,
-  Clock,
-  AlertTriangle,
-  Boxes,
-  List,
-  Calendar,
-  CheckCircle
-} from 'lucide-react';
-// ...existing code...
-
-
-// Tipos para los pedidos reales
-interface Order {
-  id: string;
-  quantity: number;
-  productName: string;
-  deliveryType: string;
-  shippingType: string;
-  state: number;
-  clientName: string;
-  client_id: string;
-  description?: string;
-  pdfRoutes?: string;
-}
-
-
+import { AlertTriangle, Boxes, Calendar, CheckCircle, Clock, Eye, Filter, List, Package, RefreshCw, Search, Send } from 'lucide-react';
 export default function VenezuelaPedidosPage() {
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  type Order = {
+    id: string | number;
+    quantity: number;
+    productName: string;
+    deliveryType?: string;
+    shippingType?: string;
+    state: number;
+    clientName: string;
+    client_id?: string;
+    description?: string;
+    pdfRoutes?: string;
+  };
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +46,7 @@ export default function VenezuelaPedidosPage() {
   const [orderCountsByBoxMain, setOrderCountsByBoxMain] = useState<Record<string | number, number>>({});
   const [ordersByBox, setOrdersByBox] = useState<Order[]>([]);
   const [ordersByBoxLoading, setOrdersByBoxLoading] = useState(false);
+  // Modal para ver pedidos de una caja
   const [modalVerPedidos, setModalVerPedidos] = useState<{ open: boolean; boxId?: number | string }>({ open: false });
 
   // Contenedores state
@@ -375,23 +357,16 @@ export default function VenezuelaPedidosPage() {
               </div>
             </div>
           </div>
-
-          {/* Filtros y búsqueda */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
             <CardContent className="p-4">
               {activeTab === 'pedidos' ? (
                 <div className="flex flex-col gap-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                    <Input
-                      placeholder="Buscar por cliente, producto o ID..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
+                    <Input placeholder="Buscar por cliente, producto o ID..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
                   </div>
                   <div className="flex gap-2">
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <Select value={statusFilter} onValueChange={setStatusFilter as any}>
                       <SelectTrigger className="flex-1 md:w-48">
                         <Filter className="w-4 h-4 mr-2" />
                         <SelectValue placeholder="Filtrar por estado" />
@@ -482,11 +457,24 @@ export default function VenezuelaPedidosPage() {
                             <p className="text-sm text-slate-600">{order.id} - {order.clientName}</p>
                           </div>
                           <div className="flex gap-2">
-                            {stateNum >= 9 ? (
-                              <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200">En aduana</Badge>
-                            ) : stateNum >= 8 ? (
-                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">ENVIADO A Vzla</Badge>
-                            ) : null}
+                            {stateNum === 13 && (
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">ENTREGADO</Badge>
+                            )}
+                            {stateNum === 12 && (
+                              <Badge className="bg-blue-100 text-blue-800 border-blue-200">LISTO PARA ENTREGA</Badge>
+                            )}
+                            {stateNum === 11 && (
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">RECIBIDO</Badge>
+                            )}
+                            {stateNum === 10 && (
+                              <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200">EN ADUANA</Badge>
+                            )}
+                            {stateNum === 9 && (
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">LLEGÓ A Vzla</Badge>
+                            )}
+                            {stateNum === 8 && (
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">EN CAMINO A Vzla</Badge>
+                            )}
                             {stateNum === 1 && (
                               <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">PENDIENTE</Badge>
                             )}
@@ -498,6 +486,9 @@ export default function VenezuelaPedidosPage() {
                             )}
                             {stateNum === 4 && (
                               <Badge className="bg-blue-100 text-blue-800 border-blue-200">PROCESANDO</Badge>
+                            )}
+                            {(stateNum >= 5 && stateNum <= 7) && (
+                              <Badge className="bg-gray-100 text-gray-800 border-gray-200">EN PROCESO</Badge>
                             )}
                           </div>
                         </div>
@@ -547,7 +538,7 @@ export default function VenezuelaPedidosPage() {
                           <Button
                             size="sm"
                             className="flex-1"
-                            disabled={loading || (stateNum !== 1 && stateNum < 8)}
+                            disabled={loading || ![1,8,11,12].includes(stateNum)}
                             onClick={async () => {
                               if (stateNum === 1) {
                                 try {
@@ -567,8 +558,8 @@ export default function VenezuelaPedidosPage() {
                                 }
                                 return;
                               }
-                              if (stateNum >= 8) {
-                                // Avanzar de 8 -> 9 (En aduana)
+                              if (stateNum === 8) {
+                                // Marcar como recibido (enviado -> estado 9)
                                 try {
                                   const res = await fetch('/venezuela/pedidos/api/advance-state', {
                                     method: 'PATCH',
@@ -586,17 +577,94 @@ export default function VenezuelaPedidosPage() {
                                 }
                                 return;
                               }
+                              if (stateNum === 9) {
+                                // Marcar recibido en aduana -> estado 10
+                                try {
+                                  const res = await fetch('/venezuela/pedidos/api/advance-state', {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ orderId: order.id, nextState: 10 })
+                                  });
+                                  if (!res.ok) {
+                                    const err = await res.json().catch(() => ({}));
+                                    throw new Error(err.error || 'No se pudo actualizar el pedido');
+                                  }
+                                  await fetchOrders();
+                                } catch (err) {
+                                  console.error(err);
+                                  alert((err as Error).message || 'Error al actualizar estado');
+                                }
+                                return;
+                              }
+                              if (stateNum === 11) {
+                                // Pedido recibido después de contenedor -> avanzar a 12
+                                try {
+                                  const res = await fetch('/venezuela/pedidos/api/advance-state', {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ orderId: order.id, nextState: 12 })
+                                  });
+                                  if (!res.ok) {
+                                    const err = await res.json().catch(() => ({}));
+                                    throw new Error(err.error || 'No se pudo actualizar el pedido');
+                                  }
+                                  await fetchOrders();
+                                } catch (err) {
+                                  console.error(err);
+                                  alert((err as Error).message || 'Error al actualizar estado');
+                                }
+                                return;
+                              }
+                              if (stateNum === 12) {
+                                // Entregar al cliente -> 13
+                                try {
+                                  const res = await fetch('/venezuela/pedidos/api/advance-state', {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ orderId: order.id, nextState: 13 })
+                                  });
+                                  if (!res.ok) {
+                                    const err = await res.json().catch(() => ({}));
+                                    throw new Error(err.error || 'No se pudo actualizar el pedido');
+                                  }
+                                  await fetchOrders();
+                                } catch (err) {
+                                  console.error(err);
+                                  alert((err as Error).message || 'Error al actualizar estado');
+                                }
+                                return;
+                              }
                             }}
                           >
-                            {stateNum >= 9 ? (
+                            {stateNum >= 13 ? (
                               <>
-                                <Send className="w-4 h-4 mr-2" />
-                                Enviar almacén
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Entregado
                               </>
-                            ) : stateNum >= 8 ? (
+                            ) : stateNum === 12 ? (
+                              <>
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Entregado
+                              </>
+                            ) : stateNum === 11 ? (
                               <>
                                 <Package className="w-4 h-4 mr-2" />
                                 Recibido
+                              </>
+                            ) : stateNum === 9 ? (
+                              <>
+                                <Package className="w-4 h-4 mr-2" />
+                                Recibido
+                              </>
+                            ) : stateNum === 8 ? (
+                              <>
+                                <Package className="w-4 h-4 mr-2" />
+                                Recibido
+                              </>
+                            ) : stateNum === 10 ? (
+                              <>
+                                <Clock className="w-4 h-4 mr-2" />
+                                En aduana
                               </>
                             ) : (stateNum >= 2 && stateNum <= 7) ? (
                               <>
@@ -674,37 +742,37 @@ export default function VenezuelaPedidosPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                              {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Empaquetada' : `Estado ${stateNum}`}
+                            <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
+                              {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Empaquetada' : stateNum === 5 ? 'Contenedor recibido' : stateNum === 6 ? 'Recibida' : `Estado ${stateNum}`}
                             </Badge>
-                            {/* Botón Recibido: activo solo cuando boxes.state === 4 */}
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled={stateNum !== 4}
-                              onClick={async () => {
-                                if (stateNum !== 4) return;
-                                try {
-                                  const res = await fetch('/venezuela/pedidos/api/advance-box', {
-                                    method: 'PATCH',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 5 })
-                                  });
-                                  if (!res.ok) {
-                                    const err = await res.json().catch(() => ({}));
-                                    throw new Error(err.error || 'No se pudo actualizar la caja');
+                            {/* Botón Recibido: visible solo cuando boxes.state === 5 */}
+                            {stateNum === 5 && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={async () => {
+                                  try {
+                                    const res = await fetch('/venezuela/pedidos/api/advance-box', {
+                                      method: 'PATCH',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 })
+                                    });
+                                    if (!res.ok) {
+                                      const err = await res.json().catch(() => ({}));
+                                      throw new Error(err.error || 'No se pudo actualizar la caja');
+                                    }
+                                    await Promise.all([fetchBoxes(), fetchOrders()]);
+                                  } catch (e) {
+                                    alert((e as Error).message || 'Error al actualizar caja');
                                   }
-                                  await fetchBoxes();
-                                } catch (e) {
-                                  alert((e as Error).message || 'Error al actualizar caja');
-                                }
-                              }}
-                              className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"
-                              title={stateNum === 4 ? 'Marcar caja como recibida' : 'Disponible cuando la caja esté en estado 4'}
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                              Recibido
-                            </Button>
+                                }}
+                                className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"
+                                title={'Marcar caja como recibida'}
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                                Recibido
+                              </Button>
+                            )}
                             <Button
                               variant="outline"
                               size="sm"
@@ -784,37 +852,37 @@ export default function VenezuelaPedidosPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                              {stateNum === 1 ? 'Nuevo' : `Estado ${stateNum}`}
+                            <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 4 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
+                              {stateNum === 1 ? 'Nuevo' : stateNum === 4 ? 'Recibido' : `Estado ${stateNum}`}
                             </Badge>
-                            {/* Botón Recibido: activo solo cuando containers.state === 3 */}
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled={stateNum !== 3}
-                              onClick={async () => {
-                                if (stateNum !== 3) return;
-                                try {
-                                  const res = await fetch('/venezuela/pedidos/api/advance-container', {
-                                    method: 'PATCH',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ containerId: container.container_id ?? container.containers_id ?? container.id ?? id, nextState: 4 })
-                                  });
-                                  if (!res.ok) {
-                                    const err = await res.json().catch(() => ({}));
-                                    throw new Error(err.error || 'No se pudo actualizar el contenedor');
+                            {/* Botón Recibido: visible solo cuando containers.state === 3 */}
+                            {stateNum === 3 && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={async () => {
+                                  try {
+                                    const res = await fetch('/venezuela/pedidos/api/advance-container', {
+                                      method: 'PATCH',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ containerId: container.container_id ?? container.containers_id ?? container.id ?? id, nextState: 4 })
+                                    });
+                                    if (!res.ok) {
+                                      const err = await res.json().catch(() => ({}));
+                                      throw new Error(err.error || 'No se pudo actualizar el contenedor');
+                                    }
+                                    await Promise.all([fetchContainers(), fetchBoxes(), fetchOrders()]);
+                                  } catch (e) {
+                                    alert((e as Error).message || 'Error al actualizar contenedor');
                                   }
-                                  await fetchContainers();
-                                } catch (e) {
-                                  alert((e as Error).message || 'Error al actualizar contenedor');
-                                }
-                              }}
-                              className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"
-                              title={stateNum === 3 ? 'Marcar contenedor como recibido' : 'Disponible cuando el contenedor esté en estado 3'}
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                              Recibido
-                            </Button>
+                                }}
+                                className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"
+                                title={'Marcar contenedor como recibido'}
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                                Recibido
+                              </Button>
+                            )}
                             <Button
                               variant="outline"
                               size="sm"
@@ -933,37 +1001,40 @@ export default function VenezuelaPedidosPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                              {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Empaquetada' : `Estado ${stateNum}`}
+                            <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
+                              {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Empaquetada' : stateNum === 5 ? 'Contenedor recibido' : stateNum === 6 ? 'Recibida' : `Estado ${stateNum}`}
                             </Badge>
-                            {/* Botón Recibido en modal: activo solo cuando boxes.state === 4 */}
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled={stateNum !== 4}
-                              onClick={async () => {
-                                if (stateNum !== 4) return;
-                                try {
-                                  const res = await fetch('/venezuela/pedidos/api/advance-box', {
-                                    method: 'PATCH',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 5 })
-                                  });
-                                  if (!res.ok) {
-                                    const err = await res.json().catch(() => ({}));
-                                    throw new Error(err.error || 'No se pudo actualizar la caja');
+                            {/* Botón Recibido en modal: visible solo cuando boxes.state === 5 */}
+                            {stateNum === 5 && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={async () => {
+                                  try {
+                                    const res = await fetch('/venezuela/pedidos/api/advance-box', {
+                                      method: 'PATCH',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 })
+                                    });
+                                    if (!res.ok) {
+                                      const err = await res.json().catch(() => ({}));
+                                      throw new Error(err.error || 'No se pudo actualizar la caja');
+                                    }
+                                    await Promise.all([
+                                      modalVerCajas.containerId ? fetchBoxesByContainerId(modalVerCajas.containerId) : Promise.resolve(),
+                                      fetchOrders()
+                                    ]);
+                                  } catch (e) {
+                                    alert((e as Error).message || 'Error al actualizar caja');
                                   }
-                                  if (modalVerCajas.containerId) await fetchBoxesByContainerId(modalVerCajas.containerId);
-                                } catch (e) {
-                                  alert((e as Error).message || 'Error al actualizar caja');
-                                }
-                              }}
-                              className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"
-                              title={stateNum === 4 ? 'Marcar caja como recibida' : 'Disponible cuando la caja esté en estado 4'}
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                              Recibido
-                            </Button>
+                                }}
+                                className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"
+                                title={'Marcar caja como recibida'}
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                                Recibido
+                              </Button>
+                            )}
                             <Button
                               variant="outline"
                               size="sm"
