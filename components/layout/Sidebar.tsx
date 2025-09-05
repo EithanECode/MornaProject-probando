@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -211,10 +212,10 @@ const PAGOS_MENU_ITEMS = [
   }
 ];
 
-const ADMIN_MENU_ITEMS = [
+const getAdminMenuItems = (t: (key: string) => string) => [
   {
     id: 'dashboard',
-    label: 'Dashboard',
+    label: t('admin.sidebar.dashboard'),
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
@@ -222,7 +223,7 @@ const ADMIN_MENU_ITEMS = [
   },
   {
     id: 'usuarios',
-    label: 'Usuarios',
+    label: t('admin.sidebar.users'),
     icon: Users,
     badge: null,
     color: 'text-green-500',
@@ -230,7 +231,7 @@ const ADMIN_MENU_ITEMS = [
   },
   {
     id: 'pedidos',
-    label: 'Pedidos',
+    label: t('admin.sidebar.orders'),
     icon: Package,
     badge: null,
     color: 'text-orange-500',
@@ -238,7 +239,7 @@ const ADMIN_MENU_ITEMS = [
   },
   {
     id: 'reportes',
-    label: 'Reportes',
+    label: t('admin.sidebar.reports'),
     icon: BarChart3,
     badge: null,
     color: 'text-purple-500',
@@ -246,7 +247,7 @@ const ADMIN_MENU_ITEMS = [
   },
   {
     id: 'alertas',
-    label: 'Alertas',
+    label: t('admin.sidebar.alerts'),
     icon: AlertTriangle,
     badge: 5,
     color: 'text-red-500',
@@ -254,7 +255,7 @@ const ADMIN_MENU_ITEMS = [
   },
   {
     id: 'gestion',
-    label: 'Gestión',
+    label: t('admin.sidebar.management'),
     icon: Settings,
     badge: null,
     color: 'text-gray-500',
@@ -282,7 +283,7 @@ const getBottomItemsByRole = (role?: string) => {
 };
 
 // Función para obtener el menú según el rol
-const getMenuItemsByRole = (role?: string) => {
+const getMenuItemsByRole = (role?: string, t?: (key: string) => string) => {
   switch (role) {
     case 'venezuela':
       return VENEZUELA_MENU_ITEMS;
@@ -291,7 +292,7 @@ const getMenuItemsByRole = (role?: string) => {
     case 'pagos':
       return PAGOS_MENU_ITEMS;
     case 'admin':
-      return ADMIN_MENU_ITEMS;
+      return getAdminMenuItems(t!);
     default:
       return CLIENT_MENU_ITEMS;
   }
@@ -362,10 +363,11 @@ const useActivePage = (menuItems: any[], userRole?: string, pathname?: string) =
 };
 
 export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = false, onMobileMenuClose, userRole = 'client' }: SidebarProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const screenWidth = useScreenSize();
   
-  const menuItems = getMenuItemsByRole(userRole);
+  const menuItems = getMenuItemsByRole(userRole, t);
 
   // Call all hooks unconditionally at the top level
   const clientCtx = useSafeClientContext();

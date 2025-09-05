@@ -330,7 +330,8 @@
         "status": "Estado",
         "assignedTo": "Asignado",
         "time": "Tiempo",
-        "actions": "Acciones"
+        "actions": "Acciones",
+        "daysElapsed": "Días transcurridos"
       },
       "status": {
         "cotizacion": "Cotización",
@@ -340,6 +341,10 @@
         "pendiente-china": "Pend. China",
         "pendiente-vzla": "Pend. Vzla",
         "cancelado": "Cancelado"
+      },
+      "assigned": {
+        "china": "Asignado China",
+        "vzla": "Asignado Venezuela"
       },
       "actions": {
         "view": "Ver",

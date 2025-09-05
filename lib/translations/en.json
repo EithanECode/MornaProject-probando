@@ -319,7 +319,8 @@
         "status": "Status",
         "assignedTo": "Assigned",
         "time": "Time",
-        "actions": "Actions"
+        "actions": "Actions",
+        "daysElapsed": "Days elapsed"
       },
       "status": {
         "cotizacion": "Quote",
@@ -329,6 +330,10 @@
         "pendiente-china": "Pend. China",
         "pendiente-vzla": "Pend. Vzla",
         "cancelado": "Cancelled"
+      },
+      "assigned": {
+        "china": "Assigned China",
+        "vzla": "Assigned Venezuela"
       },
       "actions": {
         "view": "View",
@@ -529,9 +534,8 @@
     "configuracion": "Configuration",
     "actual": "Current",
     "sistema": "System",
-    "gestion": "Management",
-    "parametros": "Parameters",
-    "ajuste": "Adjust",
+  "gestion": "Management",
+  "ajuste": "Adjust",
     "dias": "days",
     "eta": "ETA",
     "tarifa": "Rate",
@@ -614,9 +618,8 @@
     "han": "Have",
     "sido": "Been",
     "actualizados": "Updated",
-    "actualizada": "Updated",
-    "parametros": "Parameters",
-    "del": "Of the",
+  "actualizada": "Updated",
+  "del": "Of the",
     "se": "Have",
     "actualizado": "Updated"
   }
