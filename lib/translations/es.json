@@ -1,4 +1,42 @@
 {
+  "client": {
+    "dashboard": {
+      "title": "Dashboard Cliente",
+      "subtitle": "Bienvenido de vuelta, aquí tienes un resumen de tu actividad",
+      "welcome": "¡Bienvenido de vuelta!",
+      "panel": "Panel de Control - Cliente",
+      "manage": "Gestiona tus pedidos, tracking y pagos desde un solo lugar",
+      "activeShipments": "Envíos Activos",
+      "totalOrders": "Total Pedidos",
+      "ordersPlaced": "Pedidos realizados",
+      "inTransit": "En Tránsito",
+      "activeShipmentsShort": "Envíos activos",
+      "totalSpent": "Total Gastado",
+      "totalInvestment": "Inversión total",
+      "completed": "Completados",
+      "ordersDelivered": "Pedidos entregados"
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "subtitle": "Accede rápidamente a las funciones más utilizadas",
+      "newOrder": "Crear Nuevo Pedido",
+      "newOrderDesc": "Solicita la importación de un producto",
+      "trackOrder": "Seguir Pedido",
+      "trackOrderDesc": "Consulta el estado de tus envíos",
+      "support": "Contactar Soporte",
+      "supportDesc": "Obtén ayuda cuando la necesites",
+      "payments": "Mis Pagos",
+      "paymentsDesc": "Gestiona tus transacciones"
+    },
+    "recentOrders": {
+      "title": "Mis Pedidos Recientes",
+      "subtitle": "Seguimiento de tus envíos más recientes",
+      "noOrders": "No hay pedidos recientes.",
+      "status": "Estado:",
+      "budget": "PRESUPUESTO",
+      "details": "VER DETALLES"
+    }
+  },
   "common": {
     "save": "Guardar cambios",
     "cancel": "Cancelar",

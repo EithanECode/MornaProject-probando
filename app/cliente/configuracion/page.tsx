@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,16 +51,31 @@ export default function ConfiguracionPage() {
     color: 'bg-blue-500'
   };
 
+  const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
   // Estados del formulario
   const [formData, setFormData] = useState({
     nombre: roleData.nombre,
     email: roleData.email,
     telefono: roleData.telefono,
-    idioma: 'es',
+    idioma: language,
     zonaHoraria: 'America/Caracas',
     fotoPerfil: null as File | null,
     fotoPreview: '/images/logos/logo.png'
   });
+
+  // Sincronizar el idioma del contexto con el formulario
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, idioma: language }));
+  }, [language]);
+
+  // Cambiar idioma en contexto y localStorage al seleccionar
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'idioma' && ['es', 'en', 'zh'].includes(value)) {
+      setLanguage(value as 'es' | 'en' | 'zh');
+    }
+  };
 
   // Estados de contraseña
   const [passwordData, setPasswordData] = useState({
@@ -91,9 +108,7 @@ export default function ConfiguracionPage() {
     setMounted(true);
   }, []);
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  // ...existing code...
 
   const handlePasswordChange = (field: string, value: string) => {
     setPasswordData(prev => ({ ...prev, [field]: value }));
@@ -198,8 +213,8 @@ export default function ConfiguracionPage() {
               </button>
 
               <div>
-                <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Configuración</h1>
-                <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Gestiona tu perfil, seguridad y preferencias</p>
+                <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('client.configuration.title')}</h1>
+                <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.configuration.subtitle')}</p>
               </div>
             </div>
           </div>
@@ -211,19 +226,19 @@ export default function ConfiguracionPage() {
             <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-auto lg:grid-cols-4 gap-1">
               <TabsTrigger value="perfil" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
                 <User className="w-3 h-3 md:w-4 md:h-4" />
-                <span>Perfil</span>
+                <span>{t('client.configuration.tabs.profile')}</span>
               </TabsTrigger>
               <TabsTrigger value="seguridad" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
                 <Lock className="w-3 h-3 md:w-4 md:h-4" />
-                <span>Seguridad</span>
+                <span>{t('client.configuration.tabs.security')}</span>
               </TabsTrigger>
               <TabsTrigger value="notificaciones" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
                 <Bell className="w-3 h-3 md:w-4 md:h-4" />
-                <span>Notificaciones</span>
+                <span>{t('client.configuration.tabs.notifications')}</span>
               </TabsTrigger>
               <TabsTrigger value="preferencias" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
                 <Globe className="w-3 h-3 md:w-4 md:h-4" />
-                <span>Preferencias</span>
+                <span>{t('client.configuration.tabs.preferences')}</span>
               </TabsTrigger>
             </TabsList>
 
@@ -236,56 +251,56 @@ export default function ConfiguracionPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <User className="w-5 h-5" />
-                        Información Personal
+                        {t('client.configuration.profile.title')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="nombre">Nombre completo</Label>
+                          <Label htmlFor="nombre">{t('client.configuration.profile.fields.name')}</Label>
                           <Input
                             id="nombre"
                             value={formData.nombre}
                             onChange={(e) => handleInputChange('nombre', e.target.value)}
-                            placeholder="Tu nombre completo"
+                            placeholder={t('client.configuration.profile.placeholders.name')}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="email">Correo electrónico</Label>
+                          <Label htmlFor="email">{t('client.configuration.profile.fields.email')}</Label>
                           <Input
                             id="email"
                             type="email"
                             value={formData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
-                            placeholder="tu@email.com"
+                            placeholder={t('client.configuration.profile.placeholders.email')}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="telefono">Teléfono</Label>
+                          <Label htmlFor="telefono">{t('client.configuration.profile.fields.phone')}</Label>
                           <Input
                             id="telefono"
                             value={formData.telefono}
                             onChange={(e) => handleInputChange('telefono', e.target.value)}
-                            placeholder="+58 412-123-4567"
+                            placeholder={t('client.configuration.profile.placeholders.phone')}
                           />
                         </div>
-                                                 <div className="space-y-2">
-                           <Label htmlFor="idioma">Idioma</Label>
-                           <Select value={formData.idioma} onValueChange={(value) => handleInputChange('idioma', value)}>
-                             <SelectTrigger>
-                               <SelectValue placeholder="Selecciona un idioma" />
-                             </SelectTrigger>
-                             <SelectContent>
-                               <SelectItem value="es">🇪🇸 Español</SelectItem>
-                               <SelectItem value="en">🇺🇸 English</SelectItem>
-                               <SelectItem value="zh">🇨🇳 中文</SelectItem>
-                             </SelectContent>
-                           </Select>
-                         </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="idioma">{t('client.configuration.profile.fields.language')}</Label>
+                          <Select value={formData.idioma} onValueChange={(value) => handleInputChange('idioma', value)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('client.configuration.profile.placeholders.selectLanguage')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="es">🇪🇸 Español</SelectItem>
+                              <SelectItem value="en">🇺🇸 English</SelectItem>
+                              <SelectItem value="zh">🇨🇳 中文</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                       <Button onClick={handleSaveProfile} className="w-full md:w-auto">
                         <Save className="w-4 h-4 mr-2" />
-                        Guardar cambios
+                        {t('common.save')}
                       </Button>
                     </CardContent>
                   </Card>
@@ -295,19 +310,19 @@ export default function ConfiguracionPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <Lock className="w-5 h-5" />
-                        Cambiar Contraseña
+                        {t('client.configuration.password.title')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="currentPassword">Contraseña actual</Label>
+                        <Label htmlFor="currentPassword">{t('client.configuration.password.fields.current')}</Label>
                         <div className="relative">
                           <Input
                             id="currentPassword"
                             type={passwordData.showCurrentPassword ? "text" : "password"}
                             value={passwordData.currentPassword}
                             onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
-                            placeholder="Ingresa tu contraseña actual"
+                            placeholder={t('client.configuration.password.placeholders.current')}
                           />
                           <Button
                             type="button"
@@ -322,14 +337,14 @@ export default function ConfiguracionPage() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="newPassword">Nueva contraseña</Label>
+                          <Label htmlFor="newPassword">{t('client.configuration.password.fields.new')}</Label>
                           <div className="relative">
                             <Input
                               id="newPassword"
                               type={passwordData.showNewPassword ? "text" : "password"}
                               value={passwordData.newPassword}
                               onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
-                              placeholder="Nueva contraseña"
+                              placeholder={t('client.configuration.password.placeholders.new')}
                             />
                             <Button
                               type="button"
@@ -343,14 +358,14 @@ export default function ConfiguracionPage() {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
+                          <Label htmlFor="confirmPassword">{t('client.configuration.password.fields.confirm')}</Label>
                           <div className="relative">
                             <Input
                               id="confirmPassword"
                               type={passwordData.showConfirmPassword ? "text" : "password"}
                               value={passwordData.confirmPassword}
                               onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
-                              placeholder="Confirma la nueva contraseña"
+                              placeholder={t('client.configuration.password.placeholders.confirm')}
                             />
                             <Button
                               type="button"
@@ -366,7 +381,7 @@ export default function ConfiguracionPage() {
                       </div>
                       <Button onClick={handleSavePassword} className="w-full md:w-auto">
                         <Save className="w-4 h-4 mr-2" />
-                        Cambiar contraseña
+                        {t('client.configuration.password.title')}
                       </Button>
                     </CardContent>
                   </Card>
@@ -378,7 +393,7 @@ export default function ConfiguracionPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <Camera className="w-5 h-5" />
-                        Foto de Perfil
+                        {t('client.configuration.profile.profilePicture.title')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">

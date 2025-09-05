@@ -1,4 +1,83 @@
 {
+  "client": {
+    "configuration": {
+      "title": "Configuration",
+      "subtitle": "Manage your profile, security and preferences",
+      "tabs": {
+        "profile": "Profile",
+        "security": "Security",
+        "notifications": "Notifications",
+        "preferences": "Preferences"
+      },
+      "profile": {
+        "title": "Personal Information",
+        "fields": {
+          "name": "Full name",
+          "email": "Email address",
+          "phone": "Phone",
+          "language": "Language"
+        },
+        "placeholders": {
+          "name": "Your full name",
+          "email": "you@email.com",
+          "phone": "+1 555-123-4567",
+          "selectLanguage": "Select a language"
+        },
+        "profilePicture": {
+          "title": "Profile Picture"
+        }
+      },
+      "password": {
+        "title": "Change Password",
+        "fields": {
+          "current": "Current password",
+          "new": "New password",
+          "confirm": "Confirm new password"
+        },
+        "placeholders": {
+          "current": "Enter your current password",
+          "new": "Enter your new password",
+          "confirm": "Confirm your new password"
+        }
+      }
+    },
+    "dashboard": {
+      "title": "Client Dashboard",
+      "subtitle": "Welcome back, here is a summary of your activity",
+      "welcome": "Welcome back!",
+      "panel": "Control Panel - Client",
+      "manage": "Manage your orders, tracking and payments from one place",
+      "activeShipments": "Active Shipments",
+      "totalOrders": "Total Orders",
+      "ordersPlaced": "Orders placed",
+      "inTransit": "In Transit",
+      "activeShipmentsShort": "Active shipments",
+      "totalSpent": "Total Spent",
+      "totalInvestment": "Total investment",
+      "completed": "Completed",
+      "ordersDelivered": "Orders delivered"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "subtitle": "Quickly access the most used functions",
+      "newOrder": "Create New Order",
+      "newOrderDesc": "Request the import of a product",
+      "trackOrder": "Track Order",
+      "trackOrderDesc": "Check the status of your shipments",
+      "support": "Contact Support",
+      "supportDesc": "Get help when you need it",
+      "payments": "My Payments",
+      "paymentsDesc": "Manage your transactions"
+    },
+    "recentOrders": {
+      "title": "My Recent Orders",
+      "subtitle": "Track your most recent shipments",
+      "noOrders": "No recent orders.",
+      "status": "Status:",
+      "budget": "BUDGET",
+      "details": "VIEW DETAILS"
+    }
+  },
   "admin": {
     "sidebar": {
       "dashboard": "Dashboard",
