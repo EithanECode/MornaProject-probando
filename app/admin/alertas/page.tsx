@@ -15,10 +15,12 @@ import Modal from '@/components/alertas/Modal';
 // Importaciones de datos e interfaces desde la nueva ubicación
 import { alertTemplates, sampleUsers } from '@/lib/alertsData';
 import { Alert, AlertFormData } from '@/lib/types/Alerts';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const generateId = (): string => 'ALERT-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
 
 const AlertasPage: React.FC = () => {
+  const { t } = useTranslation();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -150,8 +152,8 @@ const AlertasPage: React.FC = () => {
               </button>
               
               <div>
-                <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Alertas</h1>
-                <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Notificaciones críticas para atención inmediata</p>
+                <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('admin.alerts.title')}</h1>
+                <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('admin.alerts.subtitle')}</p>
               </div>
             </div>
           </div>

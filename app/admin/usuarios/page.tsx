@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { useAdminUsers } from '@/hooks/use-admin-users';
+import { useTranslation } from '@/hooks/useTranslation';
 
 // Estilos para animaciones
 const animationStyles = `
@@ -93,6 +94,7 @@ const ROLE_COLORS: Record<UserRole, string> = {
 };
 
 export default function UsuariosPage() {
+  const { t } = useTranslation();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
@@ -290,7 +292,7 @@ export default function UsuariosPage() {
         setUsers((prev) => [mapped, ...prev]);
         setIsDialogOpen(false);
         setEditingUser(null);
-        toast({ title: 'Usuario creado', description: 'Se envió invitación al correo.' });
+        toast({ title: t('admin.users.messages.userCreated'), description: t('admin.users.messages.userCreatedDesc') });
       }).catch(() => {
         toast({ title: 'Error al crear', description: 'No se pudo crear el usuario' });
       });
@@ -315,15 +317,15 @@ export default function UsuariosPage() {
       if (!res.ok) {
         const { error } = await res.json().catch(() => ({ error: 'Error' }));
         setUsers(prevUsers);
-        toast({ title: 'Error al guardar', description: error || 'No se pudo guardar' });
+        toast({ title: t('admin.users.messages.errorSaving'), description: error || t('admin.users.messages.couldNotSave') });
         return;
       }
       setIsDialogOpen(false);
       setEditingUser(null);
-      toast({ title: 'Cambios guardados', description: 'La información del usuario ha sido actualizada.' });
+      toast({ title: t('admin.users.messages.changesSaved'), description: t('admin.users.messages.changesSavedDesc') });
     }).catch(() => {
       setUsers(prevUsers);
-      toast({ title: 'Error al guardar', description: 'No se pudo guardar' });
+      toast({ title: t('admin.users.messages.errorSaving'), description: t('admin.users.messages.couldNotSave') });
     });
   }
 
@@ -348,8 +350,8 @@ export default function UsuariosPage() {
         <Header 
           notifications={3}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Seguridad y acceso"
-          subtitle="Gestión de usuarios y accesos"
+          title={t('admin.users.subtitle')}
+          subtitle={t('admin.users.description')}
         />
 
         <div className="p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6">
@@ -357,9 +359,9 @@ export default function UsuariosPage() {
             <CardHeader>
               <CardTitle className="text-lg md:text-xl flex items-center text-black">
                 <Users className="w-4 h-4 md:w-5 md:h-5 mr-2 text-blue-600" />
-                Listado de Usuarios
+{t('admin.users.listTitle')}
               </CardTitle>
-              <CardDescription className="text-sm md:text-base">Administra roles, estados y accesos de la plataforma</CardDescription>
+              <CardDescription className="text-sm md:text-base">{t('admin.users.listDescription')}</CardDescription>
             </CardHeader>
             <CardContent className="overflow-x-hidden">
               {/* Filtros Mejorados */}
@@ -369,7 +371,7 @@ export default function UsuariosPage() {
                     <div className="relative w-full">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 z-10" />
                       <Input
-                        placeholder="Buscar por nombre, correo o ID..."
+                        placeholder={t('admin.users.search')}
                         value={searchTerm}
                         onChange={(e) => handleSearchChange(e.target.value)}
                         className="pl-10 w-full bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500"
@@ -379,10 +381,10 @@ export default function UsuariosPage() {
                       <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
                         <SelectTrigger className="w-full sm:w-auto bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500">
                           <Filter className="w-4 h-4 mr-2 text-slate-400" />
-                          <SelectValue placeholder="Filtrar por rol" />
+                          <SelectValue placeholder={t('admin.users.filters.role')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">Todos los roles</SelectItem>
+                          <SelectItem value="all">{t('admin.users.filters.allRoles')}</SelectItem>
                           {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
                             <SelectItem key={r} value={r}>{r}</SelectItem>
                           ))}
@@ -405,7 +407,7 @@ export default function UsuariosPage() {
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                       <DialogTrigger asChild>
                         <Button onClick={handleOpenCreate} className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl text-sm md:text-base w-full sm:w-auto">
-                          <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" /> Nuevo Usuario
+                          <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" /> {t('admin.users.form.newUser')}
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
@@ -415,7 +417,7 @@ export default function UsuariosPage() {
                         </DialogHeader>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
                           <div className="space-y-2">
-                            <Label htmlFor="fullName">Nombre completo</Label>
+                            <Label htmlFor="fullName">{t('admin.users.form.fullName')}</Label>
                             <Input
                               id="fullName"
                               value={editingUser?.fullName ?? ''}
@@ -423,7 +425,7 @@ export default function UsuariosPage() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="email">Correo</Label>
+                            <Label htmlFor="email">{t('admin.users.form.email')}</Label>
                             <Input
                               id="email"
                               type="email"
@@ -438,7 +440,7 @@ export default function UsuariosPage() {
                               onValueChange={(val: UserRole) => setEditingUser((prev) => prev ? { ...prev, role: val } : prev)}
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar rol" />
+                                <SelectValue placeholder={t('admin.users.form.selectRole')} />
                               </SelectTrigger>
                               <SelectContent>
                                 {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
@@ -459,8 +461,8 @@ export default function UsuariosPage() {
                           </div> */}
                         </div>
                         <DialogFooter>
-                          <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
-                          <Button onClick={handleSave} className="bg-blue-600 text-white">Guardar</Button>
+                          <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t('admin.users.form.cancel')}</Button>
+                          <Button onClick={handleSave} className="bg-blue-600 text-white">{t('admin.users.form.save')}</Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
@@ -478,25 +480,25 @@ export default function UsuariosPage() {
                                       <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '40%'}}>
                                         <div className="flex items-center gap-2">
                                           <Users className="w-4 h-4" />
-                                          Usuario
+{t('admin.users.table.user')}
                                         </div>
                                       </th>
                                       <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
                                         <div className="flex items-center gap-2">
                                           <Shield className="w-4 h-4" />
-                                          Rol
+{t('admin.users.table.role')}
                                         </div>
                                       </th>
                                       <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
                                         <div className="flex items-center gap-2">
                                           <Calendar className="w-4 h-4" />
-                                          Creado
+{t('admin.users.table.createdAt')}
                                         </div>
                                       </th>
                                       <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
                                         <div className="flex items-center gap-2">
                                           <Settings className="w-4 h-4" />
-                                          Acciones
+{t('admin.users.table.actions')}
                                         </div>
                                       </th>
                                     </tr>

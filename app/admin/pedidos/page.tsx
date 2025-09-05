@@ -58,6 +58,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useTranslation } from '@/hooks/useTranslation';
 // jsPDF se importará dinámicamente para evitar errores de SSR
 // html2canvas se importará dinámicamente para evitar errores de SSR
 
@@ -181,6 +182,7 @@ const useOrdersFilter = (orders: Order[]) => {
 };
 
 export default function PedidosPage() {
+  const { t } = useTranslation();
   // Datos desde Supabase (stats/admin)
   const { data: adminStats, loading: adminLoading, error: adminError, refetch: refetchStats } = useAdminOrders();
   // Lista de pedidos reales
@@ -717,7 +719,7 @@ export default function PedidosPage() {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-100 text-sm font-medium">Total Pedidos</p>
+                                    <p className="text-blue-100 text-sm font-medium">{t('admin.orders.stats.totalOrders')}</p>
               <p className={`text-3xl font-bold transition-all duration-1000 ${animateStats ? 'scale-100' : 'scale-0'}`}>
                 {totalPedidos}
               </p>
@@ -733,7 +735,7 @@ export default function PedidosPage() {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-orange-100 text-sm font-medium">Pendientes</p>
+              <p className="text-orange-100 text-sm font-medium">{t('admin.orders.stats.pending')}</p>
               <p className={`text-3xl font-bold transition-all duration-1000 delay-200 ${animateStats ? 'scale-100' : 'scale-0'}`}>
                 {pedidosPendientes}
               </p>
@@ -749,7 +751,7 @@ export default function PedidosPage() {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-100 text-sm font-medium">En Tránsito</p>
+              <p className="text-purple-100 text-sm font-medium">{t('admin.orders.stats.inTransit')}</p>
               <p className={`text-3xl font-bold transition-all duration-1000 delay-400 ${animateStats ? 'scale-100' : 'scale-0'}`}>
                 {pedidosTransito}
               </p>
@@ -765,7 +767,7 @@ export default function PedidosPage() {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-100 text-sm font-medium">Entregados</p>
+              <p className="text-green-100 text-sm font-medium">{t('admin.orders.stats.delivered')}</p>
               <p className={`text-3xl font-bold transition-all duration-1000 delay-600 ${animateStats ? 'scale-100' : 'scale-0'}`}>
                 {pedidosEntregados}
               </p>
@@ -863,8 +865,8 @@ export default function PedidosPage() {
         <Header 
           notifications={3}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Gestión de Pedidos"
-          subtitle="Administra y da seguimiento a todos los pedidos"
+          title={t('admin.orders.title')}
+          subtitle={t('admin.orders.subtitle')}
         />
 
         <div className={mounted && theme === 'dark' ? 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6 bg-slate-900' : 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6'}>
@@ -878,9 +880,9 @@ export default function PedidosPage() {
             <CardHeader>
                                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div>
-                      <CardTitle className={`text-lg md:text-xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Lista de Pedidos</CardTitle>
+                      <CardTitle className={`text-lg md:text-xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('admin.orders.listTitle')}</CardTitle>
                       <CardDescription className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
-                        {totalPedidos} pedidos encontrados
+{t('admin.orders.listDescription', { count: totalPedidos })}
                       </CardDescription>
                     </div>
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 w-full lg:w-auto">
@@ -888,7 +890,7 @@ export default function PedidosPage() {
                       <div className="relative w-full sm:w-auto">
                         <Search className={mounted && theme === 'dark' ? 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4' : 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4'} />
                         <Input
-                          placeholder="Buscar pedidos..."
+                          placeholder={t('admin.orders.search')}
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                           className={`pl-10 w-full sm:w-64 focus:border-blue-500 focus:ring-blue-500 ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400' : 'bg-white/50 border-slate-200'}`}
@@ -898,10 +900,10 @@ export default function PedidosPage() {
                       <Select value={statusFilter} onValueChange={setStatusFilter}>
                         <SelectTrigger className={`w-full sm:w-auto ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white/50 border-slate-200'}`}>
                           <Filter className="w-4 h-4 mr-2" />
-                          <SelectValue placeholder="Filtrar por estado" />
+                          <SelectValue placeholder={t('admin.orders.filters.status')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">Todos los estados</SelectItem>
+                          <SelectItem value="all">{t('admin.orders.filters.allStates')}</SelectItem>
                           <SelectItem value="pendiente-china">Pendiente China</SelectItem>
                           <SelectItem value="pendiente-vzla">Pendiente Vzla</SelectItem>
                           <SelectItem value="esperando-pago">Esperando Pago</SelectItem>
@@ -925,7 +927,7 @@ export default function PedidosPage() {
                       className="w-full sm:w-auto px-8 py-3 bg-white hover:bg-gray-50 border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-800 shadow-sm hover:shadow-md transition-all duration-300 text-sm md:text-base font-medium"
                     >
                       <Download className="w-4 h-4 mr-2" />
-                      Exportar a PDF
+{t('admin.orders.actions.export')}
                     </Button> */}
                   </div>
             </CardHeader>
@@ -1048,11 +1050,11 @@ export default function PedidosPage() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-xl opacity-20"></div>
               <DialogTitle className="relative text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                ✨ Crear Nuevo Pedido
+{t('admin.orders.actions.create')}
               </DialogTitle>
             </div>
             <DialogDescription className="text-lg text-slate-600 mt-2">
-              Sigue los pasos para crear el pedido
+{t('admin.orders.form.description')}
             </DialogDescription>
           </DialogHeader>
 
@@ -1073,13 +1075,13 @@ export default function PedidosPage() {
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label>Cliente</Label>
+                  <Label>{t('admin.orders.form.client')}</Label>
                   <Select value={newOrderData.client_id} onValueChange={(v) => {
                     const cli = (clients || []).find(c => c.user_id === v);
                     setNewOrderData((prev) => ({ ...prev, client_id: v, client_name: cli?.name || '' }));
                   }}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un cliente" />
+                      <SelectValue placeholder={t('admin.orders.form.selectClient')} />
                     </SelectTrigger>
                     <SelectContent>
                       {(clients || []).map((c) => (
@@ -1092,7 +1094,7 @@ export default function PedidosPage() {
                 <div className="space-y-3">
                   <Label className="text-sm font-semibold text-slate-700 flex items-center">
                     <Package className="w-4 h-4 mr-2 text-blue-600" />
-                    Nombre del Producto
+{t('admin.orders.form.productNameLabel')}
                   </Label>
                   <Input value={newOrderData.productName} onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })} placeholder="Ej: iPhone 15 Pro Max" />
                 </div>

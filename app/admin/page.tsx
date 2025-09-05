@@ -69,11 +69,21 @@ export default function AdminDashboard() {
     satisfactionRate: '96%'
   };
 
+  const getTranslatedActivity = (type: string) => {
+    switch (type) {
+      case 'user': return t('admin.dashboard.recentActivity.activities.newUserRegistered');
+      case 'payment': return t('admin.dashboard.recentActivity.activities.paymentValidated');
+      case 'alert': return t('admin.dashboard.recentActivity.activities.criticalAlert');
+      case 'config': return t('admin.dashboard.recentActivity.activities.configurationUpdated');
+      default: return '';
+    }
+  };
+
   const recentActivities = [
-    { id: 1, action: 'Nuevo usuario registrado', user: 'Carlos Pérez', time: '2 min ago', type: 'user' },
-    { id: 2, action: 'Pago validado', user: 'María González', time: '5 min ago', type: 'payment' },
-    { id: 3, action: 'Alerta crítica', user: 'Pedido #1234', time: '8 min ago', type: 'alert' },
-    { id: 4, action: 'Configuración actualizada', user: 'Sistema', time: '15 min ago', type: 'config' },
+    { id: 1, action: getTranslatedActivity('user'), user: 'Carlos Pérez', time: t('admin.dashboard.recentActivity.timeAgo.minAgo', { count: 2 }), type: 'user' },
+    { id: 2, action: getTranslatedActivity('payment'), user: 'María González', time: t('admin.dashboard.recentActivity.timeAgo.minAgo', { count: 5 }), type: 'payment' },
+    { id: 3, action: getTranslatedActivity('alert'), user: 'Pedido #1234', time: t('admin.dashboard.recentActivity.timeAgo.minAgo', { count: 8 }), type: 'alert' },
+    { id: 4, action: getTranslatedActivity('config'), user: t('admin.dashboard.recentActivity.activities.system'), time: t('admin.dashboard.recentActivity.timeAgo.minAgo', { count: 15 }), type: 'config' },
   ];
 
   const getActivityIcon = (type: string) => {

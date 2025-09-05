@@ -222,8 +222,264 @@
       },
       "recentActivity": {
         "title": "Recent System Activity",
-        "subtitle": "Latest actions and system events"
+        "subtitle": "Latest actions and system events",
+        "activities": {
+          "newUserRegistered": "New user registered",
+          "paymentValidated": "Payment validated",
+          "criticalAlert": "Critical alert",
+          "configurationUpdated": "Configuration updated",
+          "system": "System"
+        },
+        "timeAgo": {
+          "minAgo": "{{count}} min ago",
+          "minsAgo": "{{count}} min ago"
+        }
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "subtitle": "Security and access",
+      "description": "User and access management",
+      "listTitle": "User List",
+      "listDescription": "Manage platform roles, statuses and access",
+      "search": "Search by name, email or ID...",
+      "filters": {
+        "all": "All",
+        "allRoles": "All roles",
+        "role": "Filter by role",
+        "status": "Filter by status"
+      },
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "createdAt": "Created",
+        "actions": "Actions",
+        "user": "User"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "view": "View"
+      },
+      "roles": {
+        "Cliente": "Client",
+        "Empleado China": "China Employee",
+        "Empleado Vzla": "Venezuela Employee",
+        "Admin": "Admin"
+      },
+      "status": {
+        "activo": "Active",
+        "inactivo": "Inactive"
+      },
+      "form": {
+        "newUser": "New User",
+        "fullName": "Full name",
+        "email": "Email",
+        "selectRole": "Select role",
+        "cancel": "Cancel",
+        "save": "Save",
+        "active": "Active"
+      },
+      "messages": {
+        "userCreated": "User created",
+        "userCreatedDesc": "Invitation sent to email.",
+        "changesSaved": "Changes saved",
+        "changesSavedDesc": "User information has been updated.",
+        "errorSaving": "Error saving",
+        "couldNotSave": "Could not save"
+      },
+      "common": {
+        "loading": "Loading..."
+      }
+    },
+    "orders": {
+      "title": "Order Management",
+      "subtitle": "Manage and track all orders",
+      "listTitle": "Order List",
+      "listDescription": "{{count}} orders found",
+      "search": "Search orders...",
+      "stats": {
+        "totalOrders": "Total Orders",
+        "pending": "Pending",
+        "inTransit": "In Transit",
+        "delivered": "Delivered"
+      },
+      "filters": {
+        "all": "All",
+        "allStates": "All statuses",
+        "status": "Filter by status",
+        "client": "Filter by client"
+      },
+      "table": {
+        "id": "ID",
+        "client": "Client",
+        "description": "Description",
+        "status": "Status",
+        "assignedTo": "Assigned to",
+        "time": "Time (days)",
+        "actions": "Actions"
+      },
+      "status": {
+        "cotizacion": "Quote",
+        "esperando-pago": "Waiting Payment",
+        "en-transito": "In Transit",
+        "entregado": "Delivered"
+      },
+      "actions": {
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete",
+        "export": "Export to PDF",
+        "create": "✨ Create New Order",
+        "saveChanges": "Save changes",
+        "viewDocuments": "View Documents"
+      },
+      "modal": {
+        "createOrder": "Create New Order",
+        "orderDetails": "Order Details",
+        "createdBy": "Created by"
+      },
+      "deliveryTypes": {
+        "doorToDoor": "Door to Door",
+        "air": "Air Shipping",
+        "maritime": "Maritime Shipping"
+      },
+      "form": {
+        "productName": "Product name",
+        "productNameLabel": "Product Name",
+        "description": "Description",
+        "quantity": "Quantity",
+        "specifications": "Specifications",
+        "deliveryType": "Delivery type",
+        "deliveryVenezuela": "Delivery in Venezuela",
+        "estimatedBudget": "Estimated budget",
+        "selectClient": "Select a client",
+        "selectDelivery": "Select how you want to receive your order",
+        "selectLocation": "Select a location",
+        "client": "Client",
+        "clientId": "Client ID",
+        "userName": "User Name"
+      },
+      "steps": {
+        "step": "Step",
+        "of": "of",
+        "completed": "% completed",
+        "step1": "Client + Product",
+        "step2": "Shipping and budget",
+        "step3": "Summary",
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "time": {
+        "days": "{{count}} days"
+      },
+      "alerts": {
+        "onlyImages": "Only JPG, JPEG, PNG or WEBP images are allowed."
+      }
+    },
+    "management": {
+      "title": "Business Configuration",
+      "subtitle": "Operational and financial parameters",
+      "warning": {
+        "title": "Warning:",
+        "description": "Changes to these parameters directly affect business operations. Make sure to communicate any modifications to the operational team."
+      },
+      "tabs": {
+        "shipping": "Shipping",
+        "financial": "Financial",
+        "notifications": "Notifications"
+      },
+      "shipping": {
+        "airExpress": "Express Air Shipping",
+        "airDescription": "Rates and times for fast air shipments",
+        "seaShipping": "Sea Shipping",
+        "seaEconomic": "Economical Sea Shipping",
+        "seaDescription": "Rates and times for economical sea shipments",
+        "ratePerKg": "Rate per Volumetric Kg",
+        "costPerKg": "Cost per volumetric kilogram",
+        "minDays": "Minimum Days",
+        "maxDays": "Maximum Days"
+      },
+      "financial": {
+        "exchangeRate": "Exchange Rate",
+        "usdValue": "US dollar value",
+        "usdRate": "1 USD = X Bs",
+        "updateDaily": "Update daily according to parallel market",
+        "marginsDiscounts": "Margins and Discounts",
+        "profitabilityConfig": "Profitability configuration",
+        "profitMargin": "Profit Margin (%)",
+        "usdDiscount": "USD Payment Discount (%)"
+      },
+      "notifications": {
+        "notificationSystem": "Notification System"
+      },
+      "common": {
+        "loading": "Loading..."
+      },
+      "actions": {
+        "save": "Save Configuration",
+        "saving": "Saving..."
+      },
+      "messages": {
+        "configSaved": "Configuration saved",
+        "configSavedDesc": "Business parameters have been updated successfully."
+      }
+    },
+    "alerts": {
+      "title": "Alerts",
+      "subtitle": "Critical notifications for immediate attention",
+      "stats": {
+        "total": "Total",
+        "critical": "Critical",
+        "warning": "Warnings",
+        "info": "Information",
+        "resolved": "Resolved today"
+      },
+      "sections": {
+        "critical": "Critical Alerts",
+        "warning": "Warnings",
+        "info": "Informational"
+      },
+      "actions": {
+        "generateNew": "Generate New Alert",
+        "resolveAll": "Resolve All",
+        "refresh": "Refresh",
+        "view": "View",
+        "resolve": "Resolve"
+      },
+      "filters": {
+        "search": "Search alerts...",
+        "type": "Filter by type",
+        "priority": "Filter by priority",
+        "all": "All"
+      },
+      "modal": {
+        "details": "Alert Details",
+        "message": "Message:",
+        "category": "Category:",
+        "created": "Created:",
+        "status": "Status:",
+        "pending": "Pending",
+        "recommendedAction": "Recommended Action",
+        "alertResolved": "Alert resolved"
+      },
+      "header": {
+        "trackingPanel": "Tracking Panel",
+        "activeAlerts": "Active Alerts:"
       }
     }
+  },
+  "header": {
+    "notifications": "Notifications"
   }
 }

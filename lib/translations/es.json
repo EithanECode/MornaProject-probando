@@ -222,8 +222,264 @@
       },
       "recentActivity": {
         "title": "Actividad Reciente del Sistema",
-        "subtitle": "Últimas acciones y eventos del sistema"
+        "subtitle": "Últimas acciones y eventos del sistema",
+        "activities": {
+          "newUserRegistered": "Nuevo usuario registrado",
+          "paymentValidated": "Pago validado",
+          "criticalAlert": "Alerta crítica",
+          "configurationUpdated": "Configuración actualizada",
+          "system": "Sistema"
+        },
+        "timeAgo": {
+          "minAgo": "{{count}} min ago",
+          "minsAgo": "{{count}} min ago"
+        }
+      }
+    },
+    "users": {
+      "title": "Gestión de Usuarios",
+      "subtitle": "Seguridad y acceso",
+      "description": "Gestión de usuarios y accesos",
+      "listTitle": "Listado de Usuarios",
+      "listDescription": "Administra roles, estados y accesos de la plataforma",
+      "search": "Buscar por nombre, correo o ID...",
+      "filters": {
+        "all": "Todos",
+        "allRoles": "Todos los roles",
+        "role": "Filtrar por rol",
+        "status": "Filtrar por estado"
+      },
+      "table": {
+        "name": "Nombre",
+        "email": "Email",
+        "role": "Rol",
+        "status": "Estado",
+        "createdAt": "Creado",
+        "actions": "Acciones",
+        "user": "Usuario"
+      },
+      "pagination": {
+        "previous": "Anterior",
+        "next": "Siguiente"
+      },
+      "actions": {
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "view": "Ver"
+      },
+      "roles": {
+        "Cliente": "Cliente",
+        "Empleado China": "Empleado China",
+        "Empleado Vzla": "Empleado Vzla",
+        "Admin": "Admin"
+      },
+      "status": {
+        "activo": "Activo",
+        "inactivo": "Inactivo"
+      },
+      "form": {
+        "newUser": "Nuevo Usuario",
+        "fullName": "Nombre completo",
+        "email": "Correo",
+        "selectRole": "Seleccionar rol",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "active": "Activo"
+      },
+      "messages": {
+        "userCreated": "Usuario creado",
+        "userCreatedDesc": "Se envió invitación al correo.",
+        "changesSaved": "Cambios guardados",
+        "changesSavedDesc": "La información del usuario ha sido actualizada.",
+        "errorSaving": "Error al guardar",
+        "couldNotSave": "No se pudo guardar"
+      },
+      "common": {
+        "loading": "Cargando..."
+      }
+    },
+    "orders": {
+      "title": "Gestión de Pedidos",
+      "subtitle": "Administra y da seguimiento a todos los pedidos",
+      "listTitle": "Lista de Pedidos",
+      "listDescription": "{{count}} pedidos encontrados",
+      "search": "Buscar pedidos...",
+      "stats": {
+        "totalOrders": "Total Pedidos",
+        "pending": "Pendientes",
+        "inTransit": "En Tránsito",
+        "delivered": "Entregados"
+      },
+      "filters": {
+        "all": "Todos",
+        "allStates": "Todos los estados",
+        "status": "Filtrar por estado",
+        "client": "Filtrar por cliente"
+      },
+      "table": {
+        "id": "ID",
+        "client": "Cliente",
+        "description": "Descripción",
+        "status": "Estado",
+        "assignedTo": "Asignado a",
+        "time": "Tiempo (días)",
+        "actions": "Acciones"
+      },
+      "status": {
+        "cotizacion": "Cotización",
+        "esperando-pago": "Esperando Pago",
+        "en-transito": "En Tránsito",
+        "entregado": "Entregado"
+      },
+      "actions": {
+        "view": "Ver",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "export": "Exportar a PDF",
+        "create": "✨ Crear Nuevo Pedido",
+        "saveChanges": "Guardar cambios",
+        "viewDocuments": "Ver Documentos"
+      },
+      "modal": {
+        "createOrder": "Crear Nuevo Pedido",
+        "orderDetails": "Detalles del Pedido",
+        "createdBy": "Creado por"
+      },
+      "deliveryTypes": {
+        "doorToDoor": "Puerta a Puerta",
+        "air": "Envío Aéreo",
+        "maritime": "Envío Marítimo"
+      },
+      "form": {
+        "productName": "Nombre del producto",
+        "productNameLabel": "Nombre del Producto",
+        "description": "Descripción",
+        "quantity": "Cantidad",
+        "specifications": "Especificaciones",
+        "deliveryType": "Tipo de entrega",
+        "deliveryVenezuela": "Entrega en Venezuela",
+        "estimatedBudget": "Presupuesto estimado",
+        "selectClient": "Selecciona un cliente",
+        "selectDelivery": "Selecciona cómo quieres recibir tu pedido",
+        "selectLocation": "Selecciona una ubicación",
+        "client": "Cliente",
+        "clientId": "Cliente ID",
+        "userName": "Nombre de Usuario"
+      },
+      "steps": {
+        "step": "Paso",
+        "of": "de",
+        "completed": "% completado",
+        "step1": "Cliente + Producto",
+        "step2": "Envío y presupuesto",
+        "step3": "Resumen",
+        "previous": "Anterior",
+        "next": "Siguiente"
+      },
+      "pagination": {
+        "previous": "Anterior",
+        "next": "Siguiente"
+      },
+      "time": {
+        "days": "{{count}} días"
+      },
+      "alerts": {
+        "onlyImages": "Solo se permiten imágenes JPG, JPEG, PNG o WEBP."
+      }
+    },
+    "management": {
+      "title": "Configuración del Negocio",
+      "subtitle": "Parámetros operativos y financieros",
+      "warning": {
+        "title": "Advertencia:",
+        "description": "Los cambios en estos parámetros afectan directamente las operaciones del negocio. Asegúrate de comunicar cualquier modificación al equipo operativo."
+      },
+      "tabs": {
+        "shipping": "Envíos",
+        "financial": "Financiero",
+        "notifications": "Notificaciones"
+      },
+      "shipping": {
+        "airExpress": "Envío Aéreo Express",
+        "airDescription": "Tarifas y tiempos para envíos rápidos por avión",
+        "seaShipping": "Envío Marítimo",
+        "seaEconomic": "Envío Marítimo Económico",
+        "seaDescription": "Tarifas y tiempos para envíos económicos por barco",
+        "ratePerKg": "Tarifa por Kg Volumétrico",
+        "costPerKg": "Costo por kilogramo volumétrico",
+        "minDays": "Días Mínimos",
+        "maxDays": "Días Máximos"
+      },
+      "financial": {
+        "exchangeRate": "Tasa de Cambio",
+        "usdValue": "Valor del dólar estadounidense",
+        "usdRate": "1 USD = X Bs",
+        "updateDaily": "Actualizar diariamente según el mercado paralelo",
+        "marginsDiscounts": "Márgenes y Descuentos",
+        "profitabilityConfig": "Configuración de rentabilidad",
+        "profitMargin": "Margen de Ganancia (%)",
+        "usdDiscount": "Descuento por Pago en USD (%)"
+      },
+      "notifications": {
+        "notificationSystem": "Sistema de Notificaciones"
+      },
+      "common": {
+        "loading": "Cargando..."
+      },
+      "actions": {
+        "save": "Guardar Configuración",
+        "saving": "Guardando..."
+      },
+      "messages": {
+        "configSaved": "Configuración guardada",
+        "configSavedDesc": "Los parámetros del negocio se han actualizado correctamente."
+      }
+    },
+    "alerts": {
+      "title": "Alertas",
+      "subtitle": "Notificaciones críticas para atención inmediata",
+      "stats": {
+        "total": "Total",
+        "critical": "Críticas",
+        "warning": "Advertencias",
+        "info": "Información",
+        "resolved": "Resueltas hoy"
+      },
+      "sections": {
+        "critical": "Alertas Críticas",
+        "warning": "Advertencias",
+        "info": "Informativas"
+      },
+      "actions": {
+        "generateNew": "Generar Nueva Alerta",
+        "resolveAll": "Resolver Todas",
+        "refresh": "Actualizar",
+        "view": "Ver",
+        "resolve": "Resolver"
+      },
+      "filters": {
+        "search": "Buscar alertas...",
+        "type": "Filtrar por tipo",
+        "priority": "Filtrar por prioridad",
+        "all": "Todas"
+      },
+      "modal": {
+        "details": "Detalles de la Alerta",
+        "message": "Mensaje:",
+        "category": "Categoría:",
+        "created": "Creada:",
+        "status": "Estado:",
+        "pending": "Pendiente",
+        "recommendedAction": "Acción Recomendada",
+        "alertResolved": "Alerta resuelta"
+      },
+      "header": {
+        "trackingPanel": "Panel de Tracking",
+        "activeAlerts": "Alertas Activas:"
       }
     }
+  },
+  "header": {
+    "notifications": "Notificaciones"
   }
 }

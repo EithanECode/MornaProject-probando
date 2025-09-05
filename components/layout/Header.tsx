@@ -3,6 +3,7 @@
 import { Bell, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface HeaderProps {
   notifications: number;
@@ -17,6 +18,7 @@ export default function Header({
   title = "Dashboard", 
   subtitle = "Resumen de la operación" 
 }: HeaderProps) {
+  const { t } = useTranslation();
   const handleMenuToggle = () => {
     onMenuToggle?.();
   };
@@ -53,7 +55,7 @@ export default function Header({
               className="relative hidden sm:flex hover:bg-slate-50 transition-colors"
             >
               <Bell className="w-4 h-4 mr-2" />
-              <span className="hidden md:inline">Notificaciones</span>
+              <span className="hidden md:inline">{t('header.notifications')}</span>
               {notifications > 0 && (
                 <Badge className="absolute -top-2 -right-2 w-5 h-5 p-0 flex items-center justify-center bg-[#202841] text-white text-xs">
                   {notifications}

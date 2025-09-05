@@ -33,6 +33,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface BusinessConfig {
   // Parámetros de envío
@@ -63,6 +64,7 @@ interface BusinessConfig {
 }
 
 export default function ConfiguracionPage() {
+  const { t } = useTranslation();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
@@ -118,8 +120,8 @@ export default function ConfiguracionPage() {
     setIsLoading(false);
     
     toast({
-      title: "Configuración guardada",
-      description: "Los parámetros del negocio se han actualizado correctamente.",
+      title: t('admin.management.messages.configSaved'),
+      description: t('admin.management.messages.configSavedDesc'),
     });
   };
 
@@ -140,7 +142,7 @@ export default function ConfiguracionPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+          <p className="mt-4 text-gray-600">{t('admin.management.common.loading')}</p>
         </div>
       </div>
     );
@@ -204,7 +206,7 @@ export default function ConfiguracionPage() {
                   ) : (
                     <Save className="w-4 h-4 mr-2" />
                   )}
-                  {isLoading ? 'Guardando...' : 'Guardar Configuración'}
+                  {isLoading ? t('admin.management.actions.saving') : t('admin.management.actions.save')}
                 </Button>
               </div>
             </div>
@@ -216,8 +218,7 @@ export default function ConfiguracionPage() {
           <Alert className="border-orange-200 bg-orange-50">
             <AlertTriangle className="h-4 w-4 text-orange-600" />
             <AlertDescription className="text-orange-800">
-              <strong>Advertencia:</strong> Los cambios en estos parámetros afectan directamente las operaciones del negocio. 
-              Asegúrate de comunicar cualquier modificación al equipo operativo.
+              <strong>{t('admin.management.warning.title')}</strong> {t('admin.management.warning.description')}
             </AlertDescription>
           </Alert>
 
@@ -225,15 +226,15 @@ export default function ConfiguracionPage() {
             <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 bg-white/60 backdrop-blur-sm place-items-center">
               <TabsTrigger value="shipping" className="flex items-center space-x-2 text-xs md:text-sm">
                 <Package className="w-4 h-4" />
-                <span>Envíos</span>
+                <span>{t('admin.management.tabs.shipping')}</span>
               </TabsTrigger>
               <TabsTrigger value="financial" className="flex items-center space-x-2 text-xs md:text-sm">
                 <DollarSign className="w-4 h-4" />
-                <span>Financiero</span>
+                <span>{t('admin.management.tabs.financial')}</span>
               </TabsTrigger>
               <TabsTrigger value="notifications" className="flex items-center space-x-2 text-xs md:text-sm">
                 <Bell className="w-4 h-4" />
-                <span>Notificaciones</span>
+                <span>{t('admin.management.tabs.notifications')}</span>
               </TabsTrigger>
             </TabsList>
 
@@ -245,15 +246,15 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Plane className="w-5 h-5 mr-2 text-blue-600" />
-                      Envío Aéreo Express
+{t('admin.management.shipping.airExpress')}
                     </CardTitle>
                     <CardDescription className="text-black text-sm">
-                      Tarifas y tiempos para envíos rápidos por avión
+{t('admin.management.shipping.airDescription')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="airRate" className="text-sm md:text-base">Tarifa por Kg Volumétrico</Label>
+                      <Label htmlFor="airRate" className="text-sm md:text-base">{t('admin.management.shipping.ratePerKg')}</Label>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                         <Input
@@ -271,14 +272,14 @@ export default function ConfiguracionPage() {
                           className="pl-10"
                         />
                       </div>
-                      <p className="text-xs text-slate-500">Costo por kilogramo volumétrico</p>
+                      <p className="text-xs text-slate-500">{t('admin.management.shipping.costPerKg')}</p>
                     </div>
                     
                     <Separator />
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="airMin" className="text-sm">Días Mínimos</Label>
+                        <Label htmlFor="airMin" className="text-sm">{t('admin.management.shipping.minDays')}</Label>
                         <Input
                           id="airMin"
                           type="number"
@@ -296,7 +297,7 @@ export default function ConfiguracionPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="airMax" className="text-sm">Días Máximos</Label>
+                        <Label htmlFor="airMax" className="text-sm">{t('admin.management.shipping.maxDays')}</Label>
                         <Input
                           id="airMax"
                           type="number"
@@ -326,7 +327,7 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Ship className="w-5 h-5 mr-2 text-teal-600" />
-                      Envío Marítimo Económico
+{t('admin.management.shipping.seaEconomic')}
                     </CardTitle>
                     <CardDescription className="text-black text-sm">
                       Opciones y costos para envíos por barco
@@ -411,7 +412,7 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Globe className="w-5 h-5 mr-2 text-green-600" />
-                      Tasa de Cambio
+{t('admin.management.financial.exchangeRate')}
                     </CardTitle>
                     <CardDescription className="text-black text-sm">
                       Valor del dólar estadounidense
