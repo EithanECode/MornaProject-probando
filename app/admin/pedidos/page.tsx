@@ -997,7 +997,7 @@ export default function PedidosPage() {
               {totalPages > 1 && (
                 <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t ${mounted && theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}>
                   <div className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
-                    Mostrando {startIndex + 1} a {Math.min(startIndex + 8, filteredOrders.length)} de {filteredOrders.length} resultados
+                    {t('admin.orders.pagination.showing')} {startIndex + 1} a {Math.min(startIndex + 8, filteredOrders.length)} {t('admin.orders.pagination.of')} {filteredOrders.length} resultados
                   </div>
                   <div className="flex items-center gap-2">
                     <Button

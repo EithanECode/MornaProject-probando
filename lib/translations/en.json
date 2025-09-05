@@ -405,7 +405,10 @@
       },
       "pagination": {
         "previous": "Previous",
-        "next": "Next"
+        "next": "Next",
+        "showing": "Showing",
+        "of": "of",
+        "perPage": "per page"
       },
       "time": {
         "days": "{{count}} days"
