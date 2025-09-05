@@ -361,17 +361,27 @@
         "productName": "Product name",
         "productNameLabel": "Product Name",
         "description": "Description",
+        "productDescription": "Product Description",
+        "productDescriptionPlaceholder": "Describe the product...",
         "quantity": "Quantity",
+        "requestType": "Request Type",
+        "productLink": "Product Link",
+        "productLinkDescription": "Paste the store link",
+        "photoDescription": "Photo + Description",
+        "photoDescriptionDetail": "Upload a product image",
+        "productUrl": "Product URL",
         "specifications": "Specifications",
         "deliveryType": "Delivery type",
         "deliveryVenezuela": "Delivery in Venezuela",
         "estimatedBudget": "Estimated budget",
+        "estimatedBudgetUsd": "Estimated Budget (USD)",
         "selectClient": "Select a client",
         "selectDelivery": "Select how you want to receive your order",
         "selectLocation": "Select a location",
         "client": "Client",
         "clientId": "Client ID",
-        "userName": "User Name"
+        "userName": "User Name",
+        "followSteps": "Follow the steps to create the order"
       },
       "steps": {
         "step": "Step",
@@ -382,6 +392,16 @@
         "step3": "Summary",
         "previous": "Previous",
         "next": "Next"
+      },
+      "summary": {
+        "title": "Request Summary",
+        "client": "Client",
+        "product": "Product",
+        "quantity": "Quantity",
+        "shippingType": "Shipping Type",
+        "estimatedBudget": "Estimated Budget",
+        "description": "Description",
+        "createOrder": "Create Order"
       },
       "pagination": {
         "previous": "Previous",

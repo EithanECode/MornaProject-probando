@@ -361,17 +361,27 @@
         "productName": "Nombre del producto",
         "productNameLabel": "Nombre del Producto",
         "description": "Descripción",
+        "productDescription": "Descripción del Producto",
+        "productDescriptionPlaceholder": "Describe el producto...",
         "quantity": "Cantidad",
+        "requestType": "Tipo de Solicitud",
+        "productLink": "Link del Producto",
+        "productLinkDescription": "Pega el enlace de la tienda",
+        "photoDescription": "Foto + Descripción",
+        "photoDescriptionDetail": "Sube una imagen del producto",
+        "productUrl": "URL del Producto",
         "specifications": "Especificaciones",
         "deliveryType": "Tipo de entrega",
         "deliveryVenezuela": "Entrega en Venezuela",
         "estimatedBudget": "Presupuesto estimado",
+        "estimatedBudgetUsd": "Presupuesto Estimado (USD)",
         "selectClient": "Selecciona un cliente",
         "selectDelivery": "Selecciona cómo quieres recibir tu pedido",
         "selectLocation": "Selecciona una ubicación",
         "client": "Cliente",
         "clientId": "Cliente ID",
-        "userName": "Nombre de Usuario"
+        "userName": "Nombre de Usuario",
+        "followSteps": "Sigue los pasos para crear el pedido"
       },
       "steps": {
         "step": "Paso",
@@ -382,6 +392,16 @@
         "step3": "Resumen",
         "previous": "Anterior",
         "next": "Siguiente"
+      },
+      "summary": {
+        "title": "Resumen de la Solicitud",
+        "client": "Cliente",
+        "product": "Producto",
+        "quantity": "Cantidad",
+        "shippingType": "Tipo de Envío",
+        "estimatedBudget": "Presupuesto Estimado",
+        "description": "Descripción",
+        "createOrder": "Crear Pedido"
       },
       "pagination": {
         "previous": "Anterior",

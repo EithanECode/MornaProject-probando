@@ -1061,8 +1061,8 @@ export default function PedidosPage() {
           {/* Progreso */}
           <div className={`space-y-4 mb-8 ${isTransitioning ? 'opacity-75' : 'opacity-100'}`}>
             <div className="flex items-center justify-between text-sm">
-              <span className="font-medium text-slate-700">Paso {currentStep} de 3</span>
-              <span className="font-bold text-blue-600">{Math.round((currentStep / 3) * 100)}% completado</span>
+              <span className="font-medium text-slate-700">{t('admin.orders.steps.step')} {currentStep} {t('admin.orders.steps.of')} 3</span>
+              <span className="font-bold text-blue-600">{Math.round((currentStep / 3) * 100)}{t('admin.orders.steps.completed')}</span>
             </div>
             <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
               <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500" style={{ width: `${(currentStep / 3) * 100}%` }} />
@@ -1071,7 +1071,7 @@ export default function PedidosPage() {
 
           {/* Contenido por pasos */}
           <div className={`space-y-6 ${isTransitioning ? (stepDirection === 'next' ? 'opacity-0 translate-x-1' : 'opacity-0 -translate-x-1') : 'opacity-100 translate-x-0'} transition-all`}>
-            {/* Paso 1: Cliente + Producto */}
+            {/* {t('admin.orders.steps.step1')} */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div className="space-y-2">
@@ -1096,7 +1096,7 @@ export default function PedidosPage() {
                     <Package className="w-4 h-4 mr-2 text-blue-600" />
 {t('admin.orders.form.productNameLabel')}
                   </Label>
-                  <Input value={newOrderData.productName} onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })} placeholder="Ej: iPhone 15 Pro Max" />
+                  <Input value={newOrderData.productName} onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })} placeholder="E.g: iPhone 15 Pro Max" />
                 </div>
 
                 <div className="space-y-3">
