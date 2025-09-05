@@ -279,8 +279,12 @@
       },
       "form": {
         "newUser": "New User",
+        "createUser": "Create User",
+        "editUser": "Edit User", 
+        "description": "Define the role, status and contact details.",
         "fullName": "Full name",
         "email": "Email",
+        "role": "Role",
         "selectRole": "Select role",
         "cancel": "Cancel",
         "save": "Save",
@@ -295,7 +299,10 @@
         "couldNotSave": "Could not save"
       },
       "common": {
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "showing": "Showing",
+        "of": "of",
+        "perPage": "per page"
       }
     },
     "orders": {

@@ -386,7 +386,7 @@ export default function UsuariosPage() {
                         <SelectContent>
                           <SelectItem value="all">{t('admin.users.filters.allRoles')}</SelectItem>
                           {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
-                            <SelectItem key={r} value={r}>{r}</SelectItem>
+                            <SelectItem key={r} value={r}>{t(`admin.users.roles.${r}` as any)}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -412,8 +412,8 @@ export default function UsuariosPage() {
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>{editingUser && users.some(u => u.id === editingUser.id) ? 'Editar Usuario' : 'Crear Usuario'}</DialogTitle>
-                          <DialogDescription>Define el rol, el estado y los datos de contacto.</DialogDescription>
+                          <DialogTitle>{editingUser && users.some(u => u.id === editingUser.id) ? t('admin.users.form.editUser') : t('admin.users.form.createUser')}</DialogTitle>
+                          <DialogDescription>{t('admin.users.form.description')}</DialogDescription>
                         </DialogHeader>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
                           <div className="space-y-2">
@@ -444,7 +444,7 @@ export default function UsuariosPage() {
                               </SelectTrigger>
                               <SelectContent>
                                 {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
-                                  <SelectItem key={r} value={r}>{r}</SelectItem>
+                                  <SelectItem key={r} value={r}>{t(`admin.users.roles.${r}` as any)}</SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>
@@ -536,7 +536,7 @@ export default function UsuariosPage() {
                                         </td>
                                         <td className="py-4 px-6" style={{width: '15%'}}>
                                           <Badge className={`${ROLE_COLORS[user.role]} border font-medium px-3 py-1`}>
-                                            {user.role}
+                                            {t(`admin.users.roles.${user.role}` as any)}
                                           </Badge>
                                         </td>
                                         <td className="py-4 px-6" style={{width: '15%'}}>

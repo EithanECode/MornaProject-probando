@@ -279,8 +279,12 @@
       },
       "form": {
         "newUser": "Nuevo Usuario",
+        "createUser": "Crear Usuario",
+        "editUser": "Editar Usuario",
+        "description": "Define el rol, el estado y los datos de contacto.",
         "fullName": "Nombre completo",
         "email": "Correo",
+        "role": "Rol",
         "selectRole": "Seleccionar rol",
         "cancel": "Cancelar",
         "save": "Guardar",
@@ -295,7 +299,10 @@
         "couldNotSave": "No se pudo guardar"
       },
       "common": {
-        "loading": "Cargando..."
+        "loading": "Cargando...",
+        "showing": "Mostrando",
+        "of": "de",
+        "perPage": "por página"
       }
     },
     "orders": {
