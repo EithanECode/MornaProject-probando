@@ -181,6 +181,12 @@ export default function UsuariosPage() {
     const start = (page - 1) * pageSize;
     return filteredUsers.slice(start, start + pageSize);
   }, [filteredUsers, page, pageSize]);
+  // Texto de paginación internacionalizado
+  const paginationText = t('admin.users.pagination.showing', {
+    from: (filteredUsers.length === 0 ? 0 : (page - 1) * pageSize + 1),
+    to: Math.min(page * pageSize, filteredUsers.length),
+    total: filteredUsers.length
+  });
 
   // Resetear a la primera página al cambiar filtros o dataset
   useEffect(() => {
@@ -689,7 +695,7 @@ export default function UsuariosPage() {
                             {filteredUsers.length > 0 && (
                               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
                                 <div className="text-xs text-slate-600">
-                                  {t('admin.users.pagination.showing', { from: Math.min((page - 1) * pageSize + 1, filteredUsers.length), to: Math.min(page * pageSize, filteredUsers.length), total: filteredUsers.length })}
+                                  {paginationText}
                                 </div>
                                 <div className="flex items-center gap-3">
                                   <div className="flex items-center gap-2">

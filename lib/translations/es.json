@@ -245,6 +245,14 @@
       }
     },
     "users": {
+    "pagination": {
+      "showing": "Mostrando {{from}} a {{to}} de {{total}} resultados",
+      "perPage": "por página"
+    },
+    "messages": {
+      "invalidUrlTitle": "URL no válida",
+      "invalidUrlDesc": "La URL no es válida."
+    },
       "title": "Gestión de Usuarios",
       "subtitle": "Seguridad y acceso",
       "description": "Gestión de usuarios y accesos",
@@ -537,5 +545,7 @@
   },
   "header": {
     "notifications": "Notificaciones"
+  },
+  "admin": {
   }
 }
