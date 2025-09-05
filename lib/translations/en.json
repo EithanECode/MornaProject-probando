@@ -194,6 +194,36 @@
         "securityUpdated": "Security settings updated",
         "securityUpdatedDesc": "Security changes have been applied successfully."
       }
+    },
+    "dashboard": {
+      "title": "Administration Panel",
+      "subtitle": "Complete Morna system supervision",
+      "welcome": {
+        "title": "Welcome back!",
+        "subtitle": "Control Panel - Master Admin",
+        "description": "Supervise and manage the entire system from one place"
+      },
+      "stats": {
+        "totalUsers": "Total Users",
+        "activeUsers": "Active users",
+        "activeOrders": "Active Orders",
+        "inProcess": "In process",
+        "criticalAlerts": "Critical Alerts",
+        "requireAttention": "Require attention",
+        "totalRevenue": "Total Revenue"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "subtitle": "Quickly access administration functions",
+        "manageUsers": "Manage Users",
+        "configuration": "Configuration",
+        "alerts": "Alerts",
+        "reports": "Reports"
+      },
+      "recentActivity": {
+        "title": "Recent System Activity",
+        "subtitle": "Latest actions and system events"
+      }
     }
   }
 }

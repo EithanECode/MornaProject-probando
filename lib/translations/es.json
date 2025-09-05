@@ -194,6 +194,36 @@
         "securityUpdated": "Configuración de seguridad actualizada",
         "securityUpdatedDesc": "Los cambios de seguridad se han aplicado correctamente."
       }
+    },
+    "dashboard": {
+      "title": "Panel de Administración",
+      "subtitle": "Supervisión completa del sistema Morna",
+      "welcome": {
+        "title": "¡Bienvenido de vuelta!",
+        "subtitle": "Panel de Control - Master Admin",
+        "description": "Supervisa y gestiona todo el sistema desde un solo lugar"
+      },
+      "stats": {
+        "totalUsers": "Total Usuarios",
+        "activeUsers": "Usuarios activos",
+        "activeOrders": "Pedidos Activos",
+        "inProcess": "En proceso",
+        "criticalAlerts": "Alertas Críticas",
+        "requireAttention": "Requieren atención",
+        "totalRevenue": "Ingresos Totales"
+      },
+      "quickActions": {
+        "title": "Acciones Rápidas",
+        "subtitle": "Accede rápidamente a las funciones de administración",
+        "manageUsers": "Gestionar Usuarios",
+        "configuration": "Configuración",
+        "alerts": "Alertas",
+        "reports": "Reportes"
+      },
+      "recentActivity": {
+        "title": "Actividad Reciente del Sistema",
+        "subtitle": "Últimas acciones y eventos del sistema"
+      }
     }
   }
 }

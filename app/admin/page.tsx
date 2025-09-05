@@ -35,10 +35,12 @@ import {
   Zap
 } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function AdminDashboard() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const { adminId } = useAdminContext();
 
@@ -121,8 +123,8 @@ export default function AdminDashboard() {
         <Header 
           notifications={stats.criticalAlerts}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Panel de Administración"
-          subtitle="Supervisión completa del sistema Morna"
+          title={t('admin.dashboard.title')}
+          subtitle={t('admin.dashboard.subtitle')}
         />
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
@@ -132,14 +134,14 @@ export default function AdminDashboard() {
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
                 <div>
-                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
-                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">Panel de Control - Master Admin</p>
-                  <p className="text-blue-200 mt-2 text-xs md:text-sm">Supervisa y gestiona todo el sistema desde un solo lugar</p>
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">{t('admin.dashboard.welcome.title')}</h2>
+                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">{t('admin.dashboard.welcome.subtitle')}</p>
+                  <p className="text-blue-200 mt-2 text-xs md:text-sm">{t('admin.dashboard.welcome.description')}</p>
                 </div>
                 <div className="flex md:hidden lg:flex items-center space-x-4 md:space-x-6">
                   <div className="text-center">
                     <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{totalUsuarios}</div>
-                    <p className="text-blue-100 text-xs md:text-sm">Usuarios Totales</p>
+                    <p className="text-blue-100 text-xs md:text-sm">{t('admin.dashboard.stats.totalUsers')}</p>
                   </div>
                 </div>
               </div>
@@ -152,14 +154,14 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-blue-800">Total Usuarios</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-blue-800">{t('admin.dashboard.stats.totalUsers')}</CardTitle>
                   <div className="p-1.5 md:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Users className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{totalUsuarios}</div>
-                  <p className="text-xs text-blue-700">Usuarios activos</p>
+                  <p className="text-xs text-blue-700">{t('admin.dashboard.stats.activeUsers')}</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                     <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.totalUsers / 100) * 100}%`}}></div>
                   </div>
@@ -168,14 +170,14 @@ export default function AdminDashboard() {
 
               <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-green-800">Pedidos Activos</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-green-800">{t('admin.dashboard.stats.activeOrders')}</CardTitle>
                   <div className="p-1.5 md:p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Package className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{totalPedidos}</div>
-                  <p className="text-xs text-green-700">En proceso</p>
+                  <p className="text-xs text-green-700">{t('admin.dashboard.stats.inProcess')}</p>
                   <div className="mt-2 w-full bg-green-200 rounded-full h-2">
                     <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.activeOrders / 200) * 100}%`}}></div>
                   </div>
@@ -184,14 +186,14 @@ export default function AdminDashboard() {
 
               <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-red-800">Alertas Críticas</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-red-800">{t('admin.dashboard.stats.criticalAlerts')}</CardTitle>
                   <div className="p-1.5 md:p-2 bg-red-500 rounded-lg group-hover:scale-110 transition-transform">
                     <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-red-900">{stats.criticalAlerts}</div>
-                  <p className="text-xs text-red-700">Requieren atención</p>
+                  <p className="text-xs text-red-700">{t('admin.dashboard.stats.requireAttention')}</p>
                   <div className="mt-2 w-full bg-red-200 rounded-full h-2">
                     <div className="bg-red-500 h-2 rounded-full" style={{width: `${(stats.criticalAlerts / 10) * 100}%`}}></div>
                   </div>
@@ -200,7 +202,7 @@ export default function AdminDashboard() {
 
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-purple-800">Ingresos Totales</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-purple-800">{t('admin.dashboard.stats.totalRevenue')}</CardTitle>
                   <div className="p-1.5 md:p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
                     <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
@@ -217,8 +219,8 @@ export default function AdminDashboard() {
             {/* Acciones Rápidas */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-lg md:text-xl font-semibold">Acciones Rápidas</CardTitle>
-                <p className="text-xs md:text-sm text-slate-600">Accede rápidamente a las funciones de administración</p>
+                <CardTitle className="text-lg md:text-xl font-semibold">{t('admin.dashboard.quickActions.title')}</CardTitle>
+                <p className="text-xs md:text-sm text-slate-600">{t('admin.dashboard.quickActions.subtitle')}</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -227,7 +229,7 @@ export default function AdminDashboard() {
                       <div className="p-2 md:p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
                         <Users className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">Gestionar Usuarios</span>
+                      <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.manageUsers')}</span>
                     </Button>
                   </Link>
                   <Link href="/admin/configuracion">
@@ -235,7 +237,7 @@ export default function AdminDashboard() {
                       <div className="p-2 md:p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
                         <Settings className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">Configuración</span>
+                      <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.configuration')}</span>
                     </Button>
                   </Link>
                   <Link href="/admin/alertas">
@@ -243,7 +245,7 @@ export default function AdminDashboard() {
                       <div className="p-2 md:p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
                         <AlertTriangle className="h-6 w-6 md:h-8 md:w-8 text-red-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">Alertas</span>
+                      <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.alerts')}</span>
                     </Button>
                   </Link>
                   <Link href="/admin/reportes">
@@ -251,7 +253,7 @@ export default function AdminDashboard() {
                       <div className="p-2 md:p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
                         <BarChart3 className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">Reportes</span>
+                      <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.reports')}</span>
                     </Button>
                   </Link>
                 </div>
@@ -261,8 +263,8 @@ export default function AdminDashboard() {
             {/* Actividad Reciente */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-lg md:text-xl font-semibold">Actividad Reciente del Sistema</CardTitle>
-                <p className="text-xs md:text-sm text-slate-600">Últimas acciones y eventos del sistema</p>
+                <CardTitle className="text-lg md:text-xl font-semibold">{t('admin.dashboard.recentActivity.title')}</CardTitle>
+                <p className="text-xs md:text-sm text-slate-600">{t('admin.dashboard.recentActivity.subtitle')}</p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3 md:space-y-4">
