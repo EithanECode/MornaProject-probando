@@ -328,15 +328,18 @@
         "client": "Cliente",
         "description": "Descripción",
         "status": "Estado",
-        "assignedTo": "Asignado a",
-        "time": "Tiempo (días)",
+        "assignedTo": "Asignado",
+        "time": "Tiempo",
         "actions": "Acciones"
       },
       "status": {
         "cotizacion": "Cotización",
         "esperando-pago": "Esperando Pago",
         "en-transito": "En Tránsito",
-        "entregado": "Entregado"
+        "entregado": "Entregado",
+        "pendiente-china": "Pend. China",
+        "pendiente-vzla": "Pend. Vzla",
+        "cancelado": "Cancelado"
       },
       "actions": {
         "view": "Ver",
@@ -344,6 +347,7 @@
         "delete": "Eliminar",
         "export": "Exportar a PDF",
         "create": "✨ Crear Nuevo Pedido",
+        "newOrder": "Nuevo Pedido",
         "saveChanges": "Guardar cambios",
         "viewDocuments": "Ver Documentos"
       },

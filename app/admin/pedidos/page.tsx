@@ -183,6 +183,19 @@ const useOrdersFilter = (orders: Order[]) => {
 
 export default function PedidosPage() {
   const { t } = useTranslation();
+
+  // Función para traducir estados dinámicamente
+  const getTranslatedStatus = (status: string) => {
+    const statusMap: { [key: string]: string } = {
+      'pendiente-china': t('admin.orders.status.pendiente-china'),
+      'pendiente-vzla': t('admin.orders.status.pendiente-vzla'),
+      'esperando-pago': t('admin.orders.status.esperando-pago'),
+      'en-transito': t('admin.orders.status.en-transito'),
+      'entregado': t('admin.orders.status.entregado'),
+      'cancelado': t('admin.orders.status.cancelado')
+    };
+    return statusMap[status] || status;
+  };
   // Datos desde Supabase (stats/admin)
   const { data: adminStats, loading: adminLoading, error: adminError, refetch: refetchStats } = useAdminOrders();
   // Lista de pedidos reales
@@ -904,12 +917,12 @@ export default function PedidosPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">{t('admin.orders.filters.allStates')}</SelectItem>
-                          <SelectItem value="pendiente-china">Pendiente China</SelectItem>
-                          <SelectItem value="pendiente-vzla">Pendiente Vzla</SelectItem>
-                          <SelectItem value="esperando-pago">Esperando Pago</SelectItem>
-                          <SelectItem value="en-transito">En Tránsito</SelectItem>
-                          <SelectItem value="entregado">Entregado</SelectItem>
-                          <SelectItem value="cancelado">Cancelado</SelectItem>
+                          <SelectItem value="pendiente-china">{getTranslatedStatus('pendiente-china')}</SelectItem>
+                          <SelectItem value="pendiente-vzla">{getTranslatedStatus('pendiente-vzla')}</SelectItem>
+                          <SelectItem value="esperando-pago">{getTranslatedStatus('esperando-pago')}</SelectItem>
+                          <SelectItem value="en-transito">{getTranslatedStatus('en-transito')}</SelectItem>
+                          <SelectItem value="entregado">{getTranslatedStatus('entregado')}</SelectItem>
+                          <SelectItem value="cancelado">{getTranslatedStatus('cancelado')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -919,7 +932,7 @@ export default function PedidosPage() {
                   <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-4 mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
                     <Button onClick={() => setIsNewOrderModalOpen(true)} className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-sm md:text-base font-medium">
                       <Plus className="w-4 h-4 mr-2" />
-                      Nuevo Pedido
+{t('admin.orders.actions.newOrder')}
                     </Button>
                     {/* <Button 
                       variant="outline"
@@ -937,12 +950,12 @@ export default function PedidosPage() {
                 <table className={mounted && theme === 'dark' ? 'w-full bg-slate-800' : 'w-full'}>
                   <thead>
                     <tr className={mounted && theme === 'dark' ? 'border-b border-slate-700' : 'border-b border-slate-200'}>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>ID</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Cliente</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Estado</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Asignado</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Tiempo</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>Acciones</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.id')}</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.client')}</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.status')}</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.assignedTo')}</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.time')}</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -976,13 +989,13 @@ export default function PedidosPage() {
                            </div>
                            <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">
                              <Clock className="w-3 h-3" />
-                             <span>{order.daysElapsed} días</span>
+                             <span>{t('admin.orders.time.days', { count: order.daysElapsed })}</span>
                            </div>
                          </div>
                          <div className="flex items-center gap-2 flex-wrap">
                            <Badge className={`${status.color} border text-xs`}>
                              <StatusIcon className="w-3 h-3 mr-1" />
-                             {status.label}
+                             {getTranslatedStatus(order.status)}
                            </Badge>
                            <Badge className={`${assigned.color} border text-xs`}>
                              {assigned.label}
