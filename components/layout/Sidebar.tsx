@@ -238,22 +238,6 @@ const getAdminMenuItems = (t: (key: string) => string) => [
     path: '/admin/pedidos'
   },
   {
-    id: 'reportes',
-    label: t && typeof t === 'function' ? t('admin.sidebar.reports') : 'Reportes',
-    icon: BarChart3,
-    badge: null,
-    color: 'text-purple-500',
-    path: '/admin/reportes'
-  },
-  {
-    id: 'alertas',
-    label: t && typeof t === 'function' ? t('admin.sidebar.alerts') : 'Alertas',
-    icon: AlertTriangle,
-    badge: 5,
-    color: 'text-red-500',
-    path: '/admin/alertas'
-  },
-  {
     id: 'gestion',
     label: t && typeof t === 'function' ? t('admin.sidebar.management') : 'Gestión',
     icon: Settings,
