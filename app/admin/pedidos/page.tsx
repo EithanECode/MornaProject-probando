@@ -105,32 +105,32 @@ interface NewOrderData {
 
 // Memoizar las configuraciones para evitar recreaciones
 const STATUS_CONFIG = {
-  'pendiente-china': { label: t('admin.orders.status.pendiente-china'), color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
-  'pendiente-vzla': { label: t('admin.orders.status.pendiente-vzla'), color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
-  'esperando-pago': { label: t('admin.orders.status.esperando-pago'), color: 'bg-orange-700 border-orange-800', icon: Clock },
-  'en-transito': { label: t('admin.orders.status.en-transito'), color: 'bg-blue-800 border-blue-900', icon: Plane },
-  'entregado': { label: t('admin.orders.status.entregado'), color: 'bg-green-800 border-green-900', icon: CheckCircle },
-  'cancelado': { label: t('admin.orders.status.cancelado'), color: 'bg-red-800 border-red-900', icon: AlertCircle }
+  'pendiente-china': { color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
+  'pendiente-vzla': { color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
+  'esperando-pago': { color: 'bg-orange-700 border-orange-800', icon: Clock },
+  'en-transito': { color: 'bg-blue-800 border-blue-900', icon: Plane },
+  'entregado': { color: 'bg-green-800 border-green-900', icon: CheckCircle },
+  'cancelado': { color: 'bg-red-800 border-red-900', icon: AlertCircle }
 } as const;
 
 const ASSIGNED_CONFIG = {
-  'china': { label: t('admin.orders.assigned.china'), color: 'bg-red-800 border-red-900' },
-  'vzla': { label: t('admin.orders.assigned.vzla'), color: 'bg-blue-800 border-blue-900' }
+  'china': { color: 'bg-red-800 border-red-900' },
+  'vzla': { color: 'bg-blue-800 border-blue-900' }
 } as const;
 
 // Light theme colors
 const STATUS_CONFIG_LIGHT = {
-  'pendiente-china': { label: t('admin.orders.status.pendiente-china'), color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
-  'pendiente-vzla': { label: t('admin.orders.status.pendiente-vzla'), color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
-  'esperando-pago': { label: t('admin.orders.status.esperando-pago'), color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock },
-  'en-transito': { label: t('admin.orders.status.en-transito'), color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Plane },
-  'entregado': { label: t('admin.orders.status.entregado'), color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle },
-  'cancelado': { label: t('admin.orders.status.cancelado'), color: 'bg-red-100 text-red-800 border-red-200', icon: AlertCircle }
+  'pendiente-china': { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
+  'pendiente-vzla': { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
+  'esperando-pago': { color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock },
+  'en-transito': { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Plane },
+  'entregado': { color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle },
+  'cancelado': { color: 'bg-red-100 text-red-800 border-red-200', icon: AlertCircle }
 } as const;
 
 const ASSIGNED_CONFIG_LIGHT = {
-  'china': { label: t('admin.orders.assigned.china'), color: 'bg-red-100 text-red-800 border-red-200' },
-  'vzla': { label: t('admin.orders.assigned.vzla'), color: 'bg-blue-100 text-blue-800 border-blue-200' }
+  'china': { color: 'bg-red-100 text-red-800 border-red-200' },
+  'vzla': { color: 'bg-blue-100 text-blue-800 border-blue-200' }
 } as const;
 
 // Hook personalizado para manejar el filtrado y paginación
@@ -603,8 +603,8 @@ export default function PedidosPage() {
         order.id,
         order.client,
         order.description,
-        STATUS_CONFIG[order.status].label,
-        ASSIGNED_CONFIG[order.assignedTo].label,
+  t(`admin.orders.status.${order.status}`),
+  t(`admin.orders.assigned.${order.assignedTo}`),
   t('admin.orders.table.daysElapsed', { count: order.daysElapsed })
       ];
 
@@ -1004,7 +1004,7 @@ export default function PedidosPage() {
                              {getTranslatedStatus(order.status)}
                            </Badge>
                            <Badge className={`${assigned.color} border text-xs`}>
-                             {assigned.label}
+                            {t(`admin.orders.assigned.${order.assignedTo}`)}
                            </Badge>
                          </div>
                        </div>
@@ -1355,7 +1355,7 @@ export default function PedidosPage() {
                     <div>
                       <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Asignado a</p>
                       <Badge className={`${assignedConfig[selectedOrder.assignedTo].color} border text-xs md:text-sm`}>
-                        {assignedConfig[selectedOrder.assignedTo].label}
+                        {t(`admin.orders.assigned.${selectedOrder.assignedTo}`)}
                       </Badge>
                     </div>
                   </div>
@@ -1383,7 +1383,7 @@ export default function PedidosPage() {
                             return <StatusIcon className="w-3 h-3 mr-1" />;
                           })()
                         }
-                        {statusConfig[selectedOrder.status].label}
+                        {t(`admin.orders.status.${selectedOrder.status}`)}
                       </Badge>
                     </div>
                   </div>
@@ -1481,7 +1481,7 @@ export default function PedidosPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {Object.keys(statusConfig).map(statusKey => (
-                      <SelectItem key={statusKey} value={statusKey}>{statusConfig[statusKey as Order['status']].label}</SelectItem>
+                      <SelectItem key={statusKey} value={statusKey}>{t(`admin.orders.status.${statusKey}`)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -1497,7 +1497,7 @@ export default function PedidosPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {Object.keys(assignedConfig).map(assignedKey => (
-                      <SelectItem key={assignedKey} value={assignedKey}>{assignedConfig[assignedKey as Order['assignedTo']].label}</SelectItem>
+                      <SelectItem key={assignedKey} value={assignedKey}>{t(`admin.orders.assigned.${assignedKey}`)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
