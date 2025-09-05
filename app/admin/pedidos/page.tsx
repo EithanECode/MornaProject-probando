@@ -807,7 +807,6 @@ export default function PedidosPage() {
       const status = statusConfig[order.status];
       const assigned = assignedConfig[order.assignedTo];
       const StatusIcon = status.icon;
-      
       return (
         <tr 
           key={order.id}
@@ -830,12 +829,12 @@ export default function PedidosPage() {
           <td className="py-4 px-6">
             <Badge className={`${status.color} border text-slate-900 dark:text-white`}>
               <StatusIcon className="w-3 h-3 mr-1" />
-              {status.label}
+              {t(`admin.orders.status.${order.status}`)}
             </Badge>
           </td>
           <td className="py-4 px-6">
             <Badge className={`${assigned.color} border text-slate-900 dark:text-white`}>
-              {assigned.label}
+              {t(`admin.orders.assigned.${order.assignedTo}`)}
             </Badge>
           </td>
           <td className="py-4 px-6">
@@ -860,7 +859,7 @@ export default function PedidosPage() {
         </tr>
       );
     })
-  ), [paginatedOrders, statusConfig, assignedConfig]);
+  ), [paginatedOrders, statusConfig, assignedConfig, t]);
 
   return (
     <div
