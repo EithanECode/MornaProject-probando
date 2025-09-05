@@ -18,7 +18,6 @@
         "preferences": "Preferences"
       },
       "profile": {
-        "title": "Personal Information",
         "subtitle": "Update your personal information and profile picture",
         "fields": {
           "name": "Full name",
@@ -234,14 +233,6 @@
       }
     },
     "users": {
-    "pagination": {
-      "showing": "Showing {{from}} to {{to}} of {{total}} results",
-      "perPage": "per page"
-    },
-    "messages": {
-      "invalidUrlTitle": "Invalid URL",
-      "invalidUrlDesc": "The URL is not valid."
-    },
       "title": "User Management",
       "subtitle": "Security and access",
       "description": "User and access management",
