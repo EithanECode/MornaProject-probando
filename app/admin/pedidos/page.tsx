@@ -59,6 +59,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import VenezuelaOrdersTabContent from '@/components/venezuela/VenezuelaOrdersTabContent';
+import ChinaOrdersTabContent from '@/components/china/ChinaOrdersTabContent';
+
 // jsPDF se importará dinámicamente para evitar errores de SSR
 // html2canvas se importará dinámicamente para evitar errores de SSR
 
@@ -235,6 +239,7 @@ export default function PedidosPage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [stepDirection, setStepDirection] = useState<'next' | 'prev'>('next');
   const modalRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState<string>('admin');
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -878,13 +883,25 @@ export default function PedidosPage() {
         />
 
         <div className={mounted && theme === 'dark' ? 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6 bg-slate-900' : 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6'}>
-          {/* Stats Cards */}
-          {statsCards}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="mb-8 flex flex-wrap gap-3 rounded-2xl p-2 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+              <TabsTrigger value="admin" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+                <Settings className="w-4 h-4" /> Admin
+              </TabsTrigger>
+              <TabsTrigger value="venezuela" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+                <MapPin className="w-4 h-4" /> Venezuela
+              </TabsTrigger>
+              <TabsTrigger value="china" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+                <Plane className="w-4 h-4" /> China
+              </TabsTrigger>
+              {/* Pestaña Cliente eliminada */}
+            </TabsList>
 
-
-
-          {/* Table Card */}
-          <Card className={mounted && theme === 'dark' ? 'shadow-lg border-0 bg-slate-800/80 backdrop-blur-sm' : 'shadow-lg border-0 bg-white/70 backdrop-blur-sm'}>
+            <TabsContent value="admin" className="space-y-6">
+              {/* Stats Cards */}
+              {statsCards}
+              {/* Table Card existente */}
+              <Card className={mounted && theme === 'dark' ? 'shadow-lg border-0 bg-slate-800/80 backdrop-blur-sm' : 'shadow-lg border-0 bg-white/70 backdrop-blur-sm'}>
             <CardHeader>
                                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div>
@@ -1052,6 +1069,16 @@ export default function PedidosPage() {
               )}
             </CardContent>
           </Card>
+            </TabsContent>
+
+            <TabsContent value="venezuela" className="space-y-6">
+              <VenezuelaOrdersTabContent />
+            </TabsContent>
+            <TabsContent value="china" className="space-y-6">
+              <ChinaOrdersTabContent />
+            </TabsContent>
+            {/* TabsContent cliente eliminado */}
+          </Tabs>
         </div>
       </main>
 
@@ -1261,7 +1288,7 @@ export default function PedidosPage() {
                       <p className="font-medium">{newOrderData.client_name} ({newOrderData.client_id})</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">{t('admin.orders.summary.product')}</p>
+                                           <p className="text-sm text-slate-600">{t('admin.orders.summary.product')}</p>
                       <p className="font-medium">{newOrderData.productName}</p>
                     </div>
                     <div>
@@ -1275,7 +1302,7 @@ export default function PedidosPage() {
                         {newOrderData.deliveryType === 'air' && t('admin.orders.deliveryTypes.air')}
                         {newOrderData.deliveryType === 'maritime' && t('admin.orders.deliveryTypes.maritime')}
                       </p>
-                    </div>
+                                       </div>
                     <div>
                       <p className="text-sm text-slate-600">{t('admin.orders.summary.estimatedBudget')}</p>
                       <p className="font-medium">${newOrderData.estimatedBudget}</p>
