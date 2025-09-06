@@ -28,48 +28,48 @@ import {
   Headphones
 } from "lucide-react";
 
-// Preguntas frecuentes expandidas
+// Preguntas frecuentes usando llaves de traducción
 const faqData = [
   {
     id: 1,
-    category: "Tracking",
-    question: '¿Cómo puedo rastrear mi paquete?',
-    answer: 'Puedes rastrear tu paquete de varias formas:\n\n1. Ingresa el número de seguimiento en nuestra página de rastreo\n2. Haz clic en el enlace que recibiste por email\n3. Usa nuestra app móvil\n4. Pregunta en el chat en vivo\n\nEl número de seguimiento tiene formato TRK123456789 y lo recibes dentro de las 24 horas posteriores al envío. Si no lo encuentras, revisa tu carpeta de spam.',
+    category: 'tracking',
+    question: 'client.support.schedule.faq.q1.question',
+    answer: 'client.support.faq.q1.answer',
     tags: ['tracking', 'envío', 'seguimiento']
   },
   {
     id: 2,
-    category: "Envíos",
-    question: '¿Cuánto tiempo tarda la entrega?',
-    answer: 'Los tiempos de entrega varían según el destino y el tipo de envío:\n\n• Envíos Nacionales: 24-48h\n• Internacionales: 3-10 días hábiles\n• Express: 1-3 días hábiles\n• Económico: 5-15 días hábiles\n\nLos tiempos pueden variar por factores como aduanas, clima o eventos especiales.',
+    category: 'shipping',
+    question: 'client.support.faq.q2.question',
+    answer: 'client.support.faq.q2.answer',
     tags: ['entrega', 'tiempo', 'envío']
   },
   {
     id: 3,
-    category: "Pagos",
-    question: '¿Qué métodos de pago aceptan?',
-    answer: 'Aceptamos múltiples métodos de pago para tu comodidad:\n\n• Tarjetas de crédito/débito (Visa, MasterCard, American Express)\n• PayPal\n• Transferencias bancarias\n• Pago Móvil\n• Criptomonedas (Bitcoin, Ethereum)\n• Pago contra reembolso (solo envíos nacionales)\n\nTodos los pagos son procesados de forma segura con encriptación SSL.',
+    category: 'payments',
+    question: 'client.support.faq.q3.question',
+    answer: 'client.support.faq.q3.answer',
     tags: ['pago', 'tarjeta', 'paypal', 'transferencia']
   },
   {
     id: 4,
-    category: "Devoluciones",
-    question: '¿Cómo devuelvo un producto?',
-    answer: 'Para devolver un producto sigue estos pasos:\n\n1. Ve a "Mis Pedidos" en tu cuenta\n2. Selecciona el producto que deseas devolver\n3. Haz clic en "Solicitar Devolución"\n4. Completa el formulario con el motivo\n5. Imprime la etiqueta de devolución\n6. Envía el producto en 7 días\n\nLas devoluciones son gratuitas si el producto llegó dañado o es diferente al solicitado.',
+    category: 'returns',
+    question: 'client.support.faq.q4.question',
+    answer: 'client.support.faq.q4.answer',
     tags: ['devolución', 'reembolso', 'producto']
   },
   {
     id: 5,
-    category: "Cuenta",
-    question: '¿Cómo cambio mi contraseña?',
-    answer: 'Para cambiar tu contraseña:\n\n1. Inicia sesión en tu cuenta\n2. Ve a "Configuración" → "Seguridad"\n3. Haz clic en "Cambiar Contraseña"\n4. Ingresa tu contraseña actual\n5. Escribe la nueva contraseña\n6. Confirma la nueva contraseña\n7. Haz clic en "Guardar Cambios"\n\nRecibirás un email de confirmación cuando el cambio sea exitoso.',
+    category: 'account',
+    question: 'client.support.faq.q5.question',
+    answer: 'client.support.faq.q5.answer',
     tags: ['contraseña', 'cuenta', 'seguridad']
   },
   {
     id: 6,
-    category: "Facturación",
-    question: '¿Cómo obtengo mi factura?',
-    answer: 'Para obtener tu factura:\n\n1. Ve a "Mis Pedidos"\n2. Selecciona el pedido específico\n3. Haz clic en "Descargar Factura"\n4. La factura se descargará en formato PDF\n\nTambién puedes solicitar facturas por email enviando tu número de pedido a facturacion@morna.com\n\nLas facturas están disponibles 24 horas después de la confirmación del pago.',
+    category: 'billing',
+    question: 'client.support.faq.q6.question',
+    answer: 'client.support.faq.q6.answer',
     tags: ['factura', 'facturación', 'pdf']
   }
 ];
@@ -199,8 +199,10 @@ export default function ClienteSoporte() {
 
   // Filtrar FAQ
   const filteredFaq = faqData.filter(faq => {
-    const matchesSearch = faq.question.toLowerCase().includes(faqSearch.toLowerCase()) ||
-                         faq.answer.toLowerCase().includes(faqSearch.toLowerCase()) ||
+    const questionText = t(faq.question).toLowerCase();
+    const answerText = t(faq.answer).toLowerCase();
+    const matchesSearch = questionText.includes(faqSearch.toLowerCase()) ||
+                         answerText.includes(faqSearch.toLowerCase()) ||
                          faq.tags.some(tag => tag.toLowerCase().includes(faqSearch.toLowerCase()));
     const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -414,7 +416,7 @@ export default function ClienteSoporte() {
                         className="cursor-pointer hover:bg-slate-100 transition-colors text-xs md:text-sm"
                         onClick={() => handleCategoryChange(category)}
                       >
-                        {category === 'all' ? 'Todas' : category}
+                        {category === 'all' ? t('client.support.faq.all') : t('client.support.faq.categories.' + category)}
                       </Badge>
                     ))}
                   </div>
@@ -442,7 +444,7 @@ export default function ClienteSoporte() {
                                 {faq.category}
                               </Badge>
                             </div>
-                            <h4 className="font-medium text-gray-900 text-sm md:text-base">{faq.question}</h4>
+                            <h4 className="font-medium text-gray-900 text-sm md:text-base">{t(faq.question)}</h4>
                           </div>
                           <div className="ml-2 md:ml-4 transition-transform duration-200">
                             {openFaqId === faq.id ? (
@@ -461,7 +463,7 @@ export default function ClienteSoporte() {
                           }`}
                         >
                           <div className="text-gray-700 whitespace-pre-line border-t pt-4 text-xs md:text-sm">
-                            {faq.answer}
+                            {t(faq.answer)}
                           </div>
                           <div className="flex flex-wrap gap-1 mt-3">
                             {faq.tags.map(tag => (
