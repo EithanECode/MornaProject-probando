@@ -2147,10 +2147,12 @@ export default function MisPedidosPage() {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-center">
-                💳 Realizar Pago
+                💳 {t('client.recentOrders.paymentModal.title')}
               </DialogTitle>
               <DialogDescription className="text-center">
-                {paymentStep === 1 ? 'Selecciona tu método de pago preferido' : 'Confirma los detalles de tu pago'}
+                {paymentStep === 1 
+                  ? t('client.recentOrders.paymentModal.selectMethod') 
+                  : t('client.recentOrders.paymentModal.confirmDetails')}
               </DialogDescription>
             </DialogHeader>
 
@@ -2165,7 +2167,7 @@ export default function MisPedidosPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-bold text-green-600">{selectedOrderForPayment.amount}</p>
-                      <p className="text-xs text-slate-500 mt-1">Cotización válida hasta: 25/01/2024</p>
+                      <p className="text-xs text-slate-500 mt-1">{t('client.recentOrders.paymentModal.quoteValidUntil', { date: '25/01/2024' })}</p>
                     </div>
                   </div>
                 </div>
@@ -2194,7 +2196,7 @@ export default function MisPedidosPage() {
                                   ? 'bg-green-100 text-green-800 border-green-200' 
                                   : 'bg-yellow-100 text-yellow-800 border-yellow-200'
                               }`}>
-                                {method.validation === 'automatic' ? '⚡ Automático' : ' Manual'}
+                                {method.validation === 'automatic' ? `⚡ ${t('client.recentOrders.paymentModal.automatic')}` : t('client.recentOrders.paymentModal.manual')}
                               </Badge>
                               <p className="text-xs text-slate-500 mt-1">{method.currency}</p>
                             </div>
@@ -2221,16 +2223,16 @@ export default function MisPedidosPage() {
 
                     {/* Información de pago */}
                     <div className="space-y-4 payment-info-card">
-                      <h4 className="font-semibold text-lg">📋 Información de Pago</h4>
+                      <h4 className="font-semibold text-lg">📋 {t('client.recentOrders.paymentModal.paymentInfo')}</h4>
                       
                       {selectedPaymentMethod.id === 'mobile' && (
                         <div className="space-y-3">
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">Número de Teléfono:</p>
+                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.phoneNumber')}</p>
                             <p className="text-lg font-mono font-bold text-blue-600">{selectedPaymentMethod.details?.phoneNumber}</p>
                           </div>
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">Referencia:</p>
+                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.reference')}</p>
                             <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.reference}</p>
                           </div>
                         </div>
@@ -2239,15 +2241,15 @@ export default function MisPedidosPage() {
                       {selectedPaymentMethod.id === 'transfer' && (
                         <div className="space-y-3">
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">Banco:</p>
+                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.bank')}</p>
                             <p className="text-lg font-bold text-blue-600">{selectedPaymentMethod.details?.bankName}</p>
                           </div>
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">Número de Cuenta:</p>
+                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.accountNumber')}</p>
                             <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.accountNumber}</p>
                           </div>
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">Referencia:</p>
+                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.reference')}</p>
                             <p className="text-lg font-mono font-bold text-purple-600">{selectedPaymentMethod.details?.reference}</p>
                           </div>
                         </div>
@@ -2256,11 +2258,11 @@ export default function MisPedidosPage() {
                       {(selectedPaymentMethod.id === 'binance' || selectedPaymentMethod.id === 'zelle' || selectedPaymentMethod.id === 'paypal') && (
                         <div className="space-y-3">
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">Email:</p>
+                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.email')}</p>
                             <p className="text-lg font-mono font-bold text-blue-600">{selectedPaymentMethod.details?.email}</p>
                           </div>
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">Referencia:</p>
+                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.reference')}</p>
                             <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.reference}</p>
                           </div>
                         </div>
@@ -2271,13 +2273,13 @@ export default function MisPedidosPage() {
                         <div className="flex items-start gap-2">
                           <div className="text-yellow-600 mt-0.5">⚠️</div>
                           <div>
-                            <p className="font-medium text-yellow-800">Instrucciones importantes:</p>
+                            <p className="font-medium text-yellow-800">{t('client.recentOrders.paymentModal.importantInstructions')}</p>
                             <ul className="text-sm text-yellow-700 mt-1 space-y-1">
-                              <li>• Realiza el pago con la referencia exacta</li>
-                              <li>• Guarda el comprobante de pago</li>
-                              <li>• El proceso puede tomar hasta 24 horas</li>
+                              <li>• {t('client.recentOrders.paymentModal.instructions.exactReference')}</li>
+                              <li>• {t('client.recentOrders.paymentModal.instructions.saveReceipt')}</li>
+                              <li>• {t('client.recentOrders.paymentModal.instructions.processTime')}</li>
                               {selectedPaymentMethod.validation === 'manual' && (
-                                <li>• Nuestro equipo validará tu pago manualmente</li>
+                                <li>• {t('client.recentOrders.paymentModal.instructions.manualValidation')}</li>
                               )}
                             </ul>
                           </div>
@@ -2295,7 +2297,7 @@ export default function MisPedidosPage() {
                     className="flex-1"
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    {paymentStep === 1 ? 'Cancelar' : 'Volver'}
+                    {paymentStep === 1 ? t('client.recentOrders.paymentModal.cancel') : t('client.recentOrders.paymentModal.back')}
                   </Button>
                   
                   {paymentStep === 2 && (
@@ -2307,12 +2309,12 @@ export default function MisPedidosPage() {
                       {isConfirmingPayment ? (
                         <>
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                          Procesando...
+                          {t('client.recentOrders.paymentModal.processing')}
                         </>
                       ) : (
                         <>
                           <Check className="h-4 w-4 mr-2" />
-                          Confirmar Pago
+                          {t('client.recentOrders.paymentModal.confirmPayment')}
                         </>
                       )}
                     </Button>

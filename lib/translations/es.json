@@ -96,6 +96,31 @@
         "downloadInvoice": "Descargar factura"
       },
       "trackingModal": {
+      "paymentModal": {
+        "title": "Realizar Pago",
+        "selectMethod": "Selecciona tu método de pago preferido",
+        "confirmDetails": "Confirma los detalles de tu pago",
+        "quoteValidUntil": "Cotización válida hasta: {{date}}",
+        "automatic": "Automático",
+        "manual": "Manual",
+        "paymentInfo": "Información de Pago",
+        "phoneNumber": "Número de Teléfono:",
+        "reference": "Referencia:",
+        "bank": "Banco:",
+        "accountNumber": "Número de Cuenta:",
+        "email": "Email:",
+        "importantInstructions": "Instrucciones importantes:",
+        "instructions": {
+          "exactReference": "Realiza el pago con la referencia exacta",
+          "saveReceipt": "Guarda el comprobante de pago",
+          "processTime": "El proceso puede tomar hasta 24 horas",
+          "manualValidation": "Nuestro equipo validará tu pago manualmente"
+        },
+        "cancel": "Cancelar",
+        "back": "Volver",
+        "processing": "Procesando...",
+        "confirmPayment": "Confirmar Pago"
+      },
         "trackingNumber": "Número de Tracking",
         "carrier": "Transportista",
         "estimatedDelivery": "Entrega estimada",
