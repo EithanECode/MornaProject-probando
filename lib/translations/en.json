@@ -305,6 +305,7 @@
       "title": "My Orders",
       "subtitle": "View and manage all your placed orders",
       "noOrders": "You have no orders registered.",
+  "emptyHint": "Orders will appear here when they are created",
       "status": "Status:",
       "budget": "Budget",
       "details": "View details",

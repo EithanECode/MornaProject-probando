@@ -1,4 +1,264 @@
 {
+    "client": {
+      "dashboard": {
+        "title": "Dashboard Cliente",
+        "subtitle": "Bienvenido de vuelta, aquí tienes un resumen de tu actividad",
+        "welcome": "¡Bienvenido de vuelta!",
+        "panel": "Panel de Control - Cliente",
+        "manage": "Gestiona tus pedidos, tracking y pagos desde un solo lugar",
+        "activeShipments": "Envíos Activos",
+        "totalOrders": "Total Pedidos",
+        "ordersPlaced": "Pedidos realizados",
+        "inTransit": "En Tránsito",
+        "activeShipmentsShort": "Envíos activos",
+        "totalSpent": "Total Gastado",
+        "totalInvestment": "Inversión total",
+        "completed": "Completados",
+        "ordersDelivered": "Pedidos entregados"
+      },
+      "quickActions": {
+        "title": "Acciones Rápidas",
+        "subtitle": "Accede rápidamente a las funciones más utilizadas",
+        "newOrder": "Crear Nuevo Pedido",
+        "newOrderDesc": "Solicita la importación de un producto",
+        "trackOrder": "Seguir Pedido",
+        "trackOrderDesc": "Consulta el estado de tus envíos",
+        "support": "Contactar Soporte",
+        "supportDesc": "Obtén ayuda cuando la necesites",
+        "payments": "Mis Pagos",
+        "paymentsDesc": "Gestiona tus transacciones"
+      },
+      "support": {
+        "title": "Soporte",
+        "subtitle": "¿Necesitas ayuda? Estamos aquí para ti",
+        "headerTitle": "Soporte al Cliente",
+        "headerSubtitle": "¿Tienes alguna pregunta? Nuestro equipo está listo para ayudarte",
+        "onlineNow": "En línea ahora",
+        "responseTime": "Tiempo de respuesta: < 2 min",
+        "support": "Soporte",
+        "satisfaction": "Satisfacción",
+        "channels": {
+          "chatTitle": "Chat en Línea",
+          "chatDesc": "Chatea con nuestro equipo de soporte en tiempo real",
+          "available": "Disponible",
+          "phoneTitle": "Teléfono",
+          "phoneDesc": "Llámanos directamente para atención inmediata",
+          "emailTitle": "Email",
+          "emailDesc": "Envíanos un email y te responderemos en 24 horas"
+        },
+        "schedule": {
+          "faq": {
+            "chatTitle": "Chat con Soporte",
+            "agentOnline": "{{name}} - En línea",
+            "title": "Preguntas Frecuentes",
+            "subtitle": "Encuentra respuestas rápidas a las preguntas más comunes",
+            "placeholder": "Buscar en preguntas frecuentes...",
+            "tags": {
+              "tracking": "Tracking",
+              "envío": "Envío",
+              "seguimiento": "Seguimiento",
+              "entrega": "Entrega",
+              "tiempo": "Tiempo",
+              "pago": "Pago",
+              "tarjeta": "Tarjeta",
+              "paypal": "PayPal",
+              "transferencia": "Transferencia",
+              "devolución": "Devolución",
+              "reembolso": "Reembolso",
+              "producto": "Producto",
+              "contraseña": "Contraseña",
+              "cuenta": "Cuenta",
+              "seguridad": "Seguridad",
+              "factura": "Factura",
+              "facturación": "Facturación",
+              "pdf": "PDF"
+            },
+            "all": "Todas",
+            "categories": {
+              "tracking": "Tracking",
+              "shipping": "Envíos",
+              "payments": "Pagos",
+              "returns": "Devoluciones",
+              "account": "Cuenta",
+              "billing": "Facturación"
+            },
+            "q1": {
+              "question": "¿Cómo puedo rastrear mi paquete?",
+              "answer": "Puedes rastrear tu paquete de varias formas:\n\n1. Ingresa el número de seguimiento en nuestra página de rastreo\n2. Haz clic en el enlace que recibiste por email\n3. Usa nuestra app móvil\n4. Pregunta en el chat en vivo\n\nEl número de seguimiento tiene formato TRK123456789 y lo recibes dentro de las 24 horas posteriores al envío. Si no lo encuentras, revisa tu carpeta de spam."
+            },
+            "q2": {
+              "question": "¿Cuánto tiempo tarda la entrega?",
+              "answer": "Los tiempos de entrega varían según el destino y el tipo de envío:\n\n• Envíos Nacionales: 24-48h\n• Internacionales: 3-10 días hábiles\n• Express: 1-3 días hábiles\n• Económico: 5-15 días hábiles\n\nLos tiempos pueden variar por factores como aduanas, clima o eventos especiales."
+            },
+            "q3": {
+              "question": "¿Qué métodos de pago aceptan?",
+              "answer": "Aceptamos múltiples métodos de pago para tu comodidad:\n\n• Tarjetas de crédito/débito (Visa, MasterCard, American Express)\n• PayPal\n• Transferencias bancarias\n• Pago Móvil\n• Criptomonedas (Bitcoin, Ethereum)\n• Pago contra reembolso (solo envíos nacionales)\n\nTodos los pagos son procesados de forma segura con encriptación SSL."
+            },
+            "q4": {
+              "question": "¿Cómo devuelvo un producto?",
+              "answer": "Para devolver un producto sigue estos pasos:\n\n1. Ve a 'Mis Pedidos' en tu cuenta\n2. Selecciona el producto que deseas devolver\n3. Haz clic en 'Solicitar Devolución'\n4. Completa el formulario con el motivo\n5. Imprime la etiqueta de devolución\n6. Envía el producto en 7 días\n\nLas devoluciones son gratuitas si el producto llegó dañado o es diferente al solicitado."
+            },
+            "q5": {
+              "question": "¿Cómo cambio mi contraseña?",
+              "answer": "Para cambiar tu contraseña:\n\n1. Inicia sesión en tu cuenta\n2. Ve a 'Configuración' → 'Seguridad'\n3. Haz clic en 'Cambiar Contraseña'\n4. Ingresa tu contraseña actual\n5. Escribe la nueva contraseña\n6. Confirma la nueva contraseña\n7. Haz clic en 'Guardar Cambios'\n\nRecibirás un email de confirmación cuando el cambio sea exitoso."
+            },
+            "q6": {
+              "question": "¿Cómo obtengo mi factura?",
+              "answer": "Para obtener tu factura:\n\n1. Ve a 'Mis Pedidos'\n2. Selecciona el pedido específico\n3. Haz clic en 'Descargar Factura'\n4. La factura se descargará en formato PDF\n\nTambién puedes solicitar facturas por email enviando tu número de pedido a facturacion@morna.com\n\nLas facturas están disponibles 24 horas después de la confirmación del pago."
+            }
+          },
+          "title": "Horarios de Atención",
+          "weekdays": "Lunes a Viernes",
+          "saturday": "Sábados",
+          "sunday": "Domingos",
+          "chat247": "Chat 24/7",
+          "automatic": "Soporte automático",
+          "open": "Abierto",
+          "limited": "Limitado",
+          "closed": "Cerrado"
+        }
+      },
+      "recentOrders": {
+        "payments": {
+          "title": "Historial de Pagos",
+          "subtitle": "Consulta y gestiona todos tus pagos realizados",
+          "dashboard": "Panel de Control - Pagos",
+          "totalPayments": "Total Pagos",
+          "totalPaid": "Total Pagado",
+          "paid": "Pagados",
+          "paidDesc": "Transacciones exitosas",
+          "pending": "Pendientes",
+          "pendingDesc": "Esperando confirmación",
+          "processing": "Procesando",
+          "processingDesc": "En proceso",
+          "failed": "Fallidos",
+          "failedDesc": "Transacciones fallidas",
+          "filtersTitle": "Filtros y Búsqueda",
+          "filtersSubtitle": "Encuentra rápidamente tus transacciones",
+          "searchPlaceholder": "Buscar por producto, orden o ID de pago...",
+          "status": "Estado",
+          "allStatuses": "Todos los estados",
+          "paidStatus": "Pagado",
+          "pendingStatus": "Pendiente",
+          "processingStatus": "Procesando",
+          "failedStatus": "Fallido",
+          "refundedStatus": "Reembolsado",
+          "method": "Método",
+          "allMethods": "Todos los métodos",
+          "pago_movil": "Pago Móvil",
+          "transfer": "Transferencia",
+          "binance": "Binance USDT",
+          "zelle": "Zelle",
+          "paypal": "PayPal",
+          "card": "Tarjeta",
+          "date": "Fecha",
+          "allDates": "Todas las fechas",
+          "today": "Hoy",
+          "week": "Esta semana",
+          "month": "Este mes",
+          "transactions": "Transacciones",
+          "amount": "Monto:",
+          "methodLabel": "Método:",
+          "paymentDate": "Fecha de pago:",
+          "confirmed": "Confirmado:",
+          "paymentDetails": "Detalles de Pago:",
+          "bank": "Banco:",
+          "account": "Cuenta:",
+          "phone": "Teléfono:",
+          "wallet": "Wallet:",
+          "email": "Email:",
+          "reference": "Referencia:",
+          "viewDetails": "Ver Detalles",
+          "retry": "Reintentar",
+          "noTransactions": "No hay transacciones",
+          "noPayments": "No hay pagos disponibles o no hay coincidencias con los filtros aplicados."
+        },
+        "title": "Mis Pedidos",
+        "subtitle": "Consulta y gestiona todos tus pedidos realizados",
+        "noOrders": "No tienes pedidos registrados.",
+  "emptyHint": "Los pedidos aparecerán aquí cuando se creen",
+        "status": "Estado:",
+        "budget": "Presupuesto",
+        "details": "Ver detalles",
+        "search": "Buscar pedido, producto o tracking...",
+        "filter": "Filtrar por estado"
+      },
+      "configuration": {
+        "title": "Configuración",
+        "subtitle": "Gestiona tu perfil, seguridad y preferencias",
+        "tabs": {
+          "profile": "Perfil",
+          "security": "Seguridad",
+          "notifications": "Notificaciones",
+          "preferences": "Preferencias"
+        },
+        "profile": {
+          "title": "Información Personal",
+          "fields": {
+            "name": "Nombre completo",
+            "email": "Correo electrónico",
+            "phone": "Teléfono",
+            "language": "Idioma"
+          },
+          "placeholders": {
+            "name": "Tu nombre completo",
+            "email": "tu@email.com",
+            "phone": "+58 412-123-4567",
+            "selectLanguage": "Selecciona un idioma"
+          },
+          "profilePicture": {
+            "title": "Foto de Perfil",
+            "altText": "Foto de perfil",
+            "uploadButton": "Cambiar foto",
+            "deleteButton": "Eliminar foto"
+          },
+          "accountInfo": {
+            "title": "Información de la Cuenta",
+            "role": "Rol",
+            "memberSince": "Miembro desde",
+            "accountStatus": "Estado de la cuenta",
+            "lastLogin": "Último acceso",
+            "roles": {
+              "Administrador": "Administrador",
+              "Cliente": "Cliente",
+              "Empleado China": "Empleado China",
+              "Empleado Vzla": "Empleado Vzla"
+            },
+            "statuses": {
+              "Activo": "Activo",
+              "Inactivo": "Inactivo"
+            },
+            "months": {
+              "Enero": "Enero",
+              "Febrero": "Febrero",
+              "Marzo": "Marzo",
+              "Abril": "Abril",
+              "Mayo": "Mayo",
+              "Junio": "Junio",
+              "Julio": "Julio",
+              "Agosto": "Agosto",
+              "Septiembre": "Septiembre",
+              "Octubre": "Octubre",
+              "Noviembre": "Noviembre",
+              "Diciembre": "Diciembre"
+            }
+          }
+        },
+        "password": {
+          "title": "Cambiar Contraseña",
+          "fields": {
+            "current": "Contraseña actual",
+            "new": "Nueva contraseña",
+            "confirm": "Confirmar nueva contraseña"
+          },
+          "placeholders": {
+            "current": "Ingresa tu contraseña actual",
+            "new": "Ingresa tu nueva contraseña",
+            "confirm": "Confirma tu nueva contraseña"
+          }
+        }
+      }
+    },
     "dashboard": {
       "title": "Dashboard Cliente",
       "subtitle": "Bienvenido de vuelta, aquí tienes un resumen de tu actividad",

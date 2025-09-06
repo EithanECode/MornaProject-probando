@@ -1,6 +1,7 @@
 "use client";
 
 import { Package } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -11,6 +12,7 @@ interface RecentOrdersProps {
 }
 
 export default function RecentOrders({ orders }: RecentOrdersProps) {
+  const { t } = useTranslation();
   // Manejar el caso cuando orders es null
   if (!orders) {
     return (
@@ -18,10 +20,10 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Package className="w-5 h-5 mr-2 text-blue-600" />
-            Pedidos Recientes
+            {t('client.recentOrders.title')}
           </CardTitle>
           <CardDescription>
-            Seguimiento de pedidos en tiempo real
+            {t('client.recentOrders.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -71,8 +73,8 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
         <CardContent>
           <div className="text-center py-8">
             <Package className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-            <p className="text-slate-600">No hay pedidos recientes</p>
-            <p className="text-sm text-slate-500">Los pedidos aparecerán aquí cuando se creen</p>
+            <p className="text-slate-600">{t('client.recentOrders.noOrders')}</p>
+            <p className="text-sm text-slate-500">{t('client.recentOrders.emptyHint')}</p>
           </div>
         </CardContent>
       </Card>
@@ -84,10 +86,10 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
       <CardHeader>
         <CardTitle className="flex items-center">
           <Package className="w-5 h-5 mr-2 text-blue-600" />
-          Pedidos Recientes
+          {t('client.recentOrders.title')}
         </CardTitle>
         <CardDescription>
-          Seguimiento de pedidos en tiempo real
+          {t('client.recentOrders.subtitle')}
         </CardDescription>
       </CardHeader>
       <CardContent>
