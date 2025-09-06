@@ -240,17 +240,16 @@ const getAdminMenuItems = (t: (key: string) => string) => [
 ];
 
 // Función para obtener los items del bottom según el rol
-const getBottomItemsByRole = (role?: string) => {
+const getBottomItemsByRole = (role?: string, t?: (key: string) => string) => {
   const basePath = role === 'admin' ? '/admin' : 
                    role === 'venezuela' ? '/venezuela' : 
                    role === 'china' ? '/china' : 
                    role === 'pagos' ? '/pagos' : 
                    '/cliente';
-  
   return [
     {
       id: 'settings',
-      label: 'Configuración',
+      label: t && typeof t === 'function' ? t(`${role ? role : 'client'}.sidebar.settings`) : 'Configuración',
       icon: Settings,
       color: 'text-gray-500',
       path: `${basePath}/configuracion`
