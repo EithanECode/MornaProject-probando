@@ -1029,8 +1029,8 @@ export default function MisPedidosPage() {
         <Header 
           notifications={stats.pending} 
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Mis Pedidos"
-          subtitle="Gestiona y sigue el estado de tus pedidos"
+          title={t('client.recentOrders.title')}
+          subtitle={t('client.recentOrders.subtitle')}
         />
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
@@ -1040,20 +1040,20 @@ export default function MisPedidosPage() {
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
                 <div>
-                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">Mis Pedidos</h1>
-                  <p className="text-green-100 text-sm md:text-base lg:text-lg">Panel de Control - Pedidos</p>
-                  <p className="text-green-200 mt-2 text-xs md:text-sm">Gestiona y sigue el estado de tus pedidos</p>
+                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">{t('client.recentOrders.title')}</h1>
+                  <p className="text-green-100 text-sm md:text-base lg:text-lg">{t('client.dashboard.panel')}</p>
+                  <p className="text-green-200 mt-2 text-xs md:text-sm">{t('client.recentOrders.subtitle')}</p>
                 </div>
                 
                 <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
                   <div className="text-center">
                     <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{stats.total}</div>
-                    <p className="text-green-100 text-xs md:text-sm">Total Pedidos</p>
+                    <p className="text-green-100 text-xs md:text-sm">{t('client.dashboard.totalOrders')}</p>
                   </div>
                   <div className="hidden md:block w-px h-12 md:h-16 bg-white/20"></div>
                   <div className="text-center">
                     <div className="text-2xl md:text-3xl lg:text-4xl font-bold">${stats.totalSpent.toLocaleString()}</div>
-                    <p className="text-green-100 text-xs md:text-sm">Total Gastado</p>
+                    <p className="text-green-100 text-xs md:text-sm">{t('client.dashboard.totalSpent')}</p>
                   </div>
                 </div>
               </div>
@@ -1066,7 +1066,7 @@ export default function MisPedidosPage() {
               <DialogTrigger asChild>
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                   <Plus className="w-4 h-4 mr-2" />
-                  Nuevo Pedido
+                  {t('client.quickActions.newOrder')}
                 </Button>
               </DialogTrigger>
               <DialogContent ref={modalRef} className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
@@ -1074,7 +1074,7 @@ export default function MisPedidosPage() {
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-xl opacity-20 animate-pulse"></div>
                     <DialogTitle className="relative text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent animate-fade-in-up">
-                      ✨ Crear Nuevo Pedido
+                      ✨ {t('client.quickActions.newOrder')}
                     </DialogTitle>
                   </div>
                   <DialogDescription className="text-lg text-slate-600 mt-2">
@@ -1672,14 +1672,14 @@ export default function MisPedidosPage() {
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-blue-800">Total Pedidos</CardTitle>
+                <CardTitle className="text-sm font-medium text-blue-800">{t('client.dashboard.totalOrders')}</CardTitle>
                 <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                   <Package className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.total}</div>
-                <p className="text-xs text-blue-700">Todos los pedidos</p>
+                <p className="text-xs text-blue-700">{t('client.recentOrders.table.id')}</p>
                 <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                   <div className="bg-blue-500 h-2 rounded-full" style={{width: '100%'}}></div>
                 </div>
@@ -1688,14 +1688,14 @@ export default function MisPedidosPage() {
             
             <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-yellow-800">Pendientes</CardTitle>
+                <CardTitle className="text-sm font-medium text-yellow-800">{t('client.recentOrders.statuses.pending')}</CardTitle>
                 <div className="p-2 bg-yellow-500 rounded-lg group-hover:scale-110 transition-transform">
                   <Clock className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-900">{stats.pending}</div>
-                <p className="text-xs text-yellow-700">Esperando confirmación</p>
+                <p className="text-xs text-yellow-700">{t('client.recentOrders.statuses.pending')}</p>
                 <div className="mt-2 w-full bg-yellow-200 rounded-full h-2">
                   <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(stats.pending / stats.total) * 100}%`}}></div>
                 </div>
@@ -1704,14 +1704,14 @@ export default function MisPedidosPage() {
             
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-blue-800">En Proceso</CardTitle>
+                <CardTitle className="text-sm font-medium text-blue-800">{t('client.recentOrders.statuses.processing')}</CardTitle>
                 <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                   <Truck className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.processing}</div>
-                <p className="text-xs text-blue-700">En proceso</p>
+                <p className="text-xs text-blue-700">{t('client.recentOrders.statuses.processing')}</p>
                 <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                   <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.processing / stats.total) * 100}%`}}></div>
                 </div>
@@ -1720,14 +1720,14 @@ export default function MisPedidosPage() {
             
             <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-purple-800">Enviados</CardTitle>
+                <CardTitle className="text-sm font-medium text-purple-800">{t('client.recentOrders.statuses.shipped')}</CardTitle>
                 <div className="p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
                   <MapPin className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{stats.shipped}</div>
-                <p className="text-xs text-purple-700">En tránsito</p>
+                <p className="text-xs text-purple-700">{t('client.recentOrders.statuses.shipped')}</p>
                 <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
                   <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(stats.shipped / stats.total) * 100}%`}}></div>
                 </div>
@@ -1736,14 +1736,14 @@ export default function MisPedidosPage() {
             
             <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-emerald-800">Total Gastado</CardTitle>
+                <CardTitle className="text-sm font-medium text-emerald-800">{t('client.dashboard.totalSpent')}</CardTitle>
                 <div className="p-2 bg-emerald-500 rounded-lg group-hover:scale-110 transition-transform">
                   <DollarSign className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl lg:text-3xl font-bold text-emerald-900">${stats.totalSpent.toLocaleString()}</div>
-                <p className="text-xs text-emerald-700">Inversión total</p>
+                <p className="text-xs text-emerald-700">{t('client.dashboard.totalInvestment')}</p>
                 <div className="mt-2 w-full bg-emerald-200 rounded-full h-2">
                   <div className="bg-emerald-500 h-2 rounded-full" style={{width: '100%'}}></div>
                 </div>
@@ -1754,8 +1754,8 @@ export default function MisPedidosPage() {
           {/* Filtros y búsqueda */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold">Filtros y Búsqueda</CardTitle>
-              <p className="text-sm text-slate-600">Encuentra rápidamente tus pedidos</p>
+              <CardTitle className="text-xl font-semibold">{t('client.recentOrders.filter')}</CardTitle>
+              <p className="text-sm text-slate-600">{t('client.recentOrders.search')}</p>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-3 md:gap-4">
@@ -1777,13 +1777,13 @@ export default function MisPedidosPage() {
                       <SelectValue placeholder={t('client.recentOrders.filter')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos los estados</SelectItem>
-                      <SelectItem value="pending">Pendientes</SelectItem>
-                      <SelectItem value="quoted">Cotizado</SelectItem>
-                      <SelectItem value="processing">En proceso</SelectItem>
-                      <SelectItem value="shipped">Enviados</SelectItem>
-                      <SelectItem value="delivered">Entregados</SelectItem>
-                      <SelectItem value="cancelled">Cancelados</SelectItem>
+                      <SelectItem value="all">{t('client.recentOrders.filter')}</SelectItem>
+                      <SelectItem value="pending">{t('client.recentOrders.statuses.pending')}</SelectItem>
+                      <SelectItem value="quoted">{t('client.recentOrders.statuses.quoted')}</SelectItem>
+                      <SelectItem value="processing">{t('client.recentOrders.statuses.processing')}</SelectItem>
+                      <SelectItem value="shipped">{t('client.recentOrders.statuses.shipped')}</SelectItem>
+                      <SelectItem value="delivered">{t('client.recentOrders.statuses.delivered')}</SelectItem>
+                      <SelectItem value="cancelled">{t('client.recentOrders.statuses.cancelled')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1794,8 +1794,8 @@ export default function MisPedidosPage() {
           {/* Lista de pedidos */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold">Mis Pedidos</CardTitle>
-              <p className="text-sm text-slate-600">Lista de todos tus pedidos y su estado actual</p>
+              <CardTitle className="text-xl font-semibold">{t('client.recentOrders.title')}</CardTitle>
+              <p className="text-sm text-slate-600">{t('client.recentOrders.subtitle')}</p>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
