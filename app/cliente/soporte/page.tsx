@@ -34,42 +34,42 @@ const faqData = [
     id: 1,
     category: 'tracking',
     question: 'client.support.schedule.faq.q1.question',
-    answer: 'client.support.faq.q1.answer',
+    answer: 'client.support.schedule.faq.q1.answer',
     tags: ['tracking', 'envío', 'seguimiento']
   },
   {
     id: 2,
     category: 'shipping',
-    question: 'client.support.faq.q2.question',
-    answer: 'client.support.faq.q2.answer',
+    question: 'client.support.schedule.faq.q2.question',
+    answer: 'client.support.schedule.faq.q2.answer',
     tags: ['entrega', 'tiempo', 'envío']
   },
   {
     id: 3,
     category: 'payments',
-    question: 'client.support.faq.q3.question',
-    answer: 'client.support.faq.q3.answer',
+    question: 'client.support.schedule.faq.q3.question',
+    answer: 'client.support.schedule.faq.q3.answer',
     tags: ['pago', 'tarjeta', 'paypal', 'transferencia']
   },
   {
     id: 4,
     category: 'returns',
-    question: 'client.support.faq.q4.question',
-    answer: 'client.support.faq.q4.answer',
+    question: 'client.support.schedule.faq.q4.question',
+    answer: 'client.support.schedule.faq.q4.answer',
     tags: ['devolución', 'reembolso', 'producto']
   },
   {
     id: 5,
     category: 'account',
-    question: 'client.support.faq.q5.question',
-    answer: 'client.support.faq.q5.answer',
+    question: 'client.support.schedule.faq.q5.question',
+    answer: 'client.support.schedule.faq.q5.answer',
     tags: ['contraseña', 'cuenta', 'seguridad']
   },
   {
     id: 6,
     category: 'billing',
-    question: 'client.support.faq.q6.question',
-    answer: 'client.support.faq.q6.answer',
+    question: 'client.support.schedule.faq.q6.question',
+    answer: 'client.support.schedule.faq.q6.answer',
     tags: ['factura', 'facturación', 'pdf']
   }
 ];
