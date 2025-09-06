@@ -10,6 +10,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        xs: '480px', // breakpoint añadido para mejoras responsive en tarjetas (labels condicionales)
+      },
       width: {
         '18': '4.5rem', // 72px para el sidebar en pantallas medianas
       },
