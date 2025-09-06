@@ -67,7 +67,6 @@ interface SidebarProps {
 const CLIENT_MENU_ITEMS = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
@@ -75,7 +74,6 @@ const CLIENT_MENU_ITEMS = [
   },
   {
     id: 'mis-pedidos',
-    label: 'Mis Pedidos',
     icon: Package,
     badge: 3,
     color: 'text-orange-500',
@@ -83,7 +81,6 @@ const CLIENT_MENU_ITEMS = [
   },
   {
     id: 'pagos',
-    label: 'Pagos',
     icon: CreditCard,
     badge: 2,
     color: 'text-red-500',
@@ -91,7 +88,6 @@ const CLIENT_MENU_ITEMS = [
   },
   {
     id: 'soporte',
-    label: 'Soporte',
     icon: MessageCircle,
     badge: null,
     color: 'text-green-500',
@@ -102,7 +98,6 @@ const CLIENT_MENU_ITEMS = [
 const VENEZUELA_MENU_ITEMS = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
@@ -110,7 +105,6 @@ const VENEZUELA_MENU_ITEMS = [
   },
   {
     id: 'pedidos',
-    label: 'Pedidos',
     icon: Package,
     badge: 5,
     color: 'text-orange-500',
@@ -118,23 +112,13 @@ const VENEZUELA_MENU_ITEMS = [
   },
   {
     id: 'soporte',
-    label: 'Soporte',
     icon: MessageCircle,
     badge: 3,
     color: 'text-green-500',
     path: '/venezuela/soporte'
   },
-  // {
-  //   id: 'tracking',
-  //   label: 'Tracking',
-  //   icon: MapPin,
-  //   badge: 2,
-  //   color: 'text-purple-500',
-  //   path: '/venezuela/tracking'
-  // },
   {
     id: 'validacion-pagos',
-    label: 'Validación de Pagos',
     icon: BadgeDollarSign,
     badge: null,
     color: 'text-emerald-500',
@@ -142,7 +126,6 @@ const VENEZUELA_MENU_ITEMS = [
   },
   {
     id: 'reportes',
-    label: 'Reportes',
     icon: BarChart3,
     badge: null,
     color: 'text-indigo-500',
@@ -153,7 +136,6 @@ const VENEZUELA_MENU_ITEMS = [
 const CHINA_MENU_ITEMS = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
@@ -161,7 +143,6 @@ const CHINA_MENU_ITEMS = [
   },
   {
     id: 'pedidos',
-    label: 'Pedidos',
     icon: Package,
     badge: 12,
     color: 'text-orange-500',
@@ -172,7 +153,6 @@ const CHINA_MENU_ITEMS = [
 const PAGOS_MENU_ITEMS = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
@@ -180,7 +160,6 @@ const PAGOS_MENU_ITEMS = [
   },
   {
     id: 'validacion',
-    label: 'Validación',
     icon: Shield,
     badge: 15,
     color: 'text-green-500',
@@ -188,7 +167,6 @@ const PAGOS_MENU_ITEMS = [
   },
   {
     id: 'transacciones',
-    label: 'Transacciones',
     icon: CreditCard,
     badge: null,
     color: 'text-purple-500',
@@ -196,7 +174,6 @@ const PAGOS_MENU_ITEMS = [
   },
   {
     id: 'reportes',
-    label: 'Reportes',
     icon: BarChart3,
     badge: null,
     color: 'text-orange-500',
@@ -207,7 +184,7 @@ const PAGOS_MENU_ITEMS = [
 const getAdminMenuItems = (t: (key: string) => string) => [
   {
     id: 'dashboard',
-    label: t && typeof t === 'function' ? t('admin.sidebar.dashboard') : 'Dashboard',
+    label: t && typeof t === 'function' ? t('sidebar.dashboard') : 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
@@ -215,7 +192,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
   },
   {
     id: 'usuarios',
-    label: t && typeof t === 'function' ? t('admin.sidebar.users') : 'Usuarios',
+    label: t && typeof t === 'function' ? t('sidebar.users') : 'Usuarios',
     icon: Users,
     badge: null,
     color: 'text-green-500',
@@ -223,7 +200,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
   },
   {
     id: 'pedidos',
-    label: t && typeof t === 'function' ? t('admin.sidebar.orders') : 'Pedidos',
+    label: t && typeof t === 'function' ? t('sidebar.orders') : 'Pedidos',
     icon: Package,
     badge: null,
     color: 'text-orange-500',
@@ -231,7 +208,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
   },
   {
     id: 'gestion',
-    label: t && typeof t === 'function' ? t('admin.sidebar.management') : 'Gestión',
+    label: t && typeof t === 'function' ? t('sidebar.management') : 'Gestión',
     icon: Settings,
     badge: null,
     color: 'text-gray-500',
@@ -250,7 +227,6 @@ const getBottomItemsByRole = (role?: string) => {
   return [
     {
       id: 'settings',
-      label: 'Configuración',
       icon: Settings,
       color: 'text-gray-500',
       path: `${basePath}/configuracion`
@@ -466,7 +442,6 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   const renderMenuItem = useCallback((item: typeof menuItems[0]) => {
     const Icon = item.icon;
     const isActive = activeItem === item.id;
-    
     return (
       <div key={item.id}>
         <Link
@@ -500,7 +475,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
         `}>
           <div className="flex items-center justify-between whitespace-nowrap">
-            <span className={`font-medium ${responsiveConfig.textSize}`}>{item.label}</span>
+            <span className={`font-medium ${responsiveConfig.textSize}`}>{t('sidebar.' + item.id) ?? item.id}</span>
             {item.badge && (
               <Badge className={`bg-red-500 text-white ${responsiveConfig.badgeSize} animate-pulse`}>
                 {item.badge}
@@ -517,7 +492,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       </Link>
     </div>
   );
-}, [isExpanded, activeItem, responsiveConfig, screenWidth]);
+}, [isExpanded, activeItem, responsiveConfig, screenWidth, t]);
 
   return (
     <>
@@ -623,7 +598,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
                     transition-all duration-150 ease-out overflow-hidden
                     ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
                   `}>
-                    <span className="font-medium whitespace-nowrap">{item.label}</span>
+                    <span className="font-medium whitespace-nowrap">{t('sidebar.' + item.id) ?? item.id}</span>
                   </div>
                 </Link>
               );

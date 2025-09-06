@@ -436,15 +436,30 @@
       }
     }
   },
+
+  "sidebar":{
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "orders": "Orders",
+    "reports": "Reports",
+    "alerts": "Alerts",
+    "management": "Management",
+    "payments": "Payments",
+    "support": "Support",
+    "settings": "Settings",
+    "configuration": "Configuration",
+    "clients": "Clients",
+    "tracking": "Tracking",
+    "profile": "Profile",
+    "logout": "Log out",
+    "ajustes": "Settings",
+    "dashboardAdmin": "Admin Dashboard",
+    "dashboardClient": "Client Dashboard",
+    "dashboardChina": "China Dashboard",
+    "dashboardVzla": "Venezuela Dashboard"
+  },
+
   "admin": {
-    "sidebar": {
-      "dashboard": "Dashboard",
-      "users": "Users",
-      "orders": "Orders",
-      "reports": "Reports",
-      "alerts": "Alerts",
-      "management": "Management"
-    },
     "configuration": {
       "title": "Configuration",
       "subtitle": "Manage your profile, security and preferences",

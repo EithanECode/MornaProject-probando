@@ -323,12 +323,25 @@
   },
   "admin": {
     "sidebar": {
-      "dashboard": "Dashboard",
+      "dashboard": "Inicio",
       "users": "Usuarios",
       "orders": "Pedidos",
       "reports": "Reportes",
       "alerts": "Alertas",
-      "management": "Gestión"
+      "management": "Gestión",
+      "payments": "Pagos",
+      "support": "Soporte",
+      "settings": "Configuración",
+      "configuration": "Configuración",
+      "clients": "Clientes",
+      "tracking": "Tracking",
+      "profile": "Perfil",
+      "logout": "Cerrar sesión",
+      "ajustes": "Ajustes",
+      "dashboardAdmin": "Dashboard Admin",
+      "dashboardClient": "Dashboard Cliente",
+      "dashboardChina": "Dashboard China",
+      "dashboardVzla": "Dashboard Venezuela"
     },
     "configuration": {
       "title": "Configuración",
