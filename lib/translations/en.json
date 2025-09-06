@@ -198,6 +198,21 @@
         "currentProgress": "Current progress",
         "tracking": "Tracking",
         "downloadInvoice": "Download invoice"
+      },
+      "trackingModal": {
+        "trackingNumber": "Tracking number",
+        "carrier": "Carrier",
+        "estimatedDelivery": "Estimated delivery",
+        "currentStatus": "Current status",
+        "historyTitle": "Tracking history",
+        "states": {
+          "created": "Order created",
+          "processing": "Processing",
+          "shipped": "Shipped",
+          "inTransit": "In transit",
+          "customs": "In customs",
+          "delivered": "Delivered"
+        }
       }
     }
   },
