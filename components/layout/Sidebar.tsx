@@ -64,10 +64,10 @@ interface SidebarProps {
 }
 
 // Menús específicos para cada rol
-const getClientMenuItems = (t: (key: string) => string) => [
+const CLIENT_MENU_ITEMS = [
   {
     id: 'dashboard',
-    label: t && typeof t === 'function' ? t('client.sidebar.dashboard') : 'Dashboard',
+    label: 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
@@ -75,7 +75,7 @@ const getClientMenuItems = (t: (key: string) => string) => [
   },
   {
     id: 'mis-pedidos',
-    label: t && typeof t === 'function' ? t('client.sidebar.orders') : 'Mis Pedidos',
+    label: 'Mis Pedidos',
     icon: Package,
     badge: 3,
     color: 'text-orange-500',
@@ -83,7 +83,7 @@ const getClientMenuItems = (t: (key: string) => string) => [
   },
   {
     id: 'pagos',
-    label: t && typeof t === 'function' ? t('client.sidebar.payments') : 'Pagos',
+    label: 'Pagos',
     icon: CreditCard,
     badge: 2,
     color: 'text-red-500',
@@ -91,7 +91,7 @@ const getClientMenuItems = (t: (key: string) => string) => [
   },
   {
     id: 'soporte',
-    label: t && typeof t === 'function' ? t('client.sidebar.support') : 'Soporte',
+    label: 'Soporte',
     icon: MessageCircle,
     badge: null,
     color: 'text-green-500',
@@ -240,16 +240,17 @@ const getAdminMenuItems = (t: (key: string) => string) => [
 ];
 
 // Función para obtener los items del bottom según el rol
-const getBottomItemsByRole = (role?: string, t?: (key: string) => string) => {
+const getBottomItemsByRole = (role?: string) => {
   const basePath = role === 'admin' ? '/admin' : 
                    role === 'venezuela' ? '/venezuela' : 
                    role === 'china' ? '/china' : 
                    role === 'pagos' ? '/pagos' : 
                    '/cliente';
+  
   return [
     {
       id: 'settings',
-      label: t && typeof t === 'function' ? t(`${role ? role : 'client'}.sidebar.settings`) : 'Configuración',
+      label: 'Configuración',
       icon: Settings,
       color: 'text-gray-500',
       path: `${basePath}/configuracion`
@@ -269,7 +270,7 @@ const getMenuItemsByRole = (role?: string, t?: (key: string) => string) => {
     case 'admin':
       return getAdminMenuItems(t!);
     default:
-      return getClientMenuItems(t!);
+      return CLIENT_MENU_ITEMS;
   }
 };
 
