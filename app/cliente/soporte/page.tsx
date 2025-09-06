@@ -338,10 +338,10 @@ export default function ClienteSoporte() {
             {/* Horarios de Atención */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-blue-600" />
-                  {t('client.support.hours.title')}
-                </CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-blue-600" />
+                    {t('client.support.hours.title')}
+                  </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
