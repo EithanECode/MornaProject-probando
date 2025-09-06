@@ -28,24 +28,66 @@ import {
   Headphones
 } from "lucide-react";
 
+// Preguntas frecuentes expandidas
+const faqData = [
+  {
+    id: 1,
+    category: "Tracking",
+    question: '¿Cómo puedo rastrear mi paquete?',
+    answer: 'Puedes rastrear tu paquete de varias formas:\n\n1. Ingresa el número de seguimiento en nuestra página de rastreo\n2. Haz clic en el enlace que recibiste por email\n3. Usa nuestra app móvil\n4. Pregunta en el chat en vivo\n\nEl número de seguimiento tiene formato TRK123456789 y lo recibes dentro de las 24 horas posteriores al envío. Si no lo encuentras, revisa tu carpeta de spam.',
+    tags: ['tracking', 'envío', 'seguimiento']
+  },
+  {
+    id: 2,
+    category: "Envíos",
+    question: '¿Cuánto tiempo tarda la entrega?',
+    answer: 'Los tiempos de entrega varían según el destino y el tipo de envío:\n\n• Envíos Nacionales: 24-48h\n• Internacionales: 3-10 días hábiles\n• Express: 1-3 días hábiles\n• Económico: 5-15 días hábiles\n\nLos tiempos pueden variar por factores como aduanas, clima o eventos especiales.',
+    tags: ['entrega', 'tiempo', 'envío']
+  },
+  {
+    id: 3,
+    category: "Pagos",
+    question: '¿Qué métodos de pago aceptan?',
+    answer: 'Aceptamos múltiples métodos de pago para tu comodidad:\n\n• Tarjetas de crédito/débito (Visa, MasterCard, American Express)\n• PayPal\n• Transferencias bancarias\n• Pago Móvil\n• Criptomonedas (Bitcoin, Ethereum)\n• Pago contra reembolso (solo envíos nacionales)\n\nTodos los pagos son procesados de forma segura con encriptación SSL.',
+    tags: ['pago', 'tarjeta', 'paypal', 'transferencia']
+  },
+  {
+    id: 4,
+    category: "Devoluciones",
+    question: '¿Cómo devuelvo un producto?',
+    answer: 'Para devolver un producto sigue estos pasos:\n\n1. Ve a "Mis Pedidos" en tu cuenta\n2. Selecciona el producto que deseas devolver\n3. Haz clic en "Solicitar Devolución"\n4. Completa el formulario con el motivo\n5. Imprime la etiqueta de devolución\n6. Envía el producto en 7 días\n\nLas devoluciones son gratuitas si el producto llegó dañado o es diferente al solicitado.',
+    tags: ['devolución', 'reembolso', 'producto']
+  },
+  {
+    id: 5,
+    category: "Cuenta",
+    question: '¿Cómo cambio mi contraseña?',
+    answer: 'Para cambiar tu contraseña:\n\n1. Inicia sesión en tu cuenta\n2. Ve a "Configuración" → "Seguridad"\n3. Haz clic en "Cambiar Contraseña"\n4. Ingresa tu contraseña actual\n5. Escribe la nueva contraseña\n6. Confirma la nueva contraseña\n7. Haz clic en "Guardar Cambios"\n\nRecibirás un email de confirmación cuando el cambio sea exitoso.',
+    tags: ['contraseña', 'cuenta', 'seguridad']
+  },
+  {
+    id: 6,
+    category: "Facturación",
+    question: '¿Cómo obtengo mi factura?',
+    answer: 'Para obtener tu factura:\n\n1. Ve a "Mis Pedidos"\n2. Selecciona el pedido específico\n3. Haz clic en "Descargar Factura"\n4. La factura se descargará en formato PDF\n\nTambién puedes solicitar facturas por email enviando tu número de pedido a facturacion@morna.com\n\nLas facturas están disponibles 24 horas después de la confirmación del pago.',
+    tags: ['factura', 'facturación', 'pdf']
+  }
+];
 
-type FaqItem = {
-  id: number;
-  category: string;
-  question: string;
-  answer: string;
-  tags: string[];
-};
-
-const useFaqData = (t: any): FaqItem[] => t("client.support.faqList", { returnObjects: true });
-const useAutoResponses = (t: any): string[] => t("client.support.autoResponses", { returnObjects: true });
-
-
+// Respuestas automáticas del chat
+const autoResponses = [
+  "¡Hola! Soy Carlos, tu agente de soporte. ¿En qué puedo ayudarte hoy?",
+  "Entiendo tu consulta. Déjame revisar esa información para ti...",
+  "Perfecto, puedo ayudarte con eso. Te explico paso a paso:",
+  "Excelente pregunta. Según nuestros registros:",
+  "Gracias por contactarnos. Te ayudo a resolver esto:",
+  "¡Por supuesto! Aquí tienes la información que necesitas:",
+  "Me alegra poder ayudarte. La respuesta es:",
+  "Entiendo perfectamente tu situación. Te recomiendo:"
+];
 
 export default function ClienteSoporte() {
   const { t } = useTranslation();
-  const faqData: FaqItem[] = useFaqData(t);
-  const autoResponses: string[] = useAutoResponses(t);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -90,7 +132,7 @@ export default function ClienteSoporte() {
         setChatMessages([{
           id: '1',
           sender: 'agent',
-          message: autoResponses[0] + ' 😊',
+          message: '¡Hola! Soy Carlos, tu agente de soporte. ¿En qué puedo ayudarte hoy? 😊',
           time: new Date()
         }]);
       }
@@ -137,25 +179,29 @@ export default function ClienteSoporte() {
     const lowerMessage = message.toLowerCase();
     
     if (lowerMessage.includes('tracking') || lowerMessage.includes('rastreo') || lowerMessage.includes('seguimiento')) {
-      return t('client.support.chatResponses.tracking');
+      return 'Para rastrear tu pedido, ve a la sección "Tracking" en el menú lateral. Ingresa tu número de seguimiento (formato TRK123456789) y podrás ver el estado en tiempo real.';
     }
+    
     if (lowerMessage.includes('tiempo') || lowerMessage.includes('entrega') || lowerMessage.includes('días')) {
-      return t('client.support.chatResponses.deliveryTime');
+      return 'Los tiempos de entrega varían: Nacional 24-48h, Internacional 3-10 días, Express 1-3 días. Puedes ver el tiempo estimado en tu pedido específico.';
     }
+    
     if (lowerMessage.includes('pago') || lowerMessage.includes('tarjeta') || lowerMessage.includes('paypal')) {
-      return t('client.support.chatResponses.paymentMethods');
+      return 'Aceptamos tarjetas, PayPal, transferencias, Pago Móvil y criptomonedas. Todos los pagos son seguros con encriptación SSL.';
     }
+    
     if (lowerMessage.includes('devolución') || lowerMessage.includes('reembolso')) {
-      return t('client.support.chatResponses.returns');
+      return 'Para devoluciones, ve a "Mis Pedidos", selecciona el producto y solicita la devolución. Es gratis si llegó dañado o es diferente al solicitado.';
     }
-    return t('client.support.chatResponses.other');
+    
+    return 'Si necesitas ayuda más específica, puedes contactarnos por teléfono al +58 412-123-4567 o por email a soporte@morna.com.';
   };
 
   // Filtrar FAQ
-  const filteredFaq = faqData.filter((faq: FaqItem) => {
+  const filteredFaq = faqData.filter(faq => {
     const matchesSearch = faq.question.toLowerCase().includes(faqSearch.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(faqSearch.toLowerCase()) ||
-      faq.tags.some((tag: string) => tag.toLowerCase().includes(faqSearch.toLowerCase()));
+                         faq.answer.toLowerCase().includes(faqSearch.toLowerCase()) ||
+                         faq.tags.some(tag => tag.toLowerCase().includes(faqSearch.toLowerCase()));
     const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -173,7 +219,7 @@ export default function ClienteSoporte() {
     setTimeout(() => setIsFiltering(false), 100);
   };
 
-  const categories: string[] = ['all', ...Array.from(new Set(faqData.map((faq: FaqItem) => faq.category)))];
+  const categories = ['all', ...Array.from(new Set(faqData.map(faq => faq.category)))];
 
   if (!mounted) return null;
 
@@ -247,6 +293,7 @@ export default function ClienteSoporte() {
                               </Badge>
                             </CardContent>
                           </Card>
+
                           <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
                             <CardHeader className="text-center">
                               <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
@@ -266,6 +313,7 @@ export default function ClienteSoporte() {
                               </Button>
                             </CardContent>
                           </Card>
+
                           <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
                             <CardHeader className="text-center">
                               <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
@@ -338,9 +386,9 @@ export default function ClienteSoporte() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <HelpCircle className="h-5 w-5 text-orange-600" />
-                  {t('client.support.faq.title')}
+                  Preguntas Frecuentes
                 </CardTitle>
-                <p className="text-xs md:text-sm text-slate-600">{t('client.support.faq.subtitle')}</p>
+                <p className="text-xs md:text-sm text-slate-600">Encuentra respuestas rápidas a las preguntas más comunes</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Búsqueda y filtros */}
@@ -348,30 +396,32 @@ export default function ClienteSoporte() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <Input
-                      placeholder={t('client.support.faq.searchPlaceholder')}
+                      placeholder="Buscar en preguntas frecuentes..."
                       value={faqSearch}
                       onChange={(e) => handleSearchChange(e.target.value)}
                       className="pl-10"
                     />
                   </div>
+                  
                   {/* Filtros por categoría */}
                   <div className="flex flex-wrap gap-1 md:gap-2">
-                    {categories.map((category: string) => (
+                    {categories.map(category => (
                       <Badge
                         key={category}
                         variant={selectedCategory === category ? "default" : "outline"}
                         className="cursor-pointer hover:bg-slate-100 transition-colors text-xs md:text-sm"
                         onClick={() => handleCategoryChange(category)}
                       >
-                        {category === 'all' ? t('client.support.faq.all') : category}
+                        {category === 'all' ? 'Todas' : category}
                       </Badge>
                     ))}
                   </div>
                 </div>
+
                 {/* Lista de FAQ */}
                 <div className="space-y-3">
                   {filteredFaq.length > 0 ? (
-                    filteredFaq.map((faq: FaqItem, index: number) => (
+                    filteredFaq.map((faq, index) => (
                       <div
                         key={faq.id}
                         className={`border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:shadow-md transition-all duration-500 ease-out ${
@@ -400,6 +450,7 @@ export default function ClienteSoporte() {
                             )}
                           </div>
                         </div>
+                        
                         <div 
                           className={`overflow-hidden transition-all duration-300 ease-in-out ${
                             openFaqId === faq.id 
@@ -411,7 +462,7 @@ export default function ClienteSoporte() {
                             {faq.answer}
                           </div>
                           <div className="flex flex-wrap gap-1 mt-3">
-                            {faq.tags.map((tag: string) => (
+                            {faq.tags.map(tag => (
                               <Badge key={tag} variant="outline" className="text-xs">
                                 #{tag}
                               </Badge>
@@ -423,7 +474,7 @@ export default function ClienteSoporte() {
                   ) : (
                     <div className="text-center py-6 md:py-8">
                       <HelpCircle className="w-8 h-8 md:w-12 md:h-12 text-slate-400 mx-auto mb-3 md:mb-4" />
-                      <p className="text-slate-600 text-sm md:text-base">{t('client.support.faq.noResults')}</p>
+                      <p className="text-slate-600 text-sm md:text-base">No se encontraron preguntas que coincidan con tu búsqueda.</p>
                       <Button 
                         variant="outline" 
                         className="mt-2"
@@ -432,7 +483,7 @@ export default function ClienteSoporte() {
                           handleCategoryChange('all');
                         }}
                       >
-                        {t('client.support.faq.clearFilters')}
+                        Limpiar filtros
                       </Button>
                     </div>
                   )}
@@ -459,10 +510,10 @@ export default function ClienteSoporte() {
                     <Bot className="w-4 h-4 md:w-5 md:h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-sm md:text-base">{t('client.support.chatModal.title')}</h3>
+                    <h3 className="font-semibold text-sm md:text-base">Chat con Soporte</h3>
                     <p className="text-xs md:text-sm text-green-100 flex items-center">
                       <div className="w-2 h-2 bg-green-300 rounded-full mr-2 animate-pulse"></div>
-                      {t('client.support.chatModal.agentOnline')}
+                      Carlos - En línea
                     </p>
                   </div>
                 </div>
@@ -474,6 +525,7 @@ export default function ClienteSoporte() {
                 </button>
               </div>
             </div>
+
             {/* Mensajes */}
             <div className="flex-1 p-3 md:p-4 space-y-3 md:space-y-4 overflow-y-auto bg-gray-50">
               {chatMessages.map((msg) => (
@@ -495,6 +547,7 @@ export default function ClienteSoporte() {
                   </div>
                 </div>
               ))}
+              
               {isAgentTyping && (
                 <div className="flex justify-start">
                   <div className="bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm px-3 md:px-4 py-2 md:py-3">
@@ -504,27 +557,29 @@ export default function ClienteSoporte() {
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                       </div>
-                      <span className="text-xs text-gray-500 ml-2">{t('client.support.chatModal.agentTyping')}</span>
+                      <span className="text-xs text-gray-500 ml-2">Carlos está escribiendo...</span>
                     </div>
                   </div>
                 </div>
               )}
+              
               <div ref={messagesEndRef} />
             </div>
+
             {/* Input del chat */}
             <div className="p-3 md:p-4 border-t bg-white rounded-b-2xl">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (chatInput.trim()) {
-                    sendMessage(chatInput);
-                  }
-                }}
-                className="flex space-x-1 md:space-x-2"
-              >
+                              <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (chatInput.trim()) {
+                      sendMessage(chatInput);
+                    }
+                  }}
+                  className="flex space-x-1 md:space-x-2"
+                >
                 <Input
                   type="text"
-                  placeholder={t('client.support.chatModal.inputPlaceholder')}
+                  placeholder="Escribe tu mensaje..."
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   className="flex-1"
