@@ -184,7 +184,9 @@
         "track": "Track order",
         "pay": "Pay",
         "download": "Download PDF"
-      }
+      },
+      "progress": "Order progress",
+      "estimatedDelivery": "Estimated delivery"
     }
   },
   "admin": {

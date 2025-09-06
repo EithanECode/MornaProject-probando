@@ -80,7 +80,9 @@
         "track": "Ver tracking",
         "pay": "Pagar",
         "download": "Descargar PDF"
-      }
+      },
+      "progress": "Progreso del pedido",
+      "estimatedDelivery": "Entrega estimada"
     }
   },
   "common": {

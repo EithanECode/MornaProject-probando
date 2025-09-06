@@ -1859,7 +1859,7 @@ export default function MisPedidosPage() {
                     
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm font-medium">
-                        <span className="text-slate-700">Progreso del pedido</span>
+                        <span className="text-slate-700">{t('client.recentOrders.progress')}</span>
                         <span className="text-slate-800">{order.progress}%</span>
                       </div>
                       <div className="w-full bg-slate-200 rounded-full h-2 md:h-3 overflow-hidden">
@@ -1869,7 +1869,7 @@ export default function MisPedidosPage() {
                         ></div>
                       </div>
                       <div className="flex flex-col md:flex-row md:justify-between gap-3 md:gap-0 text-sm">
-                        <span className="text-slate-600 font-medium">Entrega estimada: {order.estimatedDelivery}</span>
+                        <span className="text-slate-600 font-medium">{t('client.recentOrders.estimatedDelivery')}: {order.estimatedDelivery}</span>
                         <div className="flex gap-2 md:gap-3">
                           {order.status === 'quoted' && (
                             <Button 
@@ -1999,7 +1999,7 @@ export default function MisPedidosPage() {
 
                 {/* Progreso */}
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-2">Progreso del pedido</p>
+                  <p className="text-sm font-medium text-slate-600 mb-2">{t('client.recentOrders.progress')}</p>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Progreso actual</span>
@@ -2012,7 +2012,7 @@ export default function MisPedidosPage() {
                       ></div>
                     </div>
                     <p className="text-xs text-slate-600">
-                      Entrega estimada: {selectedOrder.estimatedDelivery}
+                      {t('client.recentOrders.estimatedDelivery')}: {selectedOrder.estimatedDelivery}
                     </p>
                   </div>
                 </div>
@@ -2096,7 +2096,7 @@ export default function MisPedidosPage() {
                     <p className="font-medium">{selectedTrackingOrder.carrier}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">Entrega Estimada</p>
+                    <p className="text-sm text-slate-600">{t('client.recentOrders.estimatedDelivery')}</p>
                     <p className="font-medium">{selectedTrackingOrder.estimatedDelivery}</p>
                   </div>
                   <div className="space-y-2">
