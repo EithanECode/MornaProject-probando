@@ -1,5 +1,8 @@
       
 {
+
+
+
   "client": {
     "support": {
       "title": "Support",
@@ -1087,5 +1090,65 @@
   },
   "header": {
     "notifications": "Notifications"
+  },
+
+  "chinese": {
+    "title": "Chinese Dashboard",
+    "subtitle": "Manage and track shipments from China",
+    "welcome": "Welcome back, here is a summary of your activity",
+    "panel": "Control Panel - China Employee",
+    "manage": "Manage shipments, orders and client communications",
+    "activeShipments": "Active Shipments",
+    "totalOrders": "Total Orders",
+    "ordersPlaced": "Orders placed",
+    "inTransit": "In Transit",
+    "activeShipmentsShort": "Active shipments",
+    "totalHandled": "Total Handled",
+    "totalInvestment": "Total investment",
+    "completed": "Completed",
+    "ordersDelivered": "Orders delivered",
+    "newOrder": "New Order",
+    "processOrder": "Process Order",
+    "prepareShipment": "Prepare Shipment",
+    "recentOrders": "Recent Orders",
+    "recentOrdersSubtitle": "Latest processed orders",
+    "noOrders": "No orders to display",
+    "client": "Client",
+    "status": "Status",
+    "product": "Product",
+    "description": "Description",
+    "quantity": "Quantity",
+    "priority": "Priority",
+    "supplier": "Supplier",
+    "receivedDate": "Received Date",
+    "estimatedDelivery": "Estimated Delivery",
+    "finalPrice": "Final Price",
+    "currency": "Currency",
+    "actions": "Actions",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "completedStatus": "Completed",
+    "orderId": "Order ID",
+    "state": "State",
+    "clientLabel": "Client",
+    "orderProduct": "Product",
+    "orderStatus": "Order Status",
+    "orderPriority": "Priority",
+    "orderSupplier": "Supplier",
+    "orderReceived": "Received",
+    "orderEstimatedDelivery": "Estimated Delivery",
+    "orderFinalPrice": "Final Price",
+  "orderCurrency": "Currency",
+  "quickActions": "Quick Actions",
+  "quickActionsSubtitle": "Quickly access the most used functions for China operations",
+  "quality": "Quality",
+  "qualityscore": "Quality Score"
   }
+
 }
+
+

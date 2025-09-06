@@ -3,9 +3,12 @@
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 import "../animations/animations.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useChinaOrders } from '@/hooks/use-china-orders';
+import { useClientsInfo } from '@/hooks/use-clients-info';
 import { useChinaContext } from '@/lib/ChinaContext';
 import { useTheme } from "next-themes";
+import { useRealtimeChina } from '@/hooks/use-realtime-china';
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -84,11 +87,17 @@ interface WarehouseItem {
   status: 'available' | 'reserved' | 'low_stock' | 'out_of_stock';
 }
 
+import { useTranslation } from '@/hooks/useTranslation';
+
 export default function ChinaDashboard() {
+  const { t } = useTranslation();
+  // Estado para forzar actualización del componente
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  
   // Pedidos asignados al empleado China autenticado
-  const { data: chinaOrders, loading: ordersLoading, error: ordersError } = require('@/hooks/use-china-orders').useChinaOrders();
+  const { data: chinaOrders, loading: ordersLoading, error: ordersError } = useChinaOrders(refreshTrigger);
   // Obtener información de los clientes
-  const { data: clientsInfo } = require('@/hooks/use-clients-info').useClientsInfo();
+  const { data: clientsInfo } = useClientsInfo();
   // Nombres de los clientes de los 3 pedidos más recientes
   const pedidosRecientes = (chinaOrders ?? []).slice(-3).reverse();
   const nombresClientesRecientes = pedidosRecientes.map((order: any) =>
@@ -97,6 +106,17 @@ export default function ChinaDashboard() {
 
   // Obtener el id del empleado de China autenticado
   const { chinaId } = useChinaContext();
+  
+  console.log('China Dashboard: chinaId =', chinaId);
+
+  // Función para actualizar pedidos en realtime
+  const handleOrdersUpdate = useCallback(() => {
+    console.log('Realtime China: Triggering orders update, refreshTrigger:', refreshTrigger + 1);
+    setRefreshTrigger(prev => prev + 1);
+  }, [refreshTrigger]);
+
+  // Usar realtime para China
+  useRealtimeChina(handleOrdersUpdate, chinaId);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -297,8 +317,8 @@ export default function ChinaDashboard() {
         <Header 
           notifications={stats.pendingOrders + stats.processingOrders}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Panel China"
-          subtitle="Gestión de pedidos, procesamiento y logística"
+          title={t('chinese.title')}
+          subtitle={t('chinese.subtitle')}
         />
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-8">
@@ -308,14 +328,14 @@ export default function ChinaDashboard() {
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
-                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">Panel de Control - Empleado China</p>
-                  <p className="text-blue-200 mt-2 text-xs md:text-sm">Gestiona pedidos, procesamiento y logística desde un solo lugar</p>
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">{t('chinese.welcome')}</h2>
+                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">{t('chinese.panel')}</p>
+                  <p className="text-blue-200 mt-2 text-xs md:text-sm">{t('chinese.manage')}</p>
                 </div>
                 <div className="flex md:hidden lg:flex items-center space-x-4 md:space-x-6">
                   <div className="text-center">
                     <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{totalPedidos}</div>
-                    <p className="text-blue-100 text-xs md:text-sm">Pedidos Activos</p>
+                    <p className="text-blue-100 text-xs md:text-sm">{t('chinese.activeShipments')}</p>
                   </div>
                 </div>
               </div>
@@ -328,14 +348,14 @@ export default function ChinaDashboard() {
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-blue-800">Pedidos Pendientes</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-blue-800">{t('chinese.pending')}</CardTitle>
                   <div className="p-1 md:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Package className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{pedidosPendientes}</div>
-                  <p className="text-xs text-blue-700">Esperando procesamiento</p>
+                  <p className="text-xs text-blue-700">{t('chinese.status')}</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                     <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / totalPedidos) * 100}%`}}></div>
                   </div>
@@ -344,14 +364,14 @@ export default function ChinaDashboard() {
 
               <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-green-800">En Procesamiento</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-green-800">{t('chinese.processing')}</CardTitle>
                   <div className="p-1 md:p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Clock className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{pedidosEnProceso}</div>
-                  <p className="text-xs text-green-700">En producción</p>
+                  <p className="text-xs text-green-700">{t('chinese.status')}</p>
                   <div className="mt-2 w-full bg-green-200 rounded-full h-2">
                     <div className="bg-green-500 h-2 rounded-full" style={{width: `${(pedidosEnProceso / totalPedidos) * 100}%`}}></div>
                   </div>
@@ -360,14 +380,14 @@ export default function ChinaDashboard() {
 
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-purple-800">Enviados</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-purple-800">{t('chinese.shipped')}</CardTitle>
                   <div className="p-1 md:p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Truck className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{pedidosEnviados}</div>
-                  <p className="text-xs text-purple-700">En tránsito</p>
+                  <p className="text-xs text-purple-700">{t('chinese.inTransit')}</p>
                   <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
                     <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(pedidosEnviados / totalPedidos) * 100}%`}}></div>
                   </div>
@@ -376,14 +396,14 @@ export default function ChinaDashboard() {
 
               <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-orange-800">Calidad</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-orange-800">{t('chinese.quality')}</CardTitle>
                   <div className="p-1 md:p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Star className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{(promedioReputacion*100)/5}%</div>
-                  <p className="text-xs text-orange-700">Score promedio</p>
+                  <p className="text-xs text-orange-700">{t('chinese.qualityScore')}</p>
                   <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
                     <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(promedioReputacion*100)/5}%`}}></div>
                   </div>
@@ -394,8 +414,8 @@ export default function ChinaDashboard() {
             {/* Acciones Rápidas */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-lg md:text-xl font-semibold">Acciones Rápidas</CardTitle>
-                <p className="text-xs md:text-sm text-slate-600">Accede rápidamente a las funciones más utilizadas</p>
+                <CardTitle className="text-lg md:text-xl font-semibold">{t('chinese.quickActions')}</CardTitle>
+                <p className="text-xs md:text-sm text-slate-600">{t('chinese.quickActionsSubtitle')}</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -404,7 +424,7 @@ export default function ChinaDashboard() {
                       <div className="p-2 md:p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
                         <Package className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">Nuevo Pedido</span>
+                      <span className="text-xs md:text-sm font-medium">{t('chinese.newOrder')}</span>
                     </Button>
                   </Link>
                   <Link href="/china/pedidos">
@@ -412,7 +432,7 @@ export default function ChinaDashboard() {
                       <div className="p-2 md:p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
                         <Clock className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">Procesar Pedido</span>
+                      <span className="text-xs md:text-sm font-medium">{t('chinese.processOrder')}</span>
                     </Button>
                   </Link>
                   <Link href="/china/pedidos">
@@ -420,7 +440,7 @@ export default function ChinaDashboard() {
                       <div className="p-2 md:p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
                         <Truck className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">Preparar Envío</span>
+                      <span className="text-xs md:text-sm font-medium">{t('chinese.prepareShipment')}</span>
                     </Button>
                   </Link>
                 </div>
@@ -431,13 +451,13 @@ export default function ChinaDashboard() {
             <div className="grid grid-cols-1 gap-4 md:gap-6">
               <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <CardTitle className="text-lg md:text-xl font-semibold">Pedidos Recientes</CardTitle>
-                  <p className="text-xs md:text-sm text-slate-600">Últimos pedidos procesados</p>
+                  <CardTitle className="text-lg md:text-xl font-semibold">{t('chinese.recentOrders')}</CardTitle>
+                  <p className="text-xs md:text-sm text-slate-600">{t('chinese.recentOrdersSubtitle')}</p>
                 </CardHeader>
                                   <CardContent>
                     <div className="space-y-3 md:space-y-4">
                       {pedidosRecientes.length === 0 ? (
-                        <div className="text-center text-slate-500 text-sm md:text-base">No hay pedidos para mostrar</div>
+                        <div className="text-center text-slate-500 text-sm md:text-base">{t('chinese.noOrders')}</div>
                       ) : (
                         pedidosRecientes.map((order: any, idx: number) => (
                           <div key={order.id} className="flex flex-col md:flex-row md:items-center justify-between p-3 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 gap-3">
@@ -448,12 +468,12 @@ export default function ChinaDashboard() {
                               <div>
                                 <p className="text-sm font-medium text-slate-900">{order.id}</p>
                                 <p className="text-xs text-slate-600">{order.productName}</p>
-                                <p className="text-xs text-slate-500">Cliente: {nombresClientesRecientes[idx]}</p>
+                                <p className="text-xs text-slate-500">{t('chinese.client')}: {nombresClientesRecientes[idx]}</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
                             <Badge className={`border`}>
-                              Estado: {order.state}
+                              {t('chinese.status')}: {order.state}
                             </Badge>
                           </div>
                         </div>
