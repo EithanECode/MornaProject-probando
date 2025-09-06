@@ -151,9 +151,10 @@ export default function PedidosChina() {
         setLoading(false);
         return;
       }
+      console.debug('[PedidosChina] fetched raw orders count:', data.length);
       setPedidos(
         data
-          .filter((order: any) => typeof order.state === 'number' ? order.state >= 4 : true)
+          // Antes filtraba state>=4 lo que ocultaba pedidos tempranos. Se elimina para mostrar todos los asignados.
           .map((order: any) => ({
           id: order.id,
           cliente: order.clientName || '',
@@ -242,8 +243,8 @@ export default function PedidosChina() {
   const [isModalVerPedidosContClosing, setIsModalVerPedidosContClosing] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    fetchPedidos();
+  setMounted(true);
+  fetchPedidos();
   }, []);
 
   // Scroll lock cuando cualquier modal está abierto

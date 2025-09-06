@@ -11,11 +11,11 @@ export interface ChinaOrder {
   client_id: string;
 }
 
-export function useChinaOrders() {
+export function useChinaOrders(refreshTrigger?: number) {
   const { chinaId } = useChinaContext();
   const supabase = getSupabaseBrowserClient();
 
-  const queryKey = chinaId ? `orders-china-${chinaId}` : 'orders-china-undefined';
+  const queryKey = chinaId ? `orders-china-${chinaId}-${refreshTrigger || 0}` : 'orders-china-undefined';
 
   const result = useSupabaseQuery<ChinaOrder[]>(
     queryKey,

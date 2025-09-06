@@ -227,8 +227,7 @@ export default function AdminDashboard() {
               </Card>
             </div>
 
-            {/* Componente de prueba realtime */}
-            <RealtimeTest />
+            
 
             {/* Acciones Rápidas */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">

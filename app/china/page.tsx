@@ -3,9 +3,12 @@
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 import "../animations/animations.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useChinaOrders } from '@/hooks/use-china-orders';
+import { useClientsInfo } from '@/hooks/use-clients-info';
 import { useChinaContext } from '@/lib/ChinaContext';
 import { useTheme } from "next-themes";
+import { useRealtimeChina } from '@/hooks/use-realtime-china';
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -85,10 +88,13 @@ interface WarehouseItem {
 }
 
 export default function ChinaDashboard() {
+  // Estado para forzar actualización del componente
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  
   // Pedidos asignados al empleado China autenticado
-  const { data: chinaOrders, loading: ordersLoading, error: ordersError } = require('@/hooks/use-china-orders').useChinaOrders();
+  const { data: chinaOrders, loading: ordersLoading, error: ordersError } = useChinaOrders(refreshTrigger);
   // Obtener información de los clientes
-  const { data: clientsInfo } = require('@/hooks/use-clients-info').useClientsInfo();
+  const { data: clientsInfo } = useClientsInfo();
   // Nombres de los clientes de los 3 pedidos más recientes
   const pedidosRecientes = (chinaOrders ?? []).slice(-3).reverse();
   const nombresClientesRecientes = pedidosRecientes.map((order: any) =>
@@ -97,6 +103,17 @@ export default function ChinaDashboard() {
 
   // Obtener el id del empleado de China autenticado
   const { chinaId } = useChinaContext();
+  
+  console.log('China Dashboard: chinaId =', chinaId);
+
+  // Función para actualizar pedidos en realtime
+  const handleOrdersUpdate = useCallback(() => {
+    console.log('Realtime China: Triggering orders update, refreshTrigger:', refreshTrigger + 1);
+    setRefreshTrigger(prev => prev + 1);
+  }, [refreshTrigger]);
+
+  // Usar realtime para China
+  useRealtimeChina(handleOrdersUpdate, chinaId);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
