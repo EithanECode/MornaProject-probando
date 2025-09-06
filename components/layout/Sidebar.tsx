@@ -64,10 +64,10 @@ interface SidebarProps {
 }
 
 // Menús específicos para cada rol
-const CLIENT_MENU_ITEMS = [
+const getClientMenuItems = (t: (key: string) => string) => [
   {
     id: 'dashboard',
-    label: 'Dashboard',
+    label: t && typeof t === 'function' ? t('client.sidebar.dashboard') : 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
@@ -75,7 +75,7 @@ const CLIENT_MENU_ITEMS = [
   },
   {
     id: 'mis-pedidos',
-    label: 'Mis Pedidos',
+    label: t && typeof t === 'function' ? t('client.sidebar.orders') : 'Mis Pedidos',
     icon: Package,
     badge: 3,
     color: 'text-orange-500',
@@ -83,7 +83,7 @@ const CLIENT_MENU_ITEMS = [
   },
   {
     id: 'pagos',
-    label: 'Pagos',
+    label: t && typeof t === 'function' ? t('client.sidebar.payments') : 'Pagos',
     icon: CreditCard,
     badge: 2,
     color: 'text-red-500',
@@ -91,7 +91,7 @@ const CLIENT_MENU_ITEMS = [
   },
   {
     id: 'soporte',
-    label: 'Soporte',
+    label: t && typeof t === 'function' ? t('client.sidebar.support') : 'Soporte',
     icon: MessageCircle,
     badge: null,
     color: 'text-green-500',
@@ -270,7 +270,7 @@ const getMenuItemsByRole = (role?: string, t?: (key: string) => string) => {
     case 'admin':
       return getAdminMenuItems(t!);
     default:
-      return CLIENT_MENU_ITEMS;
+      return getClientMenuItems(t!);
   }
 };
 
