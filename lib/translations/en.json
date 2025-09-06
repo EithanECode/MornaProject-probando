@@ -200,6 +200,31 @@
         "downloadInvoice": "Download invoice"
       },
       "trackingModal": {
+      "paymentModal": {
+        "title": "Make Payment",
+        "selectMethod": "Select your preferred payment method",
+        "confirmDetails": "Confirm your payment details",
+        "quoteValidUntil": "Quote valid until: {{date}}",
+        "automatic": "Automatic",
+        "manual": "Manual",
+        "paymentInfo": "Payment Information",
+        "phoneNumber": "Phone Number:",
+        "reference": "Reference:",
+        "bank": "Bank:",
+        "accountNumber": "Account Number:",
+        "email": "Email:",
+        "importantInstructions": "Important instructions:",
+        "instructions": {
+          "exactReference": "Make the payment with the exact reference",
+          "saveReceipt": "Save the payment receipt",
+          "processTime": "The process may take up to 24 hours",
+          "manualValidation": "Our team will manually validate your payment"
+        },
+        "cancel": "Cancel",
+        "back": "Back",
+        "processing": "Processing...",
+        "confirmPayment": "Confirm Payment"
+      },
         "trackingNumber": "Tracking number",
         "carrier": "Carrier",
         "estimatedDelivery": "Estimated delivery",
@@ -209,7 +234,7 @@
           "created": "Order created",
           "processing": "Processing",
           "shipped": "Shipped",
-          "inTransit": "In transit",
+          "in_transit": "In transit",
           "customs": "In customs",
           "delivered": "Delivered"
         }
