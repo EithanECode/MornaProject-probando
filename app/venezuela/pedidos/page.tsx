@@ -243,7 +243,7 @@ export default function VenezuelaPedidosPage() {
         userRole="venezuela"
       />
       
-      <main className={`transition-all duration-300 flex-1 ${
+      <main className={`transition-all duration-300 flex-1 pr-4 ${
         sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       }`}>
         <Header 
@@ -428,7 +428,7 @@ export default function VenezuelaPedidosPage() {
 
           {/* Contenido por pestaña */}
           {activeTab === 'pedidos' && (
-            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5 lg:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-5 lg:gap-6">
               {loading ? (
                 <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
                   <CardContent className="p-12 text-center">Cargando pedidos...</CardContent>
@@ -519,9 +519,9 @@ export default function VenezuelaPedidosPage() {
                         </div>
                         <div className="flex gap-2">
                           <Button
-                            className="bg-blue-600 gap-x-1 text-white hover:bg-blue-700 hover:text-white card-animate-liftbounce flex-1"
+                            className="bg-blue-600 text-white hover:bg-blue-700 hover:text-white card-animate-liftbounce"
                             variant="outline"
-                            size="sm"
+                            size="icon"
                             onClick={() => {
                               if (order.pdfRoutes) {
                                 const win = window.open(order.pdfRoutes, '_blank');
@@ -533,11 +533,10 @@ export default function VenezuelaPedidosPage() {
                               }
                             }}
                           >
-                            <Eye className="w-4 h-4" /> Ver
+                            <Eye className="w-4 h-4" />
                           </Button>
                           <Button
-                            size="sm"
-                            className="flex-1"
+                            size="icon"
                             disabled={loading || ![1,8,11,12].includes(stateNum)}
                             onClick={async () => {
                               if (stateNum === 1) {
@@ -637,45 +636,21 @@ export default function VenezuelaPedidosPage() {
                             }}
                           >
                             {stateNum >= 13 ? (
-                              <>
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Entregado
-                              </>
+                              <CheckCircle className="w-4 h-4" />
                             ) : stateNum === 12 ? (
-                              <>
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Entregado
-                              </>
+                              <CheckCircle className="w-4 h-4" />
                             ) : stateNum === 11 ? (
-                              <>
-                                <Package className="w-4 h-4 mr-2" />
-                                Recibido
-                              </>
+                              <Package className="w-4 h-4" />
                             ) : stateNum === 9 ? (
-                              <>
-                                <Package className="w-4 h-4 mr-2" />
-                                Recibido
-                              </>
+                              <Package className="w-4 h-4" />
                             ) : stateNum === 8 ? (
-                              <>
-                                <Package className="w-4 h-4 mr-2" />
-                                Recibido
-                              </>
+                              <Package className="w-4 h-4" />
                             ) : stateNum === 10 ? (
-                              <>
-                                <Clock className="w-4 h-4 mr-2" />
-                                En aduana
-                              </>
+                              <Clock className="w-4 h-4" />
                             ) : (stateNum >= 2 && stateNum <= 7) ? (
-                              <>
-                                <Clock className="w-4 h-4 mr-2" />
-                                Esperando
-                              </>
+                              <Clock className="w-4 h-4" />
                             ) : (
-                              <>
-                                <Send className="w-4 h-4 mr-2" />
-                                Enviar a China
-                              </>
+                              <Send className="w-4 h-4" />
                             )}
                           </Button>
                         </div>
@@ -736,20 +711,19 @@ export default function VenezuelaPedidosPage() {
                                 <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
                               </div>
                               <div className="flex items-center gap-4 text-xs text-slate-500">
-                                <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created ? new Date(created).toLocaleString('es-ES') : '—'}</span>
                                 <span className="flex items-center gap-1"><List className="h-3 w-3" />Pedidos: {orderCountsByBoxMain[countKey as any] ?? 0}</span>
                               </div>
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
                             <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                              {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Empaquetada' : stateNum === 5 ? 'Contenedor recibido' : stateNum === 6 ? 'Recibida' : `Estado ${stateNum}`}
+                              {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Lista' : stateNum === 5 ? 'Recibido' : stateNum === 6 ? 'Completada' : `St.${stateNum}`}
                             </Badge>
                             {/* Botón Recibido: visible solo cuando boxes.state === 5 */}
                             {stateNum === 5 && (
                               <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon"
                                 onClick={async () => {
                                   try {
                                     const res = await fetch('/venezuela/pedidos/api/advance-box', {
@@ -766,17 +740,16 @@ export default function VenezuelaPedidosPage() {
                                     alert((e as Error).message || 'Error al actualizar caja');
                                   }
                                 }}
-                                className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"
+                                className="text-emerald-700 border-emerald-300 hover:bg-emerald-50"
                                 title={'Marcar caja como recibida'}
                               >
                                 <CheckCircle className="h-4 w-4" />
-                                Recibido
                               </Button>
                             )}
                             <Button
                               variant="outline"
-                              size="sm"
-                              className="flex items-center gap-1"
+                              size="icon"
+                              className=""
                               onClick={() => {
                                 const boxId = box.box_id ?? box.boxes_id ?? box.id;
                                 setModalVerPedidos({ open: true, boxId });
@@ -784,7 +757,6 @@ export default function VenezuelaPedidosPage() {
                               }}
                             >
                               <List className="h-4 w-4" />
-                              Ver pedidos
                             </Button>
                           </div>
                         </div>
@@ -847,19 +819,18 @@ export default function VenezuelaPedidosPage() {
                                 <h3 className="font-semibold text-slate-900">#CONT-{id}</h3>
                               </div>
                               <div className="flex items-center gap-4 text-xs text-slate-500">
-                                <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created ? new Date(created).toLocaleString('es-ES') : '—'}</span>
                               </div>
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 4 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                              {stateNum === 1 ? 'Nuevo' : stateNum === 4 ? 'Recibido' : `Estado ${stateNum}`}
+                            <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200' : stateNum === 4 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
+                              {stateNum === 1 ? 'Nuevo' : stateNum === 2 ? 'En tránsito' : stateNum === 4 ? 'Recibido' : `St.${stateNum}`}
                             </Badge>
                             {/* Botón Recibido: visible solo cuando containers.state === 3 */}
                             {stateNum === 3 && (
                               <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon"
                                 onClick={async () => {
                                   try {
                                     const res = await fetch('/venezuela/pedidos/api/advance-container', {
@@ -876,17 +847,16 @@ export default function VenezuelaPedidosPage() {
                                     alert((e as Error).message || 'Error al actualizar contenedor');
                                   }
                                 }}
-                                className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"
+                                className="text-emerald-700 border-emerald-300 hover:bg-emerald-50"
                                 title={'Marcar contenedor como recibido'}
                               >
                                 <CheckCircle className="h-4 w-4" />
-                                Recibido
                               </Button>
                             )}
                             <Button
                               variant="outline"
-                              size="sm"
-                              className="flex items-center gap-1"
+                              size="icon"
+                              className=""
                               onClick={() => {
                                 const containerId = container.container_id ?? container.containers_id ?? container.id;
                                 setModalVerCajas({ open: true, containerId });
@@ -894,7 +864,6 @@ export default function VenezuelaPedidosPage() {
                               }}
                             >
                               <List className="h-4 w-4" />
-                              Ver cajas
                             </Button>
                           </div>
                         </div>
@@ -911,8 +880,8 @@ export default function VenezuelaPedidosPage() {
           
           {/* Modales */}
           {modalVerPedidos.open && (
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-              <div className="bg-white rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto">
+            <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setModalVerPedidos({ open: false })}>
+              <div className="bg-white rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-bold text-slate-900">Pedidos de la caja #BOX-{String(modalVerPedidos.boxId ?? '')}</h3>
                   <Button variant="ghost" size="sm" onClick={() => setModalVerPedidos({ open: false })} className="h-8 w-8 p-0">✕</Button>
@@ -942,7 +911,7 @@ export default function VenezuelaPedidosPage() {
                         </div>
                         <Button
                           variant="outline"
-                          size="sm"
+                          size="icon"
                           onClick={() => {
                             if (o.pdfRoutes) {
                               const win = window.open(o.pdfRoutes, '_blank');
@@ -951,9 +920,8 @@ export default function VenezuelaPedidosPage() {
                               alert('No hay PDF disponible');
                             }
                           }}
-                          className="flex items-center gap-1"
                         >
-                          <Eye className="h-4 w-4" /> Ver
+                          <Eye className="h-4 w-4" />
                         </Button>
                       </div>
                     ))}
@@ -964,8 +932,8 @@ export default function VenezuelaPedidosPage() {
           )}
 
           {modalVerCajas.open && (
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-              <div className="bg-white rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto">
+            <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setModalVerCajas({ open: false })}>
+              <div className="bg-white rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-bold text-slate-900">Cajas del contenedor #CONT-{String(modalVerCajas.containerId ?? '')}</h3>
                   <Button variant="ghost" size="sm" onClick={() => setModalVerCajas({ open: false })} className="h-8 w-8 p-0">✕</Button>
@@ -995,20 +963,19 @@ export default function VenezuelaPedidosPage() {
                                 <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
                               </div>
                               <div className="flex items-center gap-4 text-xs text-slate-500">
-                                <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created ? new Date(created).toLocaleString('es-ES') : '—'}</span>
                                 <span className="flex items-center gap-1"><List className="h-3 w-3" />Pedidos: {orderCountsByBox[id as any] ?? 0}</span>
                               </div>
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
                             <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                              {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Empaquetada' : stateNum === 5 ? 'Contenedor recibido' : stateNum === 6 ? 'Recibida' : `Estado ${stateNum}`}
+                              {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Lista' : stateNum === 5 ? 'Recibido' : stateNum === 6 ? 'Completada' : `St.${stateNum}`}
                             </Badge>
                             {/* Botón Recibido en modal: visible solo cuando boxes.state === 5 */}
                             {stateNum === 5 && (
                               <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon"
                                 onClick={async () => {
                                   try {
                                     const res = await fetch('/venezuela/pedidos/api/advance-box', {
@@ -1028,17 +995,16 @@ export default function VenezuelaPedidosPage() {
                                     alert((e as Error).message || 'Error al actualizar caja');
                                   }
                                 }}
-                                className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"
+                                className="text-emerald-700 border-emerald-300 hover:bg-emerald-50"
                                 title={'Marcar caja como recibida'}
                               >
                                 <CheckCircle className="h-4 w-4" />
-                                Recibido
                               </Button>
                             )}
                             <Button
                               variant="outline"
-                              size="sm"
-                              className="flex items-center gap-1"
+                              size="icon"
+                              className=""
                               onClick={() => {
                                 const boxId = box.box_id ?? box.boxes_id ?? box.id;
                                 setModalVerPedidos({ open: true, boxId });
@@ -1046,7 +1012,6 @@ export default function VenezuelaPedidosPage() {
                               }}
                             >
                               <List className="h-4 w-4" />
-                              Ver pedidos
                             </Button>
                           </div>
                         </div>
