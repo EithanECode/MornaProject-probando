@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useLanguage } from '@/lib/LanguageContext';
-import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,31 +49,16 @@ export default function ConfiguracionPage() {
     color: 'bg-blue-500'
   };
 
-  const { language, setLanguage } = useLanguage();
-  const { t } = useTranslation();
   // Estados del formulario
   const [formData, setFormData] = useState({
     nombre: roleData.nombre,
     email: roleData.email,
     telefono: roleData.telefono,
-    idioma: language,
+    idioma: 'es',
     zonaHoraria: 'America/Caracas',
     fotoPerfil: null as File | null,
     fotoPreview: '/images/logos/logo.png'
   });
-
-  // Sincronizar el idioma del contexto con el formulario
-  useEffect(() => {
-    setFormData(prev => ({ ...prev, idioma: language }));
-  }, [language]);
-
-  // Cambiar idioma en contexto y localStorage al seleccionar
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (field === 'idioma' && ['es', 'en', 'zh'].includes(value)) {
-      setLanguage(value as 'es' | 'en' | 'zh');
-    }
-  };
 
   // Estados de contraseña
   const [passwordData, setPasswordData] = useState({
@@ -108,7 +91,9 @@ export default function ConfiguracionPage() {
     setMounted(true);
   }, []);
 
-  // ...existing code...
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handlePasswordChange = (field: string, value: string) => {
     setPasswordData(prev => ({ ...prev, [field]: value }));
@@ -213,8 +198,8 @@ export default function ConfiguracionPage() {
               </button>
 
               <div>
-                <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('client.configuration.title')}</h1>
-                <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.configuration.subtitle')}</p>
+                <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Configuración</h1>
+                <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Gestiona tu perfil, seguridad y preferencias</p>
               </div>
             </div>
           </div>
@@ -226,19 +211,19 @@ export default function ConfiguracionPage() {
             <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-auto lg:grid-cols-4 gap-1">
               <TabsTrigger value="perfil" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
                 <User className="w-3 h-3 md:w-4 md:h-4" />
-                <span>{t('client.configuration.tabs.profile')}</span>
+                <span>Perfil</span>
               </TabsTrigger>
               <TabsTrigger value="seguridad" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
                 <Lock className="w-3 h-3 md:w-4 md:h-4" />
-                <span>{t('client.configuration.tabs.security')}</span>
+                <span>Seguridad</span>
               </TabsTrigger>
               <TabsTrigger value="notificaciones" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
                 <Bell className="w-3 h-3 md:w-4 md:h-4" />
-                <span>{t('client.configuration.tabs.notifications')}</span>
+                <span>Notificaciones</span>
               </TabsTrigger>
               <TabsTrigger value="preferencias" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
                 <Globe className="w-3 h-3 md:w-4 md:h-4" />
-                <span>{t('client.configuration.tabs.preferences')}</span>
+                <span>Preferencias</span>
               </TabsTrigger>
             </TabsList>
 
@@ -251,56 +236,56 @@ export default function ConfiguracionPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <User className="w-5 h-5" />
-                        {t('client.configuration.profile.title')}
+                        Información Personal
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="nombre">{t('client.configuration.profile.fields.name')}</Label>
+                          <Label htmlFor="nombre">Nombre completo</Label>
                           <Input
                             id="nombre"
                             value={formData.nombre}
                             onChange={(e) => handleInputChange('nombre', e.target.value)}
-                            placeholder={t('client.configuration.profile.placeholders.name')}
+                            placeholder="Tu nombre completo"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="email">{t('client.configuration.profile.fields.email')}</Label>
+                          <Label htmlFor="email">Correo electrónico</Label>
                           <Input
                             id="email"
                             type="email"
                             value={formData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
-                            placeholder={t('client.configuration.profile.placeholders.email')}
+                            placeholder="tu@email.com"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="telefono">{t('client.configuration.profile.fields.phone')}</Label>
+                          <Label htmlFor="telefono">Teléfono</Label>
                           <Input
                             id="telefono"
                             value={formData.telefono}
                             onChange={(e) => handleInputChange('telefono', e.target.value)}
-                            placeholder={t('client.configuration.profile.placeholders.phone')}
+                            placeholder="+58 412-123-4567"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="idioma">{t('client.configuration.profile.fields.language')}</Label>
-                          <Select value={formData.idioma} onValueChange={(value) => handleInputChange('idioma', value)}>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('client.configuration.profile.placeholders.selectLanguage')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="es">🇪🇸 Español</SelectItem>
-                              <SelectItem value="en">🇺🇸 English</SelectItem>
-                              <SelectItem value="zh">🇨🇳 中文</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                                                 <div className="space-y-2">
+                           <Label htmlFor="idioma">Idioma</Label>
+                           <Select value={formData.idioma} onValueChange={(value) => handleInputChange('idioma', value)}>
+                             <SelectTrigger>
+                               <SelectValue placeholder="Selecciona un idioma" />
+                             </SelectTrigger>
+                             <SelectContent>
+                               <SelectItem value="es">🇪🇸 Español</SelectItem>
+                               <SelectItem value="en">🇺🇸 English</SelectItem>
+                               <SelectItem value="zh">🇨🇳 中文</SelectItem>
+                             </SelectContent>
+                           </Select>
+                         </div>
                       </div>
                       <Button onClick={handleSaveProfile} className="w-full md:w-auto">
                         <Save className="w-4 h-4 mr-2" />
-                        {t('common.save')}
+                        Guardar cambios
                       </Button>
                     </CardContent>
                   </Card>
@@ -310,19 +295,19 @@ export default function ConfiguracionPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <Lock className="w-5 h-5" />
-                        {t('client.configuration.password.title')}
+                        Cambiar Contraseña
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="currentPassword">{t('client.configuration.password.fields.current')}</Label>
+                        <Label htmlFor="currentPassword">Contraseña actual</Label>
                         <div className="relative">
                           <Input
                             id="currentPassword"
                             type={passwordData.showCurrentPassword ? "text" : "password"}
                             value={passwordData.currentPassword}
                             onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
-                            placeholder={t('client.configuration.password.placeholders.current')}
+                            placeholder="Ingresa tu contraseña actual"
                           />
                           <Button
                             type="button"
@@ -337,14 +322,14 @@ export default function ConfiguracionPage() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="newPassword">{t('client.configuration.password.fields.new')}</Label>
+                          <Label htmlFor="newPassword">Nueva contraseña</Label>
                           <div className="relative">
                             <Input
                               id="newPassword"
                               type={passwordData.showNewPassword ? "text" : "password"}
                               value={passwordData.newPassword}
                               onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
-                              placeholder={t('client.configuration.password.placeholders.new')}
+                              placeholder="Nueva contraseña"
                             />
                             <Button
                               type="button"
@@ -358,14 +343,14 @@ export default function ConfiguracionPage() {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="confirmPassword">{t('client.configuration.password.fields.confirm')}</Label>
+                          <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
                           <div className="relative">
                             <Input
                               id="confirmPassword"
                               type={passwordData.showConfirmPassword ? "text" : "password"}
                               value={passwordData.confirmPassword}
                               onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
-                              placeholder={t('client.configuration.password.placeholders.confirm')}
+                              placeholder="Confirma la nueva contraseña"
                             />
                             <Button
                               type="button"
@@ -381,7 +366,7 @@ export default function ConfiguracionPage() {
                       </div>
                       <Button onClick={handleSavePassword} className="w-full md:w-auto">
                         <Save className="w-4 h-4 mr-2" />
-                        {t('client.configuration.password.title')}
+                        Cambiar contraseña
                       </Button>
                     </CardContent>
                   </Card>
@@ -393,7 +378,7 @@ export default function ConfiguracionPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <Camera className="w-5 h-5" />
-                        {t('client.configuration.profile.profilePicture.title')}
+                        Foto de Perfil
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -401,7 +386,7 @@ export default function ConfiguracionPage() {
                         <div className="relative">
                           <img
                             src={formData.fotoPreview}
-                            alt={t('client.configuration.profile.profilePicture.altText')}
+                            alt="Foto de perfil"
                             className="w-32 h-32 rounded-full object-cover border-4 border-slate-200 dark:border-slate-600"
                           />
                           <Badge className="absolute -bottom-2 -right-2 bg-green-500">
@@ -411,7 +396,7 @@ export default function ConfiguracionPage() {
                         <div className="space-y-2 w-full">
                           <Button variant="outline" className="w-full" onClick={() => document.getElementById('file-upload')?.click()}>
                             <Upload className="w-4 h-4 mr-2" />
-                            {t('client.configuration.profile.profilePicture.uploadButton')}
+                            Cambiar foto
                           </Button>
                           <input
                             id="file-upload"
@@ -422,7 +407,7 @@ export default function ConfiguracionPage() {
                           />
                           <Button variant="outline" className="w-full" onClick={() => setFormData(prev => ({ ...prev, fotoPreview: '/images/logos/logo.png' }))}>
                             <Trash2 className="w-4 h-4 mr-2" />
-                            {t('client.configuration.profile.profilePicture.deleteButton')}
+                            Eliminar foto
                           </Button>
                         </div>
                       </div>
@@ -434,25 +419,25 @@ export default function ConfiguracionPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <Shield className="w-5 h-5" />
-                        {t('client.configuration.profile.accountInfo.title')}
+                        Información de la Cuenta
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-slate-600 dark:text-slate-400">{t('client.configuration.profile.accountInfo.role')}</span>
-                        <Badge className={roleData.color}>{t(`client.configuration.profile.accountInfo.roles.${roleData.rol}`)}</Badge>
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Rol</span>
+                        <Badge className={roleData.color}>{roleData.rol}</Badge>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-slate-600 dark:text-slate-400">{t('client.configuration.profile.accountInfo.accountStatus')}</span>
-                        <Badge className="bg-green-500">{t('client.configuration.profile.accountInfo.statuses.Activo')}</Badge>
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Estado</span>
+                        <Badge className="bg-green-500">Activo</Badge>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-slate-600 dark:text-slate-400">{t('client.configuration.profile.accountInfo.memberSince')}</span>
-                        <span className="text-sm font-medium">{t('client.configuration.profile.accountInfo.months.Enero')} 2024</span>
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Miembro desde</span>
+                        <span className="text-sm font-medium">Enero 2024</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-slate-600 dark:text-slate-400">{t('client.configuration.profile.accountInfo.lastLogin')}</span>
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Último acceso</span>
                         <span className="text-sm font-medium">{security.ultimoAcceso}</span>
                       </div>
                     </CardContent>
@@ -468,15 +453,15 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Shield className="w-5 h-5" />
-                      {t('client.configuration.security.title')}
+                      Configuración de Seguridad
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <Label>{t('client.configuration.security.twoFactor')}</Label>
+                        <Label>Autenticación de dos factores</Label>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          {t('client.configuration.security.twoFactorDesc')}
+                          Añade una capa extra de seguridad a tu cuenta
                         </p>
                       </div>
                       <Switch
@@ -486,24 +471,24 @@ export default function ConfiguracionPage() {
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <Label>{t('client.configuration.security.activeSessions')}</Label>
+                      <Label>Sesiones activas</Label>
                       <p className="text-sm text-slate-600 dark:text-slate-400">
-                        {t('client.configuration.security.devicesConnected', { count: security.sesionesActivas })}
+                        {security.sesionesActivas} dispositivos conectados
                       </p>
                       <Button variant="outline" size="sm">
-                        {t('client.configuration.security.viewAllSessions')}
+                        Ver todas las sesiones
                       </Button>
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <Label>{t('client.configuration.security.lastAccessIP')}</Label>
+                      <Label>IP del último acceso</Label>
                       <p className="text-sm font-mono text-slate-600 dark:text-slate-400">
                         {security.ipUltimoAcceso}
                       </p>
                     </div>
                     <Button onClick={handleSaveSecurity} className="w-full">
                       <Save className="w-4 h-4 mr-2" />
-                      {t('admin.configuration.security.saveButton')}
+                      Guardar configuración
                     </Button>
                   </CardContent>
                 </Card>
@@ -512,7 +497,7 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <AlertCircle className="w-5 h-5" />
-                      {t('admin.configuration.security.recentActivity.title')}
+                      Actividad Reciente
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -520,22 +505,22 @@ export default function ConfiguracionPage() {
                       <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium">{t('admin.configuration.security.recentActivity.loginSuccess')}</p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400">{t('admin.configuration.security.recentActivity.timeAgo.hours', { count: 2 })}</p>
+                          <p className="text-sm font-medium">Inicio de sesión exitoso</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">Hace 2 horas</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium">{t('admin.configuration.security.recentActivity.passwordChange')}</p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400">{t('admin.configuration.security.recentActivity.timeAgo.days', { count: 3 })}</p>
+                          <p className="text-sm font-medium">Cambio de contraseña</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">Hace 3 días</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
                         <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium">{t('admin.configuration.security.recentActivity.newDevice')}</p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400">{t('admin.configuration.security.recentActivity.timeAgo.week')}</p>
+                          <p className="text-sm font-medium">Nuevo dispositivo detectado</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">Hace 1 semana</p>
                         </div>
                       </div>
                     </div>
@@ -559,7 +544,7 @@ export default function ConfiguracionPage() {
                       <div className="space-y-1">
                         <Label>Notificaciones por email</Label>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          {t('admin.configuration.notifications.emailDesc')}
+                          Recibe actualizaciones importantes por correo electrónico
                         </p>
                       </div>
                       <Switch
@@ -570,9 +555,9 @@ export default function ConfiguracionPage() {
                     <Separator />
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <Label>{t('admin.configuration.notifications.push')}</Label>
+                        <Label>Notificaciones push</Label>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          {t('admin.configuration.notifications.pushDesc')}
+                          Recibe notificaciones en tiempo real en tu navegador
                         </p>
                       </div>
                       <Switch
@@ -583,9 +568,9 @@ export default function ConfiguracionPage() {
                     <Separator />
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <Label>{t('admin.configuration.notifications.marketing') || 'Marketing notifications'}</Label>
+                        <Label>Notificaciones de marketing</Label>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          {t('admin.configuration.notifications.marketingDesc') || 'Special offers and promotional content'}
+                          Ofertas especiales y contenido promocional
                         </p>
                       </div>
                       <Switch
@@ -596,9 +581,9 @@ export default function ConfiguracionPage() {
                     <Separator />
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <Label>{t('admin.configuration.notifications.orders') || 'Order notifications'}</Label>
+                        <Label>Notificaciones de pedidos</Label>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          {t('admin.configuration.notifications.ordersDesc') || 'Updates about your order status'}
+                          Actualizaciones sobre el estado de tus pedidos
                         </p>
                       </div>
                       <Switch
@@ -609,9 +594,9 @@ export default function ConfiguracionPage() {
                     <Separator />
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <Label>{t('admin.configuration.notifications.systemUpdates')}</Label>
+                        <Label>Actualizaciones del sistema</Label>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          {t('admin.configuration.notifications.systemUpdatesDesc')}
+                          Notificaciones sobre nuevas versiones y mejoras
                         </p>
                       </div>
                       <Switch
@@ -620,9 +605,9 @@ export default function ConfiguracionPage() {
                       />
                     </div>
                   </div>
-                    <Button onClick={handleSaveNotifications} className="w-full md:w-auto">
+                  <Button onClick={handleSaveNotifications} className="w-full md:w-auto">
                     <Save className="w-4 h-4 mr-2" />
-                    {t('admin.configuration.notifications.saveButton')}
+                    Guardar preferencias
                   </Button>
                 </CardContent>
               </Card>
@@ -635,15 +620,15 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Globe className="w-5 h-5" />
-                      {t('admin.configuration.preferences.regional.title')}
+                      Configuración Regional
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="zonaHoraria">{t('admin.configuration.preferences.timezone.title')}</Label>
+                      <Label htmlFor="zonaHoraria">Zona horaria</Label>
                       <Select value={formData.zonaHoraria} onValueChange={(value) => handleInputChange('zonaHoraria', value)}>
                         <SelectTrigger>
-                          <SelectValue placeholder={t('admin.configuration.preferences.timezone.placeholder')} />
+                          <SelectValue placeholder="Selecciona tu zona horaria" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="America/Caracas">Caracas (UTC-4)</SelectItem>
@@ -655,10 +640,10 @@ export default function ConfiguracionPage() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="formatoFecha">{t('admin.configuration.preferences.dateFormat.title')}</Label>
+                      <Label htmlFor="formatoFecha">Formato de fecha</Label>
                       <Select defaultValue="dd/mm/yyyy">
                         <SelectTrigger>
-                          <SelectValue placeholder={t('admin.configuration.preferences.dateFormat.placeholder')} />
+                          <SelectValue placeholder="Selecciona el formato" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="dd/mm/yyyy">DD/MM/YYYY</SelectItem>
@@ -668,14 +653,14 @@ export default function ConfiguracionPage() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="formatoHora">{t('admin.configuration.preferences.timeFormat.title')}</Label>
+                      <Label htmlFor="formatoHora">Formato de hora</Label>
                       <Select defaultValue="24h">
                         <SelectTrigger>
-                          <SelectValue placeholder={t('admin.configuration.preferences.timeFormat.placeholder')} />
+                          <SelectValue placeholder="Selecciona el formato" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="24h">{t('admin.configuration.preferences.timeFormat.24h')}</SelectItem>
-                          <SelectItem value="12h">{t('admin.configuration.preferences.timeFormat.12h')}</SelectItem>
+                          <SelectItem value="24h">24 horas</SelectItem>
+                          <SelectItem value="12h">12 horas (AM/PM)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -686,12 +671,12 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Palette className="w-5 h-5" />
-                      {t('admin.configuration.preferences.theme.title')}
+                      Apariencia
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label>{t('admin.configuration.preferences.theme.appearance')}</Label>
+                      <Label>Tema</Label>
                       <div className="flex gap-2 flex-wrap">
                         <Button
                           variant={mounted && theme === 'light' ? 'default' : 'outline'}
@@ -700,7 +685,7 @@ export default function ConfiguracionPage() {
                           className="flex-1 min-w-0 flex items-center gap-2"
                         >
                           <Sun className="w-4 h-4" />
-                          {t('admin.configuration.preferences.theme.light')}
+                          Claro
                         </Button>
                         <Button
                           variant={mounted && theme === 'dark' ? 'default' : 'outline'}
@@ -709,7 +694,7 @@ export default function ConfiguracionPage() {
                           className="flex-1 min-w-0 flex items-center gap-2"
                         >
                           <Moon className="w-4 h-4" />
-                          {t('admin.configuration.preferences.theme.dark')}
+                          Oscuro
                         </Button>
                         <Button
                           variant={mounted && theme === 'system' ? 'default' : 'outline'}
@@ -718,40 +703,40 @@ export default function ConfiguracionPage() {
                           className="flex-1 min-w-0 flex items-center gap-2"
                         >
                           <Monitor className="w-4 h-4" />
-                          {t('admin.configuration.preferences.theme.system')}
+                          Sistema
                         </Button>
                       </div>
                       {mounted && (
                         <p className="text-xs text-slate-600 dark:text-slate-400">
-                          {t('admin.configuration.preferences.theme.currentTheme')}: {theme === 'light' ? t('admin.configuration.preferences.theme.light') : theme === 'dark' ? t('admin.configuration.preferences.theme.dark') : t('admin.configuration.preferences.theme.system')}
+                          Tema actual: {theme === 'light' ? 'Claro' : theme === 'dark' ? 'Oscuro' : 'Sistema'}
                         </p>
                       )}
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <Label>{t('admin.configuration.preferences.theme.fontSize')}</Label>
+                      <Label>Tamaño de fuente</Label>
                       <Select defaultValue="medium">
                         <SelectTrigger>
-                          <SelectValue placeholder={t('admin.configuration.preferences.theme.fontSize')} />
+                          <SelectValue placeholder="Selecciona el tamaño" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="small">{t('admin.configuration.preferences.theme.fontSizes.small')}</SelectItem>
-                          <SelectItem value="medium">{t('admin.configuration.preferences.theme.fontSizes.medium')}</SelectItem>
-                          <SelectItem value="large">{t('admin.configuration.preferences.theme.fontSizes.large')}</SelectItem>
+                          <SelectItem value="small">Pequeño</SelectItem>
+                          <SelectItem value="medium">Mediano</SelectItem>
+                          <SelectItem value="large">Grande</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <Label>{t('admin.configuration.preferences.theme.interfaceDensity')}</Label>
+                      <Label>Densidad de la interfaz</Label>
                       <Select defaultValue="comfortable">
                         <SelectTrigger>
-                          <SelectValue placeholder={t('admin.configuration.preferences.theme.interfaceDensity')} />
+                          <SelectValue placeholder="Selecciona la densidad" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="compact">{t('admin.configuration.preferences.theme.densities.compact')}</SelectItem>
-                          <SelectItem value="comfortable">{t('admin.configuration.preferences.theme.densities.comfortable')}</SelectItem>
-                          <SelectItem value="spacious">{t('admin.configuration.preferences.theme.densities.spacious')}</SelectItem>
+                          <SelectItem value="compact">Compacta</SelectItem>
+                          <SelectItem value="comfortable">Cómoda</SelectItem>
+                          <SelectItem value="spacious">Espaciosa</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

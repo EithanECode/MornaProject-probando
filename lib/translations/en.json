@@ -1,5 +1,17 @@
+
+
       
 {
+
+  "chinese": {
+    "dashboardSubtitle": "Order management, processing, and logistics",
+    "dashboardWelcome": "Welcome back!",
+    "dashboard": "China Dashboard"
+
+    
+
+  },
+
   "client": {
     "support": {
       "title": "Support",

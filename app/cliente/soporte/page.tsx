@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from "next-themes";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
@@ -28,48 +27,48 @@ import {
   Headphones
 } from "lucide-react";
 
-// Preguntas frecuentes usando llaves de traducción
+// Preguntas frecuentes expandidas
 const faqData = [
   {
     id: 1,
-    category: 'tracking',
-    question: 'client.support.schedule.faq.q1.question',
-    answer: 'client.support.schedule.faq.q1.answer',
+    category: "Tracking",
+    question: '¿Cómo puedo rastrear mi paquete?',
+    answer: 'Puedes rastrear tu paquete de varias formas:\n\n1. Ingresa el número de seguimiento en nuestra página de rastreo\n2. Haz clic en el enlace que recibiste por email\n3. Usa nuestra app móvil\n4. Pregunta en el chat en vivo\n\nEl número de seguimiento tiene formato TRK123456789 y lo recibes dentro de las 24 horas posteriores al envío. Si no lo encuentras, revisa tu carpeta de spam.',
     tags: ['tracking', 'envío', 'seguimiento']
   },
   {
     id: 2,
-    category: 'shipping',
-    question: 'client.support.schedule.faq.q2.question',
-    answer: 'client.support.schedule.faq.q2.answer',
+    category: "Envíos",
+    question: '¿Cuánto tiempo tarda la entrega?',
+    answer: 'Los tiempos de entrega varían según el destino y el tipo de envío:\n\n• Envíos Nacionales: 24-48h\n• Internacionales: 3-10 días hábiles\n• Express: 1-3 días hábiles\n• Económico: 5-15 días hábiles\n\nLos tiempos pueden variar por factores como aduanas, clima o eventos especiales.',
     tags: ['entrega', 'tiempo', 'envío']
   },
   {
     id: 3,
-    category: 'payments',
-    question: 'client.support.schedule.faq.q3.question',
-    answer: 'client.support.schedule.faq.q3.answer',
+    category: "Pagos",
+    question: '¿Qué métodos de pago aceptan?',
+    answer: 'Aceptamos múltiples métodos de pago para tu comodidad:\n\n• Tarjetas de crédito/débito (Visa, MasterCard, American Express)\n• PayPal\n• Transferencias bancarias\n• Pago Móvil\n• Criptomonedas (Bitcoin, Ethereum)\n• Pago contra reembolso (solo envíos nacionales)\n\nTodos los pagos son procesados de forma segura con encriptación SSL.',
     tags: ['pago', 'tarjeta', 'paypal', 'transferencia']
   },
   {
     id: 4,
-    category: 'returns',
-    question: 'client.support.schedule.faq.q4.question',
-    answer: 'client.support.schedule.faq.q4.answer',
+    category: "Devoluciones",
+    question: '¿Cómo devuelvo un producto?',
+    answer: 'Para devolver un producto sigue estos pasos:\n\n1. Ve a "Mis Pedidos" en tu cuenta\n2. Selecciona el producto que deseas devolver\n3. Haz clic en "Solicitar Devolución"\n4. Completa el formulario con el motivo\n5. Imprime la etiqueta de devolución\n6. Envía el producto en 7 días\n\nLas devoluciones son gratuitas si el producto llegó dañado o es diferente al solicitado.',
     tags: ['devolución', 'reembolso', 'producto']
   },
   {
     id: 5,
-    category: 'account',
-    question: 'client.support.schedule.faq.q5.question',
-    answer: 'client.support.schedule.faq.q5.answer',
+    category: "Cuenta",
+    question: '¿Cómo cambio mi contraseña?',
+    answer: 'Para cambiar tu contraseña:\n\n1. Inicia sesión en tu cuenta\n2. Ve a "Configuración" → "Seguridad"\n3. Haz clic en "Cambiar Contraseña"\n4. Ingresa tu contraseña actual\n5. Escribe la nueva contraseña\n6. Confirma la nueva contraseña\n7. Haz clic en "Guardar Cambios"\n\nRecibirás un email de confirmación cuando el cambio sea exitoso.',
     tags: ['contraseña', 'cuenta', 'seguridad']
   },
   {
     id: 6,
-    category: 'billing',
-    question: 'client.support.schedule.faq.q6.question',
-    answer: 'client.support.schedule.faq.q6.answer',
+    category: "Facturación",
+    question: '¿Cómo obtengo mi factura?',
+    answer: 'Para obtener tu factura:\n\n1. Ve a "Mis Pedidos"\n2. Selecciona el pedido específico\n3. Haz clic en "Descargar Factura"\n4. La factura se descargará en formato PDF\n\nTambién puedes solicitar facturas por email enviando tu número de pedido a facturacion@morna.com\n\nLas facturas están disponibles 24 horas después de la confirmación del pago.',
     tags: ['factura', 'facturación', 'pdf']
   }
 ];
@@ -87,7 +86,6 @@ const autoResponses = [
 ];
 
 export default function ClienteSoporte() {
-  const { t } = useTranslation();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -199,10 +197,8 @@ export default function ClienteSoporte() {
 
   // Filtrar FAQ
   const filteredFaq = faqData.filter(faq => {
-    const questionText = t(faq.question).toLowerCase();
-    const answerText = t(faq.answer).toLowerCase();
-    const matchesSearch = questionText.includes(faqSearch.toLowerCase()) ||
-                         answerText.includes(faqSearch.toLowerCase()) ||
+    const matchesSearch = faq.question.toLowerCase().includes(faqSearch.toLowerCase()) ||
+                         faq.answer.toLowerCase().includes(faqSearch.toLowerCase()) ||
                          faq.tags.some(tag => tag.toLowerCase().includes(faqSearch.toLowerCase()));
     const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -244,8 +240,8 @@ export default function ClienteSoporte() {
           <Header 
             notifications={0}
             onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            title={t('client.support.title')}
-            subtitle={t('client.support.subtitle')}
+            title="Soporte"
+            subtitle="¿Necesitas ayuda? Estamos aquí para ti"
           />
           
           <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
@@ -254,27 +250,27 @@ export default function ClienteSoporte() {
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 animate-pulse"></div>
               <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
                 <div className="space-y-2">
-                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">{t('client.support.headerTitle')}</h1>
-                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">{t('client.support.headerSubtitle')}</p>
+                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">Soporte al Cliente</h1>
+                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">¿Tienes alguna pregunta? Nuestro equipo está listo para ayudarte</p>
                   <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 text-xs md:text-sm">
                     <div className="flex items-center space-x-1">
                       <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                      <span>{t('client.support.onlineNow')}</span>
+                      <span>En línea ahora</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Clock className="w-3 h-3 md:w-4 md:h-4" />
-                      <span>{t('client.support.responseTime')}</span>
+                      <span>Tiempo de respuesta: &lt; 2 min</span>
                     </div>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
                   <div className="text-center">
                     <div className="text-lg md:text-xl lg:text-2xl font-bold">24/7</div>
-                    <div className="text-xs md:text-sm text-blue-100">{t('client.support.support')}</div>
+                    <div className="text-xs md:text-sm text-blue-100">Soporte</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg md:text-xl lg:text-2xl font-bold">98%</div>
-                    <div className="text-xs md:text-sm text-blue-100">{t('client.support.satisfaction')}</div>
+                    <div className="text-xs md:text-sm text-blue-100">Satisfacción</div>
                   </div>
                 </div>
               </div>
@@ -287,13 +283,13 @@ export default function ClienteSoporte() {
                   <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-green-600 transition-colors">{t('client.support.channels.chatTitle')}</CardTitle>
+                  <CardTitle className="group-hover:text-green-600 transition-colors">Chat en Línea</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.chatDesc')}</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">Chatea con nuestro equipo de soporte en tiempo real</p>
                   <Badge className="bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                    {t('client.support.channels.available')}
+                    Disponible
                   </Badge>
                 </CardContent>
               </Card>
@@ -303,10 +299,10 @@ export default function ClienteSoporte() {
                   <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <Phone className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-blue-600 transition-colors">{t('client.support.channels.phoneTitle')}</CardTitle>
+                  <CardTitle className="group-hover:text-blue-600 transition-colors">Teléfono</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.phoneDesc')}</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">Llámanos directamente para atención inmediata</p>
                   <Button 
                     variant="outline" 
                     className="w-full group-hover:border-blue-300 group-hover:text-blue-600 transition-colors"
@@ -323,10 +319,10 @@ export default function ClienteSoporte() {
                   <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <Mail className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-purple-600 transition-colors">{t('client.support.channels.emailTitle')}</CardTitle>
+                  <CardTitle className="group-hover:text-purple-600 transition-colors">Email</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.emailDesc')}</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">Envíanos un email y te responderemos en 24 horas</p>
                   <Button 
                     variant="outline" 
                     className="w-full group-hover:border-purple-300 group-hover:text-purple-600 transition-colors"
@@ -344,42 +340,42 @@ export default function ClienteSoporte() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="h-5 w-5 text-blue-600" />
-                  {t('client.support.schedule.title')}
+                  Horarios de Atención
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <div className="space-y-4">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-blue-50 rounded-lg gap-2 md:gap-0">
-                      <div>
-                        <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.weekdays')}</h4>
-                        <p className="text-slate-600 text-xs md:text-sm">8:00 AM - 6:00 PM (GMT-4)</p>
+                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-blue-50 rounded-lg gap-2 md:gap-0">
+                        <div>
+                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Lunes a Viernes</h4>
+                          <p className="text-slate-600 text-xs md:text-sm">8:00 AM - 6:00 PM (GMT-4)</p>
+                        </div>
+                        <Badge className="bg-green-100 text-green-800 text-xs md:text-sm w-fit">Abierto</Badge>
                       </div>
-                      <Badge className="bg-green-100 text-green-800 text-xs md:text-sm w-fit">{t('client.support.schedule.open')}</Badge>
-                    </div>
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-orange-50 rounded-lg gap-2 md:gap-0">
-                      <div>
-                        <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.saturday')}</h4>
-                        <p className="text-slate-600 text-xs md:text-sm">9:00 AM - 2:00 PM (GMT-4)</p>
+                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-orange-50 rounded-lg gap-2 md:gap-0">
+                        <div>
+                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Sábados</h4>
+                          <p className="text-slate-600 text-xs md:text-sm">9:00 AM - 2:00 PM (GMT-4)</p>
+                        </div>
+                        <Badge className="bg-orange-100 text-orange-800 text-xs md:text-sm w-fit">Limitado</Badge>
                       </div>
-                      <Badge className="bg-orange-100 text-orange-800 text-xs md:text-sm w-fit">{t('client.support.schedule.limited')}</Badge>
-                    </div>
                   </div>
                   <div className="space-y-4">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-red-50 rounded-lg gap-2 md:gap-0">
-                      <div>
-                        <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.sunday')}</h4>
-                        <p className="text-slate-600 text-xs md:text-sm">{t('client.support.schedule.closed')}</p>
+                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-red-50 rounded-lg gap-2 md:gap-0">
+                        <div>
+                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Domingos</h4>
+                          <p className="text-slate-600 text-xs md:text-sm">Cerrado</p>
+                        </div>
+                        <Badge className="bg-red-100 text-red-800 text-xs md:text-sm w-fit">Cerrado</Badge>
                       </div>
-                      <Badge className="bg-red-100 text-red-800 text-xs md:text-sm w-fit">{t('client.support.schedule.closed')}</Badge>
-                    </div>
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-purple-50 rounded-lg gap-2 md:gap-0">
-                      <div>
-                        <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.chat247')}</h4>
-                        <p className="text-slate-600 text-xs md:text-sm">{t('client.support.schedule.automatic')}</p>
+                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-purple-50 rounded-lg gap-2 md:gap-0">
+                        <div>
+                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Chat 24/7</h4>
+                          <p className="text-slate-600 text-xs md:text-sm">Soporte automático</p>
+                        </div>
+                        <Badge className="bg-purple-100 text-purple-800 text-xs md:text-sm w-fit">Disponible</Badge>
                       </div>
-                      <Badge className="bg-purple-100 text-purple-800 text-xs md:text-sm w-fit">{t('client.support.channels.available')}</Badge>
-                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -390,9 +386,9 @@ export default function ClienteSoporte() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <HelpCircle className="h-5 w-5 text-orange-600" />
-                  {t('client.support.schedule.faq.title')}
+                  Preguntas Frecuentes
                 </CardTitle>
-                <p className="text-xs md:text-sm text-slate-600">{t('client.support.schedule.faq.subtitle')}</p>
+                <p className="text-xs md:text-sm text-slate-600">Encuentra respuestas rápidas a las preguntas más comunes</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Búsqueda y filtros */}
@@ -400,7 +396,7 @@ export default function ClienteSoporte() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <Input
-                      placeholder={t('client.support.schedule.faq.placeholder')}
+                      placeholder="Buscar en preguntas frecuentes..."
                       value={faqSearch}
                       onChange={(e) => handleSearchChange(e.target.value)}
                       className="pl-10"
@@ -416,7 +412,7 @@ export default function ClienteSoporte() {
                         className="cursor-pointer hover:bg-slate-100 transition-colors text-xs md:text-sm"
                         onClick={() => handleCategoryChange(category)}
                       >
-                        {category === 'all' ? t('client.support.schedule.faq.all') : t('client.support.schedule.faq.categories.' + category)}
+                        {category === 'all' ? 'Todas' : category}
                       </Badge>
                     ))}
                   </div>
@@ -444,7 +440,7 @@ export default function ClienteSoporte() {
                                 {faq.category}
                               </Badge>
                             </div>
-                            <h4 className="font-medium text-gray-900 text-sm md:text-base">{t(faq.question)}</h4>
+                            <h4 className="font-medium text-gray-900 text-sm md:text-base">{faq.question}</h4>
                           </div>
                           <div className="ml-2 md:ml-4 transition-transform duration-200">
                             {openFaqId === faq.id ? (
@@ -463,12 +459,12 @@ export default function ClienteSoporte() {
                           }`}
                         >
                           <div className="text-gray-700 whitespace-pre-line border-t pt-4 text-xs md:text-sm">
-                            {t(faq.answer)}
+                            {faq.answer}
                           </div>
                           <div className="flex flex-wrap gap-1 mt-3">
                             {faq.tags.map(tag => (
                               <Badge key={tag} variant="outline" className="text-xs">
-                                #{t('client.support.schedule.faq.tags.' + tag)}
+                                #{tag}
                               </Badge>
                             ))}
                           </div>
@@ -514,10 +510,10 @@ export default function ClienteSoporte() {
                     <Bot className="w-4 h-4 md:w-5 md:h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-sm md:text-base">{t('client.support.schedule.chatTitle')}</h3>
+                    <h3 className="font-semibold text-sm md:text-base">Chat con Soporte</h3>
                     <p className="text-xs md:text-sm text-green-100 flex items-center">
                       <div className="w-2 h-2 bg-green-300 rounded-full mr-2 animate-pulse"></div>
-                      {t('client.support.schedule.agentOnline', { name: 'Carlos' })}
+                      Carlos - En línea
                     </p>
                   </div>
                 </div>

@@ -59,10 +59,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import VenezuelaOrdersTabContent from '@/components/venezuela/VenezuelaOrdersTabContent';
-import ChinaOrdersTabContent from '@/components/china/ChinaOrdersTabContent';
-
 // jsPDF se importará dinámicamente para evitar errores de SSR
 // html2canvas se importará dinámicamente para evitar errores de SSR
 
@@ -109,32 +105,32 @@ interface NewOrderData {
 
 // Memoizar las configuraciones para evitar recreaciones
 const STATUS_CONFIG = {
-  'pendiente-china': { color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
-  'pendiente-vzla': { color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
-  'esperando-pago': { color: 'bg-orange-700 border-orange-800', icon: Clock },
-  'en-transito': { color: 'bg-blue-800 border-blue-900', icon: Plane },
-  'entregado': { color: 'bg-green-800 border-green-900', icon: CheckCircle },
-  'cancelado': { color: 'bg-red-800 border-red-900', icon: AlertCircle }
+  'pendiente-china': { label: 'Pend. China', color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
+  'pendiente-vzla': { label: 'Pend. Vzla', color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
+  'esperando-pago': { label: 'Esperando Pago', color: 'bg-orange-700 border-orange-800', icon: Clock },
+  'en-transito': { label: 'En Tránsito', color: 'bg-blue-800 border-blue-900', icon: Plane },
+  'entregado': { label: 'Entregado', color: 'bg-green-800 border-green-900', icon: CheckCircle },
+  'cancelado': { label: 'Cancelado', color: 'bg-red-800 border-red-900', icon: AlertCircle }
 } as const;
 
 const ASSIGNED_CONFIG = {
-  'china': { color: 'bg-red-800 border-red-900' },
-  'vzla': { color: 'bg-blue-800 border-blue-900' }
+  'china': { label: 'China', color: 'bg-red-800 border-red-900' },
+  'vzla': { label: 'Vzla', color: 'bg-blue-800 border-blue-900' }
 } as const;
 
 // Light theme colors
 const STATUS_CONFIG_LIGHT = {
-  'pendiente-china': { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
-  'pendiente-vzla': { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
-  'esperando-pago': { color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock },
-  'en-transito': { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Plane },
-  'entregado': { color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle },
-  'cancelado': { color: 'bg-red-100 text-red-800 border-red-200', icon: AlertCircle }
+  'pendiente-china': { label: 'Pend. China', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
+  'pendiente-vzla': { label: 'Pend. Vzla', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
+  'esperando-pago': { label: 'Esperando Pago', color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock },
+  'en-transito': { label: 'En Tránsito', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Plane },
+  'entregado': { label: 'Entregado', color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle },
+  'cancelado': { label: 'Cancelado', color: 'bg-red-100 text-red-800 border-red-200', icon: AlertCircle }
 } as const;
 
 const ASSIGNED_CONFIG_LIGHT = {
-  'china': { color: 'bg-red-100 text-red-800 border-red-200' },
-  'vzla': { color: 'bg-blue-100 text-blue-800 border-blue-200' }
+  'china': { label: 'China', color: 'bg-red-100 text-red-800 border-red-200' },
+  'vzla': { label: 'Vzla', color: 'bg-blue-100 text-blue-800 border-blue-200' }
 } as const;
 
 // Hook personalizado para manejar el filtrado y paginación
@@ -188,7 +184,18 @@ const useOrdersFilter = (orders: Order[]) => {
 export default function PedidosPage() {
   const { t } = useTranslation();
 
-  // Todas las traducciones de status se hacen directamente en el renderizado con t(`admin.orders.status.${status}`)
+  // Función para traducir estados dinámicamente
+  const getTranslatedStatus = (status: string) => {
+    const statusMap: { [key: string]: string } = {
+      'pendiente-china': t('admin.orders.status.pendiente-china'),
+      'pendiente-vzla': t('admin.orders.status.pendiente-vzla'),
+      'esperando-pago': t('admin.orders.status.esperando-pago'),
+      'en-transito': t('admin.orders.status.en-transito'),
+      'entregado': t('admin.orders.status.entregado'),
+      'cancelado': t('admin.orders.status.cancelado')
+    };
+    return statusMap[status] || status;
+  };
   // Datos desde Supabase (stats/admin)
   const { data: adminStats, loading: adminLoading, error: adminError, refetch: refetchStats } = useAdminOrders();
   // Lista de pedidos reales
@@ -239,7 +246,6 @@ export default function PedidosPage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [stepDirection, setStepDirection] = useState<'next' | 'prev'>('next');
   const modalRef = useRef<HTMLDivElement>(null);
-  const [activeTab, setActiveTab] = useState<string>('admin');
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -566,14 +572,7 @@ export default function PedidosPage() {
     
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
-    const headers = [
-      t('admin.orders.table.id'),
-      t('admin.orders.table.client'),
-      t('admin.orders.table.description'),
-      t('admin.orders.table.status'),
-      t('admin.orders.table.assigned'),
-      t('admin.orders.table.time', { unit: t('admin.orders.table.days') })
-    ];
+    const headers = ["ID", "Cliente", "Descripción", "Estado", "Asignado a", "Tiempo (días)"];
     headers.forEach(text => {
       const th = document.createElement('th');
       th.innerText = text;
@@ -597,9 +596,9 @@ export default function PedidosPage() {
         order.id,
         order.client,
         order.description,
-  t(`admin.orders.status.${order.status}`),
-  t(`admin.orders.assigned.${order.assignedTo}`),
-  t('admin.orders.table.daysElapsed', { count: order.daysElapsed })
+        STATUS_CONFIG[order.status].label,
+        ASSIGNED_CONFIG[order.assignedTo].label,
+        `${order.daysElapsed} días`
       ];
 
       rowData.forEach(text => {
@@ -801,6 +800,7 @@ export default function PedidosPage() {
       const status = statusConfig[order.status];
       const assigned = assignedConfig[order.assignedTo];
       const StatusIcon = status.icon;
+      
       return (
         <tr 
           key={order.id}
@@ -823,18 +823,18 @@ export default function PedidosPage() {
           <td className="py-4 px-6">
             <Badge className={`${status.color} border text-slate-900 dark:text-white`}>
               <StatusIcon className="w-3 h-3 mr-1" />
-              {t(`admin.orders.status.${order.status}`)}
+              {status.label}
             </Badge>
           </td>
           <td className="py-4 px-6">
             <Badge className={`${assigned.color} border text-slate-900 dark:text-white`}>
-              {t(`admin.orders.assigned.${order.assignedTo}`)}
+              {assigned.label}
             </Badge>
           </td>
           <td className="py-4 px-6">
             <div className="flex items-center space-x-2">
               <Clock className="w-4 h-4" />
-              <span>{t('admin.orders.time.days', { count: order.daysElapsed })}</span>
+              <span>{order.daysElapsed} días</span>
             </div>
           </td>
           <td className="py-4 px-6">
@@ -846,14 +846,14 @@ export default function PedidosPage() {
                 onClick={() => setSelectedOrder(order)}
               >
                 <Eye className="w-4 h-4 mr-1" />
-                {t('admin.orders.actions.view')}
+                Ver
               </Button>
             </div>
           </td>
         </tr>
       );
     })
-  ), [paginatedOrders, statusConfig, assignedConfig, t]);
+  ), [paginatedOrders, statusConfig, assignedConfig]);
 
   return (
     <div
@@ -883,25 +883,13 @@ export default function PedidosPage() {
         />
 
         <div className={mounted && theme === 'dark' ? 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6 bg-slate-900' : 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6'}>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="mb-8 flex flex-nowrap overflow-x-auto md:flex-wrap md:overflow-x-visible gap-3 rounded-2xl p-2 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
-              <TabsTrigger value="admin" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
-                <Settings className="w-4 h-4" /> Admin
-              </TabsTrigger>
-              <TabsTrigger value="venezuela" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
-                <MapPin className="w-4 h-4" /> Venezuela
-              </TabsTrigger>
-              <TabsTrigger value="china" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
-                <Plane className="w-4 h-4" /> China
-              </TabsTrigger>
-              {/* Pestaña Cliente eliminada */}
-            </TabsList>
+          {/* Stats Cards */}
+          {statsCards}
 
-            <TabsContent value="admin" className="space-y-6">
-              {/* Stats Cards */}
-              {statsCards}
-              {/* Table Card existente */}
-              <Card className={mounted && theme === 'dark' ? 'shadow-lg border-0 bg-slate-800/80 backdrop-blur-sm' : 'shadow-lg border-0 bg-white/70 backdrop-blur-sm'}>
+
+
+          {/* Table Card */}
+          <Card className={mounted && theme === 'dark' ? 'shadow-lg border-0 bg-slate-800/80 backdrop-blur-sm' : 'shadow-lg border-0 bg-white/70 backdrop-blur-sm'}>
             <CardHeader>
                                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div>
@@ -929,50 +917,60 @@ export default function PedidosPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">{t('admin.orders.filters.allStates')}</SelectItem>
-                          <SelectItem value="pendiente-china">{t('admin.orders.status.pendiente-china')}</SelectItem>
-                          <SelectItem value="pendiente-vzla">{t('admin.orders.status.pendiente-vzla')}</SelectItem>
-                          <SelectItem value="esperando-pago">{t('admin.orders.status.esperando-pago')}</SelectItem>
-                          <SelectItem value="en-transito">{t('admin.orders.status.en-transito')}</SelectItem>
-                          <SelectItem value="entregado">{t('admin.orders.status.entregado')}</SelectItem>
-                          <SelectItem value="cancelado">{t('admin.orders.status.cancelado')}</SelectItem>
+                          <SelectItem value="pendiente-china">{getTranslatedStatus('pendiente-china')}</SelectItem>
+                          <SelectItem value="pendiente-vzla">{getTranslatedStatus('pendiente-vzla')}</SelectItem>
+                          <SelectItem value="esperando-pago">{getTranslatedStatus('esperando-pago')}</SelectItem>
+                          <SelectItem value="en-transito">{getTranslatedStatus('en-transito')}</SelectItem>
+                          <SelectItem value="entregado">{getTranslatedStatus('entregado')}</SelectItem>
+                          <SelectItem value="cancelado">{getTranslatedStatus('cancelado')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
                   
-                  {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-4 mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <Button onClick={() => setIsNewOrderModalOpen(true)} className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-sm md:text-base font-medium">
-                      <Plus className="w-4 h-4 mr-2" />
-{t('admin.orders.actions.newOrder')}
-                    </Button>
-                    {/* <Button 
-                      variant="outline"
-                      onClick={handleExport}
-                      className="w-full sm:w-auto px-8 py-3 bg-white hover:bg-gray-50 border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-800 shadow-sm hover:shadow-md transition-all duration-300 text-sm md:text-base font-medium"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-{t('admin.orders.actions.export')}
-                    </Button> */}
-                  </div>
-            </CardHeader>
-            <CardContent>
-              {/* Vista Desktop - Tabla */}
-              <div className="hidden lg:block overflow-x-auto">
-                <table className={mounted && theme === 'dark' ? 'w-full bg-slate-800' : 'w-full'}>
-                  <thead>
-                    <tr className={mounted && theme === 'dark' ? 'border-b border-slate-700' : 'border-b border-slate-200'}>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.id')}</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.client')}</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.status')}</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.assignedTo')}</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.time')}</th>
-                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.actions')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tableRows}
-                  </tbody>
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="mb-8 flex flex-wrap gap-3 rounded-2xl p-2 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+                      <TabsTrigger value="admin" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+                        <Settings className="w-4 h-4" /> Admin
+                      </TabsTrigger>
+                      <TabsTrigger value="venezuela" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+                        <MapPin className="w-4 h-4" /> Venezuela
+                      </TabsTrigger>
+                      <TabsTrigger value="china" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+                        <Plane className="w-4 h-4" /> China
+                      </TabsTrigger>
+                      {/* Pestaña Cliente eliminada */}
+                    </TabsList>
+
+                    <TabsContent value="admin" className="space-y-6">
+                      {/* Stats Cards */}
+                      {statsCards}
+                      {/* Table Card existente */}
+                      <Card className={mounted && theme === 'dark' ? 'shadow-lg border-0 bg-slate-800/80 backdrop-blur-sm' : 'shadow-lg border-0 bg-white/70 backdrop-blur-sm'}>
+                        <CardHeader>
+                          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                            <div>
+                              <CardTitle className={`text-lg md:text-xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('admin.orders.listTitle')}</CardTitle>
+                              <CardDescription className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('admin.orders.listDescription', { count: totalPedidos })}</CardDescription>
+                            </div>
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 w-full lg:w-auto">
+                              {/* Search */}
+                              <div className="relative w-full sm:w-auto">
+                                <Search className={mounted && theme === 'dark' ? 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4' : 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4'} />
+                                <Input
+                                  placeholder={t('admin.orders.search')}
+                                  value={searchTerm}
+                                  onChange={(e) => setSearchTerm(e.target.value)}
+                                  className={`pl-10 w-full sm:w-64 focus:border-blue-500 focus:ring-blue-500 ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400' : 'bg-white/50 border-slate-200'}`}
+                                />
+                              </div>
+                              {/* Status Filter */}
+                              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                <SelectTrigger className={`w-full sm:w-auto ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white/50 border-slate-200'}`}>
+                                  <Filter className="w-4 h-4 mr-2" />
+                                  <SelectValue placeholder={t('admin.orders.filters.status')} />
+                                </SelectTrigger>
+                                <SelectContent>
                 </table>
               </div>
 
@@ -1007,10 +1005,10 @@ export default function PedidosPage() {
                          <div className="flex items-center gap-2 flex-wrap">
                            <Badge className={`${status.color} border text-xs`}>
                              <StatusIcon className="w-3 h-3 mr-1" />
-                             {t(`admin.orders.status.${order.status}`)}
+                             {getTranslatedStatus(order.status)}
                            </Badge>
                            <Badge className={`${assigned.color} border text-xs`}>
-                            {t(`admin.orders.assigned.${order.assignedTo}`)}
+                             {assigned.label}
                            </Badge>
                          </div>
                        </div>
@@ -1022,11 +1020,7 @@ export default function PedidosPage() {
               {totalPages > 1 && (
                 <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t ${mounted && theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}>
                   <div className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
-                    {t('admin.orders.pagination.results', {
-                      from: startIndex + 1,
-                      to: Math.min(startIndex + 8, filteredOrders.length),
-                      total: filteredOrders.length
-                    })}
+                    {t('admin.orders.pagination.showing')} {startIndex + 1} a {Math.min(startIndex + 8, filteredOrders.length)} {t('admin.orders.pagination.of')} {filteredOrders.length} resultados
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -1069,16 +1063,6 @@ export default function PedidosPage() {
               )}
             </CardContent>
           </Card>
-            </TabsContent>
-
-            <TabsContent value="venezuela" className="space-y-6">
-              <VenezuelaOrdersTabContent />
-            </TabsContent>
-            <TabsContent value="china" className="space-y-6">
-              <ChinaOrdersTabContent />
-            </TabsContent>
-            {/* TabsContent cliente eliminado */}
-          </Tabs>
         </div>
       </main>
 
@@ -1288,7 +1272,7 @@ export default function PedidosPage() {
                       <p className="font-medium">{newOrderData.client_name} ({newOrderData.client_id})</p>
                     </div>
                     <div>
-                                           <p className="text-sm text-slate-600">{t('admin.orders.summary.product')}</p>
+                      <p className="text-sm text-slate-600">{t('admin.orders.summary.product')}</p>
                       <p className="font-medium">{newOrderData.productName}</p>
                     </div>
                     <div>
@@ -1302,7 +1286,7 @@ export default function PedidosPage() {
                         {newOrderData.deliveryType === 'air' && t('admin.orders.deliveryTypes.air')}
                         {newOrderData.deliveryType === 'maritime' && t('admin.orders.deliveryTypes.maritime')}
                       </p>
-                                       </div>
+                    </div>
                     <div>
                       <p className="text-sm text-slate-600">{t('admin.orders.summary.estimatedBudget')}</p>
                       <p className="font-medium">${newOrderData.estimatedBudget}</p>
@@ -1375,7 +1359,7 @@ export default function PedidosPage() {
                     <div>
                       <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Asignado a</p>
                       <Badge className={`${assignedConfig[selectedOrder.assignedTo].color} border text-xs md:text-sm`}>
-                        {t(`admin.orders.assigned.${selectedOrder.assignedTo}`)}
+                        {assignedConfig[selectedOrder.assignedTo].label}
                       </Badge>
                     </div>
                   </div>
@@ -1386,7 +1370,7 @@ export default function PedidosPage() {
                     </div>
                     <div>
                       <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Tiempo Transcurrido</p>
-                      <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>{t('admin.orders.table.daysElapsed', { count: selectedOrder.daysElapsed })}</p>
+                      <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>{selectedOrder.daysElapsed} días</p>
                     </div>
                   </div>
 
@@ -1403,7 +1387,7 @@ export default function PedidosPage() {
                             return <StatusIcon className="w-3 h-3 mr-1" />;
                           })()
                         }
-                        {t(`admin.orders.status.${selectedOrder.status}`)}
+                        {statusConfig[selectedOrder.status].label}
                       </Badge>
                     </div>
                   </div>
@@ -1423,7 +1407,7 @@ export default function PedidosPage() {
                     {/* Placeholder para el historial */}
                     <div className={mounted && theme === 'dark' ? 'flex items-center' : 'flex items-center'}>
                       <div className={mounted && theme === 'dark' ? 'w-2 h-2 rounded-full bg-blue-400 mr-4' : 'w-2 h-2 rounded-full bg-blue-500 mr-4'}></div>
-                      <span className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}>{t('admin.orders.history.createdBy', { client: selectedOrder.client, days: selectedOrder.daysElapsed })}</span>
+                      <span className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}>Creado por {selectedOrder.client} ({selectedOrder.daysElapsed} días)</span>
                     </div>
                     <div className={mounted && theme === 'dark' ? 'flex items-center' : 'flex items-center'}>
                       <div className={mounted && theme === 'dark' ? 'w-2 h-2 rounded-full bg-yellow-400 mr-4' : 'w-2 h-2 rounded-full bg-yellow-500 mr-4'}></div>
@@ -1501,7 +1485,7 @@ export default function PedidosPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {Object.keys(statusConfig).map(statusKey => (
-                      <SelectItem key={statusKey} value={statusKey}>{t(`admin.orders.status.${statusKey}`)}</SelectItem>
+                      <SelectItem key={statusKey} value={statusKey}>{statusConfig[statusKey as Order['status']].label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -1517,13 +1501,13 @@ export default function PedidosPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {Object.keys(assignedConfig).map(assignedKey => (
-                      <SelectItem key={assignedKey} value={assignedKey}>{t(`admin.orders.assigned.${assignedKey}`)}</SelectItem>
+                      <SelectItem key={assignedKey} value={assignedKey}>{assignedConfig[assignedKey as Order['assignedTo']].label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="daysElapsed" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>{t('admin.orders.form.daysElapsed')}</Label>
+                <Label htmlFor="daysElapsed" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>Días Transcurridos</Label>
                 <Input 
                   id="daysElapsed" 
                   type="number"

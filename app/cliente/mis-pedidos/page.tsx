@@ -21,7 +21,6 @@ import { Button } from '@/components/ui/button';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useClientContext } from '@/lib/ClientContext';
-import { useTranslation } from '@/hooks/useTranslation';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -200,7 +199,6 @@ const MOCK_ORDERS: Order[] = [
 ];
 
 export default function MisPedidosPage() {
-  const { t } = useTranslation();
   const { clientId, clientName, clientEmail, clientRole } = useClientContext();
 
   // Supabase client (navegador)
@@ -410,12 +408,12 @@ export default function MisPedidosPage() {
 
     const status = mapStatus(order.status);
     const steps = [
-      { id: '1', key: 'created' },
-      { id: '2', key: 'processing' },
-      { id: '3', key: 'shipped' },
-  { id: '4', key: 'in_transit' },
-      { id: '5', key: 'customs' },
-      { id: '6', key: 'delivered' },
+      { id: '1', key: 'Pedido Creado' },
+      { id: '2', key: 'En Procesamiento' },
+      { id: '3', key: 'Enviado' },
+      { id: '4', key: 'En Tránsito' },
+      { id: '5', key: 'En Aduana' },
+      { id: '6', key: 'Entregado' },
     ];
     const statusIndexMap: Record<TrackingOrder['status'], number> = {
       pending: 0,
@@ -475,7 +473,15 @@ export default function MisPedidosPage() {
   };
 
   const getStatusText = (status: string) => {
-    return t(`client.recentOrders.statuses.${status}`) || status;
+    switch (status) {
+      case 'pending': return 'Pendiente';
+      case 'quoted': return 'Cotizado';
+      case 'processing': return 'Procesando';
+      case 'shipped': return 'Enviado';
+      case 'delivered': return 'Entregado';
+      case 'cancelled': return 'Cancelado';
+      default: return 'Desconocido';
+    }
   };
 
   const getProgressColor = (progress: number) => {
@@ -1029,8 +1035,8 @@ export default function MisPedidosPage() {
         <Header 
           notifications={stats.pending} 
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title={t('client.recentOrders.title')}
-          subtitle={t('client.recentOrders.subtitle')}
+          title="Mis Pedidos"
+          subtitle="Gestiona y sigue el estado de tus pedidos"
         />
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
@@ -1040,20 +1046,20 @@ export default function MisPedidosPage() {
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
                 <div>
-                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">{t('client.recentOrders.title')}</h1>
-                  <p className="text-green-100 text-sm md:text-base lg:text-lg">{t('client.dashboard.panel')}</p>
-                  <p className="text-green-200 mt-2 text-xs md:text-sm">{t('client.recentOrders.subtitle')}</p>
+                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">Mis Pedidos</h1>
+                  <p className="text-green-100 text-sm md:text-base lg:text-lg">Panel de Control - Pedidos</p>
+                  <p className="text-green-200 mt-2 text-xs md:text-sm">Gestiona y sigue el estado de tus pedidos</p>
                 </div>
                 
                 <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
                   <div className="text-center">
                     <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{stats.total}</div>
-                    <p className="text-green-100 text-xs md:text-sm">{t('client.dashboard.totalOrders')}</p>
+                    <p className="text-green-100 text-xs md:text-sm">Total Pedidos</p>
                   </div>
                   <div className="hidden md:block w-px h-12 md:h-16 bg-white/20"></div>
                   <div className="text-center">
                     <div className="text-2xl md:text-3xl lg:text-4xl font-bold">${stats.totalSpent.toLocaleString()}</div>
-                    <p className="text-green-100 text-xs md:text-sm">{t('client.dashboard.totalSpent')}</p>
+                    <p className="text-green-100 text-xs md:text-sm">Total Gastado</p>
                   </div>
                 </div>
               </div>
@@ -1066,7 +1072,7 @@ export default function MisPedidosPage() {
               <DialogTrigger asChild>
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                   <Plus className="w-4 h-4 mr-2" />
-                  {t('client.quickActions.newOrder')}
+                  Nuevo Pedido
                 </Button>
               </DialogTrigger>
               <DialogContent ref={modalRef} className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
@@ -1074,7 +1080,7 @@ export default function MisPedidosPage() {
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-xl opacity-20 animate-pulse"></div>
                     <DialogTitle className="relative text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent animate-fade-in-up">
-                      ✨ {t('client.quickActions.newOrder')}
+                      ✨ Crear Nuevo Pedido
                     </DialogTitle>
                   </div>
                   <DialogDescription className="text-lg text-slate-600 mt-2">
@@ -1087,8 +1093,8 @@ export default function MisPedidosPage() {
                   isTransitioning ? 'opacity-75' : 'opacity-100'
                 }`}>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-slate-700">{t('client.recentOrders.newOrder.step', { current: currentStep, total: 3 })}</span>
-                    <span className="font-bold text-blue-600">{t('client.recentOrders.newOrder.percentComplete', { percent: Math.round((currentStep / 3) * 100) })}</span>
+                    <span className="font-medium text-slate-700">Paso {currentStep} de 3</span>
+                    <span className="font-bold text-blue-600">{Math.round((currentStep / 3) * 100)}% completado</span>
                   </div>
                   <div className="relative">
                     <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
@@ -1113,7 +1119,7 @@ export default function MisPedidosPage() {
                           <span className={`text-xs mt-1 transition-colors duration-300 ${
                             step <= currentStep ? 'text-blue-600 font-medium' : 'text-slate-500'
                           }`}>
-                            {step === 1 ? t('client.recentOrders.newOrder.productTab') : step === 2 ? t('client.recentOrders.newOrder.shippingTab') : t('client.recentOrders.newOrder.summaryTab')}
+                            {step === 1 ? 'Producto' : step === 2 ? 'Envío' : 'Resumen'}
                           </span>
                         </div>
                       ))}
@@ -1173,14 +1179,14 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="productName" className="text-sm font-semibold text-slate-700 flex items-center">
                           <Package className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.productName')}
+                          Nombre del Producto
                         </Label>
                         <div className="relative group">
                           <Input
                             id="productName"
                             value={newOrderData.productName}
                             onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })}
-                            placeholder={t('client.recentOrders.newOrder.productNamePlaceholder')}
+                            placeholder="Ej: iPhone 15 Pro Max"
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -1190,14 +1196,14 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="description" className="text-sm font-semibold text-slate-700 flex items-center">
                           <FileText className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.productDescription')}
+                          Descripción del Producto
                         </Label>
                         <div className="relative group">
                           <Textarea
                             id="description"
                             value={newOrderData.description}
                             onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value })}
-                            placeholder={t('client.recentOrders.newOrder.productDescriptionPlaceholder')}
+                            placeholder="Describe detalladamente el producto que deseas importar..."
                             rows={4}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
@@ -1208,7 +1214,7 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="quantity" className="text-sm font-semibold text-slate-700 flex items-center">
                           <Hash className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.quantity')}
+                          Cantidad
                         </Label>
                         <div className="relative group">
                           <Input
@@ -1227,7 +1233,7 @@ export default function MisPedidosPage() {
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
                           {newOrderData.quantity <= 0 && (
-                            <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidQuantity')}</p>
+                            <p className="text-xs text-red-500 mt-1">La cantidad debe ser un número mayor que cero.</p>
                           )}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
@@ -1236,14 +1242,14 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="specifications" className="text-sm font-semibold text-slate-700 flex items-center">
                           <Settings className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.specifications')}
+                          Especificaciones Técnicas
                         </Label>
                         <div className="relative group">
                           <Textarea
                             id="specifications"
                             value={newOrderData.specifications}
                             onChange={(e) => setNewOrderData({ ...newOrderData, specifications: e.target.value })}
-                            placeholder={t('client.recentOrders.newOrder.specificationsPlaceholder')}
+                            placeholder="Color, talla, modelo, características específicas, etc."
                             rows={3}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
@@ -1255,7 +1261,7 @@ export default function MisPedidosPage() {
                       <div className="space-y-4">
                         <Label className="text-sm font-semibold text-slate-700 flex items-center">
                           <Target className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.requestType')}
+                          Tipo de Solicitud
                         </Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div
@@ -1279,8 +1285,8 @@ export default function MisPedidosPage() {
                                 />
                               </div>
                               <div>
-                                <p className="font-semibold text-slate-800">{t('client.recentOrders.newOrder.linkTitle')}</p>
-                                <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.linkSubtitle')}</p>
+                                <p className="font-semibold text-slate-800">Link del Producto</p>
+                                <p className="text-sm text-slate-600">Pega el enlace de la tienda</p>
                               </div>
                             </div>
                           </div>
@@ -1305,8 +1311,8 @@ export default function MisPedidosPage() {
                                 />
                               </div>
                               <div>
-                                <p className="font-semibold text-slate-800">{t('client.recentOrders.newOrder.photoTitle')}</p>
-                                <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.photoSubtitle')}</p>
+                                <p className="font-semibold text-slate-800">Foto + Descripción</p>
+                                <p className="text-sm text-slate-600">Sube una imagen del producto</p>
                               </div>
                             </div>
                           </div>
@@ -1314,20 +1320,20 @@ export default function MisPedidosPage() {
 
                         {newOrderData.requestType === 'link' && (
                           <div className="space-y-2">
-                            <Label htmlFor="productUrl">{t('client.recentOrders.newOrder.productUrl')}</Label>
+                            <Label htmlFor="productUrl">URL del Producto *</Label>
                             <Input
                               id="productUrl"
                               type="url"
                               value={newOrderData.productUrl || ''}
                               onChange={(e) => setNewOrderData({ ...newOrderData, productUrl: e.target.value })}
-                              placeholder={t('client.recentOrders.newOrder.productUrlPlaceholder')}
+                              placeholder="https://ejemplo.com/producto"
                               className={`transition-all duration-200 focus:ring-2 focus:ring-blue-500 ${
                                 newOrderData.requestType === 'link' && !newOrderData.productUrl ? 'border-red-300 focus:ring-red-500' : ''
                               }`}
                             />
 
                             {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (
-                              <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidUrl')}</p>
+                              <p className="text-xs text-red-500 mt-1">La URL no es válida.</p>
                             )}
                           </div>
                         )}
@@ -1336,7 +1342,7 @@ export default function MisPedidosPage() {
                           <div className="space-y-3">
                             <Label className="text-sm font-semibold text-slate-700 flex items-center">
                               <Image className="w-4 h-4 mr-2 text-blue-600" />
-                              {t('client.recentOrders.newOrder.productImage')}
+                              Imagen del Producto
                             </Label>
                             
                             {newOrderData.productImage ? (
@@ -1358,7 +1364,7 @@ export default function MisPedidosPage() {
                                           className="bg-white/90 hover:bg-white text-slate-700 border-0 shadow-lg"
                                         >
                                           <Upload className="w-4 h-4 mr-1" />
-                                          {t('client.recentOrders.newOrder.change')}
+                                          Cambiar
                                         </Button>
                                         <Button
                                           variant="outline"
@@ -1367,7 +1373,7 @@ export default function MisPedidosPage() {
                                           className="bg-white/90 hover:bg-white text-red-600 border-0 shadow-lg hover:text-red-700"
                                         >
                                           <X className="w-4 h-4 mr-1" />
-                                          {t('client.recentOrders.newOrder.delete')}
+                                          Eliminar
                                         </Button>
                                       </div>
                                     </div>
@@ -1413,7 +1419,7 @@ export default function MisPedidosPage() {
                                   />
                                 </div>
                                 <p className="text-sm text-slate-600 mb-4 font-medium">
-                                  {t('client.recentOrders.newOrder.dragDrop')}
+                                  Arrastra una imagen aquí o haz clic para seleccionar
                                 </p>
                                 <Button
                                   variant="outline"
@@ -1421,7 +1427,7 @@ export default function MisPedidosPage() {
                                   className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
                                 >
                                   <Upload className="w-4 h-4 mr-2" />
-                                  {t('client.recentOrders.newOrder.selectImage')}
+                                  Seleccionar Imagen
                                 </Button>
                                 <input
                                   id="imageUpload"
@@ -1442,7 +1448,7 @@ export default function MisPedidosPage() {
                   {currentStep === 2 && (
                     <div className="space-y-6">
                       <div className="space-y-4">
-                        <Label>{t('client.recentOrders.newOrder.deliveryType')}</Label>
+                        <Label>Tipo de Envío</Label>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div
                             className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
@@ -1464,8 +1470,8 @@ export default function MisPedidosPage() {
                                   autoplay={hoveredDeliveryOption === 'doorToDoor'}
                                 />
                               </div>
-                              <p className="font-medium">{t('client.recentOrders.newOrder.doorToDoor')}</p>
-                              <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.doorToDoorDesc')}</p>
+                              <p className="font-medium">Puerta a Puerta</p>
+                              <p className="text-sm text-slate-600">Recogemos en tu dirección</p>
                             </div>
                           </div>
                           <div
@@ -1488,8 +1494,8 @@ export default function MisPedidosPage() {
                                   autoplay={hoveredDeliveryOption === 'air'}
                                 />
                               </div>
-                              <p className="font-medium">{t('client.recentOrders.newOrder.air')}</p>
-                              <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.airDesc')}</p>
+                              <p className="font-medium">Envío Aéreo</p>
+                              <p className="text-sm text-slate-600">Envío rápido por avión</p>
                             </div>
                           </div>
                           <div
@@ -1512,29 +1518,29 @@ export default function MisPedidosPage() {
                                   autoplay={hoveredDeliveryOption === 'maritime'}
                                 />
                               </div>
-                              <p className="font-medium">{t('client.recentOrders.newOrder.maritime')}</p>
-                              <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.maritimeDesc')}</p>
+                              <p className="font-medium">Envío Marítimo</p>
+                              <p className="text-sm text-slate-600">Envío económico por barco</p>
                             </div>
                           </div>
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="deliveryVenezuela">{t('client.recentOrders.newOrder.deliveryVenezuela')}</Label>
+                        <Label htmlFor="deliveryVenezuela">Opción de Entrega en Venezuela</Label>
                         <Select value={newOrderData.deliveryVenezuela} onValueChange={(value) => setNewOrderData({ ...newOrderData, deliveryVenezuela: value })}>
                           <SelectTrigger>
-                            <SelectValue placeholder={t('client.recentOrders.newOrder.deliveryVenezuelaPlaceholder')} />
+                            <SelectValue placeholder="Selecciona cómo quieres recibir tu pedido" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="pickup">{t('client.recentOrders.newOrder.pickup')}</SelectItem>
-                            <SelectItem value="delivery">{t('client.recentOrders.newOrder.delivery')}</SelectItem>
-                            <SelectItem value="express">{t('client.recentOrders.newOrder.express')}</SelectItem>
+                            <SelectItem value="pickup">Recoger en oficina</SelectItem>
+                            <SelectItem value="delivery">Entrega a domicilio</SelectItem>
+                            <SelectItem value="express">Entrega express</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="estimatedBudget">{t('client.recentOrders.newOrder.estimatedBudget')}</Label>
+                        <Label htmlFor="estimatedBudget">Presupuesto Estimado (USD)</Label>
                         <Input
                           id="estimatedBudget"
                           type="number"
@@ -1546,11 +1552,11 @@ export default function MisPedidosPage() {
                               setNewOrderData({ ...newOrderData, estimatedBudget: val });
                             }
                           }}
-                          placeholder={t('client.recentOrders.newOrder.estimatedBudgetPlaceholder')}
+                          placeholder="Ej: 500"
                           className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                         />
                         {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
-                          <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidBudget')}</p>
+                          <p className="text-xs text-red-500 mt-1">El presupuesto estimado debe ser un monto válido.</p>
                         )}
                       </div>
                     </div>
@@ -1560,39 +1566,39 @@ export default function MisPedidosPage() {
                   {currentStep === 3 && (
                     <div className="space-y-6">
                       <div className="bg-slate-50 rounded-lg p-6 space-y-4">
-                        <h4 className="font-semibold text-lg">{t('client.recentOrders.newOrder.summaryTitle')}</h4>
+                        <h4 className="font-semibold text-lg">Resumen de tu Solicitud</h4>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.productName')}</p>
+                            <p className="text-sm font-medium text-slate-600">Producto</p>
                             <p className="font-medium">{newOrderData.productName}</p>
                           </div>
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.quantity')}</p>
+                            <p className="text-sm font-medium text-slate-600">Cantidad</p>
                             <p className="font-medium">{newOrderData.quantity}</p>
                           </div>
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.deliveryType')}</p>
+                            <p className="text-sm font-medium text-slate-600">Tipo de Envío</p>
                             <p className="font-medium">
-                              {newOrderData.deliveryType === 'doorToDoor' && t('client.recentOrders.newOrder.doorToDoor')}
-                              {newOrderData.deliveryType === 'air' && t('client.recentOrders.newOrder.air')}
-                              {newOrderData.deliveryType === 'maritime' && t('client.recentOrders.newOrder.maritime')}
+                              {newOrderData.deliveryType === 'doorToDoor' && 'Puerta a Puerta'}
+                              {newOrderData.deliveryType === 'air' && 'Envío Aéreo'}
+                              {newOrderData.deliveryType === 'maritime' && 'Envío Marítimo'}
                             </p>
                           </div>
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.estimatedBudget')}</p>
+                            <p className="text-sm font-medium text-slate-600">Presupuesto Estimado</p>
                             <p className="font-medium">${newOrderData.estimatedBudget}</p>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.productDescription')}</p>
+                          <p className="text-sm font-medium text-slate-600">Descripción</p>
                           <p className="text-sm">{newOrderData.description}</p>
                         </div>
 
                         {newOrderData.specifications && (
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.specifications')}</p>
+                            <p className="text-sm font-medium text-slate-600">Especificaciones</p>
                             <p className="text-sm">{newOrderData.specifications}</p>
                           </div>
                         )}
@@ -1602,9 +1608,9 @@ export default function MisPedidosPage() {
                         <div className="flex items-start space-x-3">
                           <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5" />
                           <div>
-                            <p className="font-medium text-blue-900">{t('client.recentOrders.newOrder.almostReady')}</p>
+                            <p className="font-medium text-blue-900">¡Casi listo!</p>
                             <p className="text-sm text-blue-700">
-                              {t('client.recentOrders.newOrder.reviewMessage')}
+                              Tu solicitud será revisada por nuestro equipo y recibirás una cotización en las próximas 24 horas.
                             </p>
                           </div>
                         </div>
@@ -1624,12 +1630,12 @@ export default function MisPedidosPage() {
                     {isTransitioning ? (
                       <div className="flex items-center">
                         <div className="w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin mr-2"></div>
-                        {t('client.recentOrders.newOrder.transitioning')}
+                        Transicionando...
                       </div>
                     ) : (
                       <>
                         <ArrowLeft className="w-4 h-4 mr-2" />
-                        {t('client.recentOrders.newOrder.previous')}
+                        Anterior
                       </>
                     )}
                   </Button>
@@ -1644,11 +1650,11 @@ export default function MisPedidosPage() {
                         {isTransitioning ? (
                           <div className="flex items-center">
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                            {t('client.recentOrders.newOrder.transitioning')}
+                            Transicionando...
                           </div>
                         ) : (
                           <>
-                            {t('client.recentOrders.newOrder.next')}
+                            Siguiente
                             <ArrowRight className="w-4 h-4 ml-2" />
                           </>
                         )}
@@ -1659,7 +1665,7 @@ export default function MisPedidosPage() {
                         className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         <Check className="w-4 h-4 mr-2" />
-                        {t('client.recentOrders.newOrder.createOrder')}
+                        Crear Pedido
                       </Button>
                     )}
                   </div>
@@ -1672,14 +1678,14 @@ export default function MisPedidosPage() {
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-blue-800">{t('client.dashboard.totalOrders')}</CardTitle>
+                <CardTitle className="text-sm font-medium text-blue-800">Total Pedidos</CardTitle>
                 <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                   <Package className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.total}</div>
-                <p className="text-xs text-blue-700">{t('client.recentOrders.table.id')}</p>
+                <p className="text-xs text-blue-700">Todos los pedidos</p>
                 <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                   <div className="bg-blue-500 h-2 rounded-full" style={{width: '100%'}}></div>
                 </div>
@@ -1688,14 +1694,14 @@ export default function MisPedidosPage() {
             
             <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-yellow-800">{t('client.recentOrders.statuses.pending')}</CardTitle>
+                <CardTitle className="text-sm font-medium text-yellow-800">Pendientes</CardTitle>
                 <div className="p-2 bg-yellow-500 rounded-lg group-hover:scale-110 transition-transform">
                   <Clock className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-900">{stats.pending}</div>
-                <p className="text-xs text-yellow-700">{t('client.recentOrders.statuses.pending')}</p>
+                <p className="text-xs text-yellow-700">Esperando confirmación</p>
                 <div className="mt-2 w-full bg-yellow-200 rounded-full h-2">
                   <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(stats.pending / stats.total) * 100}%`}}></div>
                 </div>
@@ -1704,14 +1710,14 @@ export default function MisPedidosPage() {
             
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-blue-800">{t('client.recentOrders.statuses.processing')}</CardTitle>
+                <CardTitle className="text-sm font-medium text-blue-800">En Proceso</CardTitle>
                 <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                   <Truck className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.processing}</div>
-                <p className="text-xs text-blue-700">{t('client.recentOrders.statuses.processing')}</p>
+                <p className="text-xs text-blue-700">En proceso</p>
                 <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                   <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.processing / stats.total) * 100}%`}}></div>
                 </div>
@@ -1720,14 +1726,14 @@ export default function MisPedidosPage() {
             
             <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-purple-800">{t('client.recentOrders.statuses.shipped')}</CardTitle>
+                <CardTitle className="text-sm font-medium text-purple-800">Enviados</CardTitle>
                 <div className="p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
                   <MapPin className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{stats.shipped}</div>
-                <p className="text-xs text-purple-700">{t('client.recentOrders.statuses.shipped')}</p>
+                <p className="text-xs text-purple-700">En tránsito</p>
                 <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
                   <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(stats.shipped / stats.total) * 100}%`}}></div>
                 </div>
@@ -1736,14 +1742,14 @@ export default function MisPedidosPage() {
             
             <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-emerald-800">{t('client.dashboard.totalSpent')}</CardTitle>
+                <CardTitle className="text-sm font-medium text-emerald-800">Total Gastado</CardTitle>
                 <div className="p-2 bg-emerald-500 rounded-lg group-hover:scale-110 transition-transform">
                   <DollarSign className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl lg:text-3xl font-bold text-emerald-900">${stats.totalSpent.toLocaleString()}</div>
-                <p className="text-xs text-emerald-700">{t('client.dashboard.totalInvestment')}</p>
+                <p className="text-xs text-emerald-700">Inversión total</p>
                 <div className="mt-2 w-full bg-emerald-200 rounded-full h-2">
                   <div className="bg-emerald-500 h-2 rounded-full" style={{width: '100%'}}></div>
                 </div>
@@ -1754,8 +1760,8 @@ export default function MisPedidosPage() {
           {/* Filtros y búsqueda */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold">{t('client.recentOrders.filter')}</CardTitle>
-              <p className="text-sm text-slate-600">{t('client.recentOrders.search')}</p>
+              <CardTitle className="text-xl font-semibold">Filtros y Búsqueda</CardTitle>
+              <p className="text-sm text-slate-600">Encuentra rápidamente tus pedidos</p>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-3 md:gap-4">
@@ -1763,7 +1769,7 @@ export default function MisPedidosPage() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <Input
-                      placeholder={t('client.recentOrders.search')}
+                      placeholder="Buscar por producto, ID o tracking..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -1774,16 +1780,16 @@ export default function MisPedidosPage() {
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="w-full md:w-48">
                       <Filter className="w-4 h-4 mr-2" />
-                      <SelectValue placeholder={t('client.recentOrders.filter')} />
+                      <SelectValue placeholder="Filtrar por estado" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">{t('client.recentOrders.filter')}</SelectItem>
-                      <SelectItem value="pending">{t('client.recentOrders.statuses.pending')}</SelectItem>
-                      <SelectItem value="quoted">{t('client.recentOrders.statuses.quoted')}</SelectItem>
-                      <SelectItem value="processing">{t('client.recentOrders.statuses.processing')}</SelectItem>
-                      <SelectItem value="shipped">{t('client.recentOrders.statuses.shipped')}</SelectItem>
-                      <SelectItem value="delivered">{t('client.recentOrders.statuses.delivered')}</SelectItem>
-                      <SelectItem value="cancelled">{t('client.recentOrders.statuses.cancelled')}</SelectItem>
+                      <SelectItem value="all">Todos los estados</SelectItem>
+                      <SelectItem value="pending">Pendientes</SelectItem>
+                      <SelectItem value="quoted">Cotizado</SelectItem>
+                      <SelectItem value="processing">En proceso</SelectItem>
+                      <SelectItem value="shipped">Enviados</SelectItem>
+                      <SelectItem value="delivered">Entregados</SelectItem>
+                      <SelectItem value="cancelled">Cancelados</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1794,8 +1800,8 @@ export default function MisPedidosPage() {
           {/* Lista de pedidos */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold">{t('client.recentOrders.title')}</CardTitle>
-              <p className="text-sm text-slate-600">{t('client.recentOrders.subtitle')}</p>
+              <CardTitle className="text-xl font-semibold">Mis Pedidos</CardTitle>
+              <p className="text-sm text-slate-600">Lista de todos tus pedidos y su estado actual</p>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -1822,17 +1828,17 @@ export default function MisPedidosPage() {
                             order.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
                             'bg-yellow-100 text-yellow-800 border-yellow-200'
                           }`}>
-                            {order.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
-                             order.stateNum === 12 ? t('client.recentOrders.statuses.processing') :
-                             order.stateNum === 11 ? t('client.recentOrders.statuses.processing') :
-                             order.stateNum === 10 ? t('client.recentOrders.statuses.processing') :
-                             order.stateNum === 9 ? t('client.recentOrders.statuses.processing') :
-                             order.stateNum === 8 ? t('client.recentOrders.statuses.shipped') :
-                             (order.stateNum >= 5 && order.stateNum <= 7) ? t('client.recentOrders.statuses.processing') :
-                             order.stateNum === 4 ? t('client.recentOrders.statuses.processing') :
-                             order.stateNum === 3 ? t('client.recentOrders.statuses.quoted') :
-                             order.stateNum === 2 ? t('client.recentOrders.statuses.pending') :
-                             t('client.recentOrders.statuses.pending')}
+                            {order.stateNum === 13 ? 'Entregado' :
+                             order.stateNum === 12 ? 'Listo para entrega' :
+                             order.stateNum === 11 ? 'Recibido' :
+                             order.stateNum === 10 ? 'En aduana' :
+                             order.stateNum === 9 ? 'llegando a Vzla' :
+                             order.stateNum === 8 ? 'Enviado a vzla' :
+                             (order.stateNum >= 5 && order.stateNum <= 7) ? 'En proceso' :
+                             order.stateNum === 4 ? 'Procesando' :
+                             order.stateNum === 3 ? 'Cotizado' :
+                             order.stateNum === 2 ? 'Pendiente' :
+                             'Pendiente'}
                           </Badge>
                         ) : (
                           <Badge className={`${getStatusColor(order.status)} text-xs md:text-sm font-semibold px-3 py-1`}>
@@ -1842,9 +1848,9 @@ export default function MisPedidosPage() {
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] md:text-[11px] uppercase tracking-wide text-slate-500 font-medium">
-                          {order.status === 'pending' && t('client.recentOrders.budget')}
-                          {order.status === 'quoted' && t('client.recentOrders.statuses.quoted')}
-                          {order.status !== 'pending' && order.status !== 'quoted' && t('client.recentOrders.table.amount')}
+                          {order.status === 'pending' && 'Presupuesto'}
+                          {order.status === 'quoted' && 'Cotización a pagar'}
+                          {order.status !== 'pending' && order.status !== 'quoted' && 'Monto'}
                         </p>
                         <p className="font-bold text-lg md:text-xl text-slate-800">
                           {order.status === 'pending' && typeof order.estimatedBudget !== 'undefined' && order.estimatedBudget !== null
@@ -1859,7 +1865,7 @@ export default function MisPedidosPage() {
                     
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm font-medium">
-                        <span className="text-slate-700">{t('client.recentOrders.progress')}</span>
+                        <span className="text-slate-700">Progreso del pedido</span>
                         <span className="text-slate-800">{order.progress}%</span>
                       </div>
                       <div className="w-full bg-slate-200 rounded-full h-2 md:h-3 overflow-hidden">
@@ -1869,7 +1875,7 @@ export default function MisPedidosPage() {
                         ></div>
                       </div>
                       <div className="flex flex-col md:flex-row md:justify-between gap-3 md:gap-0 text-sm">
-                        <span className="text-slate-600 font-medium">{t('client.recentOrders.estimatedDelivery')}: {order.estimatedDelivery}</span>
+                        <span className="text-slate-600 font-medium">Entrega estimada: {order.estimatedDelivery}</span>
                         <div className="flex gap-2 md:gap-3">
                           {order.status === 'quoted' && (
                             <Button 
@@ -1878,7 +1884,7 @@ export default function MisPedidosPage() {
                               onClick={() => handlePaymentClick(order)}
                             >
                               <DollarSign className="h-3 w-3 mr-1" />
-                              {t('client.recentOrders.actions.pay')}
+                              Pagar
                             </Button>
                           )}
                           <Button 
@@ -1888,7 +1894,7 @@ export default function MisPedidosPage() {
                             onClick={() => handleViewDetails(order)}
                           >
                             <Eye className="h-3 w-3 mr-1" />
-                            {t('client.recentOrders.actions.view')}
+                            Ver detalles
                           </Button>
                           <Button 
                             variant="outline" 
@@ -1897,7 +1903,7 @@ export default function MisPedidosPage() {
                             onClick={() => openTrackingModal(order)}
                           >
                             <MapPin className="h-3 w-3 mr-1" />
-                            {t('client.recentOrders.actions.track')}
+                            Seguimiento
                           </Button>
                         </div>
                       </div>
@@ -1910,7 +1916,7 @@ export default function MisPedidosPage() {
                     <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center">
                       <Package className="h-8 w-8 md:h-10 md:w-10 text-slate-400" />
                     </div>
-                    <p className="text-slate-500 text-base md:text-lg font-medium">{t('client.recentOrders.noOrders')}</p>
+                    <p className="text-slate-500 text-base md:text-lg font-medium">No se encontraron pedidos</p>
                     <p className="text-slate-400 text-sm mt-2">Intenta ajustar los filtros de búsqueda</p>
                   </div>
                 )}
@@ -1924,23 +1930,24 @@ export default function MisPedidosPage() {
           {selectedOrder && (
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>{t('client.recentOrders.modal.detailsTitle')}: {selectedOrder.id}</DialogTitle>
+                <DialogTitle>Detalles del Pedido: {selectedOrder.id}</DialogTitle>
                 <DialogDescription>
-                  {t('client.recentOrders.modal.detailsSubtitle')}
+                  Información completa y documentos del pedido
                 </DialogDescription>
               </DialogHeader>
+              
               <div className="space-y-6">
                 {/* Información básica */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.modal.product')}</p>
+                    <p className="text-sm font-medium text-slate-600">Producto</p>
                     <p className="text-lg">{selectedOrder.product}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-600">
-                      {selectedOrder.status === 'pending' && t('client.recentOrders.budget')}
-                      {selectedOrder.status === 'quoted' && t('client.recentOrders.statuses.quoted')}
-                      {selectedOrder.status !== 'pending' && selectedOrder.status !== 'quoted' && t('client.recentOrders.modal.amount')}
+                      {selectedOrder.status === 'pending' && 'Presupuesto'}
+                      {selectedOrder.status === 'quoted' && 'Cotización a pagar'}
+                      {selectedOrder.status !== 'pending' && selectedOrder.status !== 'quoted' && 'Monto'}
                     </p>
                     <p className="text-lg font-bold text-green-600">
                       {selectedOrder.status === 'pending' && typeof selectedOrder.estimatedBudget !== 'undefined' && selectedOrder.estimatedBudget !== null
@@ -1951,7 +1958,7 @@ export default function MisPedidosPage() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.modal.status')}</p>
+                    <p className="text-sm font-medium text-slate-600">Estado</p>
                     {typeof selectedOrder.stateNum === 'number' ? (
                       <Badge className={`text-xs font-semibold px-3 py-1 ${
                         selectedOrder.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
@@ -1966,17 +1973,17 @@ export default function MisPedidosPage() {
                         selectedOrder.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
                         'bg-yellow-100 text-yellow-800 border-yellow-200'
                       }`}>
-                        {selectedOrder.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
-                         selectedOrder.stateNum === 12 ? t('client.recentOrders.statuses.processing') :
-                         selectedOrder.stateNum === 11 ? t('client.recentOrders.statuses.processing') :
-                         selectedOrder.stateNum === 10 ? t('client.recentOrders.statuses.processing') :
-                         selectedOrder.stateNum === 9 ? t('client.recentOrders.statuses.processing') :
-                         selectedOrder.stateNum === 8 ? t('client.recentOrders.statuses.shipped') :
-                         (selectedOrder.stateNum >= 5 && selectedOrder.stateNum <= 7) ? t('client.recentOrders.statuses.processing') :
-                         selectedOrder.stateNum === 4 ? t('client.recentOrders.statuses.processing') :
-                         selectedOrder.stateNum === 3 ? t('client.recentOrders.statuses.quoted') :
-                         selectedOrder.stateNum === 2 ? t('client.recentOrders.statuses.pending') :
-                         t('client.recentOrders.statuses.pending')}
+                        {selectedOrder.stateNum === 13 ? 'Entregado' :
+                         selectedOrder.stateNum === 12 ? 'Listo para entrega' :
+                         selectedOrder.stateNum === 11 ? 'Recibido' :
+                         selectedOrder.stateNum === 10 ? 'En aduana' :
+                         selectedOrder.stateNum === 9 ? 'llegando a Vzla' :
+                         selectedOrder.stateNum === 8 ? 'Enviado a vzla' :
+                         (selectedOrder.stateNum >= 5 && selectedOrder.stateNum <= 7) ? 'En proceso' :
+                         selectedOrder.stateNum === 4 ? 'Procesando' :
+                         selectedOrder.stateNum === 3 ? 'Cotizado' :
+                         selectedOrder.stateNum === 2 ? 'Pendiente' :
+                         'Pendiente'}
                       </Badge>
                     ) : (
                       <Badge className={getStatusColor(selectedOrder.status)}>
@@ -1985,23 +1992,23 @@ export default function MisPedidosPage() {
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.modal.tracking')}</p>
+                    <p className="text-sm font-medium text-slate-600">Tracking</p>
                     <p className="text-sm font-mono">{selectedOrder.tracking}</p>
                   </div>
                 </div>
 
                 {/* Descripción */}
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-2">{t('client.recentOrders.modal.description')}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-2">Descripción</p>
                   <p className="text-sm text-slate-700">{selectedOrder.description}</p>
                 </div>
 
                 {/* Progreso */}
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-2">{t('client.recentOrders.progress')}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-2">Progreso del pedido</p>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>{t('client.recentOrders.modal.currentProgress')}</span>
+                      <span>Progreso actual</span>
                       <span>{selectedOrder.progress}%</span>
                     </div>
                     <div className="w-full bg-slate-200 rounded-full h-3">
@@ -2011,7 +2018,7 @@ export default function MisPedidosPage() {
                       ></div>
                     </div>
                     <p className="text-xs text-slate-600">
-                      {t('client.recentOrders.estimatedDelivery')}: {selectedOrder.estimatedDelivery}
+                      Entrega estimada: {selectedOrder.estimatedDelivery}
                     </p>
                   </div>
                 </div>
@@ -2019,7 +2026,7 @@ export default function MisPedidosPage() {
                 {/* Documentos */}
                 {selectedOrder.documents && selectedOrder.documents.length > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-2">{t('client.recentOrders.modal.detailsSubtitle')}</p>
+                    <p className="text-sm font-medium text-slate-600 mb-2">Documentos</p>
                     <div className="space-y-2">
                       {selectedOrder.documents.map((doc, index) => (
                         <div key={index} className="flex items-center gap-2 p-2 bg-slate-50 rounded">
@@ -2028,7 +2035,7 @@ export default function MisPedidosPage() {
                           </div>
                           <span className="text-sm">{doc.label}</span>
                           <Button variant="ghost" size="sm" className="h-6 px-2 ml-auto">
-                            {t('client.recentOrders.actions.view')}
+                            Ver
                           </Button>
                         </div>
                       ))}
@@ -2040,10 +2047,10 @@ export default function MisPedidosPage() {
                 <div className="flex gap-2 pt-4 border-t">
                   <Button className="flex-1" onClick={() => selectedOrder && openTrackingModal(selectedOrder)}>
                     <MapPin className="h-4 w-4 mr-2" />
-                    {t('client.recentOrders.modal.tracking')}
+                    Seguimiento
                   </Button>
                   <Button variant="outline" className="flex-1">
-                    {t('client.recentOrders.modal.downloadInvoice')}
+                    Descargar Factura
                   </Button>
                 </div>
               </div>
@@ -2087,28 +2094,28 @@ export default function MisPedidosPage() {
                 {/* Información del tracking */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.trackingNumber')}</p>
+                    <p className="text-sm text-slate-600">Número de Tracking</p>
                     <p className="font-mono font-medium">{selectedTrackingOrder.trackingNumber}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.carrier')}</p>
+                    <p className="text-sm text-slate-600">Transportista</p>
                     <p className="font-medium">{selectedTrackingOrder.carrier}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.estimatedDelivery')}</p>
+                    <p className="text-sm text-slate-600">Entrega Estimada</p>
                     <p className="font-medium">{selectedTrackingOrder.estimatedDelivery}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.currentStatus')}</p>
+                    <p className="text-sm text-slate-600">Estado Actual</p>
                     <Badge className={getTrackingStatusColor(selectedTrackingOrder.status)}>
-                      {t(`client.recentOrders.trackingModal.states.${selectedTrackingOrder.status}`)}
+                      {getTrackingStatusText(selectedTrackingOrder.status)}
                     </Badge>
                   </div>
                 </div>
 
                 {/* Timeline */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">{t('client.recentOrders.trackingModal.historyTitle')}</h3>
+                  <h3 className="text-lg font-semibold">Historial de Seguimiento</h3>
                   <div className="space-y-4">
                     {selectedTrackingOrder.timeline.map((step, index) => (
                       <div key={step.id} className="flex items-start space-x-4">
@@ -2124,8 +2131,8 @@ export default function MisPedidosPage() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium">{t(`client.recentOrders.trackingModal.states.${step.status}`)}</p>
-                          <p className="text-sm text-slate-600">{t(`client.recentOrders.trackingModal.states.${step.status}`)}</p>
+                          <p className="font-medium">{step.status}</p>
+                          <p className="text-sm text-slate-600">{step.description}</p>
                           <div className="flex items-center space-x-2 mt-1">
                             <MapPin className="w-3 h-3 text-slate-400" />
                             <span className="text-xs text-slate-500">{step.location}</span>
@@ -2147,12 +2154,10 @@ export default function MisPedidosPage() {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-center">
-                💳 {t('client.recentOrders.paymentModal.title')}
+                💳 Realizar Pago
               </DialogTitle>
               <DialogDescription className="text-center">
-                {paymentStep === 1 
-                  ? t('client.recentOrders.paymentModal.selectMethod') 
-                  : t('client.recentOrders.paymentModal.confirmDetails')}
+                {paymentStep === 1 ? 'Selecciona tu método de pago preferido' : 'Confirma los detalles de tu pago'}
               </DialogDescription>
             </DialogHeader>
 
@@ -2167,7 +2172,7 @@ export default function MisPedidosPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-bold text-green-600">{selectedOrderForPayment.amount}</p>
-                      <p className="text-xs text-slate-500 mt-1">{t('client.recentOrders.paymentModal.quoteValidUntil', { date: '25/01/2024' })}</p>
+                      <p className="text-xs text-slate-500 mt-1">Cotización válida hasta: 25/01/2024</p>
                     </div>
                   </div>
                 </div>
@@ -2196,7 +2201,7 @@ export default function MisPedidosPage() {
                                   ? 'bg-green-100 text-green-800 border-green-200' 
                                   : 'bg-yellow-100 text-yellow-800 border-yellow-200'
                               }`}>
-                                {method.validation === 'automatic' ? `⚡ ${t('client.recentOrders.paymentModal.automatic')}` : t('client.recentOrders.paymentModal.manual')}
+                                {method.validation === 'automatic' ? '⚡ Automático' : ' Manual'}
                               </Badge>
                               <p className="text-xs text-slate-500 mt-1">{method.currency}</p>
                             </div>
@@ -2223,16 +2228,16 @@ export default function MisPedidosPage() {
 
                     {/* Información de pago */}
                     <div className="space-y-4 payment-info-card">
-                      <h4 className="font-semibold text-lg">📋 {t('client.recentOrders.paymentModal.paymentInfo')}</h4>
+                      <h4 className="font-semibold text-lg">📋 Información de Pago</h4>
                       
                       {selectedPaymentMethod.id === 'mobile' && (
                         <div className="space-y-3">
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.phoneNumber')}</p>
+                            <p className="text-sm font-medium text-slate-700">Número de Teléfono:</p>
                             <p className="text-lg font-mono font-bold text-blue-600">{selectedPaymentMethod.details?.phoneNumber}</p>
                           </div>
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.reference')}</p>
+                            <p className="text-sm font-medium text-slate-700">Referencia:</p>
                             <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.reference}</p>
                           </div>
                         </div>
@@ -2241,15 +2246,15 @@ export default function MisPedidosPage() {
                       {selectedPaymentMethod.id === 'transfer' && (
                         <div className="space-y-3">
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.bank')}</p>
+                            <p className="text-sm font-medium text-slate-700">Banco:</p>
                             <p className="text-lg font-bold text-blue-600">{selectedPaymentMethod.details?.bankName}</p>
                           </div>
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.accountNumber')}</p>
+                            <p className="text-sm font-medium text-slate-700">Número de Cuenta:</p>
                             <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.accountNumber}</p>
                           </div>
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.reference')}</p>
+                            <p className="text-sm font-medium text-slate-700">Referencia:</p>
                             <p className="text-lg font-mono font-bold text-purple-600">{selectedPaymentMethod.details?.reference}</p>
                           </div>
                         </div>
@@ -2258,11 +2263,11 @@ export default function MisPedidosPage() {
                       {(selectedPaymentMethod.id === 'binance' || selectedPaymentMethod.id === 'zelle' || selectedPaymentMethod.id === 'paypal') && (
                         <div className="space-y-3">
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.email')}</p>
+                            <p className="text-sm font-medium text-slate-700">Email:</p>
                             <p className="text-lg font-mono font-bold text-blue-600">{selectedPaymentMethod.details?.email}</p>
                           </div>
                           <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.reference')}</p>
+                            <p className="text-sm font-medium text-slate-700">Referencia:</p>
                             <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.reference}</p>
                           </div>
                         </div>
@@ -2273,13 +2278,13 @@ export default function MisPedidosPage() {
                         <div className="flex items-start gap-2">
                           <div className="text-yellow-600 mt-0.5">⚠️</div>
                           <div>
-                            <p className="font-medium text-yellow-800">{t('client.recentOrders.paymentModal.importantInstructions')}</p>
+                            <p className="font-medium text-yellow-800">Instrucciones importantes:</p>
                             <ul className="text-sm text-yellow-700 mt-1 space-y-1">
-                              <li>• {t('client.recentOrders.paymentModal.instructions.exactReference')}</li>
-                              <li>• {t('client.recentOrders.paymentModal.instructions.saveReceipt')}</li>
-                              <li>• {t('client.recentOrders.paymentModal.instructions.processTime')}</li>
+                              <li>• Realiza el pago con la referencia exacta</li>
+                              <li>• Guarda el comprobante de pago</li>
+                              <li>• El proceso puede tomar hasta 24 horas</li>
                               {selectedPaymentMethod.validation === 'manual' && (
-                                <li>• {t('client.recentOrders.paymentModal.instructions.manualValidation')}</li>
+                                <li>• Nuestro equipo validará tu pago manualmente</li>
                               )}
                             </ul>
                           </div>
@@ -2297,7 +2302,7 @@ export default function MisPedidosPage() {
                     className="flex-1"
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    {paymentStep === 1 ? t('client.recentOrders.paymentModal.cancel') : t('client.recentOrders.paymentModal.back')}
+                    {paymentStep === 1 ? 'Cancelar' : 'Volver'}
                   </Button>
                   
                   {paymentStep === 2 && (
@@ -2309,12 +2314,12 @@ export default function MisPedidosPage() {
                       {isConfirmingPayment ? (
                         <>
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                          {t('client.recentOrders.paymentModal.processing')}
+                          Procesando...
                         </>
                       ) : (
                         <>
                           <Check className="h-4 w-4 mr-2" />
-                          {t('client.recentOrders.paymentModal.confirmPayment')}
+                          Confirmar Pago
                         </>
                       )}
                     </Button>
