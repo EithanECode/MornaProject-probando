@@ -413,7 +413,7 @@ export default function MisPedidosPage() {
       { id: '1', key: 'created' },
       { id: '2', key: 'processing' },
       { id: '3', key: 'shipped' },
-      { id: '4', key: 'inTransit' },
+  { id: '4', key: 'in_transit' },
       { id: '5', key: 'customs' },
       { id: '6', key: 'delivered' },
     ];
