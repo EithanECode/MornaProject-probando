@@ -246,6 +246,30 @@ export default function PedidosChina() {
     fetchPedidos();
   }, []);
 
+  // Scroll lock cuando cualquier modal está abierto
+  const anyModalOpen = [
+    modalCotizar.open,
+    modalDetalle.open,
+    modalCrearCaja.open,
+    modalEliminarCaja.open,
+    modalVerPedidos.open,
+    modalEmpaquetar?.open,
+    modalEmpaquetarCaja.open,
+    modalCrearContenedor.open,
+    modalEliminarContenedor.open,
+    modalVerPedidosCont.open,
+  ].some(Boolean);
+
+  useEffect(() => {
+    if (anyModalOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [anyModalOpen]);
+
   // Cargar cajas cuando se entra a la pestaña Cajas
   useEffect(() => {
     if (activeTab === 'cajas') {
@@ -1184,7 +1208,7 @@ export default function PedidosChina() {
                               }}
                             >
                               <Boxes className="h-4 w-4" />
-                              <span className="hidden xs:inline">Empaquetar</span>
+                              <span className="hidden sm:inline">Empaquetar</span>
                             </Button>
                           )}
                           {pedido.estado === 'enviado' && (pedido.numericState ?? 0) >= 6 && (
@@ -1198,8 +1222,8 @@ export default function PedidosChina() {
                                 handleUnpackOrder(pedido.id);
                               }}
                             >
-                              <span className="hidden xs:inline">Desempaquetar</span>
-                              <Boxes className="h-4 w-4 xs:hidden" />
+                              <span className="hidden sm:inline">Desempaquetar</span>
+                              <Boxes className="h-4 w-4 sm:hidden" aria-label="Desempaquetar" />
                             </Button>
                           )}
                           <Button
@@ -1216,7 +1240,7 @@ export default function PedidosChina() {
                             className="flex items-center gap-1"
                           >
                             <Eye className="h-4 w-4" />
-                            <span className="hidden xs:inline">Ver</span>
+                            <span className="hidden sm:inline">Ver</span>
                           </Button>
                           {pedido.estado === 'pendiente' ? (
                             <Button
@@ -1225,7 +1249,7 @@ export default function PedidosChina() {
                               className="flex items-center gap-1 bg-orange-600 hover:bg-orange-700"
                             >
                               <Calculator className="h-4 w-4" />
-                              <span className="hidden xs:inline">Cotizar</span>
+                              <span className="hidden sm:inline">Cotizar</span>
                             </Button>
                           ) : (
                             <Button
@@ -1235,7 +1259,7 @@ export default function PedidosChina() {
                               className="flex items-center gap-1"
                             >
                               <Pencil className="h-4 w-4" />
-                              <span className="hidden xs:inline">Editar</span>
+                              <span className="hidden sm:inline">Editar</span>
                             </Button>
                           )}
                         </div>
@@ -1269,7 +1293,7 @@ export default function PedidosChina() {
                       onClick={() => setModalCrearCaja({ open: true })}
                     >
                       <Plus className="h-4 w-4" />
-                      <span className="hidden xs:inline">Crear cajas</span>
+                      <span className="hidden sm:inline">Crear cajas</span>
                     </Button>
                   </div>
                 </div>
@@ -1330,7 +1354,7 @@ export default function PedidosChina() {
                               }}
                             >
                               <Boxes className="h-4 w-4" />
-                              <span className="hidden xs:inline">Empaquetar</span>
+                              <span className="hidden sm:inline">Empaquetar</span>
                             </Button>
                           )}
                           {stateNum === 2 && (
@@ -1345,8 +1369,8 @@ export default function PedidosChina() {
                                 }
                               }}
                             >
-                              <span className="hidden xs:inline">Desempaquetar</span>
-                              <Boxes className="h-4 w-4 xs:hidden" />
+                              <span className="hidden sm:inline">Desempaquetar</span>
+                              <Boxes className="h-4 w-4 sm:hidden" aria-label="Desempaquetar" />
                             </Button>
                           )}
                           {stateNum >= 3 && (
@@ -1356,8 +1380,8 @@ export default function PedidosChina() {
                               className="flex items-center gap-1 text-amber-700 border-amber-300 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
                               disabled
                             >
-                              <span className="hidden xs:inline">Desempaquetar</span>
-                              <Boxes className="h-4 w-4 xs:hidden" />
+                              <span className="hidden sm:inline">Desempaquetar</span>
+                              <Boxes className="h-4 w-4 sm:hidden" aria-label="Desempaquetar" />
                             </Button>
                           )}
                           <Button
@@ -1371,7 +1395,7 @@ export default function PedidosChina() {
                             }}
                           >
                             <List className="h-4 w-4" />
-                            <span className="hidden xs:inline">Ver pedidos</span>
+                            <span className="hidden sm:inline">Ver pedidos</span>
                           </Button>
                           <Button
                             variant="outline"
@@ -1388,7 +1412,7 @@ export default function PedidosChina() {
                             }}
                           >
                             <Trash2 className="h-4 w-4" />
-                            <span className="hidden xs:inline">Eliminar</span>
+                            <span className="hidden sm:inline">Eliminar</span>
                           </Button>
                         </div>
                       </div>
@@ -1417,7 +1441,7 @@ export default function PedidosChina() {
                         onClick={() => setModalCrearContenedor({ open: true })}
                       >
                         <Plus className="h-4 w-4" />
-                        <span className="hidden xs:inline">Crear contenedor</span>
+                        <span className="hidden sm:inline">Crear contenedor</span>
                       </Button>
                     </div>
                   </div>
@@ -1539,7 +1563,7 @@ export default function PedidosChina() {
                                   }
                                 }}
                               >
-                                <Truck className="h-4 w-4" /> <span className="hidden xs:inline">Enviar</span>
+                                <Truck className="h-4 w-4" /> <span className="hidden sm:inline">Enviar</span>
                               </Button>
                               <Button
                                 variant="outline"
@@ -1551,7 +1575,7 @@ export default function PedidosChina() {
                                   if (containerId !== undefined) fetchBoxesByContainerId(containerId as any);
                                 }}
                               >
-                                <List className="h-4 w-4" /> <span className="hidden xs:inline">Ver cajas</span>
+                                <List className="h-4 w-4" /> <span className="hidden sm:inline">Ver cajas</span>
                               </Button>
                               <Button
                                 variant="outline"
@@ -1567,7 +1591,7 @@ export default function PedidosChina() {
                                   setModalEliminarContenedor({ open: true, container });
                                 }}
                               >
-                                <Trash2 className="h-4 w-4" /> <span className="hidden xs:inline">Eliminar</span>
+                                <Trash2 className="h-4 w-4" /> <span className="hidden sm:inline">Eliminar</span>
                               </Button>
                             </div>
                           </div>
@@ -1711,8 +1735,8 @@ export default function PedidosChina() {
                     const created = container.creation_date ?? container.created_at ?? '';
                     const stateNum = (container.state ?? 1) as number;
                     return (
-                      <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
-                        <div className="flex items-center gap-4">
+                      <div key={`${id}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
+                        <div className="flex items-start sm:items-center gap-4 w-full sm:w-auto">
                           <div className="p-3 bg-indigo-100 rounded-lg">
                             <Boxes className="h-5 w-5 text-indigo-600" />
                           </div>
@@ -1720,7 +1744,7 @@ export default function PedidosChina() {
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold text-slate-900">#CONT-{id}</h3>
                             </div>
-                            <div className="flex items-center gap-4 text-xs text-slate-500">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
                                 {created ? new Date(created).toLocaleString('es-ES') : '—'}
@@ -1728,7 +1752,7 @@ export default function PedidosChina() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto sm:justify-end">
                           <Badge className={`${getContainerBadge(stateNum).className}`}>
                             {getContainerBadge(stateNum).label}
                           </Badge>
@@ -1811,8 +1835,8 @@ export default function PedidosChina() {
                     const created = box.creation_date ?? box.created_at ?? '';
                     const stateNum = (box.state ?? 1) as number;
                     return (
-                      <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
-                        <div className="flex items-center gap-4">
+                      <div key={`${id}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
+                        <div className="flex items-start sm:items-center gap-4 w-full sm:w-auto">
                           <div className="p-3 bg-indigo-100 rounded-lg">
                             <Boxes className="h-5 w-5 text-indigo-600" />
                           </div>
@@ -1820,7 +1844,7 @@ export default function PedidosChina() {
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
                             </div>
-                            <div className="flex items-center gap-4 text-xs text-slate-500">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
                                 {created ? new Date(created).toLocaleString('es-ES') : '—'}
@@ -1832,7 +1856,7 @@ export default function PedidosChina() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto sm:justify-end">
                           <Badge className={`${getBoxBadge(stateNum).className}`}>
                             {getBoxBadge(stateNum).label}
                           </Badge>
@@ -1847,7 +1871,8 @@ export default function PedidosChina() {
                                 handleUnpackBox(boxId as any, { containerId });
                               }}
                             >
-                              Desempaquetar
+                              <Boxes className="h-4 w-4 sm:hidden" aria-label="Desempaquetar" />
+                              <span className="hidden sm:inline">Desempaquetar</span>
                             </Button>
                           )}
                           {stateNum >= 3 && (
@@ -1857,7 +1882,8 @@ export default function PedidosChina() {
                               className="flex items-center gap-1 text-amber-700 border-amber-300 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
                               disabled
                             >
-                              Desempaquetar
+                              <Boxes className="h-4 w-4 sm:hidden" />
+                              <span className="hidden sm:inline">Desempaquetar</span>
                             </Button>
                           )}
                           <Button
@@ -1871,7 +1897,7 @@ export default function PedidosChina() {
                             }}
                           >
                             <List className="h-4 w-4" />
-                            Ver pedidos
+                            <span className="hidden sm:inline">Ver pedidos</span>
                           </Button>
                         </div>
                       </div>
@@ -2009,8 +2035,8 @@ export default function PedidosChina() {
               ) : (
                 <div className="space-y-3">
                   {ordersByBox.map((pedido) => (
-                    <div key={pedido.id} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
-                      <div className="flex items-center gap-4">
+                    <div key={pedido.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
+                      <div className="flex items-start sm:items-center gap-4 w-full sm:w-auto">
                         <div className="p-3 bg-blue-100 rounded-lg">
                           <Package className="h-5 w-5 text-blue-600" />
                         </div>
@@ -2019,7 +2045,7 @@ export default function PedidosChina() {
                             <h3 className="font-semibold text-slate-900">#ORD-{pedido.id}</h3>
                           </div>
                           <p className="text-sm text-slate-600">{pedido.producto}</p>
-                          <div className="flex items-center gap-4 text-xs text-slate-500">
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
                             <span className="flex items-center gap-1">
                               <User className="h-3 w-3" />
                               {pedido.cliente}
@@ -2035,7 +2061,7 @@ export default function PedidosChina() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto sm:justify-end">
                         <Badge className={`${getOrderBadge(pedido.numericState).className}`}>
                           {getOrderBadge(pedido.numericState).label}
                         </Badge>
@@ -2053,7 +2079,7 @@ export default function PedidosChina() {
                           className="flex items-center gap-1"
                         >
                           <Eye className="h-4 w-4" />
-                          Ver
+                          <span className="hidden sm:inline">Ver</span>
                         </Button>
                       </div>
                     </div>
