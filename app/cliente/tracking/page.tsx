@@ -281,13 +281,13 @@ export default function TrackingPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'shipped': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'in-transit': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'delivered': return 'bg-green-100 text-green-800 border-green-200';
-      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+  case 'pending': return 'bg-yellow-100 text-yellow-800 border border-yellow-200 hover:bg-yellow-50 hover:ring-1 hover:ring-yellow-200 transition-colors';
+  case 'processing': return 'bg-blue-100 text-blue-800 border border-blue-200 hover:bg-blue-50 hover:ring-1 hover:ring-blue-200 transition-colors';
+  case 'shipped': return 'bg-purple-100 text-purple-800 border border-purple-200 hover:bg-purple-50 hover:ring-1 hover:ring-purple-200 transition-colors';
+  case 'in-transit': return 'bg-orange-100 text-orange-800 border border-orange-200 hover:bg-orange-50 hover:ring-1 hover:ring-orange-200 transition-colors';
+  case 'delivered': return 'bg-green-100 text-green-800 border border-green-200 hover:bg-green-50 hover:ring-1 hover:ring-green-200 transition-colors';
+  case 'cancelled': return 'bg-red-100 text-red-800 border border-red-200 hover:bg-red-50 hover:ring-1 hover:ring-red-200 transition-colors';
+  default: return 'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-50 hover:ring-1 hover:ring-gray-200 transition-colors';
     }
   };
 
@@ -374,26 +374,27 @@ export default function TrackingPage() {
               </div>
             </div>
 
-            {/* Filtros y búsqueda */}
+            {/* Filtros y búsqueda - toolbar compacta, alineada a la derecha */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardContent className="p-4">
-                <div className="flex flex-col md:flex-row gap-3 md:gap-4">
-                  <div className="flex-1">
+              <CardHeader className="py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="hidden md:block">
+                    <CardTitle className="text-sm font-medium text-slate-700">Filtros</CardTitle>
+                  </div>
+                  <div className="flex items-center gap-2">
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                       <Input
                         placeholder="Buscar por número de tracking, producto o ID..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10"
+                        className="h-10 w-56 md:w-64 pl-10"
                       />
                     </div>
-                  </div>
-                  <div className="flex flex-col md:flex-row gap-2">
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-full md:w-48">
+                      <SelectTrigger className="h-10 w-36 md:w-40">
                         <Filter className="w-4 h-4 mr-2" />
-                        <SelectValue placeholder="Filtrar por estado" />
+                        <SelectValue placeholder="Estado" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todos los estados</SelectItem>
@@ -405,13 +406,13 @@ export default function TrackingPage() {
                         <SelectItem value="cancelled">Cancelado</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="outline" className="flex items-center gap-2 w-full md:w-auto">
+                    <Button variant="outline" className="h-10 px-3 flex items-center gap-2">
                       <RefreshCw className="w-4 h-4" />
-                      Actualizar
+                      <span className="hidden md:inline">Actualizar</span>
                     </Button>
                   </div>
                 </div>
-              </CardContent>
+              </CardHeader>
             </Card>
 
             {/* Lista de pedidos */}

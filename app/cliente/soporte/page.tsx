@@ -291,7 +291,7 @@ export default function ClienteSoporte() {
                 </CardHeader>
                 <CardContent className="text-center">
                   <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.chatDesc')}</p>
-                  <Badge className="bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
+                  <Badge className="bg-green-100 text-green-800 transition-colors hover:bg-green-50 hover:ring-1 hover:ring-green-200">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                     {t('client.support.channels.available')}
                   </Badge>
@@ -355,14 +355,14 @@ export default function ClienteSoporte() {
                         <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.weekdays')}</h4>
                         <p className="text-slate-600 text-xs md:text-sm">8:00 AM - 6:00 PM (GMT-4)</p>
                       </div>
-                      <Badge className="bg-green-100 text-green-800 text-xs md:text-sm w-fit">{t('client.support.schedule.open')}</Badge>
+                      <Badge className="bg-green-100 text-green-800 text-xs md:text-sm w-fit transition-colors hover:bg-green-50 hover:ring-1 hover:ring-green-200">{t('client.support.schedule.open')}</Badge>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-orange-50 rounded-lg gap-2 md:gap-0">
                       <div>
                         <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.saturday')}</h4>
                         <p className="text-slate-600 text-xs md:text-sm">9:00 AM - 2:00 PM (GMT-4)</p>
                       </div>
-                      <Badge className="bg-orange-100 text-orange-800 text-xs md:text-sm w-fit">{t('client.support.schedule.limited')}</Badge>
+                      <Badge className="bg-orange-100 text-orange-800 text-xs md:text-sm w-fit transition-colors hover:bg-orange-50 hover:ring-1 hover:ring-orange-200">{t('client.support.schedule.limited')}</Badge>
                     </div>
                   </div>
                   <div className="space-y-4">
@@ -371,14 +371,14 @@ export default function ClienteSoporte() {
                         <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.sunday')}</h4>
                         <p className="text-slate-600 text-xs md:text-sm">{t('client.support.schedule.closed')}</p>
                       </div>
-                      <Badge className="bg-red-100 text-red-800 text-xs md:text-sm w-fit">{t('client.support.schedule.closed')}</Badge>
+                      <Badge className="bg-red-100 text-red-800 text-xs md:text-sm w-fit transition-colors hover:bg-red-50 hover:ring-1 hover:ring-red-200">{t('client.support.schedule.closed')}</Badge>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-purple-50 rounded-lg gap-2 md:gap-0">
                       <div>
                         <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.chat247')}</h4>
                         <p className="text-slate-600 text-xs md:text-sm">{t('client.support.schedule.automatic')}</p>
                       </div>
-                      <Badge className="bg-purple-100 text-purple-800 text-xs md:text-sm w-fit">{t('client.support.channels.available')}</Badge>
+                      <Badge className="bg-purple-100 text-purple-800 text-xs md:text-sm w-fit transition-colors hover:bg-purple-50 hover:ring-1 hover:ring-purple-200">{t('client.support.channels.available')}</Badge>
                     </div>
                   </div>
                 </div>
@@ -387,33 +387,36 @@ export default function ClienteSoporte() {
 
             {/* FAQ Interactivo - Siempre visible */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <HelpCircle className="h-5 w-5 text-orange-600" />
-                  {t('client.support.schedule.faq.title')}
-                </CardTitle>
-                <p className="text-xs md:text-sm text-slate-600">{t('client.support.schedule.faq.subtitle')}</p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Búsqueda y filtros */}
-                <div className="space-y-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              <CardHeader className="py-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <HelpCircle className="h-5 w-5 text-orange-600" />
+                      {t('client.support.schedule.faq.title')}
+                    </CardTitle>
+                    <p className="text-xs md:text-sm text-slate-600 hidden sm:block">{t('client.support.schedule.faq.subtitle')}</p>
+                  </div>
+          <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <Input
                       placeholder={t('client.support.schedule.faq.placeholder')}
                       value={faqSearch}
                       onChange={(e) => handleSearchChange(e.target.value)}
-                      className="pl-10"
+            className="h-10 pl-8 w-64 md:w-80 transition-colors"
                     />
                   </div>
-                  
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Búsqueda y filtros */}
+                <div className="space-y-3">
                   {/* Filtros por categoría */}
                   <div className="flex flex-wrap gap-1 md:gap-2">
                     {categories.map(category => (
                       <Badge
                         key={category}
                         variant={selectedCategory === category ? "default" : "outline"}
-                        className="cursor-pointer hover:bg-slate-100 transition-colors text-xs md:text-sm"
+                        className="cursor-pointer transition-colors text-xs md:text-sm hover:bg-slate-50 hover:ring-1 hover:ring-slate-200"
                         onClick={() => handleCategoryChange(category)}
                       >
                         {category === 'all' ? t('client.support.schedule.faq.all') : t('client.support.schedule.faq.categories.' + category)}
@@ -440,7 +443,7 @@ export default function ClienteSoporte() {
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <Badge variant="secondary" className="text-xs">
+                              <Badge variant="secondary" className="text-xs transition-colors hover:bg-slate-50 hover:ring-1 hover:ring-slate-200">
                                 {faq.category}
                               </Badge>
                             </div>
@@ -467,7 +470,7 @@ export default function ClienteSoporte() {
                           </div>
                           <div className="flex flex-wrap gap-1 mt-3">
                             {faq.tags.map(tag => (
-                              <Badge key={tag} variant="outline" className="text-xs">
+                              <Badge key={tag} variant="outline" className="text-xs transition-colors hover:bg-slate-50 hover:ring-1 hover:ring-slate-200">
                                 #{t('client.support.schedule.faq.tags.' + tag)}
                               </Badge>
                             ))}

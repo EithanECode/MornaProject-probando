@@ -279,12 +279,12 @@ export default function PagosPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'paid': return 'bg-green-100 text-green-800 border-green-200';
-      case 'failed': return 'bg-red-100 text-red-800 border-red-200';
-      case 'refunded': return 'bg-gray-100 text-gray-800 border-gray-200';
-      case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+  case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200 transition-colors hover:bg-yellow-50 hover:ring-1 hover:ring-yellow-200';
+  case 'paid': return 'bg-green-100 text-green-800 border-green-200 transition-colors hover:bg-green-50 hover:ring-1 hover:ring-green-200';
+  case 'failed': return 'bg-red-100 text-red-800 border-red-200 transition-colors hover:bg-red-50 hover:ring-1 hover:ring-red-200';
+  case 'refunded': return 'bg-gray-100 text-gray-800 border-gray-200 transition-colors hover:bg-gray-50 hover:ring-1 hover:ring-gray-200';
+  case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200 transition-colors hover:bg-blue-50 hover:ring-1 hover:ring-blue-200';
+  default: return 'bg-gray-100 text-gray-800 border-gray-200 transition-colors hover:bg-gray-50 hover:ring-1 hover:ring-gray-200';
     }
   };
 
@@ -500,28 +500,23 @@ export default function PagosPage() {
               </Card>
             </div>
 
-            {/* Filtros y búsqueda */}
+            {/* Filtros y búsqueda - barra compacta y alineada a la derecha */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold">{t('client.recentOrders.payments.filtersTitle')}</CardTitle>
-                <p className="text-sm text-slate-600">{t('client.recentOrders.payments.filtersSubtitle')}</p>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col gap-3 md:gap-4">
-                  <div className="flex-1">
+              <CardHeader className="py-3">
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle className="text-base md:text-lg font-semibold">{t('client.recentOrders.payments.filtersTitle')}</CardTitle>
+                  <div className="flex items-center gap-2">
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                       <Input
                         placeholder={t('client.recentOrders.payments.searchPlaceholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10"
+                        className="h-10 pl-8 w-56 md:w-64 transition-colors"
                       />
                     </div>
-                  </div>
-                                    <div className="grid grid-cols-1 md:flex md:gap-2 gap-3">
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-full md:w-40">
+                      <SelectTrigger className="h-10 w-36 md:w-40">
                         <Filter className="w-4 h-4 mr-2" />
                         <SelectValue placeholder={t('client.recentOrders.payments.status')} />
                       </SelectTrigger>
@@ -535,7 +530,7 @@ export default function PagosPage() {
                       </SelectContent>
                     </Select>
                     <Select value={methodFilter} onValueChange={setMethodFilter}>
-                      <SelectTrigger className="w-full md:w-40">
+                      <SelectTrigger className="h-10 w-36 md:w-40">
                         <CreditCard className="w-4 h-4 mr-2" />
                         <SelectValue placeholder={t('client.recentOrders.payments.method')} />
                       </SelectTrigger>
@@ -550,7 +545,7 @@ export default function PagosPage() {
                       </SelectContent>
                     </Select>
                     <Select value={dateFilter} onValueChange={setDateFilter}>
-                      <SelectTrigger className="w-full md:w-40">
+                      <SelectTrigger className="h-10 w-36 md:w-40">
                         <CalendarDays className="w-4 h-4 mr-2" />
                         <SelectValue placeholder={t('client.recentOrders.payments.date')} />
                       </SelectTrigger>
@@ -563,7 +558,7 @@ export default function PagosPage() {
                     </Select>
                   </div>
                 </div>
-              </CardContent>
+              </CardHeader>
             </Card>
 
             {/* Lista de Pagos */}

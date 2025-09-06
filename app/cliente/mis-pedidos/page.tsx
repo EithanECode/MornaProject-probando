@@ -376,13 +376,13 @@ export default function MisPedidosPage() {
   // Helpers específicos para el modal de tracking (colores simples)
   const getTrackingStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'shipped': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'in-transit': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'delivered': return 'bg-green-100 text-green-800 border-green-200';
-      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+  case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200 transition-colors hover:bg-yellow-50 hover:ring-1 hover:ring-yellow-200';
+  case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200 transition-colors hover:bg-blue-50 hover:ring-1 hover:ring-blue-200';
+  case 'shipped': return 'bg-purple-100 text-purple-800 border-purple-200 transition-colors hover:bg-purple-50 hover:ring-1 hover:ring-purple-200';
+  case 'in-transit': return 'bg-orange-100 text-orange-800 border-orange-200 transition-colors hover:bg-orange-50 hover:ring-1 hover:ring-orange-200';
+  case 'delivered': return 'bg-green-100 text-green-800 border-green-200 transition-colors hover:bg-green-50 hover:ring-1 hover:ring-green-200';
+  case 'cancelled': return 'bg-red-100 text-red-800 border-red-200 transition-colors hover:bg-red-50 hover:ring-1 hover:ring-red-200';
+  default: return 'bg-gray-100 text-gray-800 border-gray-200 transition-colors hover:bg-gray-50 hover:ring-1 hover:ring-gray-200';
     }
   };
 
@@ -464,13 +464,13 @@ export default function MisPedidosPage() {
   // Funciones helper
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm';
-      case 'quoted': return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm';
-      case 'processing': return 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm';
-      case 'shipped': return 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border-purple-300 shadow-sm';
-      case 'delivered': return 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-sm';
-      case 'cancelled': return 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm';
-      default: return 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-sm';
+      case 'pending': return 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm transition-colors hover:from-yellow-50 hover:to-yellow-100 hover:ring-1 hover:ring-yellow-200 dark:hover:ring-yellow-500/20 hover:brightness-110 dark:hover:brightness-110';
+      case 'quoted': return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm transition-colors hover:from-green-50 hover:to-green-100 hover:ring-1 hover:ring-green-200 dark:hover:ring-green-500/20 hover:brightness-110 dark:hover:brightness-110';
+      case 'processing': return 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm transition-colors hover:from-blue-50 hover:to-blue-100 hover:ring-1 hover:ring-blue-200 dark:hover:ring-blue-500/20 hover:brightness-110 dark:hover:brightness-110';
+      case 'shipped': return 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border-purple-300 shadow-sm transition-colors hover:from-purple-50 hover:to-purple-100 hover:ring-1 hover:ring-purple-200 dark:hover:ring-purple-500/20 hover:brightness-110 dark:hover:brightness-110';
+      case 'delivered': return 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-sm transition-colors hover:from-emerald-50 hover:to-emerald-100 hover:ring-1 hover:ring-emerald-200 dark:hover:ring-emerald-500/20 hover:brightness-110 dark:hover:brightness-110';
+      case 'cancelled': return 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm transition-colors hover:from-red-50 hover:to-red-100 hover:ring-1 hover:ring-red-200 dark:hover:ring-red-500/20 hover:brightness-110 dark:hover:brightness-110';
+      default: return 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-sm transition-colors hover:from-slate-50 hover:to-slate-100 hover:ring-1 hover:ring-slate-200 dark:hover:ring-slate-500/20 hover:brightness-110 dark:hover:brightness-110';
     }
   };
 
@@ -1751,28 +1751,23 @@ export default function MisPedidosPage() {
             </Card>
           </div>
 
-          {/* Filtros y búsqueda */}
+          {/* Filtros y búsqueda - barra compacta y alineada a la derecha */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold">{t('client.recentOrders.filter')}</CardTitle>
-              <p className="text-sm text-slate-600">{t('client.recentOrders.search')}</p>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col gap-3 md:gap-4">
-                <div className="flex-1">
+            <CardHeader className="py-3">
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="text-base md:text-lg font-semibold">{t('client.recentOrders.filter')}</CardTitle>
+                <div className="flex items-center gap-2">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <Input
                       placeholder={t('client.recentOrders.search')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="h-10 pl-8 w-56 md:w-64 transition-colors"
                     />
                   </div>
-                </div>
-                <div className="flex flex-col md:flex-row gap-3">
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-full md:w-48">
+                    <SelectTrigger className="h-10 w-40 md:w-48">
                       <Filter className="w-4 h-4 mr-2" />
                       <SelectValue placeholder={t('client.recentOrders.filter')} />
                     </SelectTrigger>
@@ -1788,7 +1783,7 @@ export default function MisPedidosPage() {
                   </Select>
                 </div>
               </div>
-            </CardContent>
+            </CardHeader>
           </Card>
 
           {/* Lista de pedidos */}
@@ -1809,18 +1804,18 @@ export default function MisPedidosPage() {
                         </div>
                         {/* Un solo badge basado en stateNum; fallback al badge de status si no hay stateNum */}
                         {typeof order.stateNum === 'number' ? (
-                          <Badge className={`text-xs md:text-sm font-semibold px-3 py-1 ${
-                            order.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                            order.stateNum === 12 ? 'bg-blue-100 text-blue-800 border-blue-200' :
-                            order.stateNum === 11 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                            order.stateNum === 10 ? 'bg-indigo-100 text-indigo-800 border-indigo-200' :
-                            order.stateNum === 9 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                            order.stateNum === 8 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                            (order.stateNum >= 5 && order.stateNum <= 7) ? 'bg-gray-100 text-gray-800 border-gray-200' :
-                            order.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200' :
-                            order.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200' :
-                            order.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
-                            'bg-yellow-100 text-yellow-800 border-yellow-200'
+                          <Badge className={`text-xs md:text-sm font-semibold px-3 py-1 transition-colors hover:brightness-110 hover:ring-1 ${
+                            order.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
+                            order.stateNum === 12 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
+                            order.stateNum === 11 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
+                            order.stateNum === 10 ? 'bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:ring-indigo-200 dark:hover:ring-indigo-500/20' :
+                            order.stateNum === 9 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
+                            order.stateNum === 8 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
+                            (order.stateNum >= 5 && order.stateNum <= 7) ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200 dark:hover:ring-gray-500/20' :
+                            order.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
+                            order.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
+                            order.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
+                            'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20'
                           }`}>
                             {order.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
                              order.stateNum === 12 ? t('client.recentOrders.statuses.processing') :
@@ -1953,18 +1948,18 @@ export default function MisPedidosPage() {
                   <div>
                     <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.modal.status')}</p>
                     {typeof selectedOrder.stateNum === 'number' ? (
-                      <Badge className={`text-xs font-semibold px-3 py-1 ${
-                        selectedOrder.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                        selectedOrder.stateNum === 12 ? 'bg-blue-100 text-blue-800 border-blue-200' :
-                        selectedOrder.stateNum === 11 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                        selectedOrder.stateNum === 10 ? 'bg-indigo-100 text-indigo-800 border-indigo-200' :
-                        selectedOrder.stateNum === 9 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                        selectedOrder.stateNum === 8 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                        (selectedOrder.stateNum >= 5 && selectedOrder.stateNum <= 7) ? 'bg-gray-100 text-gray-800 border-gray-200' :
-                        selectedOrder.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200' :
-                        selectedOrder.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200' :
-                        selectedOrder.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
-                        'bg-yellow-100 text-yellow-800 border-yellow-200'
+                      <Badge className={`text-xs font-semibold px-3 py-1 transition-colors hover:brightness-110 hover:ring-1 ${
+                        selectedOrder.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
+                        selectedOrder.stateNum === 12 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
+                        selectedOrder.stateNum === 11 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
+                        selectedOrder.stateNum === 10 ? 'bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:ring-indigo-200 dark:hover:ring-indigo-500/20' :
+                        selectedOrder.stateNum === 9 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
+                        selectedOrder.stateNum === 8 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
+                        (selectedOrder.stateNum >= 5 && selectedOrder.stateNum <= 7) ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200 dark:hover:ring-gray-500/20' :
+                        selectedOrder.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
+                        selectedOrder.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
+                        selectedOrder.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
+                        'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20'
                       }`}>
                         {selectedOrder.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
                          selectedOrder.stateNum === 12 ? t('client.recentOrders.statuses.processing') :
@@ -2193,8 +2188,8 @@ export default function MisPedidosPage() {
                             <div className="text-right">
                               <Badge className={`${
                                 method.validation === 'automatic' 
-                                  ? 'bg-green-100 text-green-800 border-green-200' 
-                                  : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                                  ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-1 hover:ring-green-200 transition-colors' 
+                                  : 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-1 hover:ring-yellow-200 transition-colors'
                               }`}>
                                 {method.validation === 'automatic' ? `⚡ ${t('client.recentOrders.paymentModal.automatic')}` : t('client.recentOrders.paymentModal.manual')}
                               </Badge>
