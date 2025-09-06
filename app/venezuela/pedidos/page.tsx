@@ -357,73 +357,38 @@ export default function VenezuelaPedidosPage() {
               </div>
             </div>
           </div>
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-            <CardContent className="p-4">
-              {activeTab === 'pedidos' ? (
-                <div className="flex flex-col gap-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                    <Input placeholder="Buscar por cliente, producto o ID..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
-                  </div>
-                  <div className="flex gap-2">
+          {activeTab === 'pedidos' && (
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
+              <CardHeader className="py-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-semibold">Lista de pedidos</CardTitle>
+                  <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
+                    <Input
+                      placeholder="Buscar por cliente, producto o ID..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="h-10 w-56 md:w-64 px-3"
+                    />
                     <Select value={statusFilter} onValueChange={setStatusFilter as any}>
-                      <SelectTrigger className="flex-1 md:w-48">
-                        <Filter className="w-4 h-4 mr-2" />
-                        <SelectValue placeholder="Filtrar por estado" />
+                      <SelectTrigger className="h-10 w-48 md:w-56 px-3 whitespace-nowrap truncate">
+                        <SelectValue placeholder="Estado" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Todos los estados</SelectItem>
+                        <SelectItem value="all">Todos</SelectItem>
                         <SelectItem value="pending">Pendiente</SelectItem>
                         <SelectItem value="reviewing">Revisando</SelectItem>
                         <SelectItem value="quoted">Cotizado</SelectItem>
                         <SelectItem value="processing">Procesando</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="outline" className="flex items-center gap-2 ml-auto" onClick={fetchOrders} disabled={loading}>
-                      <RefreshCw className="w-4 h-4" />
-                      {loading ? 'Actualizando...' : 'Actualizar'}
+                    <Button variant="outline" className="h-10 flex items-center gap-2" onClick={fetchOrders} disabled={loading}>
+                      <RefreshCw className="w-4 h-4" /> {loading ? '...' : 'Actualizar'}
                     </Button>
                   </div>
                 </div>
-              ) : activeTab === 'cajas' ? (
-                <div className="flex flex-col gap-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                    <Input
-                      placeholder="Buscar por caja (ID)..."
-                      value={filtroCaja}
-                      onChange={(e) => setFiltroCaja(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" className="flex items-center gap-2 ml-auto" onClick={fetchBoxes} disabled={boxesLoading}>
-                      <RefreshCw className="w-4 h-4" />
-                      {boxesLoading ? 'Actualizando...' : 'Actualizar'}
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                    <Input
-                      placeholder="Buscar por contenedor (ID)..."
-                      value={filtroContenedor}
-                      onChange={(e) => setFiltroContenedor(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" className="flex items-center gap-2 ml-auto" onClick={fetchContainers} disabled={containersLoading}>
-                      <RefreshCw className="w-4 h-4" />
-                      {containersLoading ? 'Actualizando...' : 'Actualizar'}
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardHeader>
+            </Card>
+          )}
 
 
           {/* Contenido por pestaña */}
@@ -458,37 +423,37 @@ export default function VenezuelaPedidosPage() {
                           </div>
                           <div className="flex gap-2">
                             {stateNum === 13 && (
-                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">ENTREGADO</Badge>
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">ENTREGADO</Badge>
                             )}
                             {stateNum === 12 && (
-                              <Badge className="bg-blue-100 text-blue-800 border-blue-200">LISTO PARA ENTREGA</Badge>
+                              <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">LISTO PARA ENTREGA</Badge>
                             )}
                             {stateNum === 11 && (
-                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">RECIBIDO</Badge>
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">RECIBIDO</Badge>
                             )}
                             {stateNum === 10 && (
-                              <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200">EN ADUANA</Badge>
+                              <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 hover:ring-1 hover:ring-indigo-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-indigo-700/50">EN ADUANA</Badge>
                             )}
                             {stateNum === 9 && (
-                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">LLEGÓ A Vzla</Badge>
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">LLEGÓ A Vzla</Badge>
                             )}
                             {stateNum === 8 && (
-                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">EN CAMINO A Vzla</Badge>
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">EN CAMINO A Vzla</Badge>
                             )}
                             {stateNum === 1 && (
-                              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">PENDIENTE</Badge>
+                              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-yellow-700/50">PENDIENTE</Badge>
                             )}
                             {stateNum === 2 && (
-                              <Badge className="bg-green-100 text-green-800 border-green-200">REVISANDO</Badge>
+                              <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50">REVISANDO</Badge>
                             )}
                             {stateNum === 3 && (
-                              <Badge className="bg-purple-100 text-purple-800 border-purple-200">COTIZADO</Badge>
+                              <Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-50 hover:border-purple-300 hover:ring-1 hover:ring-purple-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-purple-700/50">COTIZADO</Badge>
                             )}
                             {stateNum === 4 && (
-                              <Badge className="bg-blue-100 text-blue-800 border-blue-200">PROCESANDO</Badge>
+                              <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">PROCESANDO</Badge>
                             )}
                             {(stateNum >= 5 && stateNum <= 7) && (
-                              <Badge className="bg-gray-100 text-gray-800 border-gray-200">EN PROCESO</Badge>
+                              <Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50">EN PROCESO</Badge>
                             )}
                           </div>
                         </div>
@@ -670,6 +635,17 @@ export default function VenezuelaPedidosPage() {
                     <Boxes className="h-5 w-5" />
                     Cajas
                   </CardTitle>
+                  <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
+                    <Input
+                      placeholder="Buscar por caja (ID)..."
+                      value={filtroCaja}
+                      onChange={(e) => setFiltroCaja(e.target.value)}
+                      className="h-10 w-56 md:w-64 px-3"
+                    />
+                    <Button variant="outline" size="sm" onClick={fetchBoxes} disabled={boxesLoading} className="h-10 flex items-center gap-2">
+                      <RefreshCw className="w-4 h-4" /> {boxesLoading ? '...' : 'Actualizar'}
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -716,7 +692,15 @@ export default function VenezuelaPedidosPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
+                            <Badge className={`border ${
+                              stateNum === 1
+                                ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50 transition-colors'
+                                : stateNum === 2
+                                ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50 transition-colors'
+                                : stateNum === 5 || stateNum === 6
+                                ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50 transition-colors'
+                                : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50 transition-colors'
+                            }`}>
                               {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Lista' : stateNum === 5 ? 'Recibido' : stateNum === 6 ? 'Completada' : `St.${stateNum}`}
                             </Badge>
                             {/* Botón Recibido: visible solo cuando boxes.state === 5 */}
@@ -779,6 +763,17 @@ export default function VenezuelaPedidosPage() {
                     <Boxes className="h-5 w-5" />
                     Contenedores
                   </CardTitle>
+                  <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
+                    <Input
+                      placeholder="Buscar por contenedor (ID)..."
+                      value={filtroContenedor}
+                      onChange={(e) => setFiltroContenedor(e.target.value)}
+                      className="h-10 w-56 md:w-64 px-3"
+                    />
+                    <Button variant="outline" size="sm" onClick={fetchContainers} disabled={containersLoading} className="h-10 flex items-center gap-2">
+                      <RefreshCw className="w-4 h-4" /> {containersLoading ? '...' : 'Actualizar'}
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -823,7 +818,15 @@ export default function VenezuelaPedidosPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200' : stateNum === 4 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
+                            <Badge className={`border ${
+                              stateNum === 1
+                                ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50 transition-colors'
+                                : stateNum === 2
+                                ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-yellow-700/50 transition-colors'
+                                : stateNum === 4
+                                ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50 transition-colors'
+                                : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50 transition-colors'
+                            }`}>
                               {stateNum === 1 ? 'Nuevo' : stateNum === 2 ? 'En tránsito' : stateNum === 4 ? 'Recibido' : `St.${stateNum}`}
                             </Badge>
                             {/* Botón Recibido: visible solo cuando containers.state === 3 */}
@@ -968,7 +971,15 @@ export default function VenezuelaPedidosPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
+                            <Badge className={`border ${
+                              stateNum === 1
+                                ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50 transition-colors'
+                                : stateNum === 2
+                                ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50 transition-colors'
+                                : stateNum === 5 || stateNum === 6
+                                ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50 transition-colors'
+                                : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50 transition-colors'
+                            }`}>
                               {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Lista' : stateNum === 5 ? 'Recibido' : stateNum === 6 ? 'Completada' : `St.${stateNum}`}
                             </Badge>
                             {/* Botón Recibido en modal: visible solo cuando boxes.state === 5 */}

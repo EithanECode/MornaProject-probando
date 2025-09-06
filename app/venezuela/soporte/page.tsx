@@ -12,13 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   MessageSquare, 
   Phone,
-  Search,
-  Filter,
-  RefreshCw,
   Package,
-  Clock,
-  AlertTriangle,
-  User,
   Mail
 } from 'lucide-react';
 
@@ -105,19 +99,69 @@ export default function VenezuelaSoportePage() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'high':
+        return [
+          'bg-red-100 text-red-800 border-red-200',
+          'hover:bg-red-50 hover:border-red-300 hover:ring-1 hover:ring-red-200',
+          'dark:hover:brightness-110 dark:hover:ring-1 dark:hover:ring-red-400/20',
+          'transition-colors'
+        ].join(' ');
+      case 'medium':
+        return [
+          'bg-yellow-100 text-yellow-800 border-yellow-200',
+          'hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200',
+          'dark:hover:brightness-110 dark:hover:ring-1 dark:hover:ring-yellow-400/20',
+          'transition-colors'
+        ].join(' ');
+      case 'low':
+        return [
+          'bg-green-100 text-green-800 border-green-200',
+          'hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200',
+          'dark:hover:brightness-110 dark:hover:ring-1 dark:hover:ring-green-400/20',
+          'transition-colors'
+        ].join(' ');
+      default:
+        return [
+          'bg-gray-100 text-gray-800 border-gray-200',
+          'hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200',
+          'dark:hover:brightness-110 dark:hover:ring-1 dark:hover:ring-gray-400/20',
+          'transition-colors'
+        ].join(' ');
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800 border-green-200';
-      case 'waiting': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'resolved': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'active':
+        return [
+          'bg-green-100 text-green-800 border-green-200',
+          // light theme hover (softer)
+          'hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200',
+          // dark theme hover (subtle brightness + tinted ring)
+          'dark:hover:brightness-110 dark:hover:ring-1 dark:hover:ring-green-400/20',
+          'transition-colors'
+        ].join(' ');
+      case 'waiting':
+        return [
+          'bg-orange-100 text-orange-800 border-orange-200',
+          'hover:bg-orange-50 hover:border-orange-300 hover:ring-1 hover:ring-orange-200',
+          'dark:hover:brightness-110 dark:hover:ring-1 dark:hover:ring-orange-400/20',
+          'transition-colors'
+        ].join(' ');
+      case 'resolved':
+        return [
+          'bg-gray-100 text-gray-800 border-gray-200',
+          'hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200',
+          'dark:hover:brightness-110 dark:hover:ring-1 dark:hover:ring-gray-400/20',
+          'transition-colors'
+        ].join(' ');
+      default:
+        return [
+          'bg-gray-100 text-gray-800 border-gray-200',
+          'hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200',
+          'dark:hover:brightness-110 dark:hover:ring-1 dark:hover:ring-gray-400/20',
+          'transition-colors'
+        ].join(' ');
     }
   };
 
@@ -196,23 +240,20 @@ export default function VenezuelaSoportePage() {
             </div>
           </div>
 
-          {/* Filtros y búsqueda */}
+          {/* Barra de búsqueda compacta y alineada a la derecha */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-            <CardContent className="p-4">
-              <div className="flex flex-col gap-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <CardHeader className="py-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold">Lista de chats</CardTitle>
+                <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
                   <Input
                     placeholder="Buscar por cliente o mensaje..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
+                    className="h-10 w-56 md:w-64 px-3"
                   />
-                </div>
-                <div className="flex gap-2">
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="flex-1 md:w-40">
-                      <Filter className="w-4 h-4 mr-2" />
+                    <SelectTrigger className="h-10 w-40 md:w-48 px-3 whitespace-nowrap truncate">
                       <SelectValue placeholder="Estado" />
                     </SelectTrigger>
                     <SelectContent>
@@ -223,8 +264,7 @@ export default function VenezuelaSoportePage() {
                     </SelectContent>
                   </Select>
                   <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                    <SelectTrigger className="flex-1 md:w-40">
-                      <AlertTriangle className="w-4 h-4 mr-2" />
+                    <SelectTrigger className="h-10 w-40 md:w-48 px-3 whitespace-nowrap truncate">
                       <SelectValue placeholder="Prioridad" />
                     </SelectTrigger>
                     <SelectContent>
@@ -236,7 +276,7 @@ export default function VenezuelaSoportePage() {
                   </Select>
                 </div>
               </div>
-            </CardContent>
+            </CardHeader>
           </Card>
 
           {/* Lista de Chats */}

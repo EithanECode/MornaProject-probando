@@ -9,6 +9,9 @@ import { useToast } from '@/hooks/use-toast';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Toaster } from '@/components/ui/toaster';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 // XLSX se importará dinámicamente para evitar errores de SSR
 import { 
@@ -1019,59 +1022,52 @@ const PaymentValidationDashboard: React.FC = () => {
           </div>
 
           {/* ================================ */}
-          {/* FILTROS Y BÚSQUEDA */}
+          {/* BARRA COMPACTA DERECHA */}
           {/* ================================ */}
-          <div className={mounted && theme === 'dark' ? 'bg-slate-800 rounded-xl shadow-sm p-4 md:p-6 mb-4 md:mb-6' : 'bg-white rounded-xl shadow-sm p-4 md:p-6 mb-4 md:mb-6'}>
-            <div className="flex flex-col gap-4">
-              <div className="relative group">
-                <div className="absolute left-3 top-3 z-10">
-                  <AnimatedIcon animation="pulse">
-                    <Search size={20} className="text-gray-400 group-focus-within:text-blue-500 transition-colors duration-200" />
-                  </AnimatedIcon>
+          <Card className={mounted && theme === 'dark' ? 'bg-slate-800 border-slate-700 mb-4 md:mb-6' : 'bg-white border-gray-200 mb-4 md:mb-6'}>
+            <CardHeader className="py-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold">Pagos</CardTitle>
+                <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
+                  <Input
+                    placeholder="Buscar pedidos..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="h-10 w-56 md:w-64 px-3"
+                  />
+                  <Select value={filterStatus} onValueChange={setFilterStatus}>
+                    <SelectTrigger className="h-10 w-40 md:w-48 px-3 whitespace-nowrap truncate">
+                      <SelectValue placeholder="Todos los estados" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos los estados</SelectItem>
+                      <SelectItem value="completado">Completados</SelectItem>
+                      <SelectItem value="pendiente">Pendientes</SelectItem>
+                      <SelectItem value="rechazado">Rechazados</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    className="h-10"
+                    disabled={loading}
+                    onClick={() => setRefreshIndex((i) => i + 1)}
+                  >
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    <span className="hidden sm:inline">Actualizar</span>
+                    <span className="sm:hidden">Refrescar</span>
+                  </Button>
+                  <Button
+                    className="h-10 bg-[#202841] text-white hover:bg-opacity-90"
+                    onClick={exportarGeneral}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    <span className="hidden sm:inline">Exportar</span>
+                    <span className="sm:hidden">Export</span>
+                  </Button>
                 </div>
-                <input
-                  type="text"
-                  placeholder="Buscar pedidos..."
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${mounted && theme === 'dark' ? 'border-slate-700 bg-slate-900 text-slate-100 placeholder:text-slate-400' : 'border-gray-300'}`}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
               </div>
-              <div className="flex items-center gap-2 md:gap-3">
-                <AnimatedIcon animation="shake">
-                  <Filter size={20} className="text-gray-500" />
-                </AnimatedIcon>
-                <Select onValueChange={(value) => setFilterStatus(value)} defaultValue="todos">
-                  <SelectTrigger className="flex-1 md:w-[180px]">
-                    <SelectValue placeholder="Todos los estados" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos los estados</SelectItem>
-                    <SelectItem value="completado">Completados</SelectItem>
-                    <SelectItem value="pendiente">Pendientes</SelectItem>
-                    <SelectItem value="rechazado">Rechazados</SelectItem>
-                  </SelectContent>
-                </Select>
-                <button
-                  onClick={() => setRefreshIndex((i) => i + 1)}
-                  className="flex items-center gap-2 bg-gray-200 text-gray-800 px-3 md:px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-                  disabled={loading}
-                >
-                  <RotateCcw className="md:w-5 md:h-5" />
-                  <span className="hidden sm:inline">Actualizar</span>
-                  <span className="sm:hidden">Refrescar</span>
-                </button>
-                <button
-                  onClick={exportarGeneral}
-                  className="flex items-center gap-2 bg-[#202841] text-white px-3 md:px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
-                >
-                                      <Download className="md:w-5 md:h-5" />
-                  <span className="hidden sm:inline">Exportar</span>
-                  <span className="sm:hidden">Export</span>
-                </button>
-              </div>
-            </div>
-          </div>
+            </CardHeader>
+          </Card>
 
           {/* ================================ */}
           {/* TABLA DE PAGOS */}

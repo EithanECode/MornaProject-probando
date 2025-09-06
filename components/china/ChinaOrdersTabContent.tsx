@@ -406,35 +406,28 @@ export default function ChinaOrdersTabContent() {
         </div>
       </div>
 
-      {/* Filtros pedidos */}
-      {activeSubTab==='pedidos' && (
-        <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
-          <CardContent className="p-4 space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
-              <Input placeholder="Buscar por cliente..." value={filtroCliente} onChange={e=>setFiltroCliente(e.target.value)} className="pl-10" />
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              <Select value={filtroEstado} onValueChange={setFiltroEstado as any}>
-                <SelectTrigger className="w-48"><Filter className="w-4 h-4 mr-2" /><SelectValue placeholder="Estado" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="pendiente">Pendiente</SelectItem>
-                  <SelectItem value="cotizado">Cotizado</SelectItem>
-                  <SelectItem value="procesando">Procesando</SelectItem>
-                  <SelectItem value="enviado">Enviado</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button variant="outline" className="ml-auto flex items-center gap-2" onClick={fetchPedidos} disabled={loadingPedidos}><RefreshCw className="h-4 w-4" />{loadingPedidos? '...' : 'Actualizar'}</Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+  {/* Toolbar unificada pedidos: se mueve al header de la lista */}
 
       {activeSubTab==='pedidos' && (
         <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
           <CardHeader className="pb-2">
-            <div className="flex items-center justify-between"><CardTitle className="text-lg font-semibold flex items-center gap-2"><Package className="h-5 w-5" />Lista de pedidos</CardTitle><Button variant="outline" size="sm" onClick={fetchPedidos} disabled={loadingPedidos} className="flex items-center gap-1"><RefreshCw className="h-4 w-4" />{loadingPedidos?'...':'Actualizar'}</Button></div>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold flex items-center gap-2"><Package className="h-5 w-5" />Lista de pedidos</CardTitle>
+              <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
+                <Input value={filtroCliente} onChange={e=>{ setFiltroCliente(e.target.value); }} placeholder="Buscar por cliente..." className="h-10 w-56 md:w-64 px-3" />
+                <Select value={filtroEstado} onValueChange={setFiltroEstado as any}>
+                  <SelectTrigger className="h-10 w-48 md:w-56 px-3 whitespace-nowrap truncate"><SelectValue placeholder="Estado" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="pendiente">Pendiente</SelectItem>
+                    <SelectItem value="cotizado">Cotizado</SelectItem>
+                    <SelectItem value="procesando">Procesando</SelectItem>
+                    <SelectItem value="enviado">Enviado</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" size="sm" onClick={fetchPedidos} disabled={loadingPedidos} className="h-10 flex items-center gap-1"><RefreshCw className="h-4 w-4" />{loadingPedidos?'...':'Actualizar'}</Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {loadingPedidos ? (<div className="py-12 text-center text-sm">Cargando...</div>) : pedidosFiltrados.length===0 ? (<div className="py-12 text-center text-sm">Sin pedidos</div>) : (
@@ -485,10 +478,10 @@ export default function ChinaOrdersTabContent() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold flex items-center gap-2"><Boxes className="h-5 w-5" />Cajas</CardTitle>
-              <div className="flex gap-2">
-                <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" /><Input value={filtroCaja} onChange={e=>setFiltroCaja(e.target.value)} placeholder="Buscar ID..." className="pl-10 w-48" /></div>
-                <Button size="sm" variant="outline" onClick={fetchBoxes} disabled={boxesLoading}><RefreshCw className="h-4 w-4" />{boxesLoading?'...':'Actualizar'}</Button>
-                <Button size="sm" className="bg-orange-600 hover:bg-orange-700" onClick={()=>setModalCrearCaja({open:true})}><Plus className="h-4 w-4" />Crear</Button>
+              <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
+                <Input value={filtroCaja} onChange={e=>setFiltroCaja(e.target.value)} placeholder="Buscar ID..." className="h-10 w-56 md:w-64 px-3" />
+                <Button size="sm" variant="outline" onClick={fetchBoxes} disabled={boxesLoading} className="h-10"><RefreshCw className="h-4 w-4" />{boxesLoading?'...':'Actualizar'}</Button>
+                <Button size="sm" className="h-10 bg-orange-600 hover:bg-orange-700" onClick={()=>setModalCrearCaja({open:true})}><Plus className="h-4 w-4" />Crear</Button>
               </div>
             </div>
           </CardHeader>
@@ -530,10 +523,10 @@ export default function ChinaOrdersTabContent() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold flex items-center gap-2"><Boxes className="h-5 w-5" />Contenedores</CardTitle>
-              <div className="flex gap-2">
-                <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" /><Input value={filtroContenedor} onChange={e=>setFiltroContenedor(e.target.value)} placeholder="Buscar ID..." className="pl-10 w-48" /></div>
-                <Button size="sm" variant="outline" onClick={fetchContainers} disabled={containersLoading}><RefreshCw className="h-4 w-4" />{containersLoading?'...':'Actualizar'}</Button>
-                <Button size="sm" className="bg-orange-600 hover:bg-orange-700" onClick={()=>setModalCrearContenedor({open:true})}><Plus className="h-4 w-4" />Crear</Button>
+              <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
+                <Input value={filtroContenedor} onChange={e=>setFiltroContenedor(e.target.value)} placeholder="Buscar ID..." className="h-10 w-56 md:w-64 px-3" />
+                <Button size="sm" variant="outline" onClick={fetchContainers} disabled={containersLoading} className="h-10"><RefreshCw className="h-4 w-4" />{containersLoading?'...':'Actualizar'}</Button>
+                <Button size="sm" className="h-10 bg-orange-600 hover:bg-orange-700" onClick={()=>setModalCrearContenedor({open:true})}><Plus className="h-4 w-4" />Crear</Button>
               </div>
             </div>
           </CardHeader>

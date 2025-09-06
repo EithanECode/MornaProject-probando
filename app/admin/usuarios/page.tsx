@@ -87,10 +87,35 @@ interface User {
 }
 
 const ROLE_COLORS: Record<UserRole, string> = {
-  'Cliente': 'bg-slate-100 text-slate-800 border-slate-200',
-  'Empleado China': 'bg-red-100 text-red-800 border-red-200',
-  'Empleado Vzla': 'bg-blue-100 text-blue-800 border-blue-200',
-  'Admin': 'bg-purple-100 text-purple-800 border-purple-200',
+  // Usar un hover más claro y un ligero ring para no oscurecer el fondo al pasar el mouse
+  'Cliente': [
+    'bg-slate-100 text-slate-800 border-slate-200',
+    'hover:bg-slate-50 group-hover:bg-slate-50',
+    'hover:border-slate-300 group-hover:border-slate-300',
+    'group-hover:ring-1 group-hover:ring-slate-200',
+    'transition-colors duration-200'
+  ].join(' '),
+  'Empleado China': [
+    'bg-red-100 text-red-800 border-red-200',
+    'hover:bg-red-50 group-hover:bg-red-50',
+    'hover:border-red-300 group-hover:border-red-300',
+    'group-hover:ring-1 group-hover:ring-red-200',
+    'transition-colors duration-200'
+  ].join(' '),
+  'Empleado Vzla': [
+    'bg-blue-100 text-blue-800 border-blue-200',
+    'hover:bg-blue-50 group-hover:bg-blue-50',
+    'hover:border-blue-300 group-hover:border-blue-300',
+    'group-hover:ring-1 group-hover:ring-blue-200',
+    'transition-colors duration-200'
+  ].join(' '),
+  'Admin': [
+    'bg-purple-100 text-purple-800 border-purple-200',
+    'hover:bg-purple-50 group-hover:bg-purple-50',
+    'hover:border-purple-300 group-hover:border-purple-300',
+    'group-hover:ring-1 group-hover:ring-purple-200',
+    'transition-colors duration-200'
+  ].join(' '),
 };
 
 export default function UsuariosPage() {
@@ -362,120 +387,95 @@ export default function UsuariosPage() {
 
         <div className="p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6">
           <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300">
-            <CardHeader>
-              <CardTitle className="text-lg md:text-xl flex items-center text-black">
-                <Users className="w-4 h-4 md:w-5 md:h-5 mr-2 text-blue-600" />
-{t('admin.users.listTitle')}
-              </CardTitle>
-              <CardDescription className="text-sm md:text-base">{t('admin.users.listDescription')}</CardDescription>
-            </CardHeader>
-            <CardContent className="overflow-x-hidden">
-              {/* Filtros Mejorados */}
-              <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-4 md:p-5 lg:p-6 mb-4 md:mb-5 lg:mb-6 border border-slate-200">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  <div className="flex flex-col gap-3 md:gap-4 w-full">
-                    <div className="relative w-full">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 z-10" />
-                      <Input
-                        placeholder={t('admin.users.search')}
-                        value={searchTerm}
-                        onChange={(e) => handleSearchChange(e.target.value)}
-                        className="pl-10 w-full bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-2 md:gap-3 w-full">
-                      <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
-                        <SelectTrigger className="w-full sm:w-auto bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500">
-                          <Filter className="w-4 h-4 mr-2 text-slate-400" />
-                          <SelectValue placeholder={t('admin.users.filters.role')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">{t('admin.users.filters.allRoles')}</SelectItem>
-                          {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
-                            <SelectItem key={r} value={r}>{t(`admin.users.roles.${r}` as any)}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {/* <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
-                        <SelectTrigger className="w-full sm:w-auto bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500">
-                          <UserCheck className="w-4 h-4 mr-2 text-slate-400" />
-                          <SelectValue placeholder="Filtrar por estado" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">Todos</SelectItem>
-                          <SelectItem value="activo">Activos</SelectItem>
-                          <SelectItem value="inactivo">Inactivos</SelectItem>
-                        </SelectContent>
-                      </Select> */}
-                    </div>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <CardTitle className="text-lg md:text-xl flex items-center text-black">
+                  <Users className="w-4 h-4 md:w-5 md:h-5 mr-2 text-blue-600" />
+                  {t('admin.users.listTitle')}
+                </CardTitle>
+                {/* Toolbar compacta a la derecha */}
+                <div className="flex items-center justify-end gap-2 flex-wrap">
+                  {/* Search */}
+                  <div className="relative">
+                    <Input
+                      placeholder={t('admin.users.search')}
+                      value={searchTerm}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      className="px-3 h-10 w-56 md:w-64 bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                    />
                   </div>
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button onClick={handleOpenCreate} className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl text-sm md:text-base w-full sm:w-auto">
-                          <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" /> {t('admin.users.form.newUser')}
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>{editingUser && users.some(u => u.id === editingUser.id) ? t('admin.users.form.editUser') : t('admin.users.form.createUser')}</DialogTitle>
-                          <DialogDescription>{t('admin.users.form.description')}</DialogDescription>
-                        </DialogHeader>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
-                          <div className="space-y-2">
-                            <Label htmlFor="fullName">{t('admin.users.form.fullName')}</Label>
-                            <Input
-                              id="fullName"
-                              value={editingUser?.fullName ?? ''}
-                              onChange={(e) => setEditingUser((prev) => prev ? { ...prev, fullName: e.target.value } : prev)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="email">{t('admin.users.form.email')}</Label>
-                            <Input
-                              id="email"
-                              type="email"
-                              value={editingUser?.email ?? ''}
-                              onChange={(e) => setEditingUser((prev) => prev ? { ...prev, email: e.target.value } : prev)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Rol</Label>
-                            <Select
-                              value={editingUser?.role ?? 'Empleado Vzla'}
-                              onValueChange={(val: UserRole) => setEditingUser((prev) => prev ? { ...prev, role: val } : prev)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder={t('admin.users.form.selectRole')} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
-                                  <SelectItem key={r} value={r}>{t(`admin.users.roles.${r}` as any)}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          {/* <div className="space-y-2">
-                            <Label>Estado</Label>
-                            <div className="flex items-center justify-between rounded-md border p-2">
-                              <span className="text-sm text-slate-600">Activo</span>
-                              <Switch
-                                checked={(editingUser?.status ?? 'activo') === 'activo'}
-                                onCheckedChange={(checked: boolean) => setEditingUser((prev) => prev ? { ...prev, status: checked ? 'activo' : 'inactivo' } : prev)}
-                              />
-                            </div>
-                          </div> */}
+                  {/* Filtro Rol */}
+                  <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
+                    <SelectTrigger className="h-10 w-48 md:w-56 px-3 whitespace-nowrap bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 text-sm">
+                      <div className="flex items-center gap-2 truncate">
+                        <Filter className="w-4 h-4 mr-2 text-slate-400" />
+                        <SelectValue placeholder={t('admin.users.filters.role')} />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t('admin.users.filters.allRoles')}</SelectItem>
+                      {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
+                        <SelectItem key={r} value={r}>{t(`admin.users.roles.${r}` as any)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {/* Nuevo usuario */}
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button onClick={handleOpenCreate} className="h-10 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg text-sm">
+                        <Plus className="w-3 h-3 mr-2" /> {t('admin.users.form.newUser')}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>{editingUser && users.some(u => u.id === editingUser.id) ? t('admin.users.form.editUser') : t('admin.users.form.createUser')}</DialogTitle>
+                        <DialogDescription>{t('admin.users.form.description')}</DialogDescription>
+                      </DialogHeader>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="fullName">{t('admin.users.form.fullName')}</Label>
+                          <Input
+                            id="fullName"
+                            value={editingUser?.fullName ?? ''}
+                            onChange={(e) => setEditingUser((prev) => prev ? { ...prev, fullName: e.target.value } : prev)}
+                          />
                         </div>
-                        <DialogFooter>
-                          <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t('admin.users.form.cancel')}</Button>
-                          <Button onClick={handleSave} className="bg-blue-600 text-white">{t('admin.users.form.save')}</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-
-                  </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="email">{t('admin.users.form.email')}</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={editingUser?.email ?? ''}
+                            onChange={(e) => setEditingUser((prev) => prev ? { ...prev, email: e.target.value } : prev)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Rol</Label>
+                          <Select
+                            value={editingUser?.role ?? 'Empleado Vzla'}
+                            onValueChange={(val: UserRole) => setEditingUser((prev) => prev ? { ...prev, role: val } : prev)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('admin.users.form.selectRole')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
+                                <SelectItem key={r} value={r}>{t(`admin.users.roles.${r}` as any)}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t('admin.users.form.cancel')}</Button>
+                        <Button onClick={handleSave} className="bg-blue-600 text-white">{t('admin.users.form.save')}</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
+            </CardHeader>
+            <CardContent className="overflow-x-hidden">
 
                             {/* Vista Desktop - Tabla */}
                             <div className="hidden lg:block rounded-xl border border-slate-200 bg-white/50 backdrop-blur-sm overflow-x-auto">

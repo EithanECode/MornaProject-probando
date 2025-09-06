@@ -1058,80 +1058,55 @@ export default function PedidosChina() {
             </div>
           </div>
 
-          {/* Filtros y Búsqueda (debajo de pestañas) */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-lg md:text-xl font-semibold flex items-center gap-2">
-                <Filter className="h-4 w-4 md:h-5 md:w-5" />
-                Filtros y Búsqueda
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {activeTab === 'pedidos' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">Estado</label>
-                    <Select value={filtroEstado} onValueChange={setFiltroEstado}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Todos los estados" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todos</SelectItem>
-                        <SelectItem value="pendiente">Pendientes</SelectItem>
-                        <SelectItem value="cotizado">Cotizados</SelectItem>
-                        <SelectItem value="procesando">Procesando</SelectItem>
-                        <SelectItem value="enviado">Enviados</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">Buscar Cliente</label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                      <input
-                        type="text"
+          {/* Barra compacta y alineada a la derecha */}
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
+            <CardHeader className="py-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold">
+                  {activeTab === 'pedidos' ? 'Lista de pedidos' : activeTab === 'cajas' ? 'Cajas' : 'Contenedores'}
+                </CardTitle>
+                <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
+                  {activeTab === 'pedidos' && (
+                    <>
+                      <Input
                         placeholder="Buscar por cliente..."
                         value={filtroCliente}
                         onChange={(e) => setFiltroCliente(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="h-10 w-56 md:w-64 px-3"
                       />
-                    </div>
-                  </div>
+                      <Select value={filtroEstado} onValueChange={setFiltroEstado}>
+                        <SelectTrigger className="h-10 w-48 md:w-56 px-3 whitespace-nowrap truncate">
+                          <SelectValue placeholder="Estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos</SelectItem>
+                          <SelectItem value="pendiente">Pendiente</SelectItem>
+                          <SelectItem value="cotizado">Cotizado</SelectItem>
+                          <SelectItem value="procesando">Procesando</SelectItem>
+                          <SelectItem value="enviado">Enviado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </>
+                  )}
+                  {activeTab === 'cajas' && (
+                    <Input
+                      placeholder="Buscar por caja (ID)..."
+                      value={filtroCaja}
+                      onChange={(e) => setFiltroCaja(e.target.value)}
+                      className="h-10 w-56 md:w-64 px-3"
+                    />
+                  )}
+                  {activeTab === 'contenedores' && (
+                    <Input
+                      placeholder="Buscar por contenedor (ID)..."
+                      value={filtroContenedor}
+                      onChange={(e) => setFiltroContenedor(e.target.value)}
+                      className="h-10 w-56 md:w-64 px-3"
+                    />
+                  )}
                 </div>
-              ) : activeTab === 'cajas' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                  <div className="space-y-2 md:col-span-1">
-                    <label className="text-sm font-medium text-slate-700">Buscar Caja</label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                      <input
-                        type="text"
-                        placeholder="Buscar por caja (ID)..."
-                        value={filtroCaja}
-                        onChange={(e) => setFiltroCaja(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                  <div className="space-y-2 md:col-span-1">
-                    <label className="text-sm font-medium text-slate-700">Buscar Contenedor</label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                      <input
-                        type="text"
-                        placeholder="Buscar por contenedor (ID)..."
-                        value={filtroContenedor}
-                        onChange={(e) => setFiltroContenedor(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
+              </div>
+            </CardHeader>
           </Card>
 
           {activeTab === 'pedidos' && (

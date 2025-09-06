@@ -109,32 +109,166 @@ interface NewOrderData {
 
 // Memoizar las configuraciones para evitar recreaciones
 const STATUS_CONFIG = {
-  'pendiente-china': { color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
-  'pendiente-vzla': { color: 'bg-yellow-700 border-yellow-800', icon: AlertCircle },
-  'esperando-pago': { color: 'bg-orange-700 border-orange-800', icon: Clock },
-  'en-transito': { color: 'bg-blue-800 border-blue-900', icon: Plane },
-  'entregado': { color: 'bg-green-800 border-green-900', icon: CheckCircle },
-  'cancelado': { color: 'bg-red-800 border-red-900', icon: AlertCircle }
+  // Dark theme – hover sólo al pasar por el badge (sin depender del hover de la fila)
+  'pendiente-china': {
+    color: [
+      'bg-yellow-700 border-yellow-800 text-yellow-100',
+      'hover:brightness-110',
+      'hover:ring-1 hover:ring-yellow-700/50',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: AlertCircle
+  },
+  'pendiente-vzla': {
+    color: [
+      'bg-yellow-700 border-yellow-800 text-yellow-100',
+      'hover:brightness-110',
+      'hover:ring-1 hover:ring-yellow-700/50',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: AlertCircle
+  },
+  'esperando-pago': {
+    color: [
+      'bg-orange-700 border-orange-800 text-orange-100',
+      'hover:brightness-110',
+      'hover:ring-1 hover:ring-orange-700/50',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: Clock
+  },
+  'en-transito': {
+    color: [
+      'bg-blue-800 border-blue-900 text-blue-100',
+      'hover:brightness-110',
+      'hover:ring-1 hover:ring-blue-800/50',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: Plane
+  },
+  'entregado': {
+    color: [
+      'bg-green-800 border-green-900 text-green-100',
+      'hover:brightness-110',
+      'hover:ring-1 hover:ring-green-800/50',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: CheckCircle
+  },
+  'cancelado': {
+    color: [
+      'bg-red-800 border-red-900 text-red-100',
+      'hover:brightness-110',
+      'hover:ring-1 hover:ring-red-800/50',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: AlertCircle
+  }
 } as const;
 
 const ASSIGNED_CONFIG = {
-  'china': { color: 'bg-red-800 border-red-900' },
-  'vzla': { color: 'bg-blue-800 border-blue-900' }
+  'china': {
+    color: [
+      'bg-red-800 border-red-900 text-red-100',
+      'hover:brightness-110',
+      'hover:ring-1 hover:ring-red-800/50',
+      'transition-colors duration-200'
+    ].join(' ')
+  },
+  'vzla': {
+    color: [
+      'bg-blue-800 border-blue-900 text-blue-100',
+      'hover:brightness-110',
+      'hover:ring-1 hover:ring-blue-800/50',
+      'transition-colors duration-200'
+    ].join(' ')
+  }
 } as const;
 
 // Light theme colors
 const STATUS_CONFIG_LIGHT = {
-  'pendiente-china': { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
-  'pendiente-vzla': { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertCircle },
-  'esperando-pago': { color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock },
-  'en-transito': { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Plane },
-  'entregado': { color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle },
-  'cancelado': { color: 'bg-red-100 text-red-800 border-red-200', icon: AlertCircle }
+  // Light theme – hover sólo al pasar por el badge (sin group-hover)
+  'pendiente-china': {
+    color: [
+      'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'hover:bg-yellow-50',
+      'hover:border-yellow-300',
+      'hover:ring-1 hover:ring-yellow-200',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: AlertCircle
+  },
+  'pendiente-vzla': {
+    color: [
+      'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'hover:bg-yellow-50',
+      'hover:border-yellow-300',
+      'hover:ring-1 hover:ring-yellow-200',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: AlertCircle
+  },
+  'esperando-pago': {
+    color: [
+      'bg-orange-100 text-orange-800 border-orange-200',
+      'hover:bg-orange-50',
+      'hover:border-orange-300',
+      'hover:ring-1 hover:ring-orange-200',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: Clock
+  },
+  'en-transito': {
+    color: [
+      'bg-blue-100 text-blue-800 border-blue-200',
+      'hover:bg-blue-50',
+      'hover:border-blue-300',
+      'hover:ring-1 hover:ring-blue-200',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: Plane
+  },
+  'entregado': {
+    color: [
+      'bg-green-100 text-green-800 border-green-200',
+      'hover:bg-green-50',
+      'hover:border-green-300',
+      'hover:ring-1 hover:ring-green-200',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: CheckCircle
+  },
+  'cancelado': {
+    color: [
+      'bg-red-100 text-red-800 border-red-200',
+      'hover:bg-red-50',
+      'hover:border-red-300',
+      'hover:ring-1 hover:ring-red-200',
+      'transition-colors duration-200'
+    ].join(' '),
+    icon: AlertCircle
+  }
 } as const;
 
 const ASSIGNED_CONFIG_LIGHT = {
-  'china': { color: 'bg-red-100 text-red-800 border-red-200' },
-  'vzla': { color: 'bg-blue-100 text-blue-800 border-blue-200' }
+  'china': {
+    color: [
+      'bg-red-100 text-red-800 border-red-200',
+      'hover:bg-red-50',
+      'hover:border-red-300',
+      'hover:ring-1 hover:ring-red-200',
+      'transition-colors duration-200'
+    ].join(' ')
+  },
+  'vzla': {
+    color: [
+      'bg-blue-100 text-blue-800 border-blue-200',
+      'hover:bg-blue-50',
+      'hover:border-blue-300',
+      'hover:ring-1 hover:ring-blue-200',
+      'transition-colors duration-200'
+    ].join(' ')
+  }
 } as const;
 
 // Hook personalizado para manejar el filtrado y paginación
@@ -804,7 +938,7 @@ export default function PedidosPage() {
       return (
         <tr 
           key={order.id}
-          className={`border-b border-slate-100 hover:bg-blue-900/60 transition-all duration-200 cursor-pointer group text-slate-900 dark:text-white`}
+          className={`border-b border-slate-100 hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-all duration-200 cursor-pointer group text-slate-900 dark:text-white`}
         >
           <td className="py-4 px-6">
             <div className="flex items-center space-x-3">
@@ -910,51 +1044,38 @@ export default function PedidosPage() {
 {t('admin.orders.listDescription', { count: totalPedidos })}
                       </CardDescription>
                     </div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 w-full lg:w-auto">
-                      {/* Search */}
-                      <div className="relative w-full sm:w-auto">
-                        <Search className={mounted && theme === 'dark' ? 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4' : 'absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4'} />
+                      <div className="w-full lg:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
                         <Input
                           placeholder={t('admin.orders.search')}
                           value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          className={`pl-10 w-full sm:w-64 focus:border-blue-500 focus:ring-blue-500 ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400' : 'bg-white/50 border-slate-200'}`}
+                          onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                          className={`${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400' : 'bg-white/50 border-slate-200'} h-10 w-56 md:w-64 px-3`}
                         />
+                        <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}>
+                          <SelectTrigger className={`h-10 w-48 md:w-56 px-3 whitespace-nowrap truncate ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white/50 border-slate-200'}`}>
+                            <SelectValue placeholder={t('admin.orders.filters.status')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">{t('admin.orders.filters.allStates')}</SelectItem>
+                            <SelectItem value="pendiente-china">{t('admin.orders.status.pendiente-china')}</SelectItem>
+                            <SelectItem value="pendiente-vzla">{t('admin.orders.status.pendiente-vzla')}</SelectItem>
+                            <SelectItem value="esperando-pago">{t('admin.orders.status.esperando-pago')}</SelectItem>
+                            <SelectItem value="en-transito">{t('admin.orders.status.en-transito')}</SelectItem>
+                            <SelectItem value="entregado">{t('admin.orders.status.entregado')}</SelectItem>
+                            <SelectItem value="cancelado">{t('admin.orders.status.cancelado')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          size="sm"
+                          className={`h-10 bg-blue-600 text-white hover:bg-blue-700 ${mounted && theme === 'dark' ? '' : ''}`}
+                          onClick={() => setIsNewOrderModalOpen(true)}
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          {t('admin.orders.actions.newOrder')}
+                        </Button>
                       </div>
-                      {/* Status Filter */}
-                      <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className={`w-full sm:w-auto ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white/50 border-slate-200'}`}>
-                          <Filter className="w-4 h-4 mr-2" />
-                          <SelectValue placeholder={t('admin.orders.filters.status')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">{t('admin.orders.filters.allStates')}</SelectItem>
-                          <SelectItem value="pendiente-china">{t('admin.orders.status.pendiente-china')}</SelectItem>
-                          <SelectItem value="pendiente-vzla">{t('admin.orders.status.pendiente-vzla')}</SelectItem>
-                          <SelectItem value="esperando-pago">{t('admin.orders.status.esperando-pago')}</SelectItem>
-                          <SelectItem value="en-transito">{t('admin.orders.status.en-transito')}</SelectItem>
-                          <SelectItem value="entregado">{t('admin.orders.status.entregado')}</SelectItem>
-                          <SelectItem value="cancelado">{t('admin.orders.status.cancelado')}</SelectItem>
-                        </SelectContent>
-                      </Select>
                     </div>
-                  </div>
                   
-                  {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-4 mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <Button onClick={() => setIsNewOrderModalOpen(true)} className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-sm md:text-base font-medium">
-                      <Plus className="w-4 h-4 mr-2" />
-{t('admin.orders.actions.newOrder')}
-                    </Button>
-                    {/* <Button 
-                      variant="outline"
-                      onClick={handleExport}
-                      className="w-full sm:w-auto px-8 py-3 bg-white hover:bg-gray-50 border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-800 shadow-sm hover:shadow-md transition-all duration-300 text-sm md:text-base font-medium"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-{t('admin.orders.actions.export')}
-                    </Button> */}
-                  </div>
             </CardHeader>
             <CardContent>
               {/* Vista Desktop - Tabla */}
