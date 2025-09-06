@@ -90,14 +90,6 @@ const CLIENT_MENU_ITEMS = [
     path: '/cliente/pagos'
   },
   {
-    id: 'tracking',
-    label: 'Tracking',
-    icon: MapPin,
-    badge: null,
-    color: 'text-purple-500',
-    path: '/cliente/tracking'
-  },
-  {
     id: 'soporte',
     label: 'Soporte',
     icon: MessageCircle,
