@@ -33,7 +33,7 @@ const faqData = [
   {
     id: 1,
     category: 'tracking',
-    question: 'client.support.faq.q1.question',
+    question: 'client.support.schedule.faq.q1.question',
     answer: 'client.support.faq.q1.answer',
     tags: ['tracking', 'envío', 'seguimiento']
   },
