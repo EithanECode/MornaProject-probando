@@ -416,7 +416,7 @@ export default function ClienteSoporte() {
                         className="cursor-pointer hover:bg-slate-100 transition-colors text-xs md:text-sm"
                         onClick={() => handleCategoryChange(category)}
                       >
-                        {category === 'all' ? t('client.support.faq.all') : t(`client.support.faq.categories.${category}`)}
+                        {category === 'all' ? t('client.support.faq.all') : t('client.support.faq.categories.' + category)}
                       </Badge>
                     ))}
                   </div>
