@@ -1087,8 +1087,8 @@ export default function MisPedidosPage() {
                   isTransitioning ? 'opacity-75' : 'opacity-100'
                 }`}>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-slate-700">Paso {currentStep} de 3</span>
-                    <span className="font-bold text-blue-600">{Math.round((currentStep / 3) * 100)}% completado</span>
+                    <span className="font-medium text-slate-700">{t('client.recentOrders.newOrder.step', { current: currentStep, total: 3 })}</span>
+                    <span className="font-bold text-blue-600">{t('client.recentOrders.newOrder.percentComplete', { percent: Math.round((currentStep / 3) * 100) })}</span>
                   </div>
                   <div className="relative">
                     <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
@@ -1113,7 +1113,7 @@ export default function MisPedidosPage() {
                           <span className={`text-xs mt-1 transition-colors duration-300 ${
                             step <= currentStep ? 'text-blue-600 font-medium' : 'text-slate-500'
                           }`}>
-                            {step === 1 ? 'Producto' : step === 2 ? 'Envío' : 'Resumen'}
+                            {step === 1 ? t('client.recentOrders.newOrder.productTab') : step === 2 ? t('client.recentOrders.newOrder.shippingTab') : t('client.recentOrders.newOrder.summaryTab')}
                           </span>
                         </div>
                       ))}
@@ -1173,14 +1173,14 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="productName" className="text-sm font-semibold text-slate-700 flex items-center">
                           <Package className="w-4 h-4 mr-2 text-blue-600" />
-                          Nombre del Producto
+                          {t('client.recentOrders.newOrder.productName')}
                         </Label>
                         <div className="relative group">
                           <Input
                             id="productName"
                             value={newOrderData.productName}
                             onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })}
-                            placeholder="Ej: iPhone 15 Pro Max"
+                            placeholder={t('client.recentOrders.newOrder.productNamePlaceholder')}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -1190,14 +1190,14 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="description" className="text-sm font-semibold text-slate-700 flex items-center">
                           <FileText className="w-4 h-4 mr-2 text-blue-600" />
-                          Descripción del Producto
+                          {t('client.recentOrders.newOrder.productDescription')}
                         </Label>
                         <div className="relative group">
                           <Textarea
                             id="description"
                             value={newOrderData.description}
                             onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value })}
-                            placeholder="Describe detalladamente el producto que deseas importar..."
+                            placeholder={t('client.recentOrders.newOrder.productDescriptionPlaceholder')}
                             rows={4}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
@@ -1208,7 +1208,7 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="quantity" className="text-sm font-semibold text-slate-700 flex items-center">
                           <Hash className="w-4 h-4 mr-2 text-blue-600" />
-                          Cantidad
+                          {t('client.recentOrders.newOrder.quantity')}
                         </Label>
                         <div className="relative group">
                           <Input
@@ -1227,7 +1227,7 @@ export default function MisPedidosPage() {
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
                           {newOrderData.quantity <= 0 && (
-                            <p className="text-xs text-red-500 mt-1">La cantidad debe ser un número mayor que cero.</p>
+                            <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidQuantity')}</p>
                           )}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
@@ -1236,14 +1236,14 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="specifications" className="text-sm font-semibold text-slate-700 flex items-center">
                           <Settings className="w-4 h-4 mr-2 text-blue-600" />
-                          Especificaciones Técnicas
+                          {t('client.recentOrders.newOrder.specifications')}
                         </Label>
                         <div className="relative group">
                           <Textarea
                             id="specifications"
                             value={newOrderData.specifications}
                             onChange={(e) => setNewOrderData({ ...newOrderData, specifications: e.target.value })}
-                            placeholder="Color, talla, modelo, características específicas, etc."
+                            placeholder={t('client.recentOrders.newOrder.specificationsPlaceholder')}
                             rows={3}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
@@ -1255,7 +1255,7 @@ export default function MisPedidosPage() {
                       <div className="space-y-4">
                         <Label className="text-sm font-semibold text-slate-700 flex items-center">
                           <Target className="w-4 h-4 mr-2 text-blue-600" />
-                          Tipo de Solicitud
+                          {t('client.recentOrders.newOrder.requestType')}
                         </Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div
@@ -1279,8 +1279,8 @@ export default function MisPedidosPage() {
                                 />
                               </div>
                               <div>
-                                <p className="font-semibold text-slate-800">Link del Producto</p>
-                                <p className="text-sm text-slate-600">Pega el enlace de la tienda</p>
+                                <p className="font-semibold text-slate-800">{t('client.recentOrders.newOrder.linkTitle')}</p>
+                                <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.linkSubtitle')}</p>
                               </div>
                             </div>
                           </div>
@@ -1305,8 +1305,8 @@ export default function MisPedidosPage() {
                                 />
                               </div>
                               <div>
-                                <p className="font-semibold text-slate-800">Foto + Descripción</p>
-                                <p className="text-sm text-slate-600">Sube una imagen del producto</p>
+                                <p className="font-semibold text-slate-800">{t('client.recentOrders.newOrder.photoTitle')}</p>
+                                <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.photoSubtitle')}</p>
                               </div>
                             </div>
                           </div>
@@ -1314,20 +1314,20 @@ export default function MisPedidosPage() {
 
                         {newOrderData.requestType === 'link' && (
                           <div className="space-y-2">
-                            <Label htmlFor="productUrl">URL del Producto *</Label>
+                            <Label htmlFor="productUrl">{t('client.recentOrders.newOrder.productUrl')}</Label>
                             <Input
                               id="productUrl"
                               type="url"
                               value={newOrderData.productUrl || ''}
                               onChange={(e) => setNewOrderData({ ...newOrderData, productUrl: e.target.value })}
-                              placeholder="https://ejemplo.com/producto"
+                              placeholder={t('client.recentOrders.newOrder.productUrlPlaceholder')}
                               className={`transition-all duration-200 focus:ring-2 focus:ring-blue-500 ${
                                 newOrderData.requestType === 'link' && !newOrderData.productUrl ? 'border-red-300 focus:ring-red-500' : ''
                               }`}
                             />
 
                             {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (
-                              <p className="text-xs text-red-500 mt-1">La URL no es válida.</p>
+                              <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidUrl')}</p>
                             )}
                           </div>
                         )}
@@ -1336,7 +1336,7 @@ export default function MisPedidosPage() {
                           <div className="space-y-3">
                             <Label className="text-sm font-semibold text-slate-700 flex items-center">
                               <Image className="w-4 h-4 mr-2 text-blue-600" />
-                              Imagen del Producto
+                              {t('client.recentOrders.newOrder.productImage')}
                             </Label>
                             
                             {newOrderData.productImage ? (
@@ -1358,7 +1358,7 @@ export default function MisPedidosPage() {
                                           className="bg-white/90 hover:bg-white text-slate-700 border-0 shadow-lg"
                                         >
                                           <Upload className="w-4 h-4 mr-1" />
-                                          Cambiar
+                                          {t('client.recentOrders.newOrder.change')}
                                         </Button>
                                         <Button
                                           variant="outline"
@@ -1367,7 +1367,7 @@ export default function MisPedidosPage() {
                                           className="bg-white/90 hover:bg-white text-red-600 border-0 shadow-lg hover:text-red-700"
                                         >
                                           <X className="w-4 h-4 mr-1" />
-                                          Eliminar
+                                          {t('client.recentOrders.newOrder.delete')}
                                         </Button>
                                       </div>
                                     </div>
@@ -1413,7 +1413,7 @@ export default function MisPedidosPage() {
                                   />
                                 </div>
                                 <p className="text-sm text-slate-600 mb-4 font-medium">
-                                  Arrastra una imagen aquí o haz clic para seleccionar
+                                  {t('client.recentOrders.newOrder.dragDrop')}
                                 </p>
                                 <Button
                                   variant="outline"
@@ -1421,7 +1421,7 @@ export default function MisPedidosPage() {
                                   className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
                                 >
                                   <Upload className="w-4 h-4 mr-2" />
-                                  Seleccionar Imagen
+                                  {t('client.recentOrders.newOrder.selectImage')}
                                 </Button>
                                 <input
                                   id="imageUpload"
@@ -1442,7 +1442,7 @@ export default function MisPedidosPage() {
                   {currentStep === 2 && (
                     <div className="space-y-6">
                       <div className="space-y-4">
-                        <Label>Tipo de Envío</Label>
+                        <Label>{t('client.recentOrders.newOrder.deliveryType')}</Label>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div
                             className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
@@ -1464,8 +1464,8 @@ export default function MisPedidosPage() {
                                   autoplay={hoveredDeliveryOption === 'doorToDoor'}
                                 />
                               </div>
-                              <p className="font-medium">Puerta a Puerta</p>
-                              <p className="text-sm text-slate-600">Recogemos en tu dirección</p>
+                              <p className="font-medium">{t('client.recentOrders.newOrder.doorToDoor')}</p>
+                              <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.doorToDoorDesc')}</p>
                             </div>
                           </div>
                           <div
@@ -1488,8 +1488,8 @@ export default function MisPedidosPage() {
                                   autoplay={hoveredDeliveryOption === 'air'}
                                 />
                               </div>
-                              <p className="font-medium">Envío Aéreo</p>
-                              <p className="text-sm text-slate-600">Envío rápido por avión</p>
+                              <p className="font-medium">{t('client.recentOrders.newOrder.air')}</p>
+                              <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.airDesc')}</p>
                             </div>
                           </div>
                           <div
@@ -1512,29 +1512,29 @@ export default function MisPedidosPage() {
                                   autoplay={hoveredDeliveryOption === 'maritime'}
                                 />
                               </div>
-                              <p className="font-medium">Envío Marítimo</p>
-                              <p className="text-sm text-slate-600">Envío económico por barco</p>
+                              <p className="font-medium">{t('client.recentOrders.newOrder.maritime')}</p>
+                              <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.maritimeDesc')}</p>
                             </div>
                           </div>
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="deliveryVenezuela">Opción de Entrega en Venezuela</Label>
+                        <Label htmlFor="deliveryVenezuela">{t('client.recentOrders.newOrder.deliveryVenezuela')}</Label>
                         <Select value={newOrderData.deliveryVenezuela} onValueChange={(value) => setNewOrderData({ ...newOrderData, deliveryVenezuela: value })}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecciona cómo quieres recibir tu pedido" />
+                            <SelectValue placeholder={t('client.recentOrders.newOrder.deliveryVenezuelaPlaceholder')} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="pickup">Recoger en oficina</SelectItem>
-                            <SelectItem value="delivery">Entrega a domicilio</SelectItem>
-                            <SelectItem value="express">Entrega express</SelectItem>
+                            <SelectItem value="pickup">{t('client.recentOrders.newOrder.pickup')}</SelectItem>
+                            <SelectItem value="delivery">{t('client.recentOrders.newOrder.delivery')}</SelectItem>
+                            <SelectItem value="express">{t('client.recentOrders.newOrder.express')}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="estimatedBudget">Presupuesto Estimado (USD)</Label>
+                        <Label htmlFor="estimatedBudget">{t('client.recentOrders.newOrder.estimatedBudget')}</Label>
                         <Input
                           id="estimatedBudget"
                           type="number"
@@ -1546,11 +1546,11 @@ export default function MisPedidosPage() {
                               setNewOrderData({ ...newOrderData, estimatedBudget: val });
                             }
                           }}
-                          placeholder="Ej: 500"
+                          placeholder={t('client.recentOrders.newOrder.estimatedBudgetPlaceholder')}
                           className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                         />
                         {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
-                          <p className="text-xs text-red-500 mt-1">El presupuesto estimado debe ser un monto válido.</p>
+                          <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidBudget')}</p>
                         )}
                       </div>
                     </div>
@@ -1560,39 +1560,39 @@ export default function MisPedidosPage() {
                   {currentStep === 3 && (
                     <div className="space-y-6">
                       <div className="bg-slate-50 rounded-lg p-6 space-y-4">
-                        <h4 className="font-semibold text-lg">Resumen de tu Solicitud</h4>
+                        <h4 className="font-semibold text-lg">{t('client.recentOrders.newOrder.summaryTitle')}</h4>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">Producto</p>
+                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.productName')}</p>
                             <p className="font-medium">{newOrderData.productName}</p>
                           </div>
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">Cantidad</p>
+                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.quantity')}</p>
                             <p className="font-medium">{newOrderData.quantity}</p>
                           </div>
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">Tipo de Envío</p>
+                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.deliveryType')}</p>
                             <p className="font-medium">
-                              {newOrderData.deliveryType === 'doorToDoor' && 'Puerta a Puerta'}
-                              {newOrderData.deliveryType === 'air' && 'Envío Aéreo'}
-                              {newOrderData.deliveryType === 'maritime' && 'Envío Marítimo'}
+                              {newOrderData.deliveryType === 'doorToDoor' && t('client.recentOrders.newOrder.doorToDoor')}
+                              {newOrderData.deliveryType === 'air' && t('client.recentOrders.newOrder.air')}
+                              {newOrderData.deliveryType === 'maritime' && t('client.recentOrders.newOrder.maritime')}
                             </p>
                           </div>
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">Presupuesto Estimado</p>
+                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.estimatedBudget')}</p>
                             <p className="font-medium">${newOrderData.estimatedBudget}</p>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <p className="text-sm font-medium text-slate-600">Descripción</p>
+                          <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.productDescription')}</p>
                           <p className="text-sm">{newOrderData.description}</p>
                         </div>
 
                         {newOrderData.specifications && (
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">Especificaciones</p>
+                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.specifications')}</p>
                             <p className="text-sm">{newOrderData.specifications}</p>
                           </div>
                         )}
@@ -1602,9 +1602,9 @@ export default function MisPedidosPage() {
                         <div className="flex items-start space-x-3">
                           <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5" />
                           <div>
-                            <p className="font-medium text-blue-900">¡Casi listo!</p>
+                            <p className="font-medium text-blue-900">{t('client.recentOrders.newOrder.almostReady')}</p>
                             <p className="text-sm text-blue-700">
-                              Tu solicitud será revisada por nuestro equipo y recibirás una cotización en las próximas 24 horas.
+                              {t('client.recentOrders.newOrder.reviewMessage')}
                             </p>
                           </div>
                         </div>
@@ -1624,12 +1624,12 @@ export default function MisPedidosPage() {
                     {isTransitioning ? (
                       <div className="flex items-center">
                         <div className="w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin mr-2"></div>
-                        Transicionando...
+                        {t('client.recentOrders.newOrder.transitioning')}
                       </div>
                     ) : (
                       <>
                         <ArrowLeft className="w-4 h-4 mr-2" />
-                        Anterior
+                        {t('client.recentOrders.newOrder.previous')}
                       </>
                     )}
                   </Button>
@@ -1644,11 +1644,11 @@ export default function MisPedidosPage() {
                         {isTransitioning ? (
                           <div className="flex items-center">
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                            Transicionando...
+                            {t('client.recentOrders.newOrder.transitioning')}
                           </div>
                         ) : (
                           <>
-                            Siguiente
+                            {t('client.recentOrders.newOrder.next')}
                             <ArrowRight className="w-4 h-4 ml-2" />
                           </>
                         )}
@@ -1659,7 +1659,7 @@ export default function MisPedidosPage() {
                         className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         <Check className="w-4 h-4 mr-2" />
-                        Crear Pedido
+                        {t('client.recentOrders.newOrder.createOrder')}
                       </Button>
                     )}
                   </div>
