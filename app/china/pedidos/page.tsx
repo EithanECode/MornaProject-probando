@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from '@/hooks/useTranslation';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import Sidebar from '@/components/layout/Sidebar';
 import '../../animations/animations.css';
@@ -85,6 +86,7 @@ interface ContainerItem {
 // Elimina los datos de ejemplo
 
 export default function PedidosChina() {
+  const { t } = useTranslation();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(false);
   // Mapear state numérico a texto usado en China
@@ -992,8 +994,8 @@ export default function PedidosChina() {
         <Header 
           notifications={stats.pendientes}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Gestión de Pedidos"
-          subtitle="Administra y cotiza pedidos de clientes"
+          title={t('chinese.ordersManagement')}
+          subtitle={t('chinese.ordersManagementSubtitle')}
         />
         
   <div className="p-4 md:p-5 lg:p-6 space-y-6 max-w-7xl mx-auto w-full">
@@ -1001,25 +1003,25 @@ export default function PedidosChina() {
           <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-xl p-4 md:p-6 text-white">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
               <div>
-                <h1 className="text-xl md:text-2xl font-bold">Pedidos</h1>
-                <p className="text-orange-100 mt-1 text-sm md:text-base">Administra y cotiza pedidos de clientes</p>
+                <h1 className="text-xl md:text-2xl font-bold">{t('chinese.ordersTitle')}</h1>
+                <p className="text-orange-100 mt-1 text-sm md:text-base">{t('chinese.ordersTitleSubtitle')}</p>
               </div>
               <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.pendientes}</p>
-                  <p className="text-xs md:text-sm text-orange-100">PENDIENTES</p>
+                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.pending')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.cotizados}</p>
-                  <p className="text-xs md:text-sm text-orange-100">COTIZADOS</p>
+                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.quoted')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.procesando}</p>
-                  <p className="text-xs md:text-sm text-orange-100">PROCESANDO</p>
+                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.processing')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.enviados}</p>
-                  <p className="text-xs md:text-sm text-orange-100">ENVIADOS</p>
+                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.shipped')}</p>
                 </div>
               </div>
             </div>
@@ -1038,7 +1040,7 @@ export default function PedidosChina() {
                 className={`rounded-md transition-colors ${activeTab === 'pedidos' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                 onClick={() => setActiveTab('pedidos')}
               >
-                Lista de pedidos
+                {t('chinese.tabOrders')}
               </Button>
               <Button
                 variant={activeTab === 'cajas' ? 'default' : 'ghost'}
@@ -1046,7 +1048,7 @@ export default function PedidosChina() {
                 className={`rounded-md transition-colors ${activeTab === 'cajas' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                 onClick={() => setActiveTab('cajas')}
               >
-                Cajas
+                {t('chinese.tabBoxes')}
               </Button>
               <Button
                 variant={activeTab === 'contenedores' ? 'default' : 'ghost'}
@@ -1054,11 +1056,12 @@ export default function PedidosChina() {
                 className={`rounded-md transition-colors ${activeTab === 'contenedores' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                 onClick={() => setActiveTab('contenedores')}
               >
-                Contenedores
+                {t('chinese.tabContainers')}
               </Button>
             </div>
           </div>
 
+<<<<<<< HEAD
           {/* Barra compacta y alineada a la derecha */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
             <CardHeader className="py-3">
@@ -1071,6 +1074,41 @@ export default function PedidosChina() {
                     <>
                       <Input
                         placeholder="Buscar por cliente..."
+=======
+          {/* Filtros y Búsqueda (debajo de pestañas) */}
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="text-lg md:text-xl font-semibold flex items-center gap-2">
+                <Filter className="h-4 w-4 md:h-5 md:w-5" />
+                {t('chinese.filtersAndSearch')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {activeTab === 'pedidos' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">{t('chinese.state')}</label>
+                    <Select value={filtroEstado} onValueChange={setFiltroEstado}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('chinese.allStates')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="todos">{t('chinese.all')}</SelectItem>
+                        <SelectItem value="pendiente">{t('chinese.pending')}</SelectItem>
+                        <SelectItem value="cotizado">{t('chinese.quoted')}</SelectItem>
+                        <SelectItem value="procesando">{t('chinese.processing')}</SelectItem>
+                        <SelectItem value="enviado">{t('chinese.shipped')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">{t('chinese.searchClient')}</label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                      <input
+                        type="text"
+                        placeholder={t('chinese.searchByClient')}
+>>>>>>> 2fd88ed (feat: Add translation support for order management and related UI elements in Chinese)
                         value={filtroCliente}
                         onChange={(e) => setFiltroCliente(e.target.value)}
                         className="h-10 w-56 md:w-64 px-3"
@@ -1106,8 +1144,45 @@ export default function PedidosChina() {
                     />
                   )}
                 </div>
+<<<<<<< HEAD
               </div>
             </CardHeader>
+=======
+              ) : activeTab === 'cajas' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  <div className="space-y-2 md:col-span-1">
+                    <label className="text-sm font-medium text-slate-700">{t('chinese.searchBox')}</label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                      <input
+                        type="text"
+                        placeholder={t('chinese.searchByBox')}
+                        value={filtroCaja}
+                        onChange={(e) => setFiltroCaja(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  <div className="space-y-2 md:col-span-1">
+                    <label className="text-sm font-medium text-slate-700">{t('chinese.searchContainer')}</label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                      <input
+                        type="text"
+                        placeholder={t('chinese.searchByContainer')}
+                        value={filtroContenedor}
+                        onChange={(e) => setFiltroContenedor(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+>>>>>>> 2fd88ed (feat: Add translation support for order management and related UI elements in Chinese)
           </Card>
 
           {activeTab === 'pedidos' && (
