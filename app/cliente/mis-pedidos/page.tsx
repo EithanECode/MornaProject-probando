@@ -1924,24 +1924,23 @@ export default function MisPedidosPage() {
           {selectedOrder && (
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Detalles del Pedido: {selectedOrder.id}</DialogTitle>
+                <DialogTitle>{t('client.recentOrders.modal.detailsTitle')}: {selectedOrder.id}</DialogTitle>
                 <DialogDescription>
-                  Información completa y documentos del pedido
+                  {t('client.recentOrders.modal.detailsSubtitle')}
                 </DialogDescription>
               </DialogHeader>
-              
               <div className="space-y-6">
                 {/* Información básica */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Producto</p>
+                    <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.modal.product')}</p>
                     <p className="text-lg">{selectedOrder.product}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-600">
-                      {selectedOrder.status === 'pending' && 'Presupuesto'}
-                      {selectedOrder.status === 'quoted' && 'Cotización a pagar'}
-                      {selectedOrder.status !== 'pending' && selectedOrder.status !== 'quoted' && 'Monto'}
+                      {selectedOrder.status === 'pending' && t('client.recentOrders.budget')}
+                      {selectedOrder.status === 'quoted' && t('client.recentOrders.statuses.quoted')}
+                      {selectedOrder.status !== 'pending' && selectedOrder.status !== 'quoted' && t('client.recentOrders.modal.amount')}
                     </p>
                     <p className="text-lg font-bold text-green-600">
                       {selectedOrder.status === 'pending' && typeof selectedOrder.estimatedBudget !== 'undefined' && selectedOrder.estimatedBudget !== null
@@ -1952,7 +1951,7 @@ export default function MisPedidosPage() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Estado</p>
+                    <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.modal.status')}</p>
                     {typeof selectedOrder.stateNum === 'number' ? (
                       <Badge className={`text-xs font-semibold px-3 py-1 ${
                         selectedOrder.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
@@ -1967,17 +1966,17 @@ export default function MisPedidosPage() {
                         selectedOrder.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
                         'bg-yellow-100 text-yellow-800 border-yellow-200'
                       }`}>
-                        {selectedOrder.stateNum === 13 ? 'Entregado' :
-                         selectedOrder.stateNum === 12 ? 'Listo para entrega' :
-                         selectedOrder.stateNum === 11 ? 'Recibido' :
-                         selectedOrder.stateNum === 10 ? 'En aduana' :
-                         selectedOrder.stateNum === 9 ? 'llegando a Vzla' :
-                         selectedOrder.stateNum === 8 ? 'Enviado a vzla' :
-                         (selectedOrder.stateNum >= 5 && selectedOrder.stateNum <= 7) ? 'En proceso' :
-                         selectedOrder.stateNum === 4 ? 'Procesando' :
-                         selectedOrder.stateNum === 3 ? 'Cotizado' :
-                         selectedOrder.stateNum === 2 ? 'Pendiente' :
-                         'Pendiente'}
+                        {selectedOrder.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
+                         selectedOrder.stateNum === 12 ? t('client.recentOrders.statuses.processing') :
+                         selectedOrder.stateNum === 11 ? t('client.recentOrders.statuses.processing') :
+                         selectedOrder.stateNum === 10 ? t('client.recentOrders.statuses.processing') :
+                         selectedOrder.stateNum === 9 ? t('client.recentOrders.statuses.processing') :
+                         selectedOrder.stateNum === 8 ? t('client.recentOrders.statuses.shipped') :
+                         (selectedOrder.stateNum >= 5 && selectedOrder.stateNum <= 7) ? t('client.recentOrders.statuses.processing') :
+                         selectedOrder.stateNum === 4 ? t('client.recentOrders.statuses.processing') :
+                         selectedOrder.stateNum === 3 ? t('client.recentOrders.statuses.quoted') :
+                         selectedOrder.stateNum === 2 ? t('client.recentOrders.statuses.pending') :
+                         t('client.recentOrders.statuses.pending')}
                       </Badge>
                     ) : (
                       <Badge className={getStatusColor(selectedOrder.status)}>
@@ -1986,14 +1985,14 @@ export default function MisPedidosPage() {
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Tracking</p>
+                    <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.modal.tracking')}</p>
                     <p className="text-sm font-mono">{selectedOrder.tracking}</p>
                   </div>
                 </div>
 
                 {/* Descripción */}
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-2">Descripción</p>
+                  <p className="text-sm font-medium text-slate-600 mb-2">{t('client.recentOrders.modal.description')}</p>
                   <p className="text-sm text-slate-700">{selectedOrder.description}</p>
                 </div>
 
@@ -2002,7 +2001,7 @@ export default function MisPedidosPage() {
                   <p className="text-sm font-medium text-slate-600 mb-2">{t('client.recentOrders.progress')}</p>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>Progreso actual</span>
+                      <span>{t('client.recentOrders.modal.currentProgress')}</span>
                       <span>{selectedOrder.progress}%</span>
                     </div>
                     <div className="w-full bg-slate-200 rounded-full h-3">
@@ -2020,7 +2019,7 @@ export default function MisPedidosPage() {
                 {/* Documentos */}
                 {selectedOrder.documents && selectedOrder.documents.length > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-2">Documentos</p>
+                    <p className="text-sm font-medium text-slate-600 mb-2">{t('client.recentOrders.modal.detailsSubtitle')}</p>
                     <div className="space-y-2">
                       {selectedOrder.documents.map((doc, index) => (
                         <div key={index} className="flex items-center gap-2 p-2 bg-slate-50 rounded">
@@ -2029,7 +2028,7 @@ export default function MisPedidosPage() {
                           </div>
                           <span className="text-sm">{doc.label}</span>
                           <Button variant="ghost" size="sm" className="h-6 px-2 ml-auto">
-                            Ver
+                            {t('client.recentOrders.actions.view')}
                           </Button>
                         </div>
                       ))}
@@ -2041,10 +2040,10 @@ export default function MisPedidosPage() {
                 <div className="flex gap-2 pt-4 border-t">
                   <Button className="flex-1" onClick={() => selectedOrder && openTrackingModal(selectedOrder)}>
                     <MapPin className="h-4 w-4 mr-2" />
-                    Seguimiento
+                    {t('client.recentOrders.modal.tracking')}
                   </Button>
                   <Button variant="outline" className="flex-1">
-                    Descargar Factura
+                    {t('client.recentOrders.modal.downloadInvoice')}
                   </Button>
                 </div>
               </div>
@@ -2088,28 +2087,28 @@ export default function MisPedidosPage() {
                 {/* Información del tracking */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">Número de Tracking</p>
+                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.trackingNumber')}</p>
                     <p className="font-mono font-medium">{selectedTrackingOrder.trackingNumber}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">Transportista</p>
+                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.carrier')}</p>
                     <p className="font-medium">{selectedTrackingOrder.carrier}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">{t('client.recentOrders.estimatedDelivery')}</p>
+                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.estimatedDelivery')}</p>
                     <p className="font-medium">{selectedTrackingOrder.estimatedDelivery}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">Estado Actual</p>
+                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.currentStatus')}</p>
                     <Badge className={getTrackingStatusColor(selectedTrackingOrder.status)}>
-                      {getTrackingStatusText(selectedTrackingOrder.status)}
+                      {t(`client.recentOrders.trackingModal.states.${selectedTrackingOrder.status}`)}
                     </Badge>
                   </div>
                 </div>
 
                 {/* Timeline */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Historial de Seguimiento</h3>
+                  <h3 className="text-lg font-semibold">{t('client.recentOrders.trackingModal.historyTitle')}</h3>
                   <div className="space-y-4">
                     {selectedTrackingOrder.timeline.map((step, index) => (
                       <div key={step.id} className="flex items-start space-x-4">
@@ -2125,8 +2124,8 @@ export default function MisPedidosPage() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium">{step.status}</p>
-                          <p className="text-sm text-slate-600">{step.description}</p>
+                          <p className="font-medium">{t(`client.recentOrders.trackingModal.states.${step.status}`)}</p>
+                          <p className="text-sm text-slate-600">{t(`client.recentOrders.trackingModal.states.${step.status}`)}</p>
                           <div className="flex items-center space-x-2 mt-1">
                             <MapPin className="w-3 h-3 text-slate-400" />
                             <span className="text-xs text-slate-500">{step.location}</span>

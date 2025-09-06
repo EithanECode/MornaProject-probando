@@ -187,6 +187,33 @@
       },
       "progress": "Order progress",
       "estimatedDelivery": "Estimated delivery"
+      ,
+      "modal": {
+        "detailsTitle": "Order details",
+        "detailsSubtitle": "Full information and order documents",
+        "product": "Product",
+        "amount": "Amount",
+        "status": "Status",
+        "description": "Description",
+        "currentProgress": "Current progress",
+        "tracking": "Tracking",
+        "downloadInvoice": "Download invoice"
+      },
+      "trackingModal": {
+        "trackingNumber": "Tracking number",
+        "carrier": "Carrier",
+        "estimatedDelivery": "Estimated delivery",
+        "currentStatus": "Current status",
+        "historyTitle": "Tracking history",
+        "states": {
+          "created": "Order created",
+          "processing": "Processing",
+          "shipped": "Shipped",
+          "inTransit": "In transit",
+          "customs": "In customs",
+          "delivered": "Delivered"
+        }
+      }
     }
   },
   "admin": {

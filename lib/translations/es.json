@@ -83,6 +83,33 @@
       },
       "progress": "Progreso del pedido",
       "estimatedDelivery": "Entrega estimada"
+      ,
+      "modal": {
+        "detailsTitle": "Detalles del pedido",
+        "detailsSubtitle": "Información completa y documentos del pedido",
+        "product": "Producto",
+        "amount": "Monto",
+        "status": "Estado",
+        "description": "Descripción",
+        "currentProgress": "Progreso actual",
+        "tracking": "Seguimiento",
+        "downloadInvoice": "Descargar factura"
+      },
+      "trackingModal": {
+        "trackingNumber": "Número de Tracking",
+        "carrier": "Transportista",
+        "estimatedDelivery": "Entrega estimada",
+        "currentStatus": "Estado actual",
+        "historyTitle": "Historial de seguimiento",
+        "states": {
+          "created": "Pedido creado",
+          "processing": "En procesamiento",
+          "shipped": "Enviado",
+          "inTransit": "En tránsito",
+          "customs": "En aduana",
+          "delivered": "Entregado"
+        }
+      }
     }
   },
   "common": {
