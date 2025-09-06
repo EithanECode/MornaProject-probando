@@ -514,10 +514,10 @@ export default function ClienteSoporte() {
                     <Bot className="w-4 h-4 md:w-5 md:h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-sm md:text-base">Chat con Soporte</h3>
+                    <h3 className="font-semibold text-sm md:text-base">{t('client.support.schedule.chatTitle')}</h3>
                     <p className="text-xs md:text-sm text-green-100 flex items-center">
                       <div className="w-2 h-2 bg-green-300 rounded-full mr-2 animate-pulse"></div>
-                      Carlos - En línea
+                      {t('client.support.schedule.agentOnline', { name: 'Carlos' })}
                     </p>
                   </div>
                 </div>

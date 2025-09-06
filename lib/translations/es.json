@@ -46,7 +46,9 @@
       "emailDesc": "Envíanos un email y te responderemos en 24 horas"
     },
   "schedule": {
-      "faq": {
+  "faq": {
+  "chatTitle": "Chat con Soporte",
+  "agentOnline": "{{name}} - En línea",
         "title": "Preguntas Frecuentes",
         "subtitle": "Encuentra respuestas rápidas a las preguntas más comunes",
         "placeholder": "Buscar en preguntas frecuentes...",

@@ -20,7 +20,9 @@
   "emailDesc": "Send us an email and we will reply within 24 hours"
       },
   "schedule": {
-      "faq": {
+  "faq": {
+  "chatTitle": "Support Chat",
+  "agentOnline": "{{name}} - Online",
         "title": "Frequently Asked Questions",
         "subtitle": "Find quick answers to the most common questions",
         "placeholder": "Search in frequently asked questions...",
