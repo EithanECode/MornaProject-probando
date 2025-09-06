@@ -47,6 +47,29 @@
     },
   "schedule": {
       "faq": {
+        "title": "Preguntas Frecuentes",
+        "subtitle": "Encuentra respuestas rápidas a las preguntas más comunes",
+        "placeholder": "Buscar en preguntas frecuentes...",
+        "tags": {
+          "tracking": "Tracking",
+          "envío": "Envío",
+          "seguimiento": "Seguimiento",
+          "entrega": "Entrega",
+          "tiempo": "Tiempo",
+          "pago": "Pago",
+          "tarjeta": "Tarjeta",
+          "paypal": "PayPal",
+          "transferencia": "Transferencia",
+          "devolución": "Devolución",
+          "reembolso": "Reembolso",
+          "producto": "Producto",
+          "contraseña": "Contraseña",
+          "cuenta": "Cuenta",
+          "seguridad": "Seguridad",
+          "factura": "Factura",
+          "facturación": "Facturación",
+          "pdf": "PDF"
+        },
         "all": "Todas",
         "categories": {
           "tracking": "Tracking",

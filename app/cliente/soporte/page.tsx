@@ -390,9 +390,9 @@ export default function ClienteSoporte() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <HelpCircle className="h-5 w-5 text-orange-600" />
-                  Preguntas Frecuentes
+                  {t('client.support.schedule.faq.title')}
                 </CardTitle>
-                <p className="text-xs md:text-sm text-slate-600">Encuentra respuestas rápidas a las preguntas más comunes</p>
+                <p className="text-xs md:text-sm text-slate-600">{t('client.support.schedule.faq.subtitle')}</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Búsqueda y filtros */}
@@ -400,7 +400,7 @@ export default function ClienteSoporte() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <Input
-                      placeholder="Buscar en preguntas frecuentes..."
+                      placeholder={t('client.support.schedule.faq.placeholder')}
                       value={faqSearch}
                       onChange={(e) => handleSearchChange(e.target.value)}
                       className="pl-10"
@@ -468,7 +468,7 @@ export default function ClienteSoporte() {
                           <div className="flex flex-wrap gap-1 mt-3">
                             {faq.tags.map(tag => (
                               <Badge key={tag} variant="outline" className="text-xs">
-                                #{tag}
+                                #{t('client.support.schedule.faq.tags.' + tag)}
                               </Badge>
                             ))}
                           </div>
