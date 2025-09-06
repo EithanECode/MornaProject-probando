@@ -285,13 +285,13 @@ export default function ClienteSoporte() {
                   <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-green-600 transition-colors">probando</CardTitle>
+                  <CardTitle className="group-hover:text-green-600 transition-colors">{t('client.support.channels.chatTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('support.channels.chatDesc')}</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.chatDesc')}</p>
                   <Badge className="bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                    {t('support.channels.available')}
+                    {t('client.support.channels.available')}
                   </Badge>
                 </CardContent>
               </Card>
@@ -301,10 +301,10 @@ export default function ClienteSoporte() {
                   <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <Phone className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-blue-600 transition-colors">{t('support.channels.phoneTitle')}</CardTitle>
+                  <CardTitle className="group-hover:text-blue-600 transition-colors">{t('client.support.channels.phoneTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('support.channels.phoneDesc')}</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.phoneDesc')}</p>
                   <Button 
                     variant="outline" 
                     className="w-full group-hover:border-blue-300 group-hover:text-blue-600 transition-colors"
@@ -321,10 +321,10 @@ export default function ClienteSoporte() {
                   <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <Mail className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-purple-600 transition-colors">{t('support.channels.emailTitle')}</CardTitle>
+                  <CardTitle className="group-hover:text-purple-600 transition-colors">{t('client.support.channels.emailTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('support.channels.emailDesc')}</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.emailDesc')}</p>
                   <Button 
                     variant="outline" 
                     className="w-full group-hover:border-purple-300 group-hover:text-purple-600 transition-colors"
