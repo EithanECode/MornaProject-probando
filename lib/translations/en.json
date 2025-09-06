@@ -328,7 +328,130 @@
         "back": "Back",
         "processing": "Processing...",
         "confirmPayment": "Confirm Payment"
-      },
+  },
+  "support": {
+          "title": "Support",
+          "subtitle": "Need help? We're here for you",
+          "header": {
+            "main": "Customer Support",
+            "description": "Have a question? Our team is ready to help you",
+            "onlineNow": "Online now",
+            "responseTime": "Response time: < 2 min",
+            "support": "Support",
+            "satisfaction": "Satisfaction"
+          },
+          "stats": {
+            "support": "Support",
+            "satisfaction": "Satisfaction"
+          },
+          "channels": {
+            "chat": {
+              "title": "Live Chat",
+              "desc": "Chat with our support team in real time",
+              "badge": "Available"
+            },
+            "phone": {
+              "title": "Phone",
+              "desc": "Call us directly for immediate assistance",
+              "button": "+58 412-123-4567"
+            },
+            "email": {
+              "title": "Email",
+              "desc": "Send us an email and we'll reply within 24 hours",
+              "button": "soporte@morna.com"
+            }
+          },
+          "hours": {
+            "title": "Support Hours",
+            "weekdays": "Monday to Friday",
+            "weekdaysHours": "8:00 AM - 6:00 PM (GMT-4)",
+            "saturdays": "Saturdays",
+            "saturdaysHours": "9:00 AM - 2:00 PM (GMT-4)",
+            "sundays": "Sundays",
+            "sundaysHours": "Closed",
+            "chat": "24/7 Chat",
+            "chatDesc": "Automated support",
+            "open": "Open",
+            "limited": "Limited",
+            "closed": "Closed",
+            "available": "Available"
+          },
+          "faq": {
+            "title": "Frequently Asked Questions",
+            "subtitle": "Find quick answers to the most common questions",
+            "searchPlaceholder": "Search in FAQs...",
+            "all": "All",
+            "noResults": "No questions matching your search were found.",
+            "clearFilters": "Clear filters"
+          },
+          "chatModal": {
+            "title": "Support Chat",
+            "agentOnline": "Carlos - Online",
+            "agentTyping": "Carlos is typing...",
+            "inputPlaceholder": "Type your message..."
+          },
+          "faqList": [
+            {
+              "id": 1,
+              "category": "Tracking",
+              "question": "How can I track my package?",
+              "answer": "You can track your package in several ways:\n\n1. Enter the tracking number on our tracking page\n2. Click the link you received by email\n3. Use our mobile app\n4. Ask in the live chat\n\nThe tracking number has the format TRK123456789 and you receive it within 24 hours after shipping. If you can't find it, check your spam folder.",
+              "tags": ["tracking", "shipping", "follow"]
+            },
+            {
+              "id": 2,
+              "category": "Shipping",
+              "question": "How long does delivery take?",
+              "answer": "Delivery times vary depending on the destination and shipping type:\n\n• National Shipping: 24-48h\n• International: 3-10 business days\n• Express: 1-3 business days\n• Economy: 5-15 business days\n\nTimes may vary due to customs, weather, or special events.",
+              "tags": ["delivery", "time", "shipping"]
+            },
+            {
+              "id": 3,
+              "category": "Payments",
+              "question": "What payment methods do you accept?",
+              "answer": "We accept multiple payment methods for your convenience:\n\n• Credit/debit cards (Visa, MasterCard, American Express)\n• PayPal\n• Bank transfers\n• Pago Móvil\n• Cryptocurrencies (Bitcoin, Ethereum)\n• Cash on delivery (national shipping only)\n\nAll payments are processed securely with SSL encryption.",
+              "tags": ["payment", "card", "paypal", "transfer"]
+            },
+            {
+              "id": 4,
+              "category": "Returns",
+              "question": "How do I return a product?",
+              "answer": "To return a product, follow these steps:\n\n1. Go to 'My Orders' in your account\n2. Select the product you want to return\n3. Click on 'Request Return'\n4. Complete the form with the reason\n5. Print the return label\n6. Send the product within 7 days\n\nReturns are free if the product arrived damaged or is different from what was ordered.",
+              "tags": ["return", "refund", "product"]
+            },
+            {
+              "id": 5,
+              "category": "Account",
+              "question": "How do I change my password?",
+              "answer": "To change your password:\n\n1. Log in to your account\n2. Go to 'Settings' → 'Security'\n3. Click on 'Change Password'\n4. Enter your current password\n5. Enter the new password\n6. Confirm the new password\n7. Click on 'Save Changes'\n\nYou will receive a confirmation email when the change is successful.",
+              "tags": ["password", "account", "security"]
+            },
+            {
+              "id": 6,
+              "category": "Billing",
+              "question": "How do I get my invoice?",
+              "answer": "To get your invoice:\n\n1. Go to 'My Orders'\n2. Select the specific order\n3. Click on 'Download Invoice'\n4. The invoice will be downloaded in PDF format\n\nYou can also request invoices by email by sending your order number to facturacion@morna.com\n\nInvoices are available 24 hours after payment confirmation.",
+              "tags": ["invoice", "billing", "pdf"]
+            }
+          ],
+          "autoResponses": [
+            "Hi! I'm Carlos, your support agent. How can I help you today?",
+            "I understand your query. Let me check that information for you...",
+            "Perfect, I can help you with that. I'll explain step by step:",
+            "Great question. According to our records:",
+            "Thank you for contacting us. I'll help you solve this:",
+            "Of course! Here is the information you need:",
+            "I'm glad to help you. The answer is:",
+            "I completely understand your situation. I recommend:"
+          ],
+          "chatResponses": {
+            "tracking": "To track your order, go to the 'Tracking' section in the sidebar. Enter your tracking number (format TRK123456789) and you can see the real-time status.",
+            "deliveryTime": "Delivery times vary: National 24-48h, International 3-10 days, Express 1-3 days. You can see the estimated time in your specific order.",
+            "paymentMethods": "We accept cards, PayPal, transfers, Pago Móvil and cryptocurrencies. All payments are secure with SSL encryption.",
+            "returns": "For returns, go to 'My Orders', select the product and request the return. It's free if it arrived damaged or is different from what was ordered.",
+            "other": "If you need more specific help, you can contact us by phone at +58 412-123-4567 or by email at soporte@morna.com."
+          }
+        },
         "trackingNumber": "Tracking number",
         "carrier": "Carrier",
         "estimatedDelivery": "Estimated delivery",

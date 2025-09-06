@@ -104,6 +104,129 @@
       "noTransactions": "No hay transacciones",
       "noPayments": "No hay pagos disponibles o no hay coincidencias con los filtros aplicados."
     },
+          "support": {
+            "title": "Soporte",
+            "subtitle": "¿Necesitas ayuda? Estamos aquí para ti",
+            "header": {
+              "main": "Soporte al Cliente",
+              "description": "¿Tienes alguna pregunta? Nuestro equipo está listo para ayudarte",
+              "onlineNow": "En línea ahora",
+              "responseTime": "Tiempo de respuesta: < 2 min",
+              "support": "Soporte",
+              "satisfaction": "Satisfacción"
+            },
+            "stats": {
+              "support": "Soporte",
+              "satisfaction": "Satisfacción"
+            },
+            "channels": {
+              "chat": {
+                "title": "Chat en Línea",
+                "desc": "Chatea con nuestro equipo de soporte en tiempo real",
+                "badge": "Disponible"
+              },
+              "phone": {
+                "title": "Teléfono",
+                "desc": "Llámanos directamente para atención inmediata",
+                "button": "+58 412-123-4567"
+              },
+              "email": {
+                "title": "Email",
+                "desc": "Envíanos un email y te responderemos en 24 horas",
+                "button": "soporte@morna.com"
+              }
+            },
+            "hours": {
+              "title": "Horarios de Atención",
+              "weekdays": "Lunes a Viernes",
+              "weekdaysHours": "8:00 AM - 6:00 PM (GMT-4)",
+              "saturdays": "Sábados",
+              "saturdaysHours": "9:00 AM - 2:00 PM (GMT-4)",
+              "sundays": "Domingos",
+              "sundaysHours": "Cerrado",
+              "chat": "Chat 24/7",
+              "chatDesc": "Soporte automático",
+              "open": "Abierto",
+              "limited": "Limitado",
+              "closed": "Cerrado",
+              "available": "Disponible"
+            },
+            "faq": {
+              "title": "Preguntas Frecuentes",
+              "subtitle": "Encuentra respuestas rápidas a las preguntas más comunes",
+              "searchPlaceholder": "Buscar en preguntas frecuentes...",
+              "all": "Todas",
+              "noResults": "No se encontraron preguntas que coincidan con tu búsqueda.",
+              "clearFilters": "Limpiar filtros"
+            },
+            "chatModal": {
+              "title": "Chat con Soporte",
+              "agentOnline": "Carlos - En línea",
+              "agentTyping": "Carlos está escribiendo...",
+              "inputPlaceholder": "Escribe tu mensaje..."
+            },
+            "faqList": [
+              {
+                "id": 1,
+                "category": "Tracking",
+                "question": "¿Cómo puedo rastrear mi paquete?",
+                "answer": "Puedes rastrear tu paquete de varias formas:\n\n1. Ingresa el número de seguimiento en nuestra página de rastreo\n2. Haz clic en el enlace que recibiste por email\n3. Usa nuestra app móvil\n4. Pregunta en el chat en vivo\n\nEl número de seguimiento tiene formato TRK123456789 y lo recibes dentro de las 24 horas posteriores al envío. Si no lo encuentras, revisa tu carpeta de spam.",
+                "tags": ["tracking", "envío", "seguimiento"]
+              },
+              {
+                "id": 2,
+                "category": "Envíos",
+                "question": "¿Cuánto tiempo tarda la entrega?",
+                "answer": "Los tiempos de entrega varían según el destino y el tipo de envío:\n\n• Envíos Nacionales: 24-48h\n• Internacionales: 3-10 días hábiles\n• Express: 1-3 días hábiles\n• Económico: 5-15 días hábiles\n\nLos tiempos pueden variar por factores como aduanas, clima o eventos especiales.",
+                "tags": ["entrega", "tiempo", "envío"]
+              },
+              {
+                "id": 3,
+                "category": "Pagos",
+                "question": "¿Qué métodos de pago aceptan?",
+                "answer": "Aceptamos múltiples métodos de pago para tu comodidad:\n\n• Tarjetas de crédito/débito (Visa, MasterCard, American Express)\n• PayPal\n• Transferencias bancarias\n• Pago Móvil\n• Criptomonedas (Bitcoin, Ethereum)\n• Pago contra reembolso (solo envíos nacionales)\n\nTodos los pagos son procesados de forma segura con encriptación SSL.",
+                "tags": ["pago", "tarjeta", "paypal", "transferencia"]
+              },
+              {
+                "id": 4,
+                "category": "Devoluciones",
+                "question": "¿Cómo devuelvo un producto?",
+                "answer": "Para devolver un producto sigue estos pasos:\n\n1. Ve a 'Mis Pedidos' en tu cuenta\n2. Selecciona el producto que deseas devolver\n3. Haz clic en 'Solicitar Devolución'\n4. Completa el formulario con el motivo\n5. Imprime la etiqueta de devolución\n6. Envía el producto en 7 días\n\nLas devoluciones son gratuitas si el producto llegó dañado o es diferente al solicitado.",
+                "tags": ["devolución", "reembolso", "producto"]
+              },
+              {
+                "id": 5,
+                "category": "Cuenta",
+                "question": "¿Cómo cambio mi contraseña?",
+                "answer": "Para cambiar tu contraseña:\n\n1. Inicia sesión en tu cuenta\n2. Ve a 'Configuración' → 'Seguridad'\n3. Haz clic en 'Cambiar Contraseña'\n4. Ingresa tu contraseña actual\n5. Escribe la nueva contraseña\n6. Confirma la nueva contraseña\n7. Haz clic en 'Guardar Cambios'\n\nRecibirás un email de confirmación cuando el cambio sea exitoso.",
+                "tags": ["contraseña", "cuenta", "seguridad"]
+              },
+              {
+                "id": 6,
+                "category": "Facturación",
+                "question": "¿Cómo obtengo mi factura?",
+                "answer": "Para obtener tu factura:\n\n1. Ve a 'Mis Pedidos'\n2. Selecciona el pedido específico\n3. Haz clic en 'Descargar Factura'\n4. La factura se descargará en formato PDF\n\nTambién puedes solicitar facturas por email enviando tu número de pedido a facturacion@morna.com\n\nLas facturas están disponibles 24 horas después de la confirmación del pago.",
+                "tags": ["factura", "facturación", "pdf"]
+              }
+            ],
+            "autoResponses": [
+              "¡Hola! Soy Carlos, tu agente de soporte. ¿En qué puedo ayudarte hoy?",
+              "Entiendo tu consulta. Déjame revisar esa información para ti...",
+              "Perfecto, puedo ayudarte con eso. Te explico paso a paso:",
+              "Excelente pregunta. Según nuestros registros:",
+              "Gracias por contactarnos. Te ayudo a resolver esto:",
+              "¡Por supuesto! Aquí tienes la información que necesitas:",
+              "Me alegra poder ayudarte. La respuesta es:",
+              "Entiendo perfectamente tu situación. Te recomiendo:"
+            ],
+            "chatResponses": {
+              "tracking": "Para rastrear tu pedido, ve a la sección 'Tracking' en el menú lateral. Ingresa tu número de seguimiento (formato TRK123456789) y podrás ver el estado en tiempo real.",
+              "deliveryTime": "Los tiempos de entrega varían: Nacional 24-48h, Internacional 3-10 días, Express 1-3 días. Puedes ver el tiempo estimado en tu pedido específico.",
+              "paymentMethods": "Aceptamos tarjetas, PayPal, transferencias, Pago Móvil y criptomonedas. Todos los pagos son seguros con encriptación SSL.",
+              "returns": "Para devoluciones, ve a 'Mis Pedidos', selecciona el producto y solicita la devolución. Es gratis si llegó dañado o es diferente al solicitado.",
+              "other": "Si necesitas ayuda más específica, puedes contactarnos por teléfono al +58 412-123-4567 o por email a soporte@morna.com."
+            }
+          },
       "title": "Mis Pedidos",
       "subtitle": "Consulta y gestiona todos tus pedidos realizados",
       "noOrders": "No tienes pedidos registrados.",
