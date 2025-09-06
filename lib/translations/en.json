@@ -209,7 +209,7 @@
           "created": "Order created",
           "processing": "Processing",
           "shipped": "Shipped",
-          "inTransit": "In transit",
+          "in_transit": "In transit",
           "customs": "In customs",
           "delivered": "Delivered"
         }

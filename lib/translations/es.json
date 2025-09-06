@@ -105,7 +105,7 @@
           "created": "Pedido creado",
           "processing": "En procesamiento",
           "shipped": "Enviado",
-          "inTransit": "En tránsito",
+          "in_transit": "En tránsito",
           "customs": "En aduana",
           "delivered": "Entregado"
         }

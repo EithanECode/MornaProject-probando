@@ -410,12 +410,12 @@ export default function MisPedidosPage() {
 
     const status = mapStatus(order.status);
     const steps = [
-      { id: '1', key: 'Pedido Creado' },
-      { id: '2', key: 'En Procesamiento' },
-      { id: '3', key: 'Enviado' },
-      { id: '4', key: 'En Tránsito' },
-      { id: '5', key: 'En Aduana' },
-      { id: '6', key: 'Entregado' },
+      { id: '1', key: 'created' },
+      { id: '2', key: 'processing' },
+      { id: '3', key: 'shipped' },
+      { id: '4', key: 'inTransit' },
+      { id: '5', key: 'customs' },
+      { id: '6', key: 'delivered' },
     ];
     const statusIndexMap: Record<TrackingOrder['status'], number> = {
       pending: 0,
