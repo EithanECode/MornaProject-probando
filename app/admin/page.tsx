@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useAdminContext } from '@/lib/AdminContext';
 import { useAdminOrders } from '@/hooks/use-admin-orders';
 import { useAdminUsers } from '@/hooks/use-admin-users';
+import RealtimeTest from '@/components/RealtimeTest';
 import { 
   Users, 
   Package, 
@@ -45,12 +46,12 @@ export default function AdminDashboard() {
   const { adminId } = useAdminContext();
 
     // Datos de pedidos desde la tabla orders
-  const { data: adminOrdersData, error: adminOrdersError } = useAdminOrders();
+  const { data: adminOrdersData, error: adminOrdersError, refetch: refetchOrders } = useAdminOrders();
     const totalPedidos = adminOrdersData?.totalPedidos ?? 0;
     const totalIngresos = adminOrdersData?.totalIngresos ?? 0;
 
     // Datos de usuarios desde la tabla userlevel
-  const { data: adminUsersData, error: adminUsersError } = useAdminUsers();
+  const { data: adminUsersData, error: adminUsersError, refetch: refetchUsers } = useAdminUsers();
   const totalUsuarios = Array.isArray(adminUsersData) ? adminUsersData.length : 0;
 
   useEffect(() => {
@@ -225,6 +226,9 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Componente de prueba realtime */}
+            <RealtimeTest />
 
             {/* Acciones Rápidas */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
