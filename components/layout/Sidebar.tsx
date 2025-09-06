@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -66,39 +67,27 @@ interface SidebarProps {
 const CLIENT_MENU_ITEMS = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
     path: '/cliente'
   },
   {
-    id: 'mis-pedidos',
-    label: 'Mis Pedidos',
+    id: 'orders',
     icon: Package,
     badge: 3,
     color: 'text-orange-500',
     path: '/cliente/mis-pedidos'
   },
   {
-    id: 'pagos',
-    label: 'Pagos',
+    id: 'payments',
     icon: CreditCard,
     badge: 2,
     color: 'text-red-500',
     path: '/cliente/pagos'
   },
   {
-    id: 'tracking',
-    label: 'Tracking',
-    icon: MapPin,
-    badge: null,
-    color: 'text-purple-500',
-    path: '/cliente/tracking'
-  },
-  {
-    id: 'soporte',
-    label: 'Soporte',
+    id: 'support',
     icon: MessageCircle,
     badge: null,
     color: 'text-green-500',
@@ -109,47 +98,34 @@ const CLIENT_MENU_ITEMS = [
 const VENEZUELA_MENU_ITEMS = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
     path: '/venezuela'
   },
   {
-    id: 'pedidos',
-    label: 'Pedidos',
+    id: 'orders',
     icon: Package,
     badge: 5,
     color: 'text-orange-500',
     path: '/venezuela/pedidos'
   },
   {
-    id: 'soporte',
-    label: 'Soporte',
+    id: 'support',
     icon: MessageCircle,
     badge: 3,
     color: 'text-green-500',
     path: '/venezuela/soporte'
   },
-  // {
-  //   id: 'tracking',
-  //   label: 'Tracking',
-  //   icon: MapPin,
-  //   badge: 2,
-  //   color: 'text-purple-500',
-  //   path: '/venezuela/tracking'
-  // },
   {
-    id: 'validacion-pagos',
-    label: 'Validación de Pagos',
+    id: 'payments-validation',
     icon: BadgeDollarSign,
     badge: null,
     color: 'text-emerald-500',
     path: '/venezuela/validacion-pagos'
   },
   {
-    id: 'reportes',
-    label: 'Reportes',
+    id: 'reports',
     icon: BarChart3,
     badge: null,
     color: 'text-indigo-500',
@@ -160,15 +136,13 @@ const VENEZUELA_MENU_ITEMS = [
 const CHINA_MENU_ITEMS = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
     path: '/china'
   },
   {
-    id: 'pedidos',
-    label: 'Pedidos',
+    id: 'orders',
     icon: Package,
     badge: 12,
     color: 'text-orange-500',
@@ -179,31 +153,27 @@ const CHINA_MENU_ITEMS = [
 const PAGOS_MENU_ITEMS = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
     path: '/pagos'
   },
   {
-    id: 'validacion',
-    label: 'Validación',
+    id: 'payments-validation',
     icon: Shield,
     badge: 15,
     color: 'text-green-500',
     path: '/validacion-pagos'
   },
   {
-    id: 'transacciones',
-    label: 'Transacciones',
+    id: 'transactions',
     icon: CreditCard,
     badge: null,
     color: 'text-purple-500',
     path: '/pagos/transacciones'
   },
   {
-    id: 'reportes',
-    label: 'Reportes',
+    id: 'reports',
     icon: BarChart3,
     badge: null,
     color: 'text-orange-500',
@@ -211,10 +181,10 @@ const PAGOS_MENU_ITEMS = [
   }
 ];
 
-const ADMIN_MENU_ITEMS = [
+const getAdminMenuItems = (t: (key: string) => string) => [
   {
     id: 'dashboard',
-    label: 'Dashboard',
+    label: t && typeof t === 'function' ? t('sidebar.dashboard') : 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
     color: 'text-blue-500',
@@ -222,7 +192,7 @@ const ADMIN_MENU_ITEMS = [
   },
   {
     id: 'usuarios',
-    label: 'Usuarios',
+    label: t && typeof t === 'function' ? t('sidebar.users') : 'Usuarios',
     icon: Users,
     badge: null,
     color: 'text-green-500',
@@ -230,31 +200,15 @@ const ADMIN_MENU_ITEMS = [
   },
   {
     id: 'pedidos',
-    label: 'Pedidos',
+    label: t && typeof t === 'function' ? t('sidebar.orders') : 'Pedidos',
     icon: Package,
     badge: null,
     color: 'text-orange-500',
     path: '/admin/pedidos'
   },
   {
-    id: 'reportes',
-    label: 'Reportes',
-    icon: BarChart3,
-    badge: null,
-    color: 'text-purple-500',
-    path: '/admin/reportes'
-  },
-  {
-    id: 'alertas',
-    label: 'Alertas',
-    icon: AlertTriangle,
-    badge: 5,
-    color: 'text-red-500',
-    path: '/admin/alertas'
-  },
-  {
     id: 'gestion',
-    label: 'Gestión',
+    label: t && typeof t === 'function' ? t('sidebar.management') : 'Gestión',
     icon: Settings,
     badge: null,
     color: 'text-gray-500',
@@ -273,7 +227,6 @@ const getBottomItemsByRole = (role?: string) => {
   return [
     {
       id: 'settings',
-      label: 'Configuración',
       icon: Settings,
       color: 'text-gray-500',
       path: `${basePath}/configuracion`
@@ -282,7 +235,7 @@ const getBottomItemsByRole = (role?: string) => {
 };
 
 // Función para obtener el menú según el rol
-const getMenuItemsByRole = (role?: string) => {
+const getMenuItemsByRole = (role?: string, t?: (key: string) => string) => {
   switch (role) {
     case 'venezuela':
       return VENEZUELA_MENU_ITEMS;
@@ -291,7 +244,7 @@ const getMenuItemsByRole = (role?: string) => {
     case 'pagos':
       return PAGOS_MENU_ITEMS;
     case 'admin':
-      return ADMIN_MENU_ITEMS;
+      return getAdminMenuItems(t!);
     default:
       return CLIENT_MENU_ITEMS;
   }
@@ -362,10 +315,11 @@ const useActivePage = (menuItems: any[], userRole?: string, pathname?: string) =
 };
 
 export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = false, onMobileMenuClose, userRole = 'client' }: SidebarProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const screenWidth = useScreenSize();
   
-  const menuItems = getMenuItemsByRole(userRole);
+  const menuItems = getMenuItemsByRole(userRole, t);
 
   // Call all hooks unconditionally at the top level
   const clientCtx = useSafeClientContext();
@@ -488,7 +442,6 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   const renderMenuItem = useCallback((item: typeof menuItems[0]) => {
     const Icon = item.icon;
     const isActive = activeItem === item.id;
-    
     return (
       <div key={item.id}>
         <Link
@@ -522,7 +475,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
         `}>
           <div className="flex items-center justify-between whitespace-nowrap">
-            <span className={`font-medium ${responsiveConfig.textSize}`}>{item.label}</span>
+            <span className={`font-medium ${responsiveConfig.textSize}`}>{t('sidebar.' + item.id) ?? item.id}</span>
             {item.badge && (
               <Badge className={`bg-red-500 text-white ${responsiveConfig.badgeSize} animate-pulse`}>
                 {item.badge}
@@ -539,7 +492,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       </Link>
     </div>
   );
-}, [isExpanded, activeItem, responsiveConfig, screenWidth]);
+}, [isExpanded, activeItem, responsiveConfig, screenWidth, t]);
 
   return (
     <>
@@ -645,7 +598,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
                     transition-all duration-150 ease-out overflow-hidden
                     ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
                   `}>
-                    <span className="font-medium whitespace-nowrap">{item.label}</span>
+                    <span className="font-medium whitespace-nowrap">{t('sidebar.' + item.id) ?? item.id}</span>
                   </div>
                 </Link>
               );
@@ -670,7 +623,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
               transition-all duration-150 ease-out overflow-hidden
               ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
             `}>
-              <span className="font-medium whitespace-nowrap">Cerrar Sesión</span>
+              <span className="font-medium whitespace-nowrap">{t('sidebar.logout')}</span>
             </div>
           </button>
         </div>

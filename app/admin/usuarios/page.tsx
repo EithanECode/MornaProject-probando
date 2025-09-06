@@ -121,8 +121,8 @@ export default function UsuariosPage() {
         }
         return {
           id: u.id,
-          fullName: u.name || 'Sin nombre',
-          email: u.email || '—',
+          fullName: u.name || t('admin.users.defaults.noName'),
+          email: u.email || t('admin.users.defaults.noEmail'),
           role: uiRole,
           status: (u as any).status === 'inactivo' ? 'inactivo' : 'activo',
           createdAt: u.created_at || '',
@@ -181,6 +181,12 @@ export default function UsuariosPage() {
     const start = (page - 1) * pageSize;
     return filteredUsers.slice(start, start + pageSize);
   }, [filteredUsers, page, pageSize]);
+  // Texto de paginación internacionalizado
+  const paginationText = t('admin.users.pagination.showing', {
+    from: (filteredUsers.length === 0 ? 0 : (page - 1) * pageSize + 1),
+    to: Math.min(page * pageSize, filteredUsers.length),
+    total: filteredUsers.length
+  });
 
   // Resetear a la primera página al cambiar filtros o dataset
   useEffect(() => {
@@ -217,13 +223,13 @@ export default function UsuariosPage() {
         const { error } = await res.json().catch(() => ({ error: 'Error' }));
         // Rollback
         setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, status: user.status } : u)));
-        toast({ title: 'Error al actualizar', description: error || 'No se pudo cambiar el estado' });
+  toast({ title: t('admin.users.messages.errorUpdating'), description: error || t('admin.users.messages.couldNotChangeStatus') });
         return;
       }
-      toast({ title: 'Estado actualizado', description: `${user.fullName} ahora está ${next}.` });
+  toast({ title: t('admin.users.messages.statusUpdated'), description: t('admin.users.messages.statusUpdatedDesc', { name: user.fullName, status: next }) });
     }).catch(() => {
       setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, status: user.status } : u)));
-      toast({ title: 'Error al actualizar', description: 'No se pudo cambiar el estado' });
+  toast({ title: t('admin.users.messages.errorUpdating'), description: t('admin.users.messages.couldNotChangeStatus') });
     });
   }
 
@@ -239,13 +245,13 @@ export default function UsuariosPage() {
       if (!res.ok) {
         const { error } = await res.json().catch(() => ({ error: 'Error' }));
         setUsers(prevUsers);
-        toast({ title: 'Error al eliminar', description: error || 'No se pudo eliminar' });
+    toast({ title: t('admin.users.messages.errorDeleting'), description: error || t('admin.users.messages.couldNotDelete') });
         return;
       }
-      toast({ title: 'Usuario eliminado', description: `${user.fullName} fue eliminado del sistema.` });
+  toast({ title: t('admin.users.messages.userDeleted'), description: t('admin.users.messages.userDeletedDesc', { name: user.fullName }) });
     }).catch(() => {
       setUsers(prevUsers);
-      toast({ title: 'Error al eliminar', description: 'No se pudo eliminar' });
+  toast({ title: t('admin.users.messages.errorDeleting'), description: t('admin.users.messages.couldNotDelete') });
     });
   }
 
@@ -253,7 +259,7 @@ export default function UsuariosPage() {
     if (!editingUser) return;
     // Validaciones simples
     if (!editingUser.fullName || !editingUser.email) {
-      toast({ title: 'Datos incompletos', description: 'Nombre y correo son obligatorios.' });
+  toast({ title: t('admin.users.messages.incompleteData'), description: t('admin.users.messages.nameAndEmailRequired') });
       return;
     }
     const isNew = !/^[0-9a-fA-F-]{36}$/.test(editingUser.id); // id temporal no UUID
@@ -274,7 +280,7 @@ export default function UsuariosPage() {
       }).then(async (res) => {
         if (!res.ok) {
           const { error } = await res.json().catch(() => ({ error: 'Error' }));
-          toast({ title: 'Error al crear', description: error || 'No se pudo crear el usuario' });
+    toast({ title: t('admin.users.messages.errorCreating'), description: error || t('admin.users.messages.couldNotCreate') });
           return;
         }
         const created = await res.json();
@@ -294,7 +300,7 @@ export default function UsuariosPage() {
         setEditingUser(null);
         toast({ title: t('admin.users.messages.userCreated'), description: t('admin.users.messages.userCreatedDesc') });
       }).catch(() => {
-        toast({ title: 'Error al crear', description: 'No se pudo crear el usuario' });
+  toast({ title: t('admin.users.messages.errorCreating'), description: t('admin.users.messages.couldNotCreate') });
       });
       return;
     }
@@ -617,18 +623,18 @@ export default function UsuariosPage() {
                                      </div>
                                      <div className="flex flex-col gap-2 w-full">
                                        <div className="flex items-center gap-1 md:gap-2 flex-wrap">
-                                         <Badge className={`${ROLE_COLORS[user.role]} border font-medium px-2 py-1 text-xs`}>
-                                           {user.role}
-                                         </Badge>
-                                         {user.status === 'activo' ? (
-                                           <Badge className="bg-green-100 text-green-800 border border-green-200 font-medium px-2 py-1 text-xs">
-                                             <CheckCircle className="w-3 h-3 mr-1" /> Activo
-                                           </Badge>
-                                         ) : (
-                                           <Badge className="bg-red-100 text-red-800 border border-red-200 font-medium px-2 py-1 text-xs">
-                                             <XCircle className="w-3 h-3 mr-1" /> Inactivo
-                                           </Badge>
-                                         )}
+                                        <Badge className={`${ROLE_COLORS[user.role]} border font-medium px-2 py-1 text-xs`}>
+                                          {t(`admin.users.roles.${user.role}` as any)}
+                                        </Badge>
+                                        {user.status === 'activo' ? (
+                                          <Badge className="bg-green-100 text-green-800 border border-green-200 font-medium px-2 py-1 text-xs">
+                                            <CheckCircle className="w-3 h-3 mr-1" /> {t('admin.users.status.active')}
+                                          </Badge>
+                                        ) : (
+                                          <Badge className="bg-red-100 text-red-800 border border-red-200 font-medium px-2 py-1 text-xs">
+                                            <XCircle className="w-3 h-3 mr-1" /> {t('admin.users.status.inactive')}
+                                          </Badge>
+                                        )}
                                        </div>
                                        <div className="flex items-center gap-1 text-xs text-slate-500">
                                          <Calendar className="w-3 h-3" />
@@ -680,8 +686,8 @@ export default function UsuariosPage() {
                                   }}
                                 >
                                   <Users className="w-10 h-10 md:w-12 md:h-12 text-slate-300" />
-                                  <p className="text-base md:text-lg font-medium">No se encontraron usuarios</p>
-                                  <p className="text-xs md:text-sm">Intenta ajustar los filtros de búsqueda</p>
+                                  <p className="text-base md:text-lg font-medium">{t('admin.users.empty.noUsersFound')}</p>
+                                  <p className="text-xs md:text-sm">{t('admin.users.empty.tryAdjustFilters')}</p>
                                 </div>
                               </div>
                             )}
@@ -689,11 +695,11 @@ export default function UsuariosPage() {
                             {filteredUsers.length > 0 && (
                               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
                                 <div className="text-xs text-slate-600">
-                                  Mostrando {Math.min((page - 1) * pageSize + 1, filteredUsers.length)}–{Math.min(page * pageSize, filteredUsers.length)} de {filteredUsers.length}
+                                  {paginationText}
                                 </div>
                                 <div className="flex items-center gap-3">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-xs text-slate-600">Por página</span>
+                                    <span className="text-xs text-slate-600">{t('admin.users.pagination.perPage')}</span>
                                     <Select value={String(pageSize)} onValueChange={(v) => setPageSize(parseInt(v))}>
                                       <SelectTrigger className="h-8 w-[84px]">
                                         <SelectValue />

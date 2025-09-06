@@ -1,14 +1,4 @@
-
-
 {
-  "chinese":{
-    "dashboardChinaSubtitle": "Gestión de pedidos, procesamiento y logística",
-    "dashboardChinaWelcome": "¡Bienvenido de vuelta!",
-    "dashboardChina": "Panel de Control - China"
-
-
-  },
-
     "dashboard": {
       "title": "Dashboard Cliente",
       "subtitle": "Bienvenido de vuelta, aquí tienes un resumen de tu actividad",
