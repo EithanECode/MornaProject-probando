@@ -11,13 +11,13 @@
       "support": "Support",
       "satisfaction": "Satisfaction",
       "channels": {
-        "chatTitle": "Live Chat",
-        "chatDesc": "Chat with our support team in real time",
-        "available": "Available",
-        "phoneTitle": "Phone",
-        "phoneDesc": "Call us directly for immediate assistance",
-        "emailTitle": "Email",
-        "emailDesc": "Send us an email and we'll reply within 24 hours"
+  "chatTitle": "Live Chat",
+  "chatDesc": "Chat with our support team in real time",
+  "available": "Available",
+  "phoneTitle": "Phone",
+  "phoneDesc": "Call us directly for immediate assistance",
+  "emailTitle": "Email",
+  "emailDesc": "Send us an email and we will reply within 24 hours"
       },
       "schedule": {
         "title": "Support Hours",
