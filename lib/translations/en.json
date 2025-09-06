@@ -1,3 +1,14 @@
+      "schedule": {
+        "title": "Support Hours",
+        "weekdays": "Monday to Friday",
+        "saturday": "Saturdays",
+        "sunday": "Sundays",
+        "chat247": "24/7 Chat",
+        "automatic": "Automatic support",
+        "open": "Open",
+        "limited": "Limited",
+        "closed": "Closed"
+      },
 {
   "client": {
     "support": {

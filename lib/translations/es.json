@@ -1,3 +1,14 @@
+      "schedule": {
+        "title": "Horarios de Atención",
+        "weekdays": "Lunes a Viernes",
+        "saturday": "Sábados",
+        "sunday": "Domingos",
+        "chat247": "Chat 24/7",
+        "automatic": "Soporte automático",
+        "open": "Abierto",
+        "limited": "Limitado",
+        "closed": "Cerrado"
+      },
 {
   "client": {
     "configuration": {

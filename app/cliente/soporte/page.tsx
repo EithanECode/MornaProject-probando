@@ -285,13 +285,13 @@ export default function ClienteSoporte() {
                   <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-green-600 transition-colors">{t('client.support.channels.chatTitle')}</CardTitle>
+                  <CardTitle className="group-hover:text-green-600 transition-colors">{t('support.channels.chatTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.chatDesc')}</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('support.channels.chatDesc')}</p>
                   <Badge className="bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                    {t('client.support.channels.available')}
+                    {t('support.channels.available')}
                   </Badge>
                 </CardContent>
               </Card>
@@ -301,10 +301,10 @@ export default function ClienteSoporte() {
                   <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <Phone className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-blue-600 transition-colors">{t('client.support.channels.phoneTitle')}</CardTitle>
+                  <CardTitle className="group-hover:text-blue-600 transition-colors">{t('support.channels.phoneTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.phoneDesc')}</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('support.channels.phoneDesc')}</p>
                   <Button 
                     variant="outline" 
                     className="w-full group-hover:border-blue-300 group-hover:text-blue-600 transition-colors"
@@ -321,10 +321,10 @@ export default function ClienteSoporte() {
                   <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <Mail className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-purple-600 transition-colors">{t('client.support.channels.emailTitle')}</CardTitle>
+                  <CardTitle className="group-hover:text-purple-600 transition-colors">{t('support.channels.emailTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.emailDesc')}</p>
+                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('support.channels.emailDesc')}</p>
                   <Button 
                     variant="outline" 
                     className="w-full group-hover:border-purple-300 group-hover:text-purple-600 transition-colors"
@@ -342,42 +342,42 @@ export default function ClienteSoporte() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="h-5 w-5 text-blue-600" />
-                  Horarios de Atención
+                  {t('client.support.schedule.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <div className="space-y-4">
-                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-blue-50 rounded-lg gap-2 md:gap-0">
-                        <div>
-                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Lunes a Viernes</h4>
-                          <p className="text-slate-600 text-xs md:text-sm">8:00 AM - 6:00 PM (GMT-4)</p>
-                        </div>
-                        <Badge className="bg-green-100 text-green-800 text-xs md:text-sm w-fit">Abierto</Badge>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-blue-50 rounded-lg gap-2 md:gap-0">
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.weekdays')}</h4>
+                        <p className="text-slate-600 text-xs md:text-sm">8:00 AM - 6:00 PM (GMT-4)</p>
                       </div>
-                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-orange-50 rounded-lg gap-2 md:gap-0">
-                        <div>
-                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Sábados</h4>
-                          <p className="text-slate-600 text-xs md:text-sm">9:00 AM - 2:00 PM (GMT-4)</p>
-                        </div>
-                        <Badge className="bg-orange-100 text-orange-800 text-xs md:text-sm w-fit">Limitado</Badge>
+                      <Badge className="bg-green-100 text-green-800 text-xs md:text-sm w-fit">{t('client.support.schedule.open')}</Badge>
+                    </div>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-orange-50 rounded-lg gap-2 md:gap-0">
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.saturday')}</h4>
+                        <p className="text-slate-600 text-xs md:text-sm">9:00 AM - 2:00 PM (GMT-4)</p>
                       </div>
+                      <Badge className="bg-orange-100 text-orange-800 text-xs md:text-sm w-fit">{t('client.support.schedule.limited')}</Badge>
+                    </div>
                   </div>
                   <div className="space-y-4">
-                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-red-50 rounded-lg gap-2 md:gap-0">
-                        <div>
-                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Domingos</h4>
-                          <p className="text-slate-600 text-xs md:text-sm">Cerrado</p>
-                        </div>
-                        <Badge className="bg-red-100 text-red-800 text-xs md:text-sm w-fit">Cerrado</Badge>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-red-50 rounded-lg gap-2 md:gap-0">
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.sunday')}</h4>
+                        <p className="text-slate-600 text-xs md:text-sm">{t('client.support.schedule.closed')}</p>
                       </div>
-                                          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-purple-50 rounded-lg gap-2 md:gap-0">
-                        <div>
-                          <h4 className="font-semibold text-slate-800 text-sm md:text-base">Chat 24/7</h4>
-                          <p className="text-slate-600 text-xs md:text-sm">Soporte automático</p>
-                        </div>
-                        <Badge className="bg-purple-100 text-purple-800 text-xs md:text-sm w-fit">Disponible</Badge>
+                      <Badge className="bg-red-100 text-red-800 text-xs md:text-sm w-fit">{t('client.support.schedule.closed')}</Badge>
+                    </div>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-purple-50 rounded-lg gap-2 md:gap-0">
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-sm md:text-base">{t('client.support.schedule.chat247')}</h4>
+                        <p className="text-slate-600 text-xs md:text-sm">{t('client.support.schedule.automatic')}</p>
                       </div>
+                      <Badge className="bg-purple-100 text-purple-800 text-xs md:text-sm w-fit">{t('client.support.channels.available')}</Badge>
+                    </div>
                   </div>
                 </div>
               </CardContent>
