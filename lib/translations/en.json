@@ -1142,7 +1142,11 @@
     "orderReceived": "Received",
     "orderEstimatedDelivery": "Estimated Delivery",
     "orderFinalPrice": "Final Price",
-    "orderCurrency": "Currency"
+  "orderCurrency": "Currency",
+  "quickActions": "Quick Actions",
+  "quickActionsSubtitle": "Quickly access the most used functions for China operations",
+  "quality": "Quality",
+  "qualityscore": "Quality Score"
   }
 
 }
