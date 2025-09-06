@@ -19,7 +19,42 @@
   "emailTitle": "Email",
   "emailDesc": "Send us an email and we will reply within 24 hours"
       },
-      "schedule": {
+  "schedule": {
+      "faq": {
+        "all": "All",
+        "categories": {
+          "tracking": "Tracking",
+          "shipping": "Shipping",
+          "payments": "Payments",
+          "returns": "Returns",
+          "account": "Account",
+          "billing": "Billing"
+        },
+        "q1": {
+          "question": "How can I track my package?",
+          "answer": "You can track your package in several ways:\n\n1. Enter the tracking number on our tracking page\n2. Click the link you received by email\n3. Use our mobile app\n4. Ask in the live chat\n\nThe tracking number has the format TRK123456789 and you receive it within 24 hours after shipping. If you can't find it, check your spam folder."
+        },
+        "q2": {
+          "question": "How long does delivery take?",
+          "answer": "Delivery times vary depending on the destination and shipping type:\n\n• National: 24-48h\n• International: 3-10 business days\n• Express: 1-3 business days\n• Economy: 5-15 business days\n\nTimes may vary due to customs, weather, or special events."
+        },
+        "q3": {
+          "question": "What payment methods do you accept?",
+          "answer": "We accept multiple payment methods for your convenience:\n\n• Credit/debit cards (Visa, MasterCard, American Express)\n• PayPal\n• Bank transfers\n• Mobile Payment\n• Cryptocurrencies (Bitcoin, Ethereum)\n• Cash on delivery (national shipments only)\n\nAll payments are processed securely with SSL encryption."
+        },
+        "q4": {
+          "question": "How do I return a product?",
+          "answer": "To return a product, follow these steps:\n\n1. Go to 'My Orders' in your account\n2. Select the product you want to return\n3. Click on 'Request Return'\n4. Complete the form with the reason\n5. Print the return label\n6. Send the product within 7 days\n\nReturns are free if the product arrived damaged or is different from what you ordered."
+        },
+        "q5": {
+          "question": "How do I change my password?",
+          "answer": "To change your password:\n\n1. Log in to your account\n2. Go to 'Settings' → 'Security'\n3. Click on 'Change Password'\n4. Enter your current password\n5. Enter the new password\n6. Confirm the new password\n7. Click 'Save Changes'\n\nYou will receive a confirmation email when the change is successful."
+        },
+        "q6": {
+          "question": "How do I get my invoice?",
+          "answer": "To get your invoice:\n\n1. Go to 'My Orders'\n2. Select the specific order\n3. Click on 'Download Invoice'\n4. The invoice will be downloaded as a PDF\n\nYou can also request invoices by email by sending your order number to facturacion@morna.com\n\nInvoices are available 24 hours after payment confirmation."
+        }
+      },
         "title": "Support Hours",
         "weekdays": "Monday to Friday",
         "saturday": "Saturdays",
