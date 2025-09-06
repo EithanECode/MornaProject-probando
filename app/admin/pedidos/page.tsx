@@ -728,66 +728,66 @@ export default function PedidosPage() {
 
   // Memoizar las tarjetas de estadísticas
   const statsCards = useMemo(() => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-        <CardContent className="p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 dark:from-blue-900/20 dark:to-indigo-900/20 dark:border-blue-700 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardContent className="p-4 md:p-6">
           <div className="flex items-center justify-between">
             <div>
-                                    <p className="text-blue-100 text-sm font-medium">{t('admin.orders.stats.totalOrders')}</p>
-              <p className={`text-3xl font-bold transition-all duration-1000 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+              <p className="text-blue-700 dark:text-blue-300 text-sm md:text-base font-medium">{t('admin.orders.stats.totalOrders')}</p>
+              <p className={`text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200 transition-all duration-1000 ${animateStats ? 'scale-100' : 'scale-0'}`}>
                 {totalPedidos}
               </p>
             </div>
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <Package className="w-6 h-6 animate-bounce" />
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-800/30 rounded-lg flex items-center justify-center">
+              <Package className="w-5 h-5 md:w-6 md:h-6 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-        <CardContent className="p-6">
+      <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200 dark:from-yellow-900/20 dark:to-orange-900/20 dark:border-yellow-700 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardContent className="p-4 md:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-orange-100 text-sm font-medium">{t('admin.orders.stats.pending')}</p>
-              <p className={`text-3xl font-bold transition-all duration-1000 delay-200 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+              <p className="text-yellow-700 dark:text-yellow-300 text-sm md:text-base font-medium">{t('admin.orders.stats.pending')}</p>
+              <p className={`text-2xl md:text-3xl font-bold text-yellow-800 dark:text-yellow-200 transition-all duration-1000 delay-200 ${animateStats ? 'scale-100' : 'scale-0'}`}>
                 {pedidosPendientes}
               </p>
             </div>
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <AlertCircle className="w-6 h-6 animate-pulse" />
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-yellow-100 dark:bg-yellow-800/30 rounded-lg flex items-center justify-center">
+              <AlertCircle className="w-5 h-5 md:w-6 md:h-6 text-yellow-600 dark:text-yellow-400" />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-        <CardContent className="p-6">
+      <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border-purple-200 dark:from-purple-900/20 dark:to-violet-900/20 dark:border-purple-700 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardContent className="p-4 md:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-100 text-sm font-medium">{t('admin.orders.stats.inTransit')}</p>
-              <p className={`text-3xl font-bold transition-all duration-1000 delay-400 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+              <p className="text-purple-700 dark:text-purple-300 text-sm md:text-base font-medium">{t('admin.orders.stats.inTransit')}</p>
+              <p className={`text-2xl md:text-3xl font-bold text-purple-800 dark:text-purple-200 transition-all duration-1000 delay-400 ${animateStats ? 'scale-100' : 'scale-0'}`}>
                 {pedidosTransito}
               </p>
             </div>
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <Plane className="w-6 h-6 animate-bounce" style={{ animationDuration: '2s' }} />
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 dark:bg-purple-800/30 rounded-lg flex items-center justify-center">
+              <Plane className="w-5 h-5 md:w-6 md:h-6 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-        <CardContent className="p-6">
+      <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 dark:from-green-900/20 dark:to-emerald-900/20 dark:border-green-700 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardContent className="p-4 md:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-100 text-sm font-medium">{t('admin.orders.stats.delivered')}</p>
-              <p className={`text-3xl font-bold transition-all duration-1000 delay-600 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+              <p className="text-green-700 dark:text-green-300 text-sm md:text-base font-medium">{t('admin.orders.stats.delivered')}</p>
+              <p className={`text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200 transition-all duration-1000 delay-600 ${animateStats ? 'scale-100' : 'scale-0'}`}>
                 {pedidosEntregados}
               </p>
             </div>
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 animate-pulse" />
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-800/30 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-600 dark:text-green-400" />
             </div>
           </div>
         </CardContent>
@@ -884,7 +884,7 @@ export default function PedidosPage() {
 
         <div className={mounted && theme === 'dark' ? 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6 bg-slate-900' : 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6'}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="mb-8 flex flex-wrap gap-3 rounded-2xl p-2 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+            <TabsList className="mb-8 flex flex-nowrap overflow-x-auto md:flex-wrap md:overflow-x-visible gap-3 rounded-2xl p-2 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
               <TabsTrigger value="admin" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
                 <Settings className="w-4 h-4" /> Admin
               </TabsTrigger>

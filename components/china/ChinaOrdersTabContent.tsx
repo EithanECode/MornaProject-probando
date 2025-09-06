@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import {
-  Search, Filter, RefreshCw, Boxes, Package, List, CheckCircle, Calendar, Eye, Calculator, Pencil, Tag, User, Plus, Truck, Trash2
+  Search, Filter, RefreshCw, Boxes, Package, List, CheckCircle, Calendar, Eye, Calculator, Pencil, Tag, User, Plus, Truck, Trash2, AlertTriangle, DollarSign
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
@@ -329,12 +329,72 @@ export default function ChinaOrdersTabContent() {
     <>
     <div className="space-y-6">
       {/* Estadísticas */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200"><CardContent className="p-4"><p className="text-xs font-medium text-yellow-700">PENDIENTES</p><p className="text-2xl font-bold text-yellow-800">{stats.pendientes}</p></CardContent></Card>
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"><CardContent className="p-4"><p className="text-xs font-medium text-blue-700">COTIZADOS</p><p className="text-2xl font-bold text-blue-800">{stats.cotizados}</p></CardContent></Card>
-        <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border-purple-200"><CardContent className="p-4"><p className="text-xs font-medium text-purple-700">PROCESANDO</p><p className="text-2xl font-bold text-purple-800">{stats.procesando}</p></CardContent></Card>
-        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200"><CardContent className="p-4"><p className="text-xs font-medium text-green-700">ENVIADOS</p><p className="text-2xl font-bold text-green-800">{stats.enviados}</p></CardContent></Card>
-        <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 hidden md:block"><CardContent className="p-4"><p className="text-xs font-medium text-emerald-700">TOTAL COTIZADO</p><p className="text-xl font-bold text-emerald-800">${stats.totalCotizado.toLocaleString()}</p></CardContent></Card>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
+        <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200 dark:from-yellow-900/20 dark:to-orange-900/20 dark:border-yellow-700 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm md:text-base font-medium text-yellow-700 dark:text-yellow-300">PENDIENTES</p>
+                <p className="text-2xl md:text-3xl font-bold text-yellow-800 dark:text-yellow-200">{stats.pendientes}</p>
+              </div>
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-yellow-100 dark:bg-yellow-800/30 rounded-lg flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-yellow-600 dark:text-yellow-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 dark:from-blue-900/20 dark:to-indigo-900/20 dark:border-blue-700 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm md:text-base font-medium text-blue-700 dark:text-blue-300">COTIZADOS</p>
+                <p className="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200">{stats.cotizados}</p>
+              </div>
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-800/30 rounded-lg flex items-center justify-center">
+                <Calculator className="w-5 h-5 md:w-6 md:h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border-purple-200 dark:from-purple-900/20 dark:to-violet-900/20 dark:border-purple-700 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm md:text-base font-medium text-purple-700 dark:text-purple-300">PROCESANDO</p>
+                <p className="text-2xl md:text-3xl font-bold text-purple-800 dark:text-purple-200">{stats.procesando}</p>
+              </div>
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 dark:bg-purple-800/30 rounded-lg flex items-center justify-center">
+                <Package className="w-5 h-5 md:w-6 md:h-6 text-purple-600 dark:text-purple-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 dark:from-green-900/20 dark:to-emerald-900/20 dark:border-green-700 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm md:text-base font-medium text-green-700 dark:text-green-300">ENVIADOS</p>
+                <p className="text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200">{stats.enviados}</p>
+              </div>
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-800/30 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-600 dark:text-green-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 dark:from-emerald-900/20 dark:to-teal-900/20 dark:border-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300 hidden md:block">
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm md:text-base font-medium text-emerald-700 dark:text-emerald-300">TOTAL COTIZADO</p>
+                <p className="text-xl md:text-2xl font-bold text-emerald-800 dark:text-emerald-200">${stats.totalCotizado.toLocaleString()}</p>
+              </div>
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-emerald-100 dark:bg-emerald-800/30 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-5 h-5 md:w-6 md:h-6 text-emerald-600 dark:text-emerald-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Sub-tabs */}

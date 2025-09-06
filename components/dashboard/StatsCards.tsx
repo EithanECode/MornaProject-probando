@@ -16,34 +16,45 @@ const CARD_CONFIGS = [
     id: 'total',
     label: 'Total Pedidos',
     icon: Package,
-    gradient: 'from-blue-500 to-blue-600',
-    textColor: 'text-blue-100',
-    animation: 'animate-bounce'
+    gradient: 'from-blue-50 to-indigo-50',
+    borderColor: 'border-blue-200 dark:border-blue-700',
+    textColor: 'text-blue-700 dark:text-blue-300',
+    valueColor: 'text-blue-800 dark:text-blue-200',
+    iconBg: 'bg-blue-100 dark:bg-blue-800/30',
+    iconColor: 'text-blue-600 dark:text-blue-400'
   },
   {
     id: 'pending',
     label: 'Pendientes',
     icon: Clock,
-    gradient: 'from-orange-500 to-orange-600',
-    textColor: 'text-orange-100',
-    animation: 'animate-pulse'
+    gradient: 'from-yellow-50 to-orange-50',
+    borderColor: 'border-yellow-200 dark:border-yellow-700',
+    textColor: 'text-yellow-700 dark:text-yellow-300',
+    valueColor: 'text-yellow-800 dark:text-yellow-200',
+    iconBg: 'bg-yellow-100 dark:bg-yellow-800/30',
+    iconColor: 'text-yellow-600 dark:text-yellow-400'
   },
   {
     id: 'completed',
     label: 'Completados',
     icon: CheckCircle,
-    gradient: 'from-green-500 to-green-600',
-    textColor: 'text-green-100',
-    animation: 'animate-pulse'
+    gradient: 'from-green-50 to-emerald-50',
+    borderColor: 'border-green-200 dark:border-green-700',
+    textColor: 'text-green-700 dark:text-green-300',
+    valueColor: 'text-green-800 dark:text-green-200',
+    iconBg: 'bg-green-100 dark:bg-green-800/30',
+    iconColor: 'text-green-600 dark:text-green-400'
   },
   {
     id: 'inTransit',
     label: 'En Tránsito',
     icon: Plane,
-    gradient: 'from-purple-500 to-purple-600',
-    textColor: 'text-purple-100',
-    animation: 'animate-bounce',
-    animationDuration: '2s'
+    gradient: 'from-purple-50 to-violet-50',
+    borderColor: 'border-purple-200 dark:border-purple-700',
+    textColor: 'text-purple-700 dark:text-purple-300',
+    valueColor: 'text-purple-800 dark:text-purple-200',
+    iconBg: 'bg-purple-100 dark:bg-purple-800/30',
+    iconColor: 'text-purple-600 dark:text-purple-400'
   }
 ] as const;
 
@@ -62,20 +73,17 @@ const StatCard = memo(({
   const Icon = config.icon;
   
   return (
-    <Card className={`stats-card bg-gradient-to-r ${config.gradient} text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
-      <CardContent className="p-6">
+    <Card className={`bg-gradient-to-r ${config.gradient} ${config.borderColor} shadow-lg hover:shadow-xl transition-all duration-300`}>
+      <CardContent className="p-4 md:p-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className={`${config.textColor} text-sm font-medium`}>{config.label}</p>
-            <p className={`text-3xl font-bold transition-all duration-1000 delay-${delay} ${animateStats ? 'scale-100' : 'scale-0'}`}>
+            <p className={`text-sm md:text-base font-medium ${config.textColor}`}>{config.label}</p>
+            <p className={`text-2xl md:text-3xl font-bold ${config.valueColor} transition-all duration-1000 delay-${delay} ${animateStats ? 'scale-100' : 'scale-0'}`}>
               {value}
             </p>
           </div>
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-            <Icon 
-              className={`w-6 h-6 ${config.animation}`}
-              style={'animationDuration' in config && config.animationDuration ? { animationDuration: config.animationDuration } : undefined}
-            />
+          <div className={`w-10 h-10 md:w-12 md:h-12 ${config.iconBg} rounded-lg flex items-center justify-center`}>
+            <Icon className={`w-5 h-5 md:w-6 md:h-6 ${config.iconColor}`} />
           </div>
         </div>
       </CardContent>
@@ -99,17 +107,17 @@ const StatsCards = memo(({ stats, animateStats }: StatsCardsProps) => {
   // Manejar el caso cuando stats es null con skeleton loading
   if (!stats) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {CARD_CONFIGS.map((config, index) => (
-          <Card key={config.id} className={`bg-gradient-to-r ${config.gradient} text-white border-none shadow-lg animate-pulse`}>
-            <CardContent className="p-6">
+          <Card key={config.id} className={`bg-gradient-to-r ${config.gradient} ${config.borderColor} shadow-lg animate-pulse`}>
+            <CardContent className="p-4 md:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className={`${config.textColor} text-sm font-medium`}>{config.label}</p>
-                  <div className="h-8 bg-white/20 rounded animate-pulse" />
+                  <p className={`text-sm md:text-base font-medium ${config.textColor}`}>{config.label}</p>
+                  <div className="h-8 bg-current/20 rounded animate-pulse" />
                 </div>
-                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                  <config.icon className="w-6 h-6" />
+                <div className={`w-10 h-10 md:w-12 md:h-12 ${config.iconBg} rounded-lg flex items-center justify-center`}>
+                  <config.icon className={`w-5 h-5 md:w-6 md:h-6 ${config.iconColor}`} />
                 </div>
               </div>
             </CardContent>
@@ -120,7 +128,7 @@ const StatsCards = memo(({ stats, animateStats }: StatsCardsProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
       {CARD_CONFIGS.map((config, index) => (
         <StatCard
           key={config.id}
