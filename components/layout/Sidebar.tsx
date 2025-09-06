@@ -73,21 +73,21 @@ const CLIENT_MENU_ITEMS = [
     path: '/cliente'
   },
   {
-    id: 'mis-pedidos',
+    id: 'orders',
     icon: Package,
     badge: 3,
     color: 'text-orange-500',
     path: '/cliente/mis-pedidos'
   },
   {
-    id: 'pagos',
+    id: 'payments',
     icon: CreditCard,
     badge: 2,
     color: 'text-red-500',
     path: '/cliente/pagos'
   },
   {
-    id: 'soporte',
+    id: 'support',
     icon: MessageCircle,
     badge: null,
     color: 'text-green-500',
@@ -104,28 +104,28 @@ const VENEZUELA_MENU_ITEMS = [
     path: '/venezuela'
   },
   {
-    id: 'pedidos',
+    id: 'orders',
     icon: Package,
     badge: 5,
     color: 'text-orange-500',
     path: '/venezuela/pedidos'
   },
   {
-    id: 'soporte',
+    id: 'support',
     icon: MessageCircle,
     badge: 3,
     color: 'text-green-500',
     path: '/venezuela/soporte'
   },
   {
-    id: 'validacion-pagos',
+    id: 'payments-validation',
     icon: BadgeDollarSign,
     badge: null,
     color: 'text-emerald-500',
     path: '/venezuela/validacion-pagos'
   },
   {
-    id: 'reportes',
+    id: 'reports',
     icon: BarChart3,
     badge: null,
     color: 'text-indigo-500',
@@ -142,7 +142,7 @@ const CHINA_MENU_ITEMS = [
     path: '/china'
   },
   {
-    id: 'pedidos',
+    id: 'orders',
     icon: Package,
     badge: 12,
     color: 'text-orange-500',
@@ -159,21 +159,21 @@ const PAGOS_MENU_ITEMS = [
     path: '/pagos'
   },
   {
-    id: 'validacion',
+    id: 'payments-validation',
     icon: Shield,
     badge: 15,
     color: 'text-green-500',
     path: '/validacion-pagos'
   },
   {
-    id: 'transacciones',
+    id: 'transactions',
     icon: CreditCard,
     badge: null,
     color: 'text-purple-500',
     path: '/pagos/transacciones'
   },
   {
-    id: 'reportes',
+    id: 'reports',
     icon: BarChart3,
     badge: null,
     color: 'text-orange-500',
