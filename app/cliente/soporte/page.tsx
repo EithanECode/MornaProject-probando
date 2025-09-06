@@ -285,7 +285,7 @@ export default function ClienteSoporte() {
                   <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-green-600 transition-colors">{t('support.channels.chatTitle')}</CardTitle>
+                  <CardTitle className="group-hover:text-green-600 transition-colors">probando</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
                   <p className="text-xs md:text-sm text-slate-600 mb-4">{t('support.channels.chatDesc')}</p>
