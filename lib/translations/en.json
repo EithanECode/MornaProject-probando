@@ -1,14 +1,4 @@
-      "schedule": {
-        "title": "Support Hours",
-        "weekdays": "Monday to Friday",
-        "saturday": "Saturdays",
-        "sunday": "Sundays",
-        "chat247": "24/7 Chat",
-        "automatic": "Automatic support",
-        "open": "Open",
-        "limited": "Limited",
-        "closed": "Closed"
-      },
+      
 {
   "client": {
     "support": {
@@ -19,7 +9,27 @@
       "onlineNow": "Online now",
       "responseTime": "Response time: < 2 min",
       "support": "Support",
-      "satisfaction": "Satisfaction"
+      "satisfaction": "Satisfaction",
+      "channels": {
+        "chatTitle": "Live Chat",
+        "chatDesc": "Chat with our support team in real time",
+        "available": "Available",
+        "phoneTitle": "Phone",
+        "phoneDesc": "Call us directly for immediate assistance",
+        "emailTitle": "Email",
+        "emailDesc": "Send us an email and we'll reply within 24 hours"
+      },
+      "schedule": {
+        "title": "Support Hours",
+        "weekdays": "Monday to Friday",
+        "saturday": "Saturdays",
+        "sunday": "Sundays",
+        "chat247": "24/7 Chat",
+        "automatic": "Automatic support",
+        "open": "Open",
+        "limited": "Limited",
+        "closed": "Closed"
+      }
     },
     "configuration": {
       "security": {
