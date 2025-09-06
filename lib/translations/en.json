@@ -187,6 +187,18 @@
       },
       "progress": "Order progress",
       "estimatedDelivery": "Estimated delivery"
+      ,
+      "modal": {
+        "detailsTitle": "Order details",
+        "detailsSubtitle": "Full information and order documents",
+        "product": "Product",
+        "amount": "Amount",
+        "status": "Status",
+        "description": "Description",
+        "currentProgress": "Current progress",
+        "tracking": "Tracking",
+        "downloadInvoice": "Download invoice"
+      }
     }
   },
   "admin": {

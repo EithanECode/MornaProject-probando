@@ -83,6 +83,18 @@
       },
       "progress": "Progreso del pedido",
       "estimatedDelivery": "Entrega estimada"
+      ,
+      "modal": {
+        "detailsTitle": "Detalles del pedido",
+        "detailsSubtitle": "Información completa y documentos del pedido",
+        "product": "Producto",
+        "amount": "Monto",
+        "status": "Estado",
+        "description": "Descripción",
+        "currentProgress": "Progreso actual",
+        "tracking": "Seguimiento",
+        "downloadInvoice": "Descargar factura"
+      }
     }
   },
   "common": {
