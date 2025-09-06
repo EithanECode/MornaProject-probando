@@ -1,5 +1,26 @@
 {
   "client": {
+    "configuration": {
+      "notifications": {
+        "title": "Preferencias de Notificaciones",
+        "subtitle": "Controla qué notificaciones quieres recibir",
+        "email": "Notificaciones por email",
+        "emailDesc": "Recibir notificaciones importantes por correo electrónico",
+        "push": "Notificaciones push",
+        "pushDesc": "Recibir notificaciones push en el navegador",
+        "critical": "Alertas críticas",
+        "criticalDesc": "Notificaciones sobre problemas críticos del sistema",
+        "marketing": "Notificaciones de marketing",
+        "marketingDesc": "Ofertas especiales y contenido promocional",
+        "orders": "Notificaciones de pedidos",
+        "ordersDesc": "Actualizaciones sobre el estado de tus pedidos",
+        "dailyReports": "Reportes diarios",
+        "dailyReportsDesc": "Recibir resumen diario de actividades",
+        "systemUpdates": "Actualizaciones del sistema",
+        "systemUpdatesDesc": "Notificaciones sobre nuevas funciones y actualizaciones",
+        "saveButton": "Guardar preferencias"
+      }
+    },
     "dashboard": {
       "title": "Dashboard Cliente",
       "subtitle": "Bienvenido de vuelta, aquí tienes un resumen de tu actividad",
@@ -29,12 +50,37 @@
       "paymentsDesc": "Gestiona tus transacciones"
     },
     "recentOrders": {
-      "title": "Mis Pedidos Recientes",
-      "subtitle": "Seguimiento de tus envíos más recientes",
-      "noOrders": "No hay pedidos recientes.",
+      "title": "Mis Pedidos",
+      "subtitle": "Consulta y gestiona todos tus pedidos realizados",
+      "noOrders": "No tienes pedidos registrados.",
       "status": "Estado:",
-      "budget": "PRESUPUESTO",
-      "details": "VER DETALLES"
+      "budget": "Presupuesto",
+      "details": "Ver detalles",
+      "search": "Buscar pedido, producto o tracking...",
+      "filter": "Filtrar por estado",
+      "table": {
+        "id": "ID Pedido",
+        "product": "Producto",
+        "description": "Descripción",
+        "amount": "Monto",
+        "status": "Estado",
+        "createdAt": "Fecha de creación",
+        "actions": "Acciones"
+      },
+      "statuses": {
+        "pending": "Pendiente",
+        "quoted": "Cotizado",
+        "processing": "Procesando",
+        "shipped": "Enviado",
+        "delivered": "Entregado",
+        "cancelled": "Cancelado"
+      },
+      "actions": {
+        "view": "Ver detalles",
+        "track": "Ver tracking",
+        "pay": "Pagar",
+        "download": "Descargar PDF"
+      }
     }
   },
   "common": {
@@ -144,16 +190,20 @@
         "emailDesc": "Recibir notificaciones importantes por correo electrónico",
         "push": "Notificaciones push",
         "pushDesc": "Recibir notificaciones push en el navegador",
-        "critical": "Alertas críticas",
-        "criticalDesc": "Notificaciones sobre problemas críticos del sistema",
-        "dailyReports": "Reportes diarios",
-        "dailyReportsDesc": "Recibir resumen diario de actividades",
-        "systemUpdates": "Actualizaciones del sistema",
-        "systemUpdatesDesc": "Notificaciones sobre nuevas funciones y actualizaciones",
-        "saveButton": "Guardar preferencias"
+  "critical": "Alertas críticas",
+  "criticalDesc": "Notificaciones sobre problemas críticos del sistema",
+  "marketing": "Notificaciones de marketing",
+  "marketingDesc": "Ofertas especiales y contenido promocional",
+  "orders": "Notificaciones de pedidos",
+  "ordersDesc": "Actualizaciones sobre el estado de tus pedidos",
+  "dailyReports": "Reportes diarios",
+  "dailyReportsDesc": "Recibir resumen diario de actividades",
+  "systemUpdates": "Actualizaciones del sistema",
+  "systemUpdatesDesc": "Notificaciones sobre nuevas funciones y actualizaciones",
+  "saveButton": "Guardar preferencias"
       },
       "security": {
-        "title": "Configuración de Seguridad",
+        "title": "Configuración de seguridad",
         "subtitle": "Gestiona la seguridad de tu cuenta",
         "twoFactor": "Autenticación de dos factores",
         "twoFactorDesc": "Añade una capa extra de seguridad a tu cuenta",
@@ -167,8 +217,9 @@
         "deviceConnected": "1 dispositivo conectado",
         "viewAllSessions": "Ver todas las sesiones",
         "lastAccessIP": "IP del último acceso",
+        "saveButton": "Guardar configuración",
         "recentActivity": {
-          "title": "Actividad Reciente",
+          "title": "Actividad reciente",
           "loginSuccess": "Inicio de sesión exitoso",
           "passwordChange": "Cambio de contraseña",
           "newDevice": "Nuevo dispositivo detectado",
@@ -283,14 +334,6 @@
       }
     },
     "users": {
-    "pagination": {
-      "showing": "Mostrando {{from}} a {{to}} de {{total}} resultados",
-      "perPage": "por página"
-    },
-    "messages": {
-      "invalidUrlTitle": "URL no válida",
-      "invalidUrlDesc": "La URL no es válida."
-    },
       "title": "Gestión de Usuarios",
       "subtitle": "Seguridad y acceso",
       "description": "Gestión de usuarios y accesos",
@@ -311,11 +354,6 @@
         "createdAt": "Creado",
         "actions": "Acciones",
         "user": "Usuario"
-      },
-      "pagination": {
-        "previous": "Anterior",
-        "next": "Siguiente",
-        "results": "Mostrando {{from}} a {{to}} de {{total}} resultados"
       },
       "actions": {
         "edit": "Editar",
@@ -344,14 +382,6 @@
         "cancel": "Cancelar",
         "save": "Guardar",
         "active": "Activo"
-      },
-      "messages": {
-        "userCreated": "Usuario creado",
-        "userCreatedDesc": "Se envió invitación al correo.",
-        "changesSaved": "Cambios guardados",
-        "changesSavedDesc": "La información del usuario ha sido actualizada.",
-        "errorSaving": "Error al guardar",
-        "couldNotSave": "No se pudo guardar"
       },
       "common": {
         "loading": "Cargando...",

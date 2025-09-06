@@ -1,6 +1,56 @@
 {
   "client": {
     "configuration": {
+      "security": {
+        "title": "Security Settings",
+        "subtitle": "Manage your account security",
+        "twoFactor": "Two-factor authentication",
+        "twoFactorDesc": "Add an extra layer of security to your account",
+        "activeSessions": "Active sessions",
+        "lastAccess": "Last access",
+        "ipAddress": "IP address",
+        "sessionInfo": "Session information",
+        "closeAllSessions": "Close all sessions",
+        "closeAllSessionsDesc": "Close all active sessions except the current one",
+        "devicesConnected": "{{count}} devices connected",
+        "deviceConnected": "1 device connected",
+        "viewAllSessions": "View all sessions",
+        "lastAccessIP": "Last access IP",
+        "saveButton": "Save configuration",
+        "recentActivity": {
+          "title": "Recent Activity",
+          "loginSuccess": "Successful login",
+          "passwordChange": "Password change",
+          "newDevice": "New device detected",
+          "timeAgo": {
+            "hours": "{{count}} hours ago",
+            "hour": "1 hour ago",
+            "days": "{{count}} days ago",
+            "day": "1 day ago",
+            "weeks": "{{count}} weeks ago",
+            "week": "1 week ago"
+          }
+        }
+      },
+      "notifications": {
+        "title": "Notification Preferences",
+        "subtitle": "Control which notifications you want to receive",
+        "email": "Email notifications",
+        "emailDesc": "Receive important notifications via email",
+        "push": "Push notifications",
+        "pushDesc": "Receive push notifications in the browser",
+        "critical": "Critical alerts",
+        "criticalDesc": "Notifications about critical system issues",
+        "marketing": "Marketing notifications",
+        "marketingDesc": "Special offers and promotional content",
+        "orders": "Order notifications",
+        "ordersDesc": "Updates about your order status",
+        "dailyReports": "Daily reports",
+        "dailyReportsDesc": "Receive daily activity summaries",
+        "systemUpdates": "System updates",
+        "systemUpdatesDesc": "Notifications about new features and updates",
+        "saveButton": "Save preferences"
+      },
       "title": "Configuration",
       "subtitle": "Manage your profile, security and preferences",
       "tabs": {
@@ -74,8 +124,8 @@
           "confirm": "Confirm your new password"
         }
       }
-    },
-    "dashboard": {
+  },
+  "dashboard": {
       "title": "Client Dashboard",
       "subtitle": "Welcome back, here is a summary of your activity",
       "welcome": "Welcome back!",
@@ -90,8 +140,8 @@
       "totalInvestment": "Total investment",
       "completed": "Completed",
       "ordersDelivered": "Orders delivered"
-    },
-    "quickActions": {
+  },
+  "quickActions": {
       "title": "Quick Actions",
       "subtitle": "Quickly access the most used functions",
       "newOrder": "Create New Order",
@@ -102,14 +152,39 @@
       "supportDesc": "Get help when you need it",
       "payments": "My Payments",
       "paymentsDesc": "Manage your transactions"
-    },
+  },
     "recentOrders": {
-      "title": "My Recent Orders",
-      "subtitle": "Track your most recent shipments",
-      "noOrders": "No recent orders.",
+      "title": "My Orders",
+      "subtitle": "View and manage all your placed orders",
+      "noOrders": "You have no orders registered.",
       "status": "Status:",
-      "budget": "BUDGET",
-      "details": "VIEW DETAILS"
+      "budget": "Budget",
+      "details": "View details",
+      "search": "Search order, product or tracking...",
+      "filter": "Filter by status",
+      "table": {
+        "id": "Order ID",
+        "product": "Product",
+        "description": "Description",
+        "amount": "Amount",
+        "status": "Status",
+        "createdAt": "Created at",
+        "actions": "Actions"
+      },
+      "statuses": {
+        "pending": "Pending",
+        "quoted": "Quoted",
+        "processing": "Processing",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      },
+      "actions": {
+        "view": "View details",
+        "track": "Track order",
+        "pay": "Pay",
+        "download": "Download PDF"
+      }
     }
   },
   "admin": {
@@ -208,13 +283,17 @@
         "emailDesc": "Receive important notifications via email",
         "push": "Push notifications",
         "pushDesc": "Receive push notifications in the browser",
-        "critical": "Critical alerts",
-        "criticalDesc": "Notifications about critical system issues",
-        "dailyReports": "Daily reports",
-        "dailyReportsDesc": "Receive daily activity summaries",
-        "systemUpdates": "System updates",
-        "systemUpdatesDesc": "Notifications about new features and updates",
-        "saveButton": "Save preferences"
+  "critical": "Critical alerts",
+  "criticalDesc": "Notifications about critical system issues",
+  "marketing": "Marketing notifications",
+  "marketingDesc": "Special offers and promotional content",
+  "orders": "Order notifications",
+  "ordersDesc": "Updates about your order status",
+  "dailyReports": "Daily reports",
+  "dailyReportsDesc": "Receive daily activity summaries",
+  "systemUpdates": "System updates",
+  "systemUpdatesDesc": "Notifications about new features and updates",
+  "saveButton": "Save preferences"
       },
       "security": {
         "title": "Security Settings",

@@ -468,15 +468,15 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Shield className="w-5 h-5" />
-                      Configuración de Seguridad
+                      {t('client.configuration.security.title')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <Label>Autenticación de dos factores</Label>
+                        <Label>{t('client.configuration.security.twoFactor')}</Label>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Añade una capa extra de seguridad a tu cuenta
+                          {t('client.configuration.security.twoFactorDesc')}
                         </p>
                       </div>
                       <Switch
@@ -486,24 +486,24 @@ export default function ConfiguracionPage() {
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <Label>Sesiones activas</Label>
+                      <Label>{t('client.configuration.security.activeSessions')}</Label>
                       <p className="text-sm text-slate-600 dark:text-slate-400">
-                        {security.sesionesActivas} dispositivos conectados
+                        {t('client.configuration.security.devicesConnected', { count: security.sesionesActivas })}
                       </p>
                       <Button variant="outline" size="sm">
-                        Ver todas las sesiones
+                        {t('client.configuration.security.viewAllSessions')}
                       </Button>
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <Label>IP del último acceso</Label>
+                      <Label>{t('client.configuration.security.lastAccessIP')}</Label>
                       <p className="text-sm font-mono text-slate-600 dark:text-slate-400">
                         {security.ipUltimoAcceso}
                       </p>
                     </div>
                     <Button onClick={handleSaveSecurity} className="w-full">
                       <Save className="w-4 h-4 mr-2" />
-                      Guardar configuración
+                      {t('admin.configuration.security.saveButton')}
                     </Button>
                   </CardContent>
                 </Card>
@@ -512,7 +512,7 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <AlertCircle className="w-5 h-5" />
-                      Actividad Reciente
+                      {t('admin.configuration.security.recentActivity.title')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -520,22 +520,22 @@ export default function ConfiguracionPage() {
                       <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium">Inicio de sesión exitoso</p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400">Hace 2 horas</p>
+                          <p className="text-sm font-medium">{t('admin.configuration.security.recentActivity.loginSuccess')}</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">{t('admin.configuration.security.recentActivity.timeAgo.hours', { count: 2 })}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium">Cambio de contraseña</p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400">Hace 3 días</p>
+                          <p className="text-sm font-medium">{t('admin.configuration.security.recentActivity.passwordChange')}</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">{t('admin.configuration.security.recentActivity.timeAgo.days', { count: 3 })}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
                         <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium">Nuevo dispositivo detectado</p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400">Hace 1 semana</p>
+                          <p className="text-sm font-medium">{t('admin.configuration.security.recentActivity.newDevice')}</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">{t('admin.configuration.security.recentActivity.timeAgo.week')}</p>
                         </div>
                       </div>
                     </div>
