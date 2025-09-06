@@ -2087,28 +2087,28 @@ export default function MisPedidosPage() {
                 {/* Información del tracking */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">Número de Tracking</p>
+                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.trackingNumber')}</p>
                     <p className="font-mono font-medium">{selectedTrackingOrder.trackingNumber}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">Transportista</p>
+                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.carrier')}</p>
                     <p className="font-medium">{selectedTrackingOrder.carrier}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">{t('client.recentOrders.estimatedDelivery')}</p>
+                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.estimatedDelivery')}</p>
                     <p className="font-medium">{selectedTrackingOrder.estimatedDelivery}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">Estado Actual</p>
+                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.currentStatus')}</p>
                     <Badge className={getTrackingStatusColor(selectedTrackingOrder.status)}>
-                      {getTrackingStatusText(selectedTrackingOrder.status)}
+                      {t(`client.recentOrders.trackingModal.states.${selectedTrackingOrder.status}`)}
                     </Badge>
                   </div>
                 </div>
 
                 {/* Timeline */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Historial de Seguimiento</h3>
+                  <h3 className="text-lg font-semibold">{t('client.recentOrders.trackingModal.historyTitle')}</h3>
                   <div className="space-y-4">
                     {selectedTrackingOrder.timeline.map((step, index) => (
                       <div key={step.id} className="flex items-start space-x-4">
@@ -2124,8 +2124,8 @@ export default function MisPedidosPage() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium">{step.status}</p>
-                          <p className="text-sm text-slate-600">{step.description}</p>
+                          <p className="font-medium">{t(`client.recentOrders.trackingModal.states.${step.status}`)}</p>
+                          <p className="text-sm text-slate-600">{t(`client.recentOrders.trackingModal.states.${step.status}`)}</p>
                           <div className="flex items-center space-x-2 mt-1">
                             <MapPin className="w-3 h-3 text-slate-400" />
                             <span className="text-xs text-slate-500">{step.location}</span>
