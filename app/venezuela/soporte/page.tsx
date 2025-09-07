@@ -15,6 +15,7 @@ import {
   Package,
   Mail
 } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 // Tipos
 interface ChatSupport {
@@ -85,6 +86,7 @@ const CHAT_SUPPORT: ChatSupport[] = [
 ];
 
 export default function VenezuelaSoportePage() {
+  const { t } = useTranslation();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -167,10 +169,10 @@ export default function VenezuelaSoportePage() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active': return 'Activo';
-      case 'waiting': return 'Esperando';
-      case 'resolved': return 'Resuelto';
-      default: return 'Desconocido';
+  case 'active': return t('venezuela.soporte.badges.status.active');
+  case 'waiting': return t('venezuela.soporte.badges.status.waiting');
+  case 'resolved': return t('venezuela.soporte.badges.status.resolved');
+  default: return t('venezuela.soporte.badges.status.unknown');
     }
   };
 
@@ -211,8 +213,8 @@ export default function VenezuelaSoportePage() {
         <Header 
           notifications={stats.totalUnread}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Soporte al Cliente"
-          subtitle="Gestiona chats y consultas de clientes"
+          title={t('venezuela.soporte.headerTitle')}
+          subtitle={t('venezuela.soporte.headerSubtitle')}
         />
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6">
@@ -220,21 +222,21 @@ export default function VenezuelaSoportePage() {
           <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl p-4 md:p-6 text-white">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
               <div>
-                <h1 className="text-xl md:text-2xl font-bold">Soporte al Cliente</h1>
-                <p className="text-green-100 mt-1 text-sm md:text-base">Gestiona chats y consultas de clientes</p>
+                <h1 className="text-xl md:text-2xl font-bold">{t('venezuela.soporte.headerTitle')}</h1>
+                <p className="text-green-100 mt-1 text-sm md:text-base">{t('venezuela.soporte.headerSubtitle')}</p>
               </div>
               <div className="grid grid-cols-3 md:flex md:items-center md:space-x-4 gap-4">
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.active}</p>
-                  <p className="text-xs md:text-sm text-green-100">Activos</p>
+                  <p className="text-xs md:text-sm text-green-100">{t('venezuela.soporte.stats.active')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.waiting}</p>
-                  <p className="text-xs md:text-sm text-green-100">Esperando</p>
+                  <p className="text-xs md:text-sm text-green-100">{t('venezuela.soporte.stats.waiting')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.totalUnread}</p>
-                  <p className="text-xs md:text-sm text-green-100">Sin Leer</p>
+                  <p className="text-xs md:text-sm text-green-100">{t('venezuela.soporte.stats.unread')}</p>
                 </div>
               </div>
             </div>
@@ -244,34 +246,34 @@ export default function VenezuelaSoportePage() {
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
             <CardHeader className="py-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">Lista de chats</CardTitle>
+                <CardTitle className="text-lg font-semibold">{t('venezuela.soporte.listTitle')}</CardTitle>
                 <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
                   <Input
-                    placeholder="Buscar por cliente o mensaje..."
+                    placeholder={t('venezuela.soporte.searchPlaceholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="h-10 w-56 md:w-64 px-3"
                   />
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="h-10 w-40 md:w-48 px-3 whitespace-nowrap truncate">
-                      <SelectValue placeholder="Estado" />
+                      <SelectValue placeholder={t('venezuela.soporte.filters.status')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos los estados</SelectItem>
-                      <SelectItem value="active">Activo</SelectItem>
-                      <SelectItem value="waiting">Esperando</SelectItem>
-                      <SelectItem value="resolved">Resuelto</SelectItem>
+                      <SelectItem value="all">{t('venezuela.soporte.filters.all')}</SelectItem>
+                      <SelectItem value="active">{t('venezuela.soporte.filters.active')}</SelectItem>
+                      <SelectItem value="waiting">{t('venezuela.soporte.filters.waiting')}</SelectItem>
+                      <SelectItem value="resolved">{t('venezuela.soporte.filters.resolved')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select value={priorityFilter} onValueChange={setPriorityFilter}>
                     <SelectTrigger className="h-10 w-40 md:w-48 px-3 whitespace-nowrap truncate">
-                      <SelectValue placeholder="Prioridad" />
+                      <SelectValue placeholder={t('venezuela.soporte.filters.priority')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todas las prioridades</SelectItem>
-                      <SelectItem value="high">Alta</SelectItem>
-                      <SelectItem value="medium">Media</SelectItem>
-                      <SelectItem value="low">Baja</SelectItem>
+                      <SelectItem value="all">{t('venezuela.soporte.filters.allPriorities')}</SelectItem>
+                      <SelectItem value="high">{t('venezuela.soporte.filters.high')}</SelectItem>
+                      <SelectItem value="medium">{t('venezuela.soporte.filters.medium')}</SelectItem>
+                      <SelectItem value="low">{t('venezuela.soporte.filters.low')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -291,7 +293,11 @@ export default function VenezuelaSoportePage() {
                     </div>
                     <div className="flex gap-2">
                       <Badge className={getPriorityColor(chat.priority)}>
-                        {chat.priority === 'high' ? 'Alta' : chat.priority === 'medium' ? 'Media' : 'Baja'}
+                        {chat.priority === 'high' 
+                          ? t('venezuela.soporte.badges.priority.high') 
+                          : chat.priority === 'medium' 
+                            ? t('venezuela.soporte.badges.priority.medium') 
+                            : t('venezuela.soporte.badges.priority.low')}
                       </Badge>
                       <Badge className={getStatusColor(chat.status)}>
                         {getStatusText(chat.status)}
@@ -303,12 +309,12 @@ export default function VenezuelaSoportePage() {
                   <div className="space-y-2">
                     <p className="text-sm text-slate-600">{chat.lastMessage}</p>
                     <div className="flex items-center justify-between text-sm">
-                      <span>Último mensaje:</span>
+                      <span>{t('venezuela.soporte.chat.lastMessage')}</span>
                       <span className="font-medium">{chat.lastMessageTime}</span>
                     </div>
                     {chat.unreadMessages > 0 && (
                       <div className="flex items-center justify-between text-sm">
-                        <span>Mensajes sin leer:</span>
+                        <span>{t('venezuela.soporte.chat.unreadMessages')}</span>
                         <Badge className="bg-red-100 text-red-800">
                           {chat.unreadMessages}
                         </Badge>
@@ -335,8 +341,8 @@ export default function VenezuelaSoportePage() {
                       className="flex-1 bg-[#202841]/90 text-white hover:bg-[#202841]"
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />
-                      <span className="hidden sm:inline">Abrir Chat</span>
-                      <span className="sm:hidden">Chat</span>
+                      <span className="hidden sm:inline">{t('venezuela.soporte.chat.openChat')}</span>
+                      <span className="sm:hidden">{t('venezuela.soporte.chat.openChatShort')}</span>
                     </Button>
                     {chat.orderId && (
                       <Button variant="outline" size="sm" className="flex-shrink-0">
@@ -359,8 +365,8 @@ export default function VenezuelaSoportePage() {
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
               <CardContent className="p-8 md:p-12 text-center">
                 <MessageSquare className="w-12 h-12 md:w-16 md:h-16 text-slate-400 mx-auto mb-4" />
-                <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-2">No hay chats activos</h3>
-                <p className="text-sm md:text-base text-slate-600">Todos los chats han sido resueltos o no hay coincidencias con los filtros.</p>
+                <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-2">{t('venezuela.soporte.empty.title')}</h3>
+                <p className="text-sm md:text-base text-slate-600">{t('venezuela.soporte.empty.description')}</p>
               </CardContent>
             </Card>
           )}

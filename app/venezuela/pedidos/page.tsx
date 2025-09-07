@@ -12,9 +12,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertTriangle, Boxes, Calendar, CheckCircle, Clock, Eye, Filter, List, Package, RefreshCw, Search, Send } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 export default function VenezuelaPedidosPage() {
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,10 +67,10 @@ export default function VenezuelaPedidosPage() {
     try {
       const supabase = getSupabaseBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
-      const empleadoId = user?.id;
-      if (!empleadoId) throw new Error('No se pudo obtener el usuario logueado');
+  const empleadoId = user?.id;
+  if (!empleadoId) throw new Error(t('venezuela.pedidos.errors.getUser'));
       const res = await fetch(`/venezuela/pedidos/api/orders?asignedEVzla=${encodeURIComponent(String(empleadoId))}`, { cache: 'no-store' });
-      if (!res.ok) throw new Error('Error al obtener pedidos');
+  if (!res.ok) throw new Error(t('venezuela.pedidos.errors.fetchOrders'));
       const data = await res.json();
       setOrders(data);
     } catch (err: any) {
@@ -249,16 +251,16 @@ export default function VenezuelaPedidosPage() {
         <Header 
           notifications={0}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Pedidos"
-          subtitle="Revisa y envía pedidos a China para cotización"
+          title={t('venezuela.pedidos.title')}
+          subtitle={t('venezuela.pedidos.subtitle')}
         />
         
   <div className="p-4 md:p-5 lg:p-6 space-y-6">
           {/* Header de la página */}
           <div className="space-y-4">
             <div>
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">Pedidos</h1>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-300">Revisa y envía pedidos a China para cotización</p>
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">{t('venezuela.pedidos.title')}</h1>
+              <p className="text-sm md:text-base text-slate-600 dark:text-slate-300">{t('venezuela.pedidos.subtitle')}</p>
             </div>
             
             {/* Tarjetas de estadísticas */}
@@ -267,7 +269,7 @@ export default function VenezuelaPedidosPage() {
                 <CardContent className="p-4 md:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm md:text-base font-medium text-yellow-700 dark:text-yellow-300">PENDIENTES</p>
+                      <p className="text-sm md:text-base font-medium text-yellow-700 dark:text-yellow-300">{t('venezuela.pedidos.stats.pending')}</p>
                       <p className="text-2xl md:text-3xl font-bold text-yellow-800 dark:text-yellow-200">
                         {orders.filter(o => o.state === 1).length}
                       </p>
@@ -283,7 +285,7 @@ export default function VenezuelaPedidosPage() {
                 <CardContent className="p-4 md:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm md:text-base font-medium text-green-700 dark:text-green-300">REVISANDO</p>
+                      <p className="text-sm md:text-base font-medium text-green-700 dark:text-green-300">{t('venezuela.pedidos.stats.reviewing')}</p>
                       <p className="text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200">
                         {orders.filter(o => o.state === 2).length}
                       </p>
@@ -299,7 +301,7 @@ export default function VenezuelaPedidosPage() {
                 <CardContent className="p-4 md:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm md:text-base font-medium text-purple-700 dark:text-purple-300">COTIZADOS</p>
+                      <p className="text-sm md:text-base font-medium text-purple-700 dark:text-purple-300">{t('venezuela.pedidos.stats.quoted')}</p>
                       <p className="text-2xl md:text-3xl font-bold text-purple-800 dark:text-purple-200">
                         {orders.filter(o => o.state === 3).length}
                       </p>
@@ -315,7 +317,7 @@ export default function VenezuelaPedidosPage() {
                 <CardContent className="p-4 md:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm md:text-base font-medium text-blue-700 dark:text-blue-300">PROCESANDO</p>
+                      <p className="text-sm md:text-base font-medium text-blue-700 dark:text-blue-300">{t('venezuela.pedidos.stats.processing')}</p>
                       <p className="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200">
                         {orders.filter(o => o.state === 4).length}
                       </p>
@@ -336,7 +338,7 @@ export default function VenezuelaPedidosPage() {
                   className={`rounded-md transition-colors ${activeTab === 'pedidos' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                   onClick={() => setActiveTab('pedidos')}
                 >
-                  Lista de pedidos
+                  {t('venezuela.pedidos.tabs.ordersList')}
                 </Button>
                 <Button
                   variant={activeTab === 'cajas' ? 'default' : 'ghost'}
@@ -344,7 +346,7 @@ export default function VenezuelaPedidosPage() {
                   className={`rounded-md transition-colors ${activeTab === 'cajas' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                   onClick={() => setActiveTab('cajas')}
                 >
-                  Cajas
+                  {t('venezuela.pedidos.tabs.boxes')}
                 </Button>
                 <Button
                   variant={activeTab === 'contenedores' ? 'default' : 'ghost'}
@@ -352,7 +354,7 @@ export default function VenezuelaPedidosPage() {
                   className={`rounded-md transition-colors ${activeTab === 'contenedores' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                   onClick={() => setActiveTab('contenedores')}
                 >
-                  Contenedores
+                  {t('venezuela.pedidos.tabs.containers')}
                 </Button>
               </div>
             </div>
@@ -361,28 +363,28 @@ export default function VenezuelaPedidosPage() {
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
               <CardHeader className="py-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-semibold">Lista de pedidos</CardTitle>
+                  <CardTitle className="text-lg font-semibold">{t('venezuela.pedidos.tabs.ordersList')}</CardTitle>
                   <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
                     <Input
-                      placeholder="Buscar por cliente, producto o ID..."
+                      placeholder={t('venezuela.pedidos.searchPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="h-10 w-56 md:w-64 px-3"
                     />
                     <Select value={statusFilter} onValueChange={setStatusFilter as any}>
                       <SelectTrigger className="h-10 w-48 md:w-56 px-3 whitespace-nowrap truncate">
-                        <SelectValue placeholder="Estado" />
+                        <SelectValue placeholder={t('venezuela.pedidos.filters.status')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem>
-                        <SelectItem value="pending">Pendiente</SelectItem>
-                        <SelectItem value="reviewing">Revisando</SelectItem>
-                        <SelectItem value="quoted">Cotizado</SelectItem>
-                        <SelectItem value="processing">Procesando</SelectItem>
+                        <SelectItem value="all">{t('venezuela.pedidos.filters.all')}</SelectItem>
+                        <SelectItem value="pending">{t('venezuela.pedidos.filters.pending')}</SelectItem>
+                        <SelectItem value="reviewing">{t('venezuela.pedidos.filters.reviewing')}</SelectItem>
+                        <SelectItem value="quoted">{t('venezuela.pedidos.filters.quoted')}</SelectItem>
+                        <SelectItem value="processing">{t('venezuela.pedidos.filters.processing')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <Button variant="outline" className="h-10 flex items-center gap-2" onClick={fetchOrders} disabled={loading}>
-                      <RefreshCw className="w-4 h-4" /> {loading ? '...' : 'Actualizar'}
+                      <RefreshCw className="w-4 h-4" /> {loading ? '...' : t('venezuela.pedidos.refresh')}
                     </Button>
                   </div>
                 </div>
@@ -396,7 +398,7 @@ export default function VenezuelaPedidosPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-5 lg:gap-6">
               {loading ? (
                 <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-                  <CardContent className="p-12 text-center">Cargando pedidos...</CardContent>
+                  <CardContent className="p-12 text-center">{t('venezuela.pedidos.loadingOrders')}</CardContent>
                 </Card>
               ) : error ? (
                 <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
@@ -406,8 +408,8 @@ export default function VenezuelaPedidosPage() {
                 <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
                   <CardContent className="p-12 text-center">
                     <Package className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">No hay pedidos para revisar</h3>
-                    <p className="text-slate-600">Todos los pedidos han sido procesados o no hay coincidencias con los filtros.</p>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">{t('venezuela.pedidos.emptyOrdersTitle')}</h3>
+                    <p className="text-slate-600">{t('venezuela.pedidos.emptyOrdersDesc')}</p>
                   </CardContent>
                 </Card>
               ) : (
@@ -423,37 +425,37 @@ export default function VenezuelaPedidosPage() {
                           </div>
                           <div className="flex gap-2">
                             {stateNum === 13 && (
-                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">ENTREGADO</Badge>
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('venezuela.pedidos.badges.delivered')}</Badge>
                             )}
                             {stateNum === 12 && (
-                              <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">LISTO PARA ENTREGA</Badge>
+                              <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">{t('venezuela.pedidos.badges.readyToDeliver')}</Badge>
                             )}
                             {stateNum === 11 && (
-                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">RECIBIDO</Badge>
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('venezuela.pedidos.badges.received')}</Badge>
                             )}
                             {stateNum === 10 && (
-                              <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 hover:ring-1 hover:ring-indigo-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-indigo-700/50">EN ADUANA</Badge>
+                              <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 hover:ring-1 hover:ring-indigo-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-indigo-700/50">{t('venezuela.pedidos.badges.customs')}</Badge>
                             )}
                             {stateNum === 9 && (
-                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">LLEGÓ A Vzla</Badge>
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('venezuela.pedidos.badges.arrivedVzla')}</Badge>
                             )}
                             {stateNum === 8 && (
-                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">EN CAMINO A Vzla</Badge>
+                              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('venezuela.pedidos.badges.onWayVzla')}</Badge>
                             )}
                             {stateNum === 1 && (
-                              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-yellow-700/50">PENDIENTE</Badge>
+                              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-yellow-700/50">{t('venezuela.pedidos.badges.pending')}</Badge>
                             )}
                             {stateNum === 2 && (
-                              <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50">REVISANDO</Badge>
+                              <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50">{t('venezuela.pedidos.badges.reviewing')}</Badge>
                             )}
                             {stateNum === 3 && (
-                              <Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-50 hover:border-purple-300 hover:ring-1 hover:ring-purple-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-purple-700/50">COTIZADO</Badge>
+                              <Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-50 hover:border-purple-300 hover:ring-1 hover:ring-purple-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-purple-700/50">{t('venezuela.pedidos.badges.quoted')}</Badge>
                             )}
                             {stateNum === 4 && (
-                              <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">PROCESANDO</Badge>
+                              <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">{t('venezuela.pedidos.badges.processing')}</Badge>
                             )}
                             {(stateNum >= 5 && stateNum <= 7) && (
-                              <Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50">EN PROCESO</Badge>
+                              <Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50">{t('venezuela.pedidos.badges.inProcess')}</Badge>
                             )}
                           </div>
                         </div>
@@ -461,23 +463,23 @@ export default function VenezuelaPedidosPage() {
                       <CardContent className="space-y-4">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-sm">
-                            <span>Cantidad:</span>
+                            <span>{t('venezuela.pedidos.labels.quantity')}</span>
                             <span className="font-medium">{order.quantity}</span>
                           </div>
                           <div className="flex items-center justify-between text-sm">
-                            <span>Tipo de Entrega:</span>
+                            <span>{t('venezuela.pedidos.labels.deliveryType')}</span>
                             <span className="font-medium">
-                              {order.deliveryType === 'office' && 'Oficina'}
-                              {order.deliveryType === 'warehouse' && 'Almacén'}
+                              {order.deliveryType === 'office' && t('venezuela.pedidos.deliveryTypes.office')}
+                              {order.deliveryType === 'warehouse' && t('venezuela.pedidos.deliveryTypes.warehouse')}
                               {order.deliveryType !== 'office' && order.deliveryType !== 'warehouse' && order.deliveryType}
                             </span>
                           </div>
                           <div className="flex items-center justify-between text-sm">
-                            <span>Tipo de Envío:</span>
+                            <span>{t('venezuela.pedidos.labels.shippingType')}</span>
                             <span className="font-medium">
-                              {order.shippingType === 'doorToDoor' && 'Puerta A Puerta'}
-                              {order.shippingType === 'maritime' && 'Marítimo'}
-                              {order.shippingType === 'air' && 'Aéreo'}
+                              {order.shippingType === 'doorToDoor' && t('venezuela.pedidos.shippingTypes.doorToDoor')}
+                              {order.shippingType === 'maritime' && t('venezuela.pedidos.shippingTypes.maritime')}
+                              {order.shippingType === 'air' && t('venezuela.pedidos.shippingTypes.air')}
                               {order.shippingType !== 'doorToDoor' && order.shippingType !== 'maritime' && order.shippingType !== 'air' && order.shippingType}
                             </span>
                           </div>
@@ -491,10 +493,10 @@ export default function VenezuelaPedidosPage() {
                               if (order.pdfRoutes) {
                                 const win = window.open(order.pdfRoutes, '_blank');
                                 if (!win) {
-                                  alert('No se pudo abrir el PDF. Verifica que tu navegador no esté bloqueando ventanas emergentes.');
+                                  alert(t('venezuela.pedidos.pdf.openError'));
                                 }
                               } else {
-                                alert('No hay PDF disponible para este pedido.');
+                                alert(t('venezuela.pedidos.pdf.notAvailableOrder'));
                               }
                             }}
                           >
@@ -513,12 +515,12 @@ export default function VenezuelaPedidosPage() {
                                   });
                                   if (!res.ok) {
                                     const err = await res.json().catch(() => ({}));
-                                    throw new Error(err.error || 'No se pudo actualizar el pedido');
+                                    throw new Error(err.error || t('venezuela.pedidos.errors.updateOrder'));
                                   }
                                   await fetchOrders();
                                 } catch (err) {
                                   console.error(err);
-                                  alert((err as Error).message || 'Error al enviar a China');
+                                  alert((err as Error).message || t('venezuela.pedidos.errors.sendToChina'));
                                 }
                                 return;
                               }
@@ -532,12 +534,12 @@ export default function VenezuelaPedidosPage() {
                                   });
                                   if (!res.ok) {
                                     const err = await res.json().catch(() => ({}));
-                                    throw new Error(err.error || 'No se pudo actualizar el pedido');
+                                    throw new Error(err.error || t('venezuela.pedidos.errors.updateOrder'));
                                   }
                                   await fetchOrders();
                                 } catch (err) {
                                   console.error(err);
-                                  alert((err as Error).message || 'Error al actualizar estado');
+                                  alert((err as Error).message || t('venezuela.pedidos.errors.updateStatus'));
                                 }
                                 return;
                               }
@@ -551,12 +553,12 @@ export default function VenezuelaPedidosPage() {
                                   });
                                   if (!res.ok) {
                                     const err = await res.json().catch(() => ({}));
-                                    throw new Error(err.error || 'No se pudo actualizar el pedido');
+                                    throw new Error(err.error || t('venezuela.pedidos.errors.updateOrder'));
                                   }
                                   await fetchOrders();
                                 } catch (err) {
                                   console.error(err);
-                                  alert((err as Error).message || 'Error al actualizar estado');
+                                  alert((err as Error).message || t('venezuela.pedidos.errors.updateStatus'));
                                 }
                                 return;
                               }
@@ -570,12 +572,12 @@ export default function VenezuelaPedidosPage() {
                                   });
                                   if (!res.ok) {
                                     const err = await res.json().catch(() => ({}));
-                                    throw new Error(err.error || 'No se pudo actualizar el pedido');
+                                    throw new Error(err.error || t('venezuela.pedidos.errors.updateOrder'));
                                   }
                                   await fetchOrders();
                                 } catch (err) {
                                   console.error(err);
-                                  alert((err as Error).message || 'Error al actualizar estado');
+                                  alert((err as Error).message || t('venezuela.pedidos.errors.updateStatus'));
                                 }
                                 return;
                               }
@@ -589,12 +591,12 @@ export default function VenezuelaPedidosPage() {
                                   });
                                   if (!res.ok) {
                                     const err = await res.json().catch(() => ({}));
-                                    throw new Error(err.error || 'No se pudo actualizar el pedido');
+                                    throw new Error(err.error || t('venezuela.pedidos.errors.updateOrder'));
                                   }
                                   await fetchOrders();
                                 } catch (err) {
                                   console.error(err);
-                                  alert((err as Error).message || 'Error al actualizar estado');
+                                  alert((err as Error).message || t('venezuela.pedidos.errors.updateStatus'));
                                 }
                                 return;
                               }
@@ -633,17 +635,17 @@ export default function VenezuelaPedidosPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xl font-semibold flex items-center gap-2">
                     <Boxes className="h-5 w-5" />
-                    Cajas
+                    {t('venezuela.pedidos.tabs.boxes')}
                   </CardTitle>
                   <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
                     <Input
-                      placeholder="Buscar por caja (ID)..."
+                      placeholder={t('venezuela.pedidos.filters.searchBoxPlaceholder')}
                       value={filtroCaja}
                       onChange={(e) => setFiltroCaja(e.target.value)}
                       className="h-10 w-56 md:w-64 px-3"
                     />
                     <Button variant="outline" size="sm" onClick={fetchBoxes} disabled={boxesLoading} className="h-10 flex items-center gap-2">
-                      <RefreshCw className="w-4 h-4" /> {boxesLoading ? '...' : 'Actualizar'}
+                      <RefreshCw className="w-4 h-4" /> {boxesLoading ? '...' : t('venezuela.pedidos.refresh')}
                     </Button>
                   </div>
                 </div>
@@ -652,8 +654,8 @@ export default function VenezuelaPedidosPage() {
                 {boxes.length === 0 ? (
                   <div className="text-center py-12">
                     <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No hay cajas</h3>
-                    <p className="text-slate-500">No se encontraron cajas.</p>
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('venezuela.pedidos.emptyBoxesTitle')}</h3>
+                    <p className="text-slate-500">{t('venezuela.pedidos.emptyBoxesDesc')}</p>
                   </div>
                 ) : boxes.filter((b, idx) => {
                   if (!filtroCaja) return true;
@@ -662,8 +664,8 @@ export default function VenezuelaPedidosPage() {
                 }).length === 0 ? (
                   <div className="text-center py-12">
                     <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No se encontraron cajas</h3>
-                    <p className="text-slate-500">Ajusta la búsqueda por ID.</p>
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('venezuela.pedidos.emptyBoxesSearchTitle')}</h3>
+                    <p className="text-slate-500">{t('venezuela.pedidos.emptyBoxesSearchDesc')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -687,7 +689,7 @@ export default function VenezuelaPedidosPage() {
                                 <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
                               </div>
                               <div className="flex items-center gap-4 text-xs text-slate-500">
-                                <span className="flex items-center gap-1"><List className="h-3 w-3" />Pedidos: {orderCountsByBoxMain[countKey as any] ?? 0}</span>
+                                <span className="flex items-center gap-1"><List className="h-3 w-3" />{t('venezuela.pedidos.labels.orders')} {orderCountsByBoxMain[countKey as any] ?? 0}</span>
                               </div>
                             </div>
                           </div>
@@ -701,7 +703,7 @@ export default function VenezuelaPedidosPage() {
                                 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50 transition-colors'
                                 : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50 transition-colors'
                             }`}>
-                              {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Lista' : stateNum === 5 ? 'Recibido' : stateNum === 6 ? 'Completada' : `St.${stateNum}`}
+                              {stateNum === 1 ? t('venezuela.pedidos.boxesBadges.new') : stateNum === 2 ? t('venezuela.pedidos.boxesBadges.ready') : stateNum === 5 ? t('venezuela.pedidos.boxesBadges.received') : stateNum === 6 ? t('venezuela.pedidos.boxesBadges.completed') : t('venezuela.pedidos.boxesBadges.state', { num: stateNum })}
                             </Badge>
                             {/* Botón Recibido: visible solo cuando boxes.state === 5 */}
                             {stateNum === 5 && (
@@ -717,15 +719,15 @@ export default function VenezuelaPedidosPage() {
                                     });
                                     if (!res.ok) {
                                       const err = await res.json().catch(() => ({}));
-                                      throw new Error(err.error || 'No se pudo actualizar la caja');
+                                      throw new Error(err.error || t('venezuela.pedidos.errors.updateBox'));
                                     }
                                     await Promise.all([fetchBoxes(), fetchOrders()]);
                                   } catch (e) {
-                                    alert((e as Error).message || 'Error al actualizar caja');
+                                    alert((e as Error).message || t('venezuela.pedidos.errors.boxUpdate'));
                                   }
                                 }}
                                 className="text-emerald-700 border-emerald-300 hover:bg-emerald-50"
-                                title={'Marcar caja como recibida'}
+                                title={t('venezuela.pedidos.tooltips.markBoxReceived')}
                               >
                                 <CheckCircle className="h-4 w-4" />
                               </Button>
@@ -749,7 +751,7 @@ export default function VenezuelaPedidosPage() {
                   </div>
                 )}
                 {boxesLoading && (
-                  <p className="text-center text-sm text-slate-500 mt-4">Cargando cajas...</p>
+                  <p className="text-center text-sm text-slate-500 mt-4">{t('venezuela.pedidos.loadingBoxes')}</p>
                 )}
               </CardContent>
             </Card>
@@ -761,17 +763,17 @@ export default function VenezuelaPedidosPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xl font-semibold flex items-center gap-2">
                     <Boxes className="h-5 w-5" />
-                    Contenedores
+                    {t('venezuela.pedidos.tabs.containers')}
                   </CardTitle>
                   <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
                     <Input
-                      placeholder="Buscar por contenedor (ID)..."
+                      placeholder={t('venezuela.pedidos.filters.searchContainerPlaceholder')}
                       value={filtroContenedor}
                       onChange={(e) => setFiltroContenedor(e.target.value)}
                       className="h-10 w-56 md:w-64 px-3"
                     />
                     <Button variant="outline" size="sm" onClick={fetchContainers} disabled={containersLoading} className="h-10 flex items-center gap-2">
-                      <RefreshCw className="w-4 h-4" /> {containersLoading ? '...' : 'Actualizar'}
+                      <RefreshCw className="w-4 h-4" /> {containersLoading ? '...' : t('venezuela.pedidos.refresh')}
                     </Button>
                   </div>
                 </div>
@@ -780,8 +782,8 @@ export default function VenezuelaPedidosPage() {
                 {containers.length === 0 ? (
                   <div className="text-center py-12">
                     <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No hay contenedores</h3>
-                    <p className="text-slate-500">No se encontraron contenedores.</p>
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('venezuela.pedidos.emptyContainersTitle')}</h3>
+                    <p className="text-slate-500">{t('venezuela.pedidos.emptyContainersDesc')}</p>
                   </div>
                 ) : containers.filter((c, idx) => {
                   if (!filtroContenedor) return true;
@@ -790,8 +792,8 @@ export default function VenezuelaPedidosPage() {
                 }).length === 0 ? (
                   <div className="text-center py-12">
                     <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No se encontraron contenedores</h3>
-                    <p className="text-slate-500">Ajusta la búsqueda por ID.</p>
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('venezuela.pedidos.emptyContainersSearchTitle')}</h3>
+                    <p className="text-slate-500">{t('venezuela.pedidos.emptyContainersSearchDesc')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -827,7 +829,7 @@ export default function VenezuelaPedidosPage() {
                                 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50 transition-colors'
                                 : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50 transition-colors'
                             }`}>
-                              {stateNum === 1 ? 'Nuevo' : stateNum === 2 ? 'En tránsito' : stateNum === 4 ? 'Recibido' : `St.${stateNum}`}
+                              {stateNum === 1 ? t('venezuela.pedidos.containersBadges.new') : stateNum === 2 ? t('venezuela.pedidos.containersBadges.inTransit') : stateNum === 4 ? t('venezuela.pedidos.containersBadges.received') : t('venezuela.pedidos.containersBadges.state', { num: stateNum })}
                             </Badge>
                             {/* Botón Recibido: visible solo cuando containers.state === 3 */}
                             {stateNum === 3 && (
@@ -843,15 +845,15 @@ export default function VenezuelaPedidosPage() {
                                     });
                                     if (!res.ok) {
                                       const err = await res.json().catch(() => ({}));
-                                      throw new Error(err.error || 'No se pudo actualizar el contenedor');
+                                      throw new Error(err.error || t('venezuela.pedidos.errors.updateContainer'));
                                     }
                                     await Promise.all([fetchContainers(), fetchBoxes(), fetchOrders()]);
                                   } catch (e) {
-                                    alert((e as Error).message || 'Error al actualizar contenedor');
+                                    alert((e as Error).message || t('venezuela.pedidos.errors.containerUpdate'));
                                   }
                                 }}
                                 className="text-emerald-700 border-emerald-300 hover:bg-emerald-50"
-                                title={'Marcar contenedor como recibido'}
+                                title={t('venezuela.pedidos.tooltips.markContainerReceived')}
                               >
                                 <CheckCircle className="h-4 w-4" />
                               </Button>
@@ -875,7 +877,7 @@ export default function VenezuelaPedidosPage() {
                   </div>
                 )}
                 {containersLoading && (
-                  <p className="text-center text-sm text-slate-500 mt-4">Cargando contenedores...</p>
+                  <p className="text-center text-sm text-slate-500 mt-4">{t('venezuela.pedidos.loadingContainers')}</p>
                 )}
               </CardContent>
             </Card>
@@ -886,16 +888,16 @@ export default function VenezuelaPedidosPage() {
             <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setModalVerPedidos({ open: false })}>
               <div className="bg-white rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-slate-900">Pedidos de la caja #BOX-{String(modalVerPedidos.boxId ?? '')}</h3>
+                  <h3 className="text-lg font-bold text-slate-900">{t('venezuela.pedidos.modalOrdersTitle', { boxId: String(modalVerPedidos.boxId ?? '') })}</h3>
                   <Button variant="ghost" size="sm" onClick={() => setModalVerPedidos({ open: false })} className="h-8 w-8 p-0">✕</Button>
                 </div>
                 {ordersByBoxLoading ? (
-                  <p className="text-center text-sm text-slate-500 py-6">Cargando pedidos...</p>
+                  <p className="text-center text-sm text-slate-500 py-6">{t('venezuela.pedidos.loadingOrders')}</p>
                 ) : ordersByBox.length === 0 ? (
                   <div className="text-center py-12">
                     <Package className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h4 className="text-base font-medium text-slate-900 mb-2">No hay pedidos asociados a esta caja</h4>
-                    <p className="text-slate-500">Cuando asignes pedidos a esta caja, aparecerán aquí.</p>
+                    <h4 className="text-base font-medium text-slate-900 mb-2">{t('venezuela.pedidos.modalOrdersEmptyTitle')}</h4>
+                    <p className="text-slate-500">{t('venezuela.pedidos.modalOrdersEmptyDesc')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -915,12 +917,12 @@ export default function VenezuelaPedidosPage() {
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() => {
+              onClick={() => {
                             if (o.pdfRoutes) {
                               const win = window.open(o.pdfRoutes, '_blank');
-                              if (!win) alert('No se pudo abrir el PDF');
+                if (!win) alert(t('venezuela.pedidos.pdf.openError'));
                             } else {
-                              alert('No hay PDF disponible');
+                alert(t('venezuela.pedidos.pdf.notAvailable'));
                             }
                           }}
                         >
@@ -938,16 +940,16 @@ export default function VenezuelaPedidosPage() {
             <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setModalVerCajas({ open: false })}>
               <div className="bg-white rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-slate-900">Cajas del contenedor #CONT-{String(modalVerCajas.containerId ?? '')}</h3>
+                  <h3 className="text-lg font-bold text-slate-900">{t('venezuela.pedidos.modalBoxesTitle', { containerId: String(modalVerCajas.containerId ?? '') })}</h3>
                   <Button variant="ghost" size="sm" onClick={() => setModalVerCajas({ open: false })} className="h-8 w-8 p-0">✕</Button>
                 </div>
                 {boxesByContainerLoading ? (
-                  <p className="text-center text-sm text-slate-500 py-6">Cargando cajas...</p>
+                  <p className="text-center text-sm text-slate-500 py-6">{t('venezuela.pedidos.loadingBoxes')}</p>
                 ) : boxesByContainer.length === 0 ? (
                   <div className="text-center py-12">
                     <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h4 className="text-base font-medium text-slate-900 mb-2">No hay cajas asociadas a este contenedor</h4>
-                    <p className="text-slate-500">Cuando se asignen cajas a este contenedor, aparecerán aquí.</p>
+                    <h4 className="text-base font-medium text-slate-900 mb-2">{t('venezuela.pedidos.modalBoxesEmptyTitle')}</h4>
+                    <p className="text-slate-500">{t('venezuela.pedidos.modalBoxesEmptyDesc')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -966,7 +968,7 @@ export default function VenezuelaPedidosPage() {
                                 <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
                               </div>
                               <div className="flex items-center gap-4 text-xs text-slate-500">
-                                <span className="flex items-center gap-1"><List className="h-3 w-3" />Pedidos: {orderCountsByBox[id as any] ?? 0}</span>
+                                <span className="flex items-center gap-1"><List className="h-3 w-3" />{t('venezuela.pedidos.labels.orders')} {orderCountsByBox[id as any] ?? 0}</span>
                               </div>
                             </div>
                           </div>
@@ -980,7 +982,7 @@ export default function VenezuelaPedidosPage() {
                                 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50 transition-colors'
                                 : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50 transition-colors'
                             }`}>
-                              {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Lista' : stateNum === 5 ? 'Recibido' : stateNum === 6 ? 'Completada' : `St.${stateNum}`}
+                              {stateNum === 1 ? t('venezuela.pedidos.boxesBadges.new') : stateNum === 2 ? t('venezuela.pedidos.boxesBadges.ready') : stateNum === 5 ? t('venezuela.pedidos.boxesBadges.received') : stateNum === 6 ? t('venezuela.pedidos.boxesBadges.completed') : t('venezuela.pedidos.boxesBadges.state', { num: stateNum })}
                             </Badge>
                             {/* Botón Recibido en modal: visible solo cuando boxes.state === 5 */}
                             {stateNum === 5 && (
@@ -996,18 +998,18 @@ export default function VenezuelaPedidosPage() {
                                     });
                                     if (!res.ok) {
                                       const err = await res.json().catch(() => ({}));
-                                      throw new Error(err.error || 'No se pudo actualizar la caja');
+                                      throw new Error(err.error || t('venezuela.pedidos.errors.updateBox'));
                                     }
                                     await Promise.all([
                                       modalVerCajas.containerId ? fetchBoxesByContainerId(modalVerCajas.containerId) : Promise.resolve(),
                                       fetchOrders()
                                     ]);
                                   } catch (e) {
-                                    alert((e as Error).message || 'Error al actualizar caja');
+                                    alert((e as Error).message || t('venezuela.pedidos.errors.boxUpdate'));
                                   }
                                 }}
                                 className="text-emerald-700 border-emerald-300 hover:bg-emerald-50"
-                                title={'Marcar caja como recibida'}
+                                title={t('venezuela.pedidos.tooltips.markBoxReceived')}
                               >
                                 <CheckCircle className="h-4 w-4" />
                               </Button>

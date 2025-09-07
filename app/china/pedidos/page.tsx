@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from '@/hooks/useTranslation';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import Sidebar from '@/components/layout/Sidebar';
 import '../../animations/animations.css';
@@ -85,6 +86,7 @@ interface ContainerItem {
 // Elimina los datos de ejemplo
 
 export default function PedidosChina() {
+  const { t } = useTranslation();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(false);
   // Mapear state numérico a texto usado en China
@@ -100,36 +102,35 @@ export default function PedidosChina() {
     const s = Number(stateNum ?? 0);
     // Colores utilitarios tailwind para Badges
     const base = 'border';
-    if (s <= 0 || isNaN(s)) return { label: 'Desconocido', className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
-    if (s === 3) return { label: 'Cotizado', className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
-    if (s === 4) return { label: 'Procesando', className: `${base} bg-purple-100 text-purple-800 border-purple-200` };
-    if (s === 5) return { label: 'Listo para empaquetar', className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
-    if (s === 6) return { label: 'En caja', className: `${base} bg-indigo-100 text-indigo-800 border-indigo-200` };
-    if (s === 7) return { label: 'En contenedor', className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
-    if (s >= 9) return { label: 'Enviado a Venezuela', className: `${base} bg-green-100 text-green-800 border-green-200` };
-    // Para otros (por si se usa 8 u otros intermedios)
-    return { label: `Estado ${s}`, className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    if (s <= 0 || isNaN(s)) return { label: t('chinese.ordersPage.badges.unknown'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    if (s === 3) return { label: t('chinese.ordersPage.badges.quoted'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+    if (s === 4) return { label: t('chinese.ordersPage.badges.processing'), className: `${base} bg-purple-100 text-purple-800 border-purple-200` };
+    if (s === 5) return { label: t('chinese.ordersPage.badges.readyToPack'), className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
+    if (s === 6) return { label: t('chinese.ordersPage.badges.inBox'), className: `${base} bg-indigo-100 text-indigo-800 border-indigo-200` };
+    if (s === 7) return { label: t('chinese.ordersPage.badges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
+    if (s >= 9) return { label: t('chinese.ordersPage.badges.shippedVzla'), className: `${base} bg-green-100 text-green-800 border-green-200` };
+    return { label: t('chinese.ordersPage.badges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
   }
 
   // Badges estandarizados para cajas
   function getBoxBadge(stateNum?: number) {
     const s = Number(stateNum ?? 0);
     const base = 'border';
-    if (s <= 1) return { label: 'Nueva', className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
-    if (s === 2) return { label: 'Empaquetada', className: `${base} bg-green-100 text-green-800 border-green-200` };
-    if (s === 3) return { label: 'En contenedor', className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
-    if (s >= 4) return { label: 'Enviada', className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
-    return { label: `Estado ${s}`, className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    if (s <= 1) return { label: t('chinese.ordersPage.boxBadges.new'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+    if (s === 2) return { label: t('chinese.ordersPage.boxBadges.packed'), className: `${base} bg-green-100 text-green-800 border-green-200` };
+    if (s === 3) return { label: t('chinese.ordersPage.boxBadges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
+    if (s >= 4) return { label: t('chinese.ordersPage.boxBadges.shipped'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    return { label: t('chinese.ordersPage.boxBadges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
   }
 
   // Badges estandarizados para contenedores
   function getContainerBadge(stateNum?: number) {
     const s = Number(stateNum ?? 0);
     const base = 'border';
-    if (s <= 1) return { label: 'Nuevo', className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
-    if (s === 2) return { label: 'Cargando', className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
-    if (s >= 3) return { label: 'Enviado', className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
-    return { label: `Estado ${s}`, className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    if (s <= 1) return { label: t('chinese.ordersPage.containerBadges.new'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+    if (s === 2) return { label: t('chinese.ordersPage.containerBadges.loading'), className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
+    if (s >= 3) return { label: t('chinese.ordersPage.containerBadges.shipped'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    return { label: t('chinese.ordersPage.containerBadges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
   }
 
   // Fetch pedidos reales filtrando por asignedEChina
@@ -440,16 +441,16 @@ export default function PedidosChina() {
       if (error) {
         console.error('Error al crear caja:', error);
         toast({
-          title: 'No se pudo crear la caja',
-          description: 'Intenta nuevamente en unos segundos.',
+          title: t('chinese.ordersPage.toasts.createBoxErrorTitle'),
+          description: t('chinese.ordersPage.toasts.tryAgainSeconds'),
         });
         return;
       }
       // Éxito: cerrar modal (podemos mostrar toast si existe más adelante)
       closeModalCrearCaja();
       toast({
-        title: 'Caja creada',
-        description: 'La caja fue creada correctamente.',
+        title: t('chinese.ordersPage.toasts.boxCreatedTitle'),
+        description: t('chinese.ordersPage.toasts.boxCreatedDesc'),
       });
       // Refrescar listado de cajas
       fetchBoxes();
@@ -468,7 +469,7 @@ export default function PedidosChina() {
         .select('*');
       if (error) {
         console.error('Error al obtener cajas:', error);
-        toast({ title: 'No se pudieron cargar las cajas', description: 'Reintenta más tarde.' });
+  toast({ title: t('chinese.ordersPage.toasts.loadBoxesErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
         return;
       }
       const list = (data || []) as BoxItem[];
@@ -519,11 +520,11 @@ export default function PedidosChina() {
         .insert([{ state: 1, creation_date }]);
       if (error) {
         console.error('Error al crear contenedor:', error);
-        toast({ title: 'No se pudo crear el contenedor', description: 'Intenta nuevamente en unos segundos.' });
+  toast({ title: t('chinese.ordersPage.toasts.createContainerErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainSeconds') });
         return;
       }
       closeModalCrearContenedor();
-      toast({ title: 'Contenedor creado', description: 'El contenedor fue creado correctamente.' });
+  toast({ title: t('chinese.ordersPage.toasts.containerCreatedTitle'), description: t('chinese.ordersPage.toasts.containerCreatedDesc') });
       fetchContainers();
     } finally {
       setCreatingContainer(false);
@@ -540,7 +541,7 @@ export default function PedidosChina() {
         .select('*');
       if (error) {
         console.error('Error al obtener contenedores:', error);
-        toast({ title: 'No se pudieron cargar los contenedores', description: 'Reintenta más tarde.' });
+  toast({ title: t('chinese.ordersPage.toasts.loadContainersErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
         return;
       }
       const list = (data || []) as ContainerItem[];
@@ -566,7 +567,7 @@ export default function PedidosChina() {
         .eq('container_id', containerId);
       if (error) {
         console.error('Error al obtener cajas del contenedor:', error);
-        toast({ title: 'No se pudieron cargar las cajas', description: 'Intenta nuevamente.' });
+  toast({ title: t('chinese.ordersPage.toasts.loadBoxesErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
         return;
       }
       const list = (data || []) as BoxItem[];
@@ -615,7 +616,7 @@ export default function PedidosChina() {
         .eq('box_id', boxId);
       if (error) {
         console.error('Error al obtener pedidos de la caja:', error);
-        toast({ title: 'No se pudieron cargar los pedidos', description: 'Intenta nuevamente.' });
+  toast({ title: t('chinese.ordersPage.toasts.loadOrdersErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
         return;
       }
       const mapped: Pedido[] = (data || []).map((order: any) => ({
@@ -644,7 +645,7 @@ export default function PedidosChina() {
   const handleSelectContenedorForCaja = async (boxId: number | string, container: ContainerItem) => {
     const containerId = container.container_id ?? container.containers_id ?? container.id;
     if (!containerId) {
-      toast({ title: 'Contenedor inválido', description: 'No se pudo determinar el ID del contenedor.' });
+      toast({ title: t('chinese.ordersPage.toasts.invalidContainerTitle'), description: t('chinese.ordersPage.toasts.invalidContainerDesc') });
       return;
     }
     try {
@@ -652,7 +653,7 @@ export default function PedidosChina() {
       // No permitir asignar a contenedor enviado
       const contStateNum = (container.state ?? 1) as number;
       if (contStateNum >= 3) {
-        toast({ title: 'No permitido', description: 'No puedes asignar cajas a un contenedor enviado.' });
+        toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.assignToShippedContainerDesc') });
         return;
       }
       // 1) Actualizar la caja: asignar contenedor y cambiar state=2 (empaquetada)
@@ -662,7 +663,7 @@ export default function PedidosChina() {
         .eq('box_id', boxId);
       if (boxUpdateError) {
         console.error('Error asignando contenedor:', boxUpdateError);
-        toast({ title: 'No se pudo asignar el contenedor', description: 'Intenta nuevamente.' });
+        toast({ title: t('chinese.ordersPage.toasts.assignContainerErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
         return;
       }
       // 2) Mover todos los pedidos de esa caja a state=7
@@ -681,7 +682,7 @@ export default function PedidosChina() {
       if (contStateErr) {
         console.error('Error actualizando contenedor a estado 2:', contStateErr);
       }
-      toast({ title: 'Caja asignada', description: `La caja #BOX-${boxId} fue asignada al contenedor #CONT-${containerId}.` });
+  toast({ title: t('chinese.ordersPage.toasts.boxAssignedTitle'), description: t('chinese.ordersPage.toasts.boxAssignedDesc', { boxId: boxId, containerId: containerId }) });
       // Actualizar UI local
       setBoxes(prev => prev.map(b => {
         const id = b.box_id ?? b.boxes_id ?? b.id;
@@ -695,8 +696,8 @@ export default function PedidosChina() {
       }));
       closeModalEmpaquetarCaja();
     } catch (e) {
-      console.error(e);
-      toast({ title: 'Error inesperado', description: 'Reintenta más tarde.' });
+  console.error(e);
+  toast({ title: t('chinese.ordersPage.toasts.unexpectedErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
     }
   };
 
@@ -717,7 +718,7 @@ export default function PedidosChina() {
         }
         const contState = (contRow?.state ?? 1) as number;
         if (contState >= 3) {
-          toast({ title: 'No permitido', description: 'No puedes desempaquetar una caja de un contenedor enviado.' });
+          toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.unpackBoxFromShippedContainerDesc') });
           return;
         }
       }
@@ -736,10 +737,10 @@ export default function PedidosChina() {
         .eq('box_id', boxId);
       if (boxErr) {
         console.error('Error al actualizar caja a estado 1:', boxErr);
-        toast({ title: 'No se pudo desempaquetar', description: 'Intenta nuevamente.' });
+  toast({ title: t('chinese.ordersPage.toasts.unassignErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
         return;
       }
-      toast({ title: 'Caja desempaquetada', description: `Se liberaron los pedidos y la caja #BOX-${boxId}.` });
+  toast({ title: t('chinese.ordersPage.toasts.boxUnpackedTitle'), description: t('chinese.ordersPage.toasts.boxUnpackedDesc', { boxId }) });
       // Actualizar estado local de cajas
       setBoxes(prev => prev.map(b => {
         const id = b.box_id ?? b.boxes_id ?? b.id;
@@ -757,7 +758,7 @@ export default function PedidosChina() {
       fetchPedidos();
     } catch (e) {
       console.error(e);
-      toast({ title: 'Error inesperado', description: 'Reintenta más tarde.' });
+  toast({ title: t('chinese.ordersPage.toasts.unexpectedErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
     }
   };
 
@@ -811,7 +812,7 @@ export default function PedidosChina() {
   const handleSelectCajaForPedido = async (pedidoId: number, box: BoxItem) => {
     const boxId = box.box_id ?? box.boxes_id ?? box.id;
     if (!boxId) {
-      toast({ title: 'Caja inválida', description: 'No se pudo determinar el ID de la caja.' });
+      toast({ title: t('chinese.ordersPage.toasts.invalidBoxTitle'), description: t('chinese.ordersPage.toasts.invalidBoxDesc') });
       return;
     }
     try {
@@ -819,7 +820,7 @@ export default function PedidosChina() {
       // No permitir empaquetar en cajas enviadas o contenedores enviados
       const boxStateNumCheck = (box.state ?? 1) as number;
       if (boxStateNumCheck >= 3) {
-        toast({ title: 'No permitido', description: 'No puedes empaquetar en una caja enviada.' });
+        toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.packInShippedBoxDesc') });
         return;
       }
       if ((box as any)?.container_id) {
@@ -833,7 +834,7 @@ export default function PedidosChina() {
         }
         const contState = (contRow?.state ?? 1) as number;
         if (contState >= 3) {
-          toast({ title: 'No permitido', description: 'No puedes empaquetar en cajas de un contenedor enviado.' });
+          toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.packInBoxOfShippedContainerDesc') });
           return;
         }
       }
@@ -844,12 +845,12 @@ export default function PedidosChina() {
         .from('orders')
         .update({ box_id: boxId, state: nextOrderState })
         .eq('id', pedidoId);
-      if (error) {
-        console.error('Error asignando caja:', error);
-        toast({ title: 'No se pudo asignar la caja', description: 'Intenta nuevamente.' });
+  if (error) {
+    console.error('Error asignando caja:', error);
+    toast({ title: t('chinese.ordersPage.toasts.assignBoxErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
         return;
       }
-  toast({ title: 'Pedido asignado', description: `El pedido #ORD-${pedidoId} fue asignado a la caja ${boxId}.` });
+  toast({ title: t('chinese.ordersPage.toasts.orderAssignedTitle'), description: t('chinese.ordersPage.toasts.orderAssignedDesc', { orderId: pedidoId, boxId: boxId }) });
   // Reflejar inmediatamente en UI que el pedido pasó a estado 6
   setPedidos(prev => prev.map(p => p.id === pedidoId ? { ...p, numericState: nextOrderState } : p));
 
@@ -874,7 +875,7 @@ export default function PedidosChina() {
       closeModalEmpaquetar();
     } catch (e) {
       console.error(e);
-      toast({ title: 'Error inesperado', description: 'Reintenta más tarde.' });
+  toast({ title: t('chinese.ordersPage.toasts.unexpectedErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
     }
   };
 
@@ -890,12 +891,12 @@ export default function PedidosChina() {
         .single();
       if (fetchErr) {
         console.error('No se pudo obtener el pedido para desempaquetar:', fetchErr);
-        toast({ title: 'No se pudo desempaquetar', description: 'Intenta nuevamente.' });
+        toast({ title: t('chinese.ordersPage.toasts.unassignErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
         return;
       }
       const boxId = (orderRow as any)?.box_id as number | string | null;
       if (!boxId) {
-        toast({ title: 'Pedido sin caja', description: 'Este pedido no tiene caja asignada.' });
+        toast({ title: t('chinese.ordersPage.toasts.orderWithoutBoxTitle'), description: t('chinese.ordersPage.toasts.orderWithoutBoxDesc') });
         return;
       }
       // Si la caja está dentro de un contenedor enviado o la caja fue enviada, bloquear
@@ -909,7 +910,7 @@ export default function PedidosChina() {
       }
       const bState = (boxRow?.state ?? 1) as number;
       if (bState >= 3) {
-        toast({ title: 'No permitido', description: 'No puedes desempaquetar pedidos de una caja enviada.' });
+        toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.unpackOrdersFromShippedBoxDesc') });
         return;
       }
       if (boxRow?.container_id) {
@@ -923,7 +924,7 @@ export default function PedidosChina() {
         }
         const cState = (cRow?.state ?? 1) as number;
         if (cState >= 3) {
-          toast({ title: 'No permitido', description: 'No puedes desempaquetar pedidos de un contenedor enviado.' });
+          toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.unpackOrdersFromShippedContainerDesc') });
           return;
         }
       }
@@ -934,10 +935,10 @@ export default function PedidosChina() {
         .eq('id', pedidoId);
       if (updErr) {
         console.error('Error al desempaquetar pedido:', updErr);
-        toast({ title: 'No se pudo desempaquetar', description: 'Intenta nuevamente.' });
+        toast({ title: t('chinese.ordersPage.toasts.unassignErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
         return;
       }
-      toast({ title: 'Pedido desempaquetado', description: `El pedido #ORD-${pedidoId} fue liberado de la caja.` });
+  toast({ title: t('chinese.ordersPage.toasts.orderUnassignedTitle'), description: t('chinese.ordersPage.toasts.orderUnassignedDesc', { orderId: pedidoId }) });
       // Actualizar UI: estado del pedido
       setPedidos(prev => prev.map(p => p.id === pedidoId ? { ...p, numericState: 5 } : p));
       // Ajustar conteo local de la caja en vistas principales
@@ -957,7 +958,7 @@ export default function PedidosChina() {
       }
     } catch (e) {
       console.error(e);
-      toast({ title: 'Error inesperado', description: 'Reintenta más tarde.' });
+  toast({ title: t('chinese.ordersPage.toasts.unexpectedErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
     }
   };
 
@@ -968,7 +969,7 @@ export default function PedidosChina() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+          <p className="mt-4 text-gray-600">{t('chinese.ordersPage.loading')}</p>
         </div>
       </div>
     );
@@ -992,8 +993,8 @@ export default function PedidosChina() {
         <Header 
           notifications={stats.pendientes}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Gestión de Pedidos"
-          subtitle="Administra y cotiza pedidos de clientes"
+          title={t('chinese.ordersPage.title')}
+          subtitle={t('chinese.ordersPage.subtitle')}
         />
         
   <div className="p-4 md:p-5 lg:p-6 space-y-6 max-w-7xl mx-auto w-full">
@@ -1001,25 +1002,25 @@ export default function PedidosChina() {
           <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-xl p-4 md:p-6 text-white">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
               <div>
-                <h1 className="text-xl md:text-2xl font-bold">Pedidos</h1>
-                <p className="text-orange-100 mt-1 text-sm md:text-base">Administra y cotiza pedidos de clientes</p>
+                <h1 className="text-xl md:text-2xl font-bold">{t('chinese.ordersPage.pageTitle')}</h1>
+                <p className="text-orange-100 mt-1 text-sm md:text-base">{t('chinese.ordersPage.subtitle')}</p>
               </div>
               <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.pendientes}</p>
-                  <p className="text-xs md:text-sm text-orange-100">PENDIENTES</p>
+                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.ordersPage.stats.pending')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.cotizados}</p>
-                  <p className="text-xs md:text-sm text-orange-100">COTIZADOS</p>
+                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.ordersPage.stats.quoted')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.procesando}</p>
-                  <p className="text-xs md:text-sm text-orange-100">PROCESANDO</p>
+                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.ordersPage.stats.processing')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.enviados}</p>
-                  <p className="text-xs md:text-sm text-orange-100">ENVIADOS</p>
+                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.ordersPage.stats.shipped')}</p>
                 </div>
               </div>
             </div>
@@ -1038,7 +1039,7 @@ export default function PedidosChina() {
                 className={`rounded-md transition-colors ${activeTab === 'pedidos' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                 onClick={() => setActiveTab('pedidos')}
               >
-                Lista de pedidos
+                {t('chinese.ordersPage.tabs.ordersList')}
               </Button>
               <Button
                 variant={activeTab === 'cajas' ? 'default' : 'ghost'}
@@ -1046,7 +1047,7 @@ export default function PedidosChina() {
                 className={`rounded-md transition-colors ${activeTab === 'cajas' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                 onClick={() => setActiveTab('cajas')}
               >
-                Cajas
+                {t('chinese.ordersPage.tabs.boxes')}
               </Button>
               <Button
                 variant={activeTab === 'contenedores' ? 'default' : 'ghost'}
@@ -1054,7 +1055,7 @@ export default function PedidosChina() {
                 className={`rounded-md transition-colors ${activeTab === 'contenedores' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                 onClick={() => setActiveTab('contenedores')}
               >
-                Contenedores
+                {t('chinese.ordersPage.tabs.containers')}
               </Button>
             </div>
           </div>
@@ -1064,13 +1065,13 @@ export default function PedidosChina() {
             <CardHeader className="py-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold">
-                  {activeTab === 'pedidos' ? 'Lista de pedidos' : activeTab === 'cajas' ? 'Cajas' : 'Contenedores'}
+                  {activeTab === 'pedidos' ? t('chinese.ordersPage.tabs.ordersList') : activeTab === 'cajas' ? t('chinese.ordersPage.tabs.boxes') : t('chinese.ordersPage.tabs.containers')}
                 </CardTitle>
                 <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
                   {activeTab === 'pedidos' && (
                     <>
                       <Input
-                        placeholder="Buscar por cliente..."
+                        placeholder={t('chinese.ordersPage.filters.searchClientPlaceholder')}
                         value={filtroCliente}
                         onChange={(e) => setFiltroCliente(e.target.value)}
                         className="h-10 w-56 md:w-64 px-3"
@@ -1080,18 +1081,18 @@ export default function PedidosChina() {
                           <SelectValue placeholder="Estado" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="todos">Todos</SelectItem>
-                          <SelectItem value="pendiente">Pendiente</SelectItem>
-                          <SelectItem value="cotizado">Cotizado</SelectItem>
-                          <SelectItem value="procesando">Procesando</SelectItem>
-                          <SelectItem value="enviado">Enviado</SelectItem>
+                          <SelectItem value="todos">{t('chinese.ordersPage.filters.all')}</SelectItem>
+                          <SelectItem value="pendiente">{t('chinese.ordersPage.filters.pending')}</SelectItem>
+                          <SelectItem value="cotizado">{t('chinese.ordersPage.filters.quoted')}</SelectItem>
+                          <SelectItem value="procesando">{t('chinese.ordersPage.filters.processing')}</SelectItem>
+                          <SelectItem value="enviado">{t('chinese.ordersPage.filters.shipped')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </>
                   )}
                   {activeTab === 'cajas' && (
                     <Input
-                      placeholder="Buscar por caja (ID)..."
+                      placeholder={t('chinese.ordersPage.filters.searchBoxPlaceholder')}
                       value={filtroCaja}
                       onChange={(e) => setFiltroCaja(e.target.value)}
                       className="h-10 w-56 md:w-64 px-3"
@@ -1099,7 +1100,7 @@ export default function PedidosChina() {
                   )}
                   {activeTab === 'contenedores' && (
                     <Input
-                      placeholder="Buscar por contenedor (ID)..."
+                      placeholder={t('chinese.ordersPage.filters.searchContainerPlaceholder')}
                       value={filtroContenedor}
                       onChange={(e) => setFiltroContenedor(e.target.value)}
                       className="h-10 w-56 md:w-64 px-3"
@@ -1116,12 +1117,12 @@ export default function PedidosChina() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xl font-semibold flex items-center gap-2">
                     <Package className="h-5 w-5" />
-                    Lista de Pedidos
+                    {t('chinese.ordersPage.orders.listTitle')}
                   </CardTitle>
                   <div className="flex items-center">
                     <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={fetchPedidos} disabled={loading}>
                       <RefreshCw className="h-4 w-4" />
-                      {loading ? 'Actualizando...' : 'Actualizar'}
+                      {loading ? t('chinese.ordersPage.orders.refreshing') : t('chinese.ordersPage.orders.refresh')}
                     </Button>
                   </div>
                 </div>
@@ -1149,7 +1150,7 @@ export default function PedidosChina() {
                               <User className="h-3 w-3" /> {pedido.cliente}
                             </span>
                             <span className="flex items-center gap-1">
-                              <Tag className="h-3 w-3" /> Cant: {pedido.cantidad}
+                              <Tag className="h-3 w-3" /> {t('chinese.ordersPage.orders.qtyShort')}: {pedido.cantidad}
                             </span>
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" /> {new Date(pedido.fecha).toLocaleDateString('es-ES')}
@@ -1184,7 +1185,7 @@ export default function PedidosChina() {
                               }}
                             >
                               <Boxes className="h-4 w-4" />
-                              <span className="hidden sm:inline">Empaquetar</span>
+                              <span className="hidden sm:inline">{t('chinese.ordersPage.orders.pack')}</span>
                             </Button>
                           )}
                           {pedido.estado === 'enviado' && (pedido.numericState ?? 0) >= 6 && (
@@ -1198,7 +1199,7 @@ export default function PedidosChina() {
                                 handleUnpackOrder(pedido.id);
                               }}
                             >
-                              <span className="hidden sm:inline">Desempaquetar</span>
+                              <span className="hidden sm:inline">{t('chinese.ordersPage.orders.unpack')}</span>
                               <Boxes className="h-4 w-4 sm:hidden" aria-label="Desempaquetar" />
                             </Button>
                           )}
@@ -1216,7 +1217,7 @@ export default function PedidosChina() {
                             className="flex items-center gap-1"
                           >
                             <Eye className="h-4 w-4" />
-                            <span className="hidden sm:inline">Ver</span>
+                            <span className="hidden sm:inline">{t('chinese.ordersPage.orders.view')}</span>
                           </Button>
                           {pedido.estado === 'pendiente' ? (
                             <Button
@@ -1225,7 +1226,7 @@ export default function PedidosChina() {
                               className="flex items-center gap-1 bg-orange-600 hover:bg-orange-700"
                             >
                               <Calculator className="h-4 w-4" />
-                              <span className="hidden sm:inline">Cotizar</span>
+                              <span className="hidden sm:inline">{t('chinese.ordersPage.orders.quote')}</span>
                             </Button>
                           ) : (
                             <Button
@@ -1235,7 +1236,7 @@ export default function PedidosChina() {
                               className="flex items-center gap-1"
                             >
                               <Pencil className="h-4 w-4" />
-                              <span className="hidden sm:inline">Editar</span>
+                              <span className="hidden sm:inline">{t('chinese.ordersPage.orders.editQuote')}</span>
                             </Button>
                           )}
                         </div>
@@ -1245,8 +1246,8 @@ export default function PedidosChina() {
                   {pedidosFiltrados.length === 0 && (
                     <div className="text-center py-12">
                       <Package className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-slate-900 mb-2">No se encontraron pedidos</h3>
-                      <p className="text-slate-500">Intenta ajustar los filtros de búsqueda</p>
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">{t('chinese.ordersPage.orders.notFoundTitle')}</h3>
+                      <p className="text-slate-500">{t('chinese.ordersPage.orders.notFoundSubtitle')}</p>
                     </div>
                   )}
                 </div>
@@ -1260,7 +1261,7 @@ export default function PedidosChina() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xl font-semibold flex items-center gap-2">
                     <Boxes className="h-5 w-5" />
-                    Cajas
+                    {t('chinese.ordersPage.boxes.title')}
                   </CardTitle>
                   <div className="flex items-center">
                     <Button
@@ -1269,7 +1270,7 @@ export default function PedidosChina() {
                       onClick={() => setModalCrearCaja({ open: true })}
                     >
                       <Plus className="h-4 w-4" />
-                      <span className="hidden sm:inline">Crear cajas</span>
+                      <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.create')}</span>
                     </Button>
                   </div>
                 </div>
@@ -1278,14 +1279,14 @@ export default function PedidosChina() {
                 {boxes.length === 0 ? (
                   <div className="text-center py-12">
                     <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No hay cajas creadas</h3>
-                    <p className="text-slate-500">Crea tu primera caja con el botón de arriba.</p>
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('chinese.ordersPage.boxes.noneTitle')}</h3>
+                    <p className="text-slate-500">{t('chinese.ordersPage.boxes.noneSubtitle')}</p>
                   </div>
                 ) : cajasFiltradas.length === 0 ? (
                   <div className="text-center py-12">
                     <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No se encontraron cajas</h3>
-                    <p className="text-slate-500">Intenta ajustar la búsqueda por ID.</p>
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('chinese.ordersPage.boxes.notFoundTitle')}</h3>
+                    <p className="text-slate-500">{t('chinese.ordersPage.boxes.notFoundSubtitle')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -1310,7 +1311,7 @@ export default function PedidosChina() {
                                 <Calendar className="h-3 w-3" /> {created ? new Date(created).toLocaleString('es-ES') : '—'}
                               </span>
                               <span className="flex items-center gap-1">
-                                <List className="h-3 w-3" /> Pedidos: {orderCountsByBoxMain[boxKey as any] ?? 0}
+                                <List className="h-3 w-3" /> {t('chinese.ordersPage.boxes.ordersCount')} {orderCountsByBoxMain[boxKey as any] ?? 0}
                               </span>
                             </div>
                           </div>
@@ -1330,7 +1331,7 @@ export default function PedidosChina() {
                               }}
                             >
                               <Boxes className="h-4 w-4" />
-                              <span className="hidden sm:inline">Empaquetar</span>
+                              <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.pack')}</span>
                             </Button>
                           )}
                           {stateNum === 2 && (
@@ -1345,7 +1346,7 @@ export default function PedidosChina() {
                                 }
                               }}
                             >
-                              <span className="hidden sm:inline">Desempaquetar</span>
+                              <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.unpack')}</span>
                               <Boxes className="h-4 w-4 sm:hidden" aria-label="Desempaquetar" />
                             </Button>
                           )}
@@ -1356,7 +1357,7 @@ export default function PedidosChina() {
                               className="flex items-center gap-1 text-amber-700 border-amber-300 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
                               disabled
                             >
-                              <span className="hidden sm:inline">Desempaquetar</span>
+                              <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.unpack')}</span>
                               <Boxes className="h-4 w-4 sm:hidden" aria-label="Desempaquetar" />
                             </Button>
                           )}
@@ -1371,7 +1372,7 @@ export default function PedidosChina() {
                             }}
                           >
                             <List className="h-4 w-4" />
-                            <span className="hidden sm:inline">Ver pedidos</span>
+                            <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.viewOrders')}</span>
                           </Button>
                           <Button
                             variant="outline"
@@ -1381,14 +1382,14 @@ export default function PedidosChina() {
                             onClick={() => {
                               const st = (box.state ?? 1) as number;
                               if (st >= 3) {
-                                toast({ title: 'No permitido', description: 'No puedes eliminar una caja enviada.' });
+                                toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.deleteShippedBoxDesc') });
                                 return;
                               }
                               setModalEliminarCaja({ open: true, box });
                             }}
                           >
                             <Trash2 className="h-4 w-4" />
-                            <span className="hidden sm:inline">Eliminar</span>
+                            <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.delete')}</span>
                           </Button>
                         </div>
                       </div>
@@ -1396,7 +1397,7 @@ export default function PedidosChina() {
                   </div>
                 )}
                 {boxesLoading && (
-                  <p className="text-center text-sm text-slate-500 mt-4">Cargando cajas...</p>
+                  <p className="text-center text-sm text-slate-500 mt-4">{t('chinese.ordersPage.boxes.loading')}</p>
                 )}
               </CardContent>
             </Card>
@@ -1408,7 +1409,7 @@ export default function PedidosChina() {
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xl font-semibold flex items-center gap-2">
                       <Boxes className="h-5 w-5" />
-                      Contenedores
+                      {t('chinese.ordersPage.containers.title')}
                     </CardTitle>
                     <div className="flex items-center">
                       <Button
@@ -1417,7 +1418,7 @@ export default function PedidosChina() {
                         onClick={() => setModalCrearContenedor({ open: true })}
                       >
                         <Plus className="h-4 w-4" />
-                        <span className="hidden sm:inline">Crear contenedor</span>
+                        <span className="hidden sm:inline">{t('chinese.ordersPage.containers.create')}</span>
                       </Button>
                     </div>
                   </div>
@@ -1426,8 +1427,8 @@ export default function PedidosChina() {
                   {containers.length === 0 ? (
                     <div className="text-center py-12">
                       <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-slate-900 mb-2">No hay contenedores creados</h3>
-                      <p className="text-slate-500">Crea tu primer contenedor con el botón de arriba.</p>
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">{t('chinese.ordersPage.containers.noneTitle')}</h3>
+                      <p className="text-slate-500">{t('chinese.ordersPage.containers.noneSubtitle')}</p>
                     </div>
                   ) : containers.filter((c, idx) => {
                       if (!filtroContenedor) return true;
@@ -1436,8 +1437,8 @@ export default function PedidosChina() {
                     }).length === 0 ? (
                     <div className="text-center py-12">
                       <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-slate-900 mb-2">No se encontraron contenedores</h3>
-                      <p className="text-slate-500">Intenta ajustar la búsqueda por ID.</p>
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">{t('chinese.ordersPage.containers.notFoundTitle')}</h3>
+                      <p className="text-slate-500">{t('chinese.ordersPage.containers.notFoundSubtitle')}</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -1510,7 +1511,7 @@ export default function PedidosChina() {
                                         .in('box_id', boxIds as any);
                                       if (ordErr) throw ordErr;
                                     }
-                                    toast({ title: 'Contenedor enviado', description: `El contenedor #CONT-${String(containerId)} fue marcado como enviado.` });
+                                    toast({ title: t('chinese.ordersPage.toasts.containerSentTitle'), description: t('chinese.ordersPage.toasts.containerSentDesc', { id: String(containerId) }) });
                                     // Refrescar UI local
                                     setContainers(prev => prev.map(c => {
                                       const cid = c.container_id ?? c.containers_id ?? c.id;
@@ -1535,11 +1536,11 @@ export default function PedidosChina() {
                                     }));
                                   } catch (e) {
                                     console.error(e);
-                                    toast({ title: 'No se pudo enviar', description: 'Intenta nuevamente más tarde.' });
+                                    toast({ title: t('chinese.ordersPage.toasts.sendErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
                                   }
                                 }}
                               >
-                                <Truck className="h-4 w-4" /> <span className="hidden sm:inline">Enviar</span>
+                                <Truck className="h-4 w-4" /> <span className="hidden sm:inline">{t('chinese.ordersPage.containers.send')}</span>
                               </Button>
                               <Button
                                 variant="outline"
@@ -1551,7 +1552,7 @@ export default function PedidosChina() {
                                   if (containerId !== undefined) fetchBoxesByContainerId(containerId as any);
                                 }}
                               >
-                                <List className="h-4 w-4" /> <span className="hidden sm:inline">Ver cajas</span>
+                                <List className="h-4 w-4" /> <span className="hidden sm:inline">{t('chinese.ordersPage.containers.viewBoxes')}</span>
                               </Button>
                               <Button
                                 variant="outline"
@@ -1561,13 +1562,13 @@ export default function PedidosChina() {
                                 onClick={() => {
                                   const st = (container.state ?? 1) as number;
                                   if (st >= 3) {
-                                    toast({ title: 'No permitido', description: 'No puedes eliminar un contenedor enviado.' });
+                                    toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.deleteShippedContainerDesc') });
                                     return;
                                   }
                                   setModalEliminarContenedor({ open: true, container });
                                 }}
                               >
-                                <Trash2 className="h-4 w-4" /> <span className="hidden sm:inline">Eliminar</span>
+                                <Trash2 className="h-4 w-4" /> <span className="hidden sm:inline">{t('chinese.ordersPage.containers.delete')}</span>
                               </Button>
                             </div>
                           </div>
@@ -1576,7 +1577,7 @@ export default function PedidosChina() {
                     </div>
                   )}
                   {containersLoading && (
-                    <p className="text-center text-sm text-slate-500 mt-4">Cargando contenedores...</p>
+                    <p className="text-center text-sm text-slate-500 mt-4">{t('chinese.ordersPage.containers.loading')}</p>
                   )}
                 </CardContent>
               </Card>
@@ -1595,7 +1596,7 @@ export default function PedidosChina() {
                }`}
              >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-slate-900">Cotizar Pedido</h3>
+                <h3 className="text-xl font-bold text-slate-900">{t('chinese.ordersPage.modals.quote.title')}</h3>
                                  <Button
                    variant="ghost"
                    size="sm"
@@ -1615,29 +1616,29 @@ export default function PedidosChina() {
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
                     <Package className="h-4 w-4" />
-                    Resumen del Pedido
+                    {t('chinese.ordersPage.modals.quote.summaryTitle')}
                   </h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="font-medium text-slate-700">Cliente:</p>
+                      <p className="font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.client')}</p>
                       <p className="text-slate-600">{modalCotizar.pedido?.cliente}</p>
                     </div>
                     <div>
-                      <p className="font-medium text-slate-700">Producto:</p>
+                      <p className="font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.product')}</p>
                       <p className="text-slate-600">{modalCotizar.pedido?.producto}</p>
                     </div>
                     <div>
-                      <p className="font-medium text-slate-700">Cantidad:</p>
+                      <p className="font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.quantity')}</p>
                       <p className="text-slate-600">{modalCotizar.pedido?.cantidad}</p>
                     </div>
                     <div>
-                      <p className="font-medium text-slate-700">Especificaciones:</p>
-                      <p className="text-slate-600">{modalCotizar.pedido?.especificaciones || 'N/A'}</p>
+                      <p className="font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.specifications')}</p>
+                      <p className="text-slate-600">{modalCotizar.pedido?.especificaciones || t('chinese.ordersPage.modals.quote.specificationsNA')}</p>
                     </div>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">Precio unitario de la Cotización *</label>
+                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.unitPriceLabel')}</label>
                                      <div className="relative">
                      <span className="absolute left-3 top-3 text-slate-500">$</span>
                      <input
@@ -1647,7 +1648,7 @@ export default function PedidosChina() {
                        min="0"
                        step="0.01"
                        className="w-full pl-8 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                       placeholder="0.00"
+                       placeholder={t('chinese.ordersPage.modals.quote.unitPricePlaceholder')}
                        onChange={e => {
                          const precio = Number(e.target.value);
                          setModalCotizar(prev => ({...prev, precioCotizacion: precio}));
@@ -1656,7 +1657,7 @@ export default function PedidosChina() {
                    </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">Total a Pagar</label>
+                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.totalToPay')}</label>
                   <div className="px-4 py-3 border border-slate-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 text-lg font-bold text-green-600">
                     ${((modalCotizar.precioCotizacion || 0) * (modalCotizar.pedido?.cantidad || 0)).toLocaleString()}
                   </div>
@@ -1667,13 +1668,13 @@ export default function PedidosChina() {
                      variant="outline"
                      onClick={closeModalCotizar}
                    >
-                     Cancelar
+                     {t('chinese.ordersPage.modals.quote.cancel')}
                    </Button>
                   <Button
                     type="submit"
                     className="bg-blue-600 hover:bg-blue-700"
                   >
-                    Enviar Cotización
+                    {t('chinese.ordersPage.modals.quote.sendQuote')}
                   </Button>
                 </div>
               </form>
@@ -1691,18 +1692,18 @@ export default function PedidosChina() {
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">Seleccionar contenedor para la caja #BOX-{String(modalEmpaquetarCaja.boxId ?? '')}</h3>
+                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.selectContainerForBox.title', { id: String(modalEmpaquetarCaja.boxId ?? '') })}</h3>
                 <Button variant="ghost" size="sm" onClick={closeModalEmpaquetarCaja} className="h-8 w-8 p-0">
                   <span className="text-2xl">×</span>
                 </Button>
               </div>
               {containersLoading ? (
-                <p className="text-center text-sm text-slate-500 py-6">Cargando contenedores...</p>
+                <p className="text-center text-sm text-slate-500 py-6">{t('chinese.ordersPage.modals.selectContainerForBox.loading')}</p>
               ) : containers.length === 0 ? (
                 <div className="text-center py-12">
                   <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                  <h4 className="text-base font-medium text-slate-900 mb-2">No hay contenedores disponibles</h4>
-                  <p className="text-slate-500">Crea un contenedor desde la pestaña Contenedores para poder empaquetar.</p>
+                  <h4 className="text-base font-medium text-slate-900 mb-2">{t('chinese.ordersPage.modals.selectContainerForBox.noneTitle')}</h4>
+                  <p className="text-slate-500">{t('chinese.ordersPage.modals.selectContainerForBox.noneSubtitle')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -1737,7 +1738,7 @@ export default function PedidosChina() {
                             className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700"
                             onClick={() => modalEmpaquetarCaja.boxId && handleSelectContenedorForCaja(modalEmpaquetarCaja.boxId, container)}
                           >
-                            Seleccionar
+                            {t('chinese.ordersPage.modals.selectContainerForBox.select')}
                           </Button>
                         </div>
                       </div>
@@ -1760,7 +1761,7 @@ export default function PedidosChina() {
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">Crear contenedor</h3>
+                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.createContainer.title')}</h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -1770,11 +1771,11 @@ export default function PedidosChina() {
                   <span className="text-2xl">×</span>
                 </Button>
               </div>
-              <p className="text-slate-600 mb-6">¿Deseas crear un nuevo contenedor?</p>
+              <p className="text-slate-600 mb-6">{t('chinese.ordersPage.modals.createContainer.question')}</p>
               <div className="flex justify-end gap-3">
-                <Button variant="outline" onClick={closeModalCrearContenedor} disabled={creatingContainer}>Cancelar</Button>
+                <Button variant="outline" onClick={closeModalCrearContenedor} disabled={creatingContainer}>{t('chinese.ordersPage.modals.createContainer.cancel')}</Button>
                 <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleConfirmCrearContenedor} disabled={creatingContainer}>
-                  {creatingContainer ? 'Creando...' : 'Aceptar'}
+                  {creatingContainer ? t('chinese.ordersPage.modals.createContainer.creating') : t('chinese.ordersPage.modals.createContainer.accept')}
                 </Button>
               </div>
             </div>
@@ -1791,18 +1792,18 @@ export default function PedidosChina() {
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">Cajas del contenedor #CONT-{String(modalVerPedidosCont.containerId ?? '')}</h3>
+                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.containerBoxes.title', { id: String(modalVerPedidosCont.containerId ?? '') })}</h3>
                 <Button variant="ghost" size="sm" onClick={closeModalVerPedidosCont} className="h-8 w-8 p-0">
                   <span className="text-2xl">×</span>
                 </Button>
               </div>
               {boxesByContainerLoading ? (
-                <p className="text-center text-sm text-slate-500 py-6">Cargando cajas...</p>
+                <p className="text-center text-sm text-slate-500 py-6">{t('chinese.ordersPage.modals.containerBoxes.loading')}</p>
               ) : boxesByContainer.length === 0 ? (
                 <div className="text-center py-12">
                   <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                  <h4 className="text-base font-medium text-slate-900 mb-2">No hay cajas asociadas a este contenedor</h4>
-                  <p className="text-slate-500">Cuando asignes cajas a este contenedor, aparecerán aquí.</p>
+                  <h4 className="text-base font-medium text-slate-900 mb-2">{t('chinese.ordersPage.modals.containerBoxes.noneTitle')}</h4>
+                  <p className="text-slate-500">{t('chinese.ordersPage.modals.containerBoxes.noneSubtitle')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -1827,7 +1828,7 @@ export default function PedidosChina() {
                               </span>
                               <span className="flex items-center gap-1">
                                 <List className="h-3 w-3" />
-                                Pedidos: {orderCountsByBox[id as any] ?? 0}
+                                {t('chinese.ordersPage.boxes.ordersCount')} {orderCountsByBox[id as any] ?? 0}
                               </span>
                             </div>
                           </div>
@@ -1848,7 +1849,7 @@ export default function PedidosChina() {
                               }}
                             >
                               <Boxes className="h-4 w-4 sm:hidden" aria-label="Desempaquetar" />
-                              <span className="hidden sm:inline">Desempaquetar</span>
+                              <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.unpack')}</span>
                             </Button>
                           )}
                           {stateNum >= 3 && (
@@ -1859,7 +1860,7 @@ export default function PedidosChina() {
                               disabled
                             >
                               <Boxes className="h-4 w-4 sm:hidden" />
-                              <span className="hidden sm:inline">Desempaquetar</span>
+                              <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.unpack')}</span>
                             </Button>
                           )}
                           <Button
@@ -1873,7 +1874,7 @@ export default function PedidosChina() {
                             }}
                           >
                             <List className="h-4 w-4" />
-                            <span className="hidden sm:inline">Ver pedidos</span>
+                            <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.viewOrders')}</span>
                           </Button>
                         </div>
                       </div>
@@ -1897,7 +1898,7 @@ export default function PedidosChina() {
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">Eliminar contenedor</h3>
+                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.deleteContainer.title')}</h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -1907,9 +1908,9 @@ export default function PedidosChina() {
                   <span className="text-2xl">×</span>
                 </Button>
               </div>
-              <p className="text-slate-600 mb-6">¿Seguro que deseas eliminar el contenedor #CONT-{String(modalEliminarContenedor.container?.containers_id ?? modalEliminarContenedor.container?.id ?? modalEliminarContenedor.container?.container_id ?? '')}? Esta acción no se puede deshacer.</p>
+              <p className="text-slate-600 mb-6">{t('chinese.ordersPage.modals.deleteContainer.question', { id: String(modalEliminarContenedor.container?.containers_id ?? modalEliminarContenedor.container?.id ?? modalEliminarContenedor.container?.container_id ?? '') })}</p>
               <div className="flex justify-end gap-3">
-                <Button variant="outline" onClick={closeModalEliminarContenedor} disabled={deletingContainer}>Cancelar</Button>
+                <Button variant="outline" onClick={closeModalEliminarContenedor} disabled={deletingContainer}>{t('chinese.ordersPage.modals.deleteContainer.cancel')}</Button>
                 <Button
                   className="bg-red-600 hover:bg-red-700"
                   disabled={deletingContainer}
@@ -1919,7 +1920,7 @@ export default function PedidosChina() {
                       const supabase = getSupabaseBrowserClient();
                       const id = modalEliminarContenedor.container?.container_id ?? modalEliminarContenedor.container?.containers_id ?? modalEliminarContenedor.container?.id;
                       if (!id) {
-                        toast({ title: 'No se pudo eliminar', description: 'ID de contenedor no válido.' });
+                        toast({ title: t('chinese.ordersPage.toasts.deleteErrorTitle'), description: t('chinese.ordersPage.toasts.invalidContainerIdDesc') });
                         return;
                       }
                       const { error } = await supabase
@@ -1928,10 +1929,10 @@ export default function PedidosChina() {
                         .eq('container_id', id);
                       if (error) {
                         console.error('Error al eliminar contenedor:', error);
-                        toast({ title: 'No se pudo eliminar el contenedor', description: 'Intenta nuevamente.' });
+                        toast({ title: t('chinese.ordersPage.toasts.deleteContainerErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
                         return;
                       }
-                      toast({ title: 'Contenedor eliminado', description: 'El contenedor fue eliminado correctamente.' });
+                      toast({ title: t('chinese.ordersPage.toasts.containerDeletedTitle'), description: t('chinese.ordersPage.toasts.containerDeletedDesc') });
                       closeModalEliminarContenedor();
                       fetchContainers();
                     } finally {
@@ -1939,7 +1940,7 @@ export default function PedidosChina() {
                     }
                   }}
                 >
-                  {deletingContainer ? 'Eliminando...' : 'Eliminar'}
+                  {deletingContainer ? t('chinese.ordersPage.modals.deleteContainer.deleting') : t('chinese.ordersPage.modals.deleteContainer.delete')}
                 </Button>
               </div>
             </div>
@@ -1964,7 +1965,7 @@ export default function PedidosChina() {
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">Crear caja</h3>
+                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.createBox.title')}</h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -1974,11 +1975,11 @@ export default function PedidosChina() {
                   <span className="text-2xl">×</span>
                 </Button>
               </div>
-              <p className="text-slate-600 mb-6">¿Deseas crear una nueva caja?</p>
+              <p className="text-slate-600 mb-6">{t('chinese.ordersPage.modals.createBox.question')}</p>
               <div className="flex justify-end gap-3">
-                <Button variant="outline" onClick={closeModalCrearCaja} disabled={creatingBox}>Cancelar</Button>
+                <Button variant="outline" onClick={closeModalCrearCaja} disabled={creatingBox}>{t('chinese.ordersPage.modals.createBox.cancel')}</Button>
                 <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleConfirmCrearCaja} disabled={creatingBox}>
-                  {creatingBox ? 'Creando...' : 'Aceptar'}
+                  {creatingBox ? t('chinese.ordersPage.modals.createBox.creating') : t('chinese.ordersPage.modals.createBox.accept')}
                 </Button>
               </div>
             </div>
@@ -1995,18 +1996,18 @@ export default function PedidosChina() {
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">Pedidos de la caja #BOX-{String(modalVerPedidos.boxId ?? '')}</h3>
+                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.boxOrders.title', { id: String(modalVerPedidos.boxId ?? '') })}</h3>
                 <Button variant="ghost" size="sm" onClick={closeModalVerPedidos} className="h-8 w-8 p-0">
                   <span className="text-2xl">×</span>
                 </Button>
               </div>
               {ordersByBoxLoading ? (
-                <p className="text-center text-sm text-slate-500 py-6">Cargando pedidos...</p>
+                <p className="text-center text-sm text-slate-500 py-6">{t('chinese.ordersPage.modals.boxOrders.loading')}</p>
               ) : ordersByBox.length === 0 ? (
                 <div className="text-center py-12">
                   <Package className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                  <h4 className="text-base font-medium text-slate-900 mb-2">No hay pedidos asociados a esta caja</h4>
-                  <p className="text-slate-500">Cuando asignes pedidos a esta caja, aparecerán aquí.</p>
+                  <h4 className="text-base font-medium text-slate-900 mb-2">{t('chinese.ordersPage.modals.boxOrders.noneTitle')}</h4>
+                  <p className="text-slate-500">{t('chinese.ordersPage.modals.boxOrders.noneSubtitle')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -2055,7 +2056,7 @@ export default function PedidosChina() {
                           className="flex items-center gap-1"
                         >
                           <Eye className="h-4 w-4" />
-                          <span className="hidden sm:inline">Ver</span>
+                          <span className="hidden sm:inline">{t('chinese.ordersPage.orders.view')}</span>
                         </Button>
                       </div>
                     </div>
@@ -2076,18 +2077,18 @@ export default function PedidosChina() {
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">Seleccionar caja para el pedido #ORD-{modalEmpaquetar?.pedidoId}</h3>
+                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.selectBoxForOrder.title', { id: modalEmpaquetar?.pedidoId })}</h3>
                 <Button variant="ghost" size="sm" onClick={closeModalEmpaquetar} className="h-8 w-8 p-0">
                   <span className="text-2xl">×</span>
                 </Button>
               </div>
               {boxesLoading ? (
-                <p className="text-center text-sm text-slate-500 py-6">Cargando cajas...</p>
+                <p className="text-center text-sm text-slate-500 py-6">{t('chinese.ordersPage.modals.selectBoxForOrder.loading')}</p>
               ) : boxes.length === 0 ? (
                 <div className="text-center py-12">
                   <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                  <h4 className="text-base font-medium text-slate-900 mb-2">No hay cajas disponibles</h4>
-                  <p className="text-slate-500">Crea una caja desde la pestaña Cajas para poder empaquetar.</p>
+                  <h4 className="text-base font-medium text-slate-900 mb-2">{t('chinese.ordersPage.modals.selectBoxForOrder.noneTitle')}</h4>
+                  <p className="text-slate-500">{t('chinese.ordersPage.modals.selectBoxForOrder.noneSubtitle')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -2115,14 +2116,14 @@ export default function PedidosChina() {
                         </div>
                         <div className="flex items-center gap-3">
                           <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                            {stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Empaquetada' : `Estado ${stateNum}`}
+                            {stateNum === 1 ? t('chinese.ordersPage.boxBadges.new') : stateNum === 2 ? t('chinese.ordersPage.boxBadges.packed') : t('chinese.ordersPage.boxBadges.state', { num: stateNum })}
                           </Badge>
                           <Button
                             size="sm"
                             className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700"
                             onClick={() => modalEmpaquetar?.pedidoId && handleSelectCajaForPedido(modalEmpaquetar.pedidoId, box)}
                           >
-                            Seleccionar
+                            {t('chinese.ordersPage.modals.selectBoxForOrder.select')}
                           </Button>
                         </div>
                       </div>
@@ -2146,7 +2147,7 @@ export default function PedidosChina() {
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">Eliminar caja</h3>
+                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.deleteBox.title')}</h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -2156,9 +2157,9 @@ export default function PedidosChina() {
                   <span className="text-2xl">×</span>
                 </Button>
               </div>
-              <p className="text-slate-600 mb-6">¿Seguro que deseas eliminar la caja #BOX-{String(modalEliminarCaja.box?.boxes_id ?? modalEliminarCaja.box?.id ?? modalEliminarCaja.box?.box_id ?? '')}? Esta acción no se puede deshacer.</p>
+              <p className="text-slate-600 mb-6">{t('chinese.ordersPage.modals.deleteBox.question', { id: String(modalEliminarCaja.box?.boxes_id ?? modalEliminarCaja.box?.id ?? modalEliminarCaja.box?.box_id ?? '') })}</p>
               <div className="flex justify-end gap-3">
-                <Button variant="outline" onClick={closeModalEliminarCaja} disabled={deletingBox}>Cancelar</Button>
+                <Button variant="outline" onClick={closeModalEliminarCaja} disabled={deletingBox}>{t('chinese.ordersPage.modals.deleteBox.cancel')}</Button>
                 <Button
                   className="bg-red-600 hover:bg-red-700"
                   disabled={deletingBox}
@@ -2169,7 +2170,7 @@ export default function PedidosChina() {
                       const supabase = getSupabaseBrowserClient();
                       const id = modalEliminarCaja.box?.box_id ?? modalEliminarCaja.box?.boxes_id ?? modalEliminarCaja.box?.id;
                       if (!id) {
-                        toast({ title: 'No se pudo eliminar', description: 'ID de caja no válido.' });
+                        toast({ title: t('chinese.ordersPage.toasts.deleteErrorTitle'), description: t('chinese.ordersPage.toasts.invalidBoxIdDesc') });
                         return;
                       }
                       const { error } = await supabase
@@ -2178,10 +2179,10 @@ export default function PedidosChina() {
                         .eq('box_id', id);
                       if (error) {
                         console.error('Error al eliminar caja:', error);
-                        toast({ title: 'No se pudo eliminar la caja', description: 'Intenta nuevamente.' });
+                        toast({ title: t('chinese.ordersPage.toasts.deleteBoxErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
                         return;
                       }
-                      toast({ title: 'Caja eliminada', description: 'La caja fue eliminada correctamente.' });
+                      toast({ title: t('chinese.ordersPage.toasts.boxDeletedTitle'), description: t('chinese.ordersPage.toasts.boxDeletedDesc') });
                       closeModalEliminarCaja();
                       fetchBoxes();
                     } finally {
@@ -2189,7 +2190,7 @@ export default function PedidosChina() {
                     }
                   }}
                 >
-                  {deletingBox ? 'Eliminando...' : 'Eliminar'}
+                  {deletingBox ? t('chinese.ordersPage.modals.deleteBox.deleting') : t('chinese.ordersPage.modals.deleteBox.delete')}
                 </Button>
               </div>
             </div>

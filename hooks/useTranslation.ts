@@ -4,13 +4,14 @@ export type TFunction = (key: string, options?: Record<string, any>) => string;
 import { useLanguage } from '@/lib/LanguageContext';
 import esTranslations from '@/lib/translations/es.json';
 import enTranslations from '@/lib/translations/en.json';
+import zhTranslations from '@/lib/translations/zk.json';
 
 type TranslationKey = string;
 
 const translations = {
   es: esTranslations,
   en: enTranslations,
-  zh: esTranslations // Por ahora usar español para chino, lo cambiaremos después
+  zh: zhTranslations
 };
 
 export function useTranslation() {

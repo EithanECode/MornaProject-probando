@@ -11,6 +11,7 @@ import Header from '@/components/layout/Header';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Calendar, Users, Package, Download, Filter, TrendingUp, Clock, CheckCircle, Eye, X, Star, FileText, ShoppingCart, Heart } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const Reportes = () => {
   const [metricasSatisfaccion, setMetricasSatisfaccion] = useState({ promedioGeneral: 0, totalResenas: 0, cincoEstrellas: 0, satisfechos: 0 });
@@ -31,6 +32,7 @@ const Reportes = () => {
   };
   const [metricasMeses, setMetricasMeses] = useState<MetricasMes[]>([]);
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState('mes');
   const [selectedMonth, setSelectedMonth] = useState('2024-08');
   const [selectedEmployee, setSelectedEmployee] = useState('todos');
@@ -109,7 +111,7 @@ const Reportes = () => {
             }
           })
           .catch((err) => {
-            setErrorPedidos('Error inesperado al obtener pedidos.');
+            setErrorPedidos(t('venezuela.reportes.list.errorOrders'));
             setReportesPedidos([]);
             console.error(err);
           });
@@ -122,10 +124,10 @@ const Reportes = () => {
   const renderMetricasPedido = () => {
     if (!metricasPedido) return null;
     const metricas = [
-      { label: 'Total Pedidos', value: metricasPedido.totalPedidos, icon: Package, color: 'text-blue-600' },
-      { label: 'Entregados', value: metricasPedido.entregados, icon: CheckCircle, color: 'text-green-600' },
-      { label: 'En Tránsito', value: metricasPedido.enTransito, icon: Clock, color: 'text-orange-600' },
-      { label: 'Valor Promedio', value: `$${metricasPedido.valorPromedio}`, icon: TrendingUp, color: 'text-purple-600' }
+      { label: t('venezuela.reportes.metrics.order.totalOrders'), value: metricasPedido.totalPedidos, icon: Package, color: 'text-blue-600' },
+      { label: t('venezuela.reportes.metrics.order.delivered'), value: metricasPedido.entregados, icon: CheckCircle, color: 'text-green-600' },
+      { label: t('venezuela.reportes.metrics.order.inTransit'), value: metricasPedido.enTransito, icon: Clock, color: 'text-orange-600' },
+      { label: t('venezuela.reportes.metrics.order.averageValue'), value: `$${metricasPedido.valorPromedio}`, icon: TrendingUp, color: 'text-purple-600' }
     ];
     return metricas.map(({ label, value, icon: Icon, color }, index) => (
       <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -147,10 +149,10 @@ const Reportes = () => {
     const satisfaccionPromedio = totalPedidosConReputacion > 0 ? (totalSatisfaccion / totalPedidosConReputacion).toFixed(2) : '0';
     
     const metricas = [
-      { label: 'Pedidos Totales', value: totalPedidos, icon: Package, color: 'text-blue-600' },
-      { label: 'Completados', value: completados, icon: CheckCircle, color: 'text-green-600' },
-      { label: 'Satisfacción', value: `${satisfaccionPromedio}/5`, icon: Star, color: 'text-yellow-600' },
-      { label: 'Ingresos', value: `$${ingresos}`, icon: TrendingUp, color: 'text-purple-600' }
+      { label: t('venezuela.reportes.metrics.month.totalOrders'), value: totalPedidos, icon: Package, color: 'text-blue-600' },
+      { label: t('venezuela.reportes.metrics.month.completed'), value: completados, icon: CheckCircle, color: 'text-green-600' },
+      { label: t('venezuela.reportes.metrics.month.satisfaction'), value: `${satisfaccionPromedio}/5`, icon: Star, color: 'text-yellow-600' },
+      { label: t('venezuela.reportes.metrics.month.revenue'), value: `$${ingresos}`, icon: TrendingUp, color: 'text-purple-600' }
     ];
     return metricas.map(({ label, value, icon: Icon, color }, index) => (
       <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -164,10 +166,10 @@ const Reportes = () => {
   // Renderizar métricas clave para el filtro 'satisfaccion'
   const renderMetricasSatisfaccion = () => {
     const metricas = [
-      { label: 'Promedio General', value: `${metricasSatisfaccion.promedioGeneral}/5`, icon: Star, color: 'text-yellow-600' },
-      { label: 'Total Reseñas', value: metricasSatisfaccion.totalResenas, icon: Users, color: 'text-blue-600' },
-      { label: '5 Estrellas', value: metricasSatisfaccion.cincoEstrellas, icon: Heart, color: 'text-green-600' },
-      { label: 'Satisfacción', value: `${metricasSatisfaccion.satisfechos}%`, icon: CheckCircle, color: 'text-purple-600' }
+      { label: t('venezuela.reportes.metrics.satisfaction.average'), value: `${metricasSatisfaccion.promedioGeneral}/5`, icon: Star, color: 'text-yellow-600' },
+      { label: t('venezuela.reportes.metrics.satisfaction.totalReviews'), value: metricasSatisfaccion.totalResenas, icon: Users, color: 'text-blue-600' },
+      { label: t('venezuela.reportes.metrics.satisfaction.fiveStars'), value: metricasSatisfaccion.cincoEstrellas, icon: Heart, color: 'text-green-600' },
+      { label: t('venezuela.reportes.metrics.satisfaction.satisfied'), value: `${metricasSatisfaccion.satisfechos}%`, icon: CheckCircle, color: 'text-purple-600' }
     ];
     return metricas.map(({ label, value, icon: Icon, color }, index) => (
       <div key={index} className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -285,10 +287,10 @@ const Reportes = () => {
         };
         // Campos personalizados para pedido
         const tableData = [
-          ['Total Pedidos', `${metricasPedido?.totalPedidos ?? ''}`],
-          ['Entregados', `${metricasPedido?.entregados ?? ''}`],
-          ['En Tránsito', `${metricasPedido?.enTransito ?? ''}`],
-          ['Valor Promedio', `$${metricasPedido?.valorPromedio ?? ''}`]
+          [t('venezuela.reportes.pdf.fields.totalOrders'), `${metricasPedido?.totalPedidos ?? ''}`],
+          [t('venezuela.reportes.pdf.fields.delivered'), `${metricasPedido?.entregados ?? ''}`],
+          [t('venezuela.reportes.pdf.fields.inTransit'), `${metricasPedido?.enTransito ?? ''}`],
+          [t('venezuela.reportes.pdf.fields.averageValue'), `$${metricasPedido?.valorPromedio ?? ''}`]
         ];
         // Encabezado
         doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
@@ -298,13 +300,13 @@ const Reportes = () => {
         doc.setFont('helvetica', 'bold');
         doc.setFillColor(255, 255, 255);
         doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
-        doc.text('PITA', margin + 10, 20, { align: 'center' });
+  doc.text(t('venezuela.reportes.pdf.headerBrand'), margin + 10, 20, { align: 'center' });
         doc.setFontSize(24);
         doc.setTextColor(255, 255, 255);
-        doc.text('RESUMEN DE PEDIDOS', pageWidth / 2, 22, { align: 'center' });
+  doc.text(t('venezuela.reportes.pdf.titles.ordersSummary'), pageWidth / 2, 22, { align: 'center' });
         let currentY = 50;
         autoTable(doc, {
-          head: [['Campo', 'Valor']],
+          head: [[t('venezuela.reportes.pdf.table.field'), t('venezuela.reportes.pdf.table.value')]],
           body: tableData,
           startY: currentY,
           margin: { left: margin, right: margin },
@@ -342,7 +344,7 @@ const Reportes = () => {
           doc.setFontSize(14);
           doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
           const tituloY = afterTableY - 20;
-          doc.text('Estados de Pedidos', pageWidth / 2, tituloY, { align: 'center' });
+          doc.text(t('venezuela.reportes.pdf.charts.orderStates'), pageWidth / 2, tituloY, { align: 'center' });
           const leftMargin = (pageWidth - imgWidth) / 2;
           doc.addImage(imgData, 'PNG', leftMargin, afterTableY, imgWidth, imgHeight);
         }
@@ -353,14 +355,14 @@ const Reportes = () => {
         doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
         doc.setFontSize(9);
         doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-        doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
+  doc.text(t('venezuela.reportes.pdf.brandLine'), pageWidth / 2, footerY, { align: 'center' });
         doc.setFontSize(8);
-        doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-        doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
+  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  doc.text(t('venezuela.reportes.pdf.contactLine'), pageWidth / 2, footerY + 7, { align: 'center' });
         doc.setFontSize(7);
         doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-        doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
-        doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+  doc.text(`${t('venezuela.reportes.pdf.generatedAt')} ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+  doc.text(t('venezuela.reportes.pdf.pageOf', { current: 1, total: 1 }), pageWidth - margin, footerY + 13, { align: 'right' });
         window.open(doc.output('bloburl'), '_blank');
       })();
       return;
@@ -384,13 +386,13 @@ const Reportes = () => {
       let tableData: [string, string][] = [];
       let title = '';
       if (activeFilter === 'mes' && 'mes' in reporte) {
-        title = 'RESUMEN MENSUAL';
+        title = t('venezuela.reportes.pdf.titles.monthlySummary');
         tableData = [
-          ['Periodo', reporte.mes.toUpperCase()],
-          ['Ingresos', `$${reporte.ingresos}`],
-          ['Total Pedidos', `${reporte.totalPedidos}`],
-          ['Completados', `${reporte.completados}`],
-          ['Satisfacción', `${reporte.satisfaccion}/5`]
+          [t('venezuela.reportes.pdf.fields.period'), reporte.mes.toUpperCase()],
+          [t('venezuela.reportes.pdf.fields.revenue'), `$${reporte.ingresos}`],
+          [t('venezuela.reportes.pdf.fields.totalOrders'), `${reporte.totalPedidos}`],
+          [t('venezuela.reportes.pdf.fields.completed'), `${reporte.completados}`],
+          [t('venezuela.reportes.pdf.fields.satisfaction'), `${reporte.satisfaccion}/5`]
         ];
       }
       // ...existing code para PDF mensual...
@@ -401,13 +403,13 @@ const Reportes = () => {
       doc.setFont('helvetica', 'bold');
       doc.setFillColor(255, 255, 255);
       doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
-      doc.text('PITA', margin + 10, 20, { align: 'center' });
+  doc.text(t('venezuela.reportes.pdf.headerBrand'), margin + 10, 20, { align: 'center' });
       doc.setFontSize(24);
       doc.setTextColor(255, 255, 255);
       doc.text(title, pageWidth / 2, 22, { align: 'center' });
       let currentY = 50;
       autoTable(doc, {
-        head: [['Campo', 'Valor']],
+        head: [[t('venezuela.reportes.pdf.table.field'), t('venezuela.reportes.pdf.table.value')]],
         body: tableData,
         startY: currentY,
         margin: { left: margin, right: margin },
@@ -439,14 +441,14 @@ const Reportes = () => {
       doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
       doc.setFontSize(9);
       doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-      doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
+  doc.text(t('venezuela.reportes.pdf.brandLine'), pageWidth / 2, footerY, { align: 'center' });
       doc.setFontSize(8);
-      doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-      doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
+  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  doc.text(t('venezuela.reportes.pdf.contactLine'), pageWidth / 2, footerY + 7, { align: 'center' });
       doc.setFontSize(7);
       doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-      doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
-      doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+  doc.text(`${t('venezuela.reportes.pdf.generatedAt')} ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+  doc.text(t('venezuela.reportes.pdf.pageOf', { current: 1, total: 1 }), pageWidth - margin, footerY + 13, { align: 'right' });
       window.open(doc.output('bloburl'), '_blank');
     })();
   };
@@ -493,17 +495,17 @@ const Reportes = () => {
     doc.setFont('helvetica', 'bold');
     doc.setFillColor(255, 255, 255);
     doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
-    doc.text('PITA', margin + 10, 20, { align: 'center' });
+  doc.text(t('venezuela.reportes.pdf.headerBrand'), margin + 10, 20, { align: 'center' });
     doc.setFontSize(24);
     doc.setTextColor(255, 255, 255);
-    doc.text('RESUMEN DE PEDIDO', pageWidth / 2, 22, { align: 'center' });
+  doc.text(t('venezuela.reportes.pdf.titles.ordersSummary'), pageWidth / 2, 22, { align: 'center' });
 
     let currentY = 50;
 
     // === MANEJO POR TIPO DE PEDIDO ===
     // Solo tabla de métricas agregadas
     autoTable(doc, {
-      head: [['Campo', 'Valor']],
+      head: [[t('venezuela.reportes.pdf.table.field'), t('venezuela.reportes.pdf.table.value')]],
       body: pedidoTable,
       startY: currentY,
       margin: { left: margin, right: margin },
@@ -546,7 +548,7 @@ const Reportes = () => {
   doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
   // Separar el título del gráfico
   const tituloY = afterTableY - 20;
-  doc.text('Tendencia Mensual', pageWidth / 2, tituloY, { align: 'center' });
+  doc.text(t('venezuela.reportes.pdf.charts.monthlyTrend'), pageWidth / 2, tituloY, { align: 'center' });
   // Calcular margen izquierdo para centrar
   const leftMargin = (pageWidth - imgWidth) / 2;
   doc.addImage(imgData, 'PNG', leftMargin, afterTableY, imgWidth, imgHeight);
@@ -559,14 +561,14 @@ const Reportes = () => {
     doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
     doc.setFontSize(9);
     doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-    doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
+  doc.text(t('venezuela.reportes.pdf.brandLine'), pageWidth / 2, footerY, { align: 'center' });
     doc.setFontSize(8);
-    doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-    doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
+  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  doc.text(t('venezuela.reportes.pdf.contactLine'), pageWidth / 2, footerY + 7, { align: 'center' });
     doc.setFontSize(7);
     doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-    doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
-    doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+  doc.text(`${t('venezuela.reportes.pdf.generatedAt')} ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+  doc.text(t('venezuela.reportes.pdf.pageOf', { current: 1, total: 1 }), pageWidth - margin, footerY + 13, { align: 'right' });
 
     window.open(doc.output('bloburl'), '_blank');
   };
@@ -592,7 +594,7 @@ const Reportes = () => {
         } ${theme === 'dark' ? 'bg-zinc-900' : 'bg-white'}`}>
           <div className="sticky top-0 bg-inherit border-b p-4 flex justify-between items-center">
             <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Detalles del Reporte
+              {t('venezuela.reportes.modal.title')}
             </h3>
             <button 
               onClick={cerrarModal}
@@ -606,11 +608,11 @@ const Reportes = () => {
               <div className="p-6 rounded-lg">
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="bg-blue-50 rounded-lg p-4 flex flex-col justify-center items-start">
-                    <span className="text-xs font-semibold text-gray-500 mb-1">PERIODO</span>
+                    <span className="text-xs font-semibold text-gray-500 mb-1">{t('venezuela.reportes.modal.monthly.period')}</span>
                     <span className="text-2xl font-bold text-blue-700">{selectedReport.mes.toUpperCase()}</span>
                   </div>
                   <div className="bg-green-50 rounded-lg p-4 flex flex-col justify-center items-start">
-                    <span className="text-xs font-semibold text-gray-500 mb-1">INGRESOS</span>
+                    <span className="text-xs font-semibold text-gray-500 mb-1">{t('venezuela.reportes.modal.monthly.revenue')}</span>
                     <span className="text-2xl font-bold text-green-600">${selectedReport.ingresos}</span>
                   </div>
                 </div>
@@ -618,17 +620,17 @@ const Reportes = () => {
                   <div className="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
                     <Package size={32} className="mb-2 text-gray-400" />
                     <span className="text-2xl font-bold text-[#202841]">{selectedReport.totalPedidos}</span>
-                    <span className="text-xs text-gray-500 mt-1">TOTAL PEDIDOS</span>
+                    <span className="text-xs text-gray-500 mt-1">{t('venezuela.reportes.modal.monthly.totalOrders')}</span>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
                     <CheckCircle size={32} className="mb-2 text-green-500" />
                     <span className="text-2xl font-bold text-[#202841]">{selectedReport.completados}</span>
-                    <span className="text-xs text-gray-500 mt-1">COMPLETADOS</span>
+                    <span className="text-xs text-gray-500 mt-1">{t('venezuela.reportes.modal.monthly.completed')}</span>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
                     <Star size={32} className="mb-2 text-yellow-500" />
                     <span className="text-2xl font-bold text-[#202841]">{selectedReport.satisfaccion}</span>
-                    <span className="text-xs text-gray-500 mt-1">SATISFACCION</span>
+                    <span className="text-xs text-gray-500 mt-1">{t('venezuela.reportes.modal.monthly.satisfaction')}</span>
                   </div>
                 </div>
                 <div className="pt-2">
@@ -662,22 +664,22 @@ const Reportes = () => {
                     }}
                   >
                     <Download size={20} />
-                    EXPORTAR COMO PDF
+                    {t('venezuela.reportes.modal.monthly.exportAsPdf')}
                   </button>
                 </div>
               </div>
             )}
             {activeFilter === 'pedido' && selectedReport && 'numeroPedido' in selectedReport && (
               <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Información del Pedido</h4>
+                <h4 className="font-medium mb-2 text-gray-900 dark:text-white">{t('venezuela.reportes.modal.order.infoTitle')}</h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  {'numeroPedido' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Número:</strong> {selectedReport.numeroPedido}</div>}
-                  {'cliente' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Cliente:</strong> {selectedReport.cliente}</div>}
-                  {'productName' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Producto:</strong> {selectedReport.productName}</div>}
-                  {'fechaPedido' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Fecha:</strong> {selectedReport.fechaPedido}</div>}
+                  {'numeroPedido' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>{t('venezuela.reportes.modal.order.fields.number')}</strong> {selectedReport.numeroPedido}</div>}
+                  {'cliente' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>{t('venezuela.reportes.modal.order.fields.client')}</strong> {selectedReport.cliente}</div>}
+                  {'productName' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>{t('venezuela.reportes.modal.order.fields.product')}</strong> {selectedReport.productName}</div>}
+                  {'fechaPedido' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>{t('venezuela.reportes.modal.order.fields.date')}</strong> {selectedReport.fechaPedido}</div>}
                   {'estado' in selectedReport && (
                     <div className="text-gray-700 dark:text-gray-300">
-                      <strong>Estado:</strong>
+                      <strong>{t('venezuela.reportes.modal.order.fields.status')}</strong>
                       <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
                         selectedReport.estado === 'Entregado' 
                           ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
@@ -689,8 +691,8 @@ const Reportes = () => {
                       </span>
                     </div>
                   )}
-                  {'valor' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Valor:</strong> ${selectedReport.valor}</div>}
-                  {'tiempoEntrega' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>Tiempo Entrega:</strong> {selectedReport.tiempoEntrega}</div>}
+                  {'valor' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>{t('venezuela.reportes.modal.order.fields.value')}</strong> ${selectedReport.valor}</div>}
+                  {'tiempoEntrega' in selectedReport && <div className="text-gray-700 dark:text-gray-300"><strong>{t('venezuela.reportes.modal.order.fields.deliveryTime')}</strong> {selectedReport.tiempoEntrega}</div>}
                 </div>
                 <div className="pt-4">
                   <button
@@ -721,7 +723,7 @@ const Reportes = () => {
                     }}
                   >
                     <Download size={20} />
-                    EXPORTAR COMO PDF
+                    {t('venezuela.reportes.modal.order.exportAsPdf')}
                   </button>
                 </div>
               </div>
@@ -730,12 +732,12 @@ const Reportes = () => {
             {activeFilter === 'satisfaccion' && selectedReport && 'periodo' in selectedReport && (
               <div className="space-y-4">
                 <div className="text-center bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Promedio General</h4>
+                  <h4 className="font-medium mb-2 text-gray-900 dark:text-white">{t('venezuela.reportes.modal.satisfaction.average')}</h4>
                   <p className="text-4xl font-bold text-yellow-600">{selectedReport.promedioGeneral}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">de 5 estrellas</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{t('venezuela.reportes.modal.satisfaction.outOf5')}</p>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                  <h4 className="font-medium mb-3 text-gray-900 dark:text-white">Distribución de Calificaciones</h4>
+                  <h4 className="font-medium mb-3 text-gray-900 dark:text-white">{t('venezuela.reportes.modal.satisfaction.distributionTitle')}</h4>
                   <div className="space-y-2">
                     {Object.entries(selectedReport.distribucion).reverse().map(([estrella, cantidad]) => (
                       <div key={estrella} className="flex items-center gap-3">
@@ -777,8 +779,8 @@ const Reportes = () => {
         <Header 
           notifications={0}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Reportes"
-          subtitle="Analiza el rendimiento y métricas de tu operación"
+          title={t('venezuela.reportes.title')}
+          subtitle={t('venezuela.reportes.subtitle')}
         />
 
 
@@ -790,17 +792,17 @@ const Reportes = () => {
           }>
             <CardHeader className="pb-0">
               <div className="flex items-center gap-2 mb-4">
-                <Filter size={20} className="text-gray-600" />
-                <CardTitle className={theme === 'dark' ? 'text-white' : 'text-black'}>Tipo de Reporte</CardTitle>
+        <Filter size={20} className="text-gray-600" />
+        <CardTitle className={theme === 'dark' ? 'text-white' : 'text-black'}>{t('venezuela.reportes.filters.title')}</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="pt-0 pb-4 md:pb-6">
               <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                 <div className="flex flex-wrap gap-2 md:gap-3">
                   {([
-                    { key: 'mes', label: 'Por Mes', icon: Calendar, color: 'bg-blue-500' },
-                    { key: 'pedido', label: 'Por Pedido', icon: ShoppingCart, color: 'bg-green-500' },
-                    { key: 'satisfaccion', label: 'Satisfacción Cliente', icon: Heart, color: 'bg-purple-500' }
+          { key: 'mes', label: t('venezuela.reportes.filters.types.month'), icon: Calendar, color: 'bg-blue-500' },
+          { key: 'pedido', label: t('venezuela.reportes.filters.types.order'), icon: ShoppingCart, color: 'bg-green-500' },
+          { key: 'satisfaccion', label: t('venezuela.reportes.filters.types.satisfaction'), icon: Heart, color: 'bg-purple-500' }
                   ] as { key: 'mes' | 'pedido' | 'satisfaccion'; label: string; icon: any; color: string }[]).map(({ key, label, icon: Icon, color }) => (
                         <button
                           key={key}
@@ -920,7 +922,7 @@ const Reportes = () => {
                   className="flex items-center gap-2 bg-[#202841] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
                 >
                   <Download size={20} />
-                  Exportar
+                  {t('venezuela.reportes.filters.export')}
                 </button>
               </div>
             </CardContent>
@@ -949,9 +951,9 @@ const Reportes = () => {
                       <YAxis stroke="#222" />
                       <Tooltip />
                       {/* Pendiente: amarillo, En tránsito: naranja, Completado: verde */}
-                      <Bar dataKey="Pendiente" fill="#fde047" name="Pendiente" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="En tránsito" fill="#fb923c" name="En tránsito" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="Completado" fill="#22c55e" name="Completado" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Pendiente" fill="#fde047" name={t('venezuela.reportes.statuses.pending')} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="En tránsito" fill="#fb923c" name={t('venezuela.reportes.statuses.inTransit')} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Completado" fill="#22c55e" name={t('venezuela.reportes.statuses.delivered')} radius={[4, 4, 0, 0]} />
                     </BarChart>
                   ) : activeFilter === 'mes' ? (
                     <LineChart data={datosGraficos.mes}>
@@ -988,7 +990,7 @@ const Reportes = () => {
               data-export={activeFilter === 'mes' ? 'metricas-clave' : undefined}
             >
               <CardHeader className="pb-0">
-                <CardTitle className={theme === 'dark' ? 'text-white' : 'text-black'}>Métricas Clave</CardTitle>
+                <CardTitle className={theme === 'dark' ? 'text-white' : 'text-black'}>{t('venezuela.reportes.cards.keyMetrics')}</CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="grid grid-cols-2 gap-3 md:gap-4 h-[250px] md:h-[300px] content-center">
@@ -1009,9 +1011,9 @@ const Reportes = () => {
             data-export={activeFilter === 'mes' ? 'lista-reportes-mes' : undefined}
             data-section="lista-reportes"
           >
-            <CardHeader className="pb-0">
+              <CardHeader className="pb-0">
               <CardTitle className={theme === 'dark' ? 'text-white' : 'text-black'}>
-                Lista de Reportes - {activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)}
+                {t('venezuela.reportes.list.title', { filter: activeFilter === 'mes' ? t('venezuela.reportes.filters.types.month') : activeFilter === 'pedido' ? t('venezuela.reportes.filters.types.order') : t('venezuela.reportes.filters.types.satisfaction') })}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
@@ -1024,9 +1026,9 @@ const Reportes = () => {
                       </div>
                       <div>
                         <h4 className="font-medium text-gray-900 dark:text-white text-sm md:text-base">{reporte.mes}</h4>
-                        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                          {`${reporte.totalPedidos} pedidos • ${reporte.satisfaccion}/5 ⭐ • $${reporte.ingresos}`}
-                        </p>
+                          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
+                            {t('venezuela.reportes.list.monthlyItem', { orders: reporte.totalPedidos, rating: reporte.satisfaccion, revenue: reporte.ingresos })}
+                          </p>
                       </div>
                     </div>
                     <button
@@ -1034,13 +1036,13 @@ const Reportes = () => {
                       className="flex items-center gap-2 bg-blue-600 text-white px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs md:text-sm"
                     >
                       <Eye className="md:w-4 md:h-4" />
-                      <span className="hidden sm:inline">Ver Detalles</span>
-                      <span className="sm:hidden">Ver</span>
+                        <span className="hidden sm:inline">{t('venezuela.reportes.list.viewDetails')}</span>
+                        <span className="sm:hidden">{t('venezuela.reportes.list.view')}</span>
                     </button>
                   </div>
                 ))}
                 {activeFilter === 'mes' && obtenerDatosReporte().length === 0 && (
-                  <div className="text-center text-gray-500 py-6 md:py-8 text-sm md:text-base">No hay reportes mensuales registrados.</div>
+                  <div className="text-center text-gray-500 py-6 md:py-8 text-sm md:text-base">{t('venezuela.reportes.list.emptyMonthly')}</div>
                 )}
 
                 {activeFilter === 'satisfaccion' && obtenerDatosReporte().length > 0 && obtenerDatosReporte().map((reporte: any) => (
@@ -1052,7 +1054,7 @@ const Reportes = () => {
                       <div>
                         <h4 className="font-medium text-gray-900 dark:text-white text-sm md:text-base">{reporte.periodo}</h4>
                         <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                          {`${reporte.promedioGeneral}/5 ⭐ • ${reporte.totalReseñas} reseñas`}
+                          {t('venezuela.reportes.list.satisfactionItem', { avg: reporte.promedioGeneral, reviews: reporte.totalReseñas })}
                         </p>
                       </div>
                     </div>
@@ -1061,13 +1063,13 @@ const Reportes = () => {
                       className="flex items-center gap-2 bg-blue-600 text-white px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs md:text-sm"
                     >
                       <Eye className="md:w-4 md:h-4" />
-                      <span className="hidden sm:inline">Ver Detalles</span>
-                      <span className="sm:hidden">Ver</span>
+                      <span className="hidden sm:inline">{t('venezuela.reportes.list.viewDetails')}</span>
+                      <span className="sm:hidden">{t('venezuela.reportes.list.view')}</span>
                     </button>
                   </div>
                 ))}
                 {activeFilter === 'satisfaccion' && obtenerDatosReporte().length === 0 && (
-                  <div className="text-center text-gray-500 py-6 md:py-8 text-sm md:text-base">No hay reportes de satisfacción registrados.</div>
+                  <div className="text-center text-gray-500 py-6 md:py-8 text-sm md:text-base">{t('venezuela.reportes.list.emptySatisfaction')}</div>
                 )}
                 {activeFilter === 'pedido' && errorPedidos && (
                   <div className="text-center text-red-500 py-6 md:py-8 text-sm md:text-base">{errorPedidos}</div>
@@ -1080,7 +1082,7 @@ const Reportes = () => {
                         <div className="font-bold text-base md:text-lg text-[#202841] dark:text-white">{pedido.numeroPedido}</div>
                         <div className="text-xs md:text-sm text-gray-700 dark:text-gray-300">
                           <span className="font-semibold">{pedido.productName}</span> &bull; {pedido.cliente} &bull; {pedido.estado} &bull; <span className="font-semibold">{pedido.valor}</span>
-                          &bull; {pedido.satisfaccion !== null ? `${pedido.satisfaccion}/5` : 'Sin calificar'}
+                           &bull; {pedido.satisfaccion !== null ? `${pedido.satisfaccion}/5` : t('venezuela.reportes.modal.order.notRated')}
                           {pedido.satisfaccion !== null && <Star className="md:w-4 md:h-4 inline ml-1 text-yellow-400" />}
                         </div>
                       </div>
@@ -1090,20 +1092,20 @@ const Reportes = () => {
                       className="flex items-center gap-2 bg-blue-600 text-white px-2 md:px-4 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs md:text-sm"
                     >
                       <Eye className="md:w-5 md:h-5" />
-                      <span className="hidden sm:inline">Ver detalles</span>
-                      <span className="sm:hidden">Ver</span>
+                      <span className="hidden sm:inline">{t('venezuela.reportes.list.viewDetails')}</span>
+                      <span className="sm:hidden">{t('venezuela.reportes.list.view')}</span>
                     </button>
                   </div>
                 ))}
                 {activeFilter === 'pedido' && !errorPedidos && reportesPedidos.length === 0 && (
-                  <div className="text-center text-gray-500 py-6 md:py-8 text-sm md:text-base">No hay pedidos registrados.</div>
+                  <div className="text-center text-gray-500 py-6 md:py-8 text-sm md:text-base">{t('venezuela.reportes.list.emptyOrders')}</div>
                 )}
 
                 {/* Paginación para pedidos */}
                 {activeFilter === 'pedido' && !errorPedidos && reportesPedidos.length > 0 && totalPages > 1 && (
                   <div className="flex items-center justify-between mt-6 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, reportesPedidos.length)} de {reportesPedidos.length} pedidos
+                      {t('venezuela.reportes.pagination.showing', { from: ((currentPage - 1) * itemsPerPage) + 1, to: Math.min(currentPage * itemsPerPage, reportesPedidos.length), total: reportesPedidos.length })}
                     </div>
                     <div className="flex items-center gap-2">
                       <button
@@ -1111,7 +1113,7 @@ const Reportes = () => {
                         disabled={currentPage === 1}
                         className="px-3 py-1 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
-                        Anterior
+                        {t('venezuela.reportes.pagination.previous')}
                       </button>
                       
                       {/* Números de página */}
@@ -1149,7 +1151,7 @@ const Reportes = () => {
                         disabled={currentPage === totalPages}
                         className="px-3 py-1 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
-                        Siguiente
+                        {t('venezuela.reportes.pagination.next')}
                       </button>
                     </div>
                   </div>

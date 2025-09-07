@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -32,6 +33,7 @@ interface BoxItem { boxes_id?: number | string; id?: number | string; box_id?: n
 interface ContainerItem { containers_id?: number | string; id?: number | string; container_id?: number | string; state?: number; creation_date?: string; created_at?: string }
 
 export default function VenezuelaOrdersTabContent() {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -198,7 +200,7 @@ export default function VenezuelaOrdersTabContent() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm md:text-base font-medium text-yellow-700 dark:text-yellow-300">PENDIENTES</p>
+                <p className="text-sm md:text-base font-medium text-yellow-700 dark:text-yellow-300">{t('venezuela.pedidos.stats.pending')}</p>
                 <p className="text-2xl md:text-3xl font-bold text-yellow-800 dark:text-yellow-200">{orders.filter(o => o.state === 1).length}</p>
               </div>
               <div className="w-10 h-10 md:w-12 md:h-12 bg-yellow-100 dark:bg-yellow-800/30 rounded-lg flex items-center justify-center">
@@ -211,7 +213,7 @@ export default function VenezuelaOrdersTabContent() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm md:text-base font-medium text-green-700 dark:text-green-300">REVISANDO</p>
+                <p className="text-sm md:text-base font-medium text-green-700 dark:text-green-300">{t('venezuela.pedidos.stats.reviewing')}</p>
                 <p className="text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200">{orders.filter(o => o.state === 2).length}</p>
               </div>
               <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-800/30 rounded-lg flex items-center justify-center">
@@ -224,7 +226,7 @@ export default function VenezuelaOrdersTabContent() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm md:text-base font-medium text-purple-700 dark:text-purple-300">COTIZADOS</p>
+                <p className="text-sm md:text-base font-medium text-purple-700 dark:text-purple-300">{t('venezuela.pedidos.stats.quoted')}</p>
                 <p className="text-2xl md:text-3xl font-bold text-purple-800 dark:text-purple-200">{orders.filter(o => o.state === 3).length}</p>
               </div>
               <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 dark:bg-purple-800/30 rounded-lg flex items-center justify-center">
@@ -237,7 +239,7 @@ export default function VenezuelaOrdersTabContent() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm md:text-base font-medium text-blue-700 dark:text-blue-300">PROCESANDO</p>
+                <p className="text-sm md:text-base font-medium text-blue-700 dark:text-blue-300">{t('venezuela.pedidos.stats.processing')}</p>
                 <p className="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200">{orders.filter(o => o.state === 4).length}</p>
               </div>
               <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-800/30 rounded-lg flex items-center justify-center">
@@ -259,9 +261,9 @@ export default function VenezuelaOrdersTabContent() {
               className={`rounded-md transition-colors ${activeSubTab === tab ? 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700/60'}`}
               onClick={() => setActiveSubTab(tab)}
             >
-              {tab === 'pedidos' && 'Lista de pedidos'}
-              {tab === 'cajas' && 'Cajas'}
-              {tab === 'contenedores' && 'Contenedores'}
+              {tab === 'pedidos' && t('venezuela.pedidos.tabs.ordersList')}
+              {tab === 'cajas' && t('venezuela.pedidos.tabs.boxes')}
+              {tab === 'contenedores' && t('venezuela.pedidos.tabs.containers')}
             </Button>
           ))}
         </div>
@@ -275,23 +277,23 @@ export default function VenezuelaOrdersTabContent() {
           <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">Lista de pedidos</CardTitle>
+                <CardTitle className="text-lg font-semibold">{t('venezuela.pedidos.tabs.ordersList')}</CardTitle>
                 <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
-                  <Input placeholder="Buscar por cliente, producto o ID..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="h-10 w-56 md:w-64 px-3" />
+                  <Input placeholder={t('venezuela.pedidos.searchPlaceholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="h-10 w-56 md:w-64 px-3" />
                   <Select value={statusFilter} onValueChange={setStatusFilter as any}>
                     <SelectTrigger className="h-10 w-48 md:w-56 px-3 whitespace-nowrap truncate">
-                      <SelectValue placeholder="Estado" />
+                      <SelectValue placeholder={t('chinese.ordersPage.filters.status')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      <SelectItem value="pending">Pendiente</SelectItem>
-                      <SelectItem value="reviewing">Revisando</SelectItem>
-                      <SelectItem value="quoted">Cotizado</SelectItem>
-                      <SelectItem value="processing">Procesando</SelectItem>
+                      <SelectItem value="all">{t('chinese.ordersPage.filters.all')}</SelectItem>
+                      <SelectItem value="pending">{t('venezuela.pedidos.statusExtended.pending')}</SelectItem>
+                      <SelectItem value="reviewing">{t('venezuela.pedidos.statusExtended.reviewing')}</SelectItem>
+                      <SelectItem value="quoted">{t('venezuela.pedidos.statusExtended.quoted')}</SelectItem>
+                      <SelectItem value="processing">{t('venezuela.pedidos.statusExtended.processing')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button variant="outline" className="h-10 flex items-center gap-2" onClick={fetchOrders} disabled={loading}>
-                    <RefreshCw className="w-4 h-4" /> {loading ? '...' : 'Actualizar'}
+                    <RefreshCw className="w-4 h-4" /> {loading ? '...' : t('venezuela.pedidos.refresh')}
                   </Button>
                 </div>
               </div>
@@ -300,7 +302,7 @@ export default function VenezuelaOrdersTabContent() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
           {loading ? (
             <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
-              <CardContent className="p-12 text-center">Cargando pedidos...</CardContent>
+              <CardContent className="p-12 text-center">{t('venezuela.pedidos.loadingOrders')}</CardContent>
             </Card>
           ) : error ? (
             <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
@@ -310,8 +312,8 @@ export default function VenezuelaOrdersTabContent() {
             <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
               <CardContent className="p-12 text-center">
                 <Package className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">No hay pedidos</h3>
-                <p className="text-slate-600 dark:text-slate-400">Sin coincidencias con los filtros aplicados.</p>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{t('venezuela.pedidos.emptyOrdersTitle')}</h3>
+                <p className="text-slate-600 dark:text-slate-400">{t('venezuela.pedidos.emptyOrdersDesc')}</p>
               </CardContent>
             </Card>
           ) : (
@@ -326,25 +328,25 @@ export default function VenezuelaOrdersTabContent() {
                         <p className="text-sm text-slate-600 dark:text-slate-400">{order.id} - {order.clientName}</p>
                       </div>
                       <div className="flex gap-2 flex-wrap justify-end">
-                        {stateNum === 13 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">ENTREGADO</Badge>)}
-                        {stateNum === 12 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">LISTO</Badge>)}
-                        {stateNum === 11 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">RECIBIDO</Badge>)}
-                        {stateNum === 10 && (<Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 hover:ring-1 hover:ring-indigo-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-indigo-700/50">ADUANA</Badge>)}
-                        {stateNum === 9 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">LLEGÓ</Badge>)}
-                        {stateNum === 8 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">EN CAMINO</Badge>)}
-                        {stateNum === 1 && (<Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-yellow-700/50">PENDIENTE</Badge>)}
-                        {stateNum === 2 && (<Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50">REVISANDO</Badge>)}
-                        {stateNum === 3 && (<Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-50 hover:border-purple-300 hover:ring-1 hover:ring-purple-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-purple-700/50">COTIZADO</Badge>)}
-                        {stateNum === 4 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">PROC.</Badge>)}
-                        {(stateNum >= 5 && stateNum <= 7) && (<Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50">EN PROCESO</Badge>)}
+                        {stateNum === 13 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('admin.orders.status.entregado')}</Badge>)}
+                        {stateNum === 12 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">READY</Badge>)}
+                        {stateNum === 11 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">RECEIVED</Badge>)}
+                        {stateNum === 10 && (<Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 hover:ring-1 hover:ring-indigo-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-indigo-700/50">CUSTOMS</Badge>)}
+                        {stateNum === 9 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">ARRIVED</Badge>)}
+                        {stateNum === 8 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">IN TRANSIT</Badge>)}
+                        {stateNum === 1 && (<Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-yellow-700/50">{t('venezuela.pedidos.statusExtended.pending')}</Badge>)}
+                        {stateNum === 2 && (<Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50">{t('venezuela.pedidos.statusExtended.reviewing')}</Badge>)}
+                        {stateNum === 3 && (<Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-50 hover:border-purple-300 hover:ring-1 hover:ring-purple-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-purple-700/50">{t('venezuela.pedidos.statusExtended.quoted')}</Badge>)}
+                        {stateNum === 4 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">{t('venezuela.pedidos.statusExtended.processing')}</Badge>)}
+                        {(stateNum >= 5 && stateNum <= 7) && (<Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50">IN PROCESS</Badge>)}
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2 text-sm">
-                      <div className="flex items-center justify-between"><span>Cantidad:</span><span className="font-medium">{order.quantity}</span></div>
-                      <div className="flex items-center justify-between"><span>Entrega:</span><span className="font-medium">{order.deliveryType}</span></div>
-                      <div className="flex items-center justify-between"><span>Envío:</span><span className="font-medium">{order.shippingType}</span></div>
+                      <div className="flex items-center justify-between"><span>{t('admin.orders.form.quantity')}:</span><span className="font-medium">{order.quantity}</span></div>
+                      <div className="flex items-center justify-between"><span>{t('admin.orders.form.deliveryType')}:</span><span className="font-medium">{order.deliveryType}</span></div>
+                      <div className="flex items-center justify-between"><span>{t('admin.orders.pdf.shippingType')}:</span><span className="font-medium">{order.shippingType}</span></div>
                     </div>
                     <div className="flex gap-2">
                       <Button
@@ -360,7 +362,7 @@ export default function VenezuelaOrdersTabContent() {
                           }
                         }}
                       >
-                        <Eye className="w-4 h-4" /> Ver
+                        <Eye className="w-4 h-4" /> {t('admin.orders.actions.view')}
                       </Button>
                       <Button
                         size="sm"
@@ -381,7 +383,7 @@ export default function VenezuelaOrdersTabContent() {
                           } catch (e:any) { alert(e.message || 'Error'); }
                         }}
                       >
-                        {stateNum >= 13 ? (<><CheckCircle className="w-4 h-4 mr-2" />Entregado</>) : stateNum === 12 ? (<><CheckCircle className="w-4 h-4 mr-2" />Entregado</>) : stateNum === 11 ? (<><Package className="w-4 h-4 mr-2" />Recibido</>) : stateNum === 9 ? (<><Package className="w-4 h-4 mr-2" />Recibido</>) : stateNum === 8 ? (<><Package className="w-4 h-4 mr-2" />Recibido</>) : stateNum === 10 ? (<><Clock className="w-4 h-4 mr-2" />En aduana</>) : (stateNum >= 2 && stateNum <= 7) ? (<><Clock className="w-4 h-4 mr-2" />Esperando</>) : (<><Send className="w-4 h-4 mr-2" />Enviar</>)}
+                        {stateNum >= 13 ? (<><CheckCircle className="w-4 h-4 mr-2" />{t('admin.orders.status.entregado')}</>) : stateNum === 12 ? (<><CheckCircle className="w-4 h-4 mr-2" />{t('admin.orders.status.entregado')}</>) : stateNum === 11 ? (<><Package className="w-4 h-4 mr-2" />RECEIVED</>) : stateNum === 9 ? (<><Package className="w-4 h-4 mr-2" />RECEIVED</>) : stateNum === 8 ? (<><Package className="w-4 h-4 mr-2" />IN TRANSIT</>) : stateNum === 10 ? (<><Clock className="w-4 h-4 mr-2" />CUSTOMS</>) : (stateNum >= 2 && stateNum <= 7) ? (<><Clock className="w-4 h-4 mr-2" />WAITING</>) : (<><Send className="w-4 h-4 mr-2" />{t('venezuela.pedidos.actions.send')}</>)}
                       </Button>
                     </div>
                   </CardContent>
@@ -398,21 +400,21 @@ export default function VenezuelaOrdersTabContent() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Boxes className="h-5 w-5" /> Cajas
+                <Boxes className="h-5 w-5" /> {t('venezuela.pedidos.tabs.boxes')}
               </CardTitle>
               <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
-                <Input value={filtroCaja} onChange={(e)=>setFiltroCaja(e.target.value)} placeholder="Buscar por caja (ID)..." className="h-10 w-56 md:w-64 px-3" />
+                <Input value={filtroCaja} onChange={(e)=>setFiltroCaja(e.target.value)} placeholder={t('chinese.ordersPage.filters.searchBoxPlaceholder')} className="h-10 w-56 md:w-64 px-3" />
                 <Button variant="outline" size="sm" onClick={fetchBoxes} disabled={boxesLoading} className="h-10 flex items-center gap-1">
-                  <RefreshCw className="h-4 w-4" /> {boxesLoading ? '...' : 'Actualizar'}
+                  <RefreshCw className="h-4 w-4" /> {boxesLoading ? '...' : t('venezuela.pedidos.refresh')}
                 </Button>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             {boxes.length === 0 ? (
-              <div className="text-center py-10 text-sm text-slate-500">No hay cajas.</div>
+              <div className="text-center py-10 text-sm text-slate-500">{t('venezuela.pedidos.emptyBoxesTitle')}</div>
             ) : boxes.filter((b, idx) => { if (!filtroCaja) return true; const id = b.box_id ?? b.boxes_id ?? b.id ?? idx; return String(id).toLowerCase().includes(filtroCaja.toLowerCase()); }).length === 0 ? (
-              <div className="text-center py-10 text-sm text-slate-500">Sin coincidencias.</div>
+              <div className="text-center py-10 text-sm text-slate-500">{t('venezuela.pedidos.emptyBoxesDesc')}</div>
             ) : (
               <div className="space-y-3">
                 {boxes.filter((b, idx) => { if (!filtroCaja) return true; const id = b.box_id ?? b.boxes_id ?? b.id ?? idx; return String(id).toLowerCase().includes(filtroCaja.toLowerCase()); }).map((box, idx) => {
@@ -428,23 +430,23 @@ export default function VenezuelaOrdersTabContent() {
                           <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
                           <div className="flex items-center gap-4 text-xs text-slate-500">
                             <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created ? new Date(created).toLocaleString('es-ES') : '—'}</span>
-                            <span className="flex items-center gap-1"><List className="h-3 w-3" />Pedidos: {orderCountsByBoxMain[countKey as any] ?? 0}</span>
+                            <span className="flex items-center gap-1"><List className="h-3 w-3" />{t('venezuela.pedidos.labels.ordersCount')} {orderCountsByBoxMain[countKey as any] ?? 0}</span>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Empaquetada' : stateNum === 5 ? 'Contenedor recibido' : stateNum === 6 ? 'Recibida' : `Estado ${stateNum}`}</Badge>
+                        <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum === 1 ? t('venezuela.pedidos.boxesStatus.new') : stateNum === 2 ? t('venezuela.pedidos.boxesStatus.packed') : stateNum === 5 ? 'Container received' : stateNum === 6 ? 'Received' : `State ${stateNum}`}</Badge>
                         {stateNum === 5 && (
-                          <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-box', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'No se pudo actualizar la caja'); } await Promise.all([fetchBoxes(), fetchOrders()]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />Recibido</Button>
+                          <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-box', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'Error'); } await Promise.all([fetchBoxes(), fetchOrders()]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />RECEIVED</Button>
                         )}
-                        <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={() => { const boxId = box.box_id ?? box.boxes_id ?? box.id; setModalVerPedidos({ open: true, boxId }); if (boxId !== undefined) fetchOrdersByBoxId(boxId as any); }}><List className="h-4 w-4" />Ver pedidos</Button>
+                        <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={() => { const boxId = box.box_id ?? box.boxes_id ?? box.id; setModalVerPedidos({ open: true, boxId }); if (boxId !== undefined) fetchOrdersByBoxId(boxId as any); }}><List className="h-4 w-4" />{t('venezuela.pedidos.actions.viewOrders')}</Button>
                       </div>
                     </div>
                   );
                 })}
               </div>
             )}
-            {boxesLoading && <p className="text-center text-sm text-slate-500 mt-4">Cargando cajas...</p>}
+            {boxesLoading && <p className="text-center text-sm text-slate-500 mt-4">{t('venezuela.pedidos.loadingBoxes')}</p>}
           </CardContent>
         </Card>
       )}
@@ -454,19 +456,19 @@ export default function VenezuelaOrdersTabContent() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Boxes className="h-5 w-5" /> Contenedores
+                <Boxes className="h-5 w-5" /> {t('venezuela.pedidos.tabs.containers')}
               </CardTitle>
               <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
-                <Input value={filtroContenedor} onChange={(e)=>setFiltroContenedor(e.target.value)} placeholder="Buscar por contenedor (ID)..." className="h-10 w-56 md:w-64 px-3" />
+                <Input value={filtroContenedor} onChange={(e)=>setFiltroContenedor(e.target.value)} placeholder={t('chinese.ordersPage.filters.searchContainerPlaceholder')} className="h-10 w-56 md:w-64 px-3" />
                 <Button variant="outline" size="sm" onClick={fetchContainers} disabled={containersLoading} className="h-10 flex items-center gap-1"><RefreshCw className="h-4 w-4" /> {containersLoading ? '...' : 'Actualizar'}</Button>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             {containers.length === 0 ? (
-              <div className="text-center py-10 text-sm text-slate-500">No hay contenedores.</div>
+              <div className="text-center py-10 text-sm text-slate-500">{t('venezuela.pedidos.emptyContainersTitle')}</div>
             ) : containers.filter((c, idx) => { if (!filtroContenedor) return true; const id = c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }).length === 0 ? (
-              <div className="text-center py-10 text-sm text-slate-500">Sin coincidencias.</div>
+              <div className="text-center py-10 text-sm text-slate-500">{t('venezuela.pedidos.emptyContainersDesc')}</div>
             ) : (
               <div className="space-y-3">
                 {containers.filter((c, idx) => { if (!filtroContenedor) return true; const id = c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }).map((container, idx) => {
@@ -485,18 +487,18 @@ export default function VenezuelaOrdersTabContent() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 4 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum === 1 ? 'Nuevo' : stateNum === 4 ? 'Recibido' : `Estado ${stateNum}`}</Badge>
+                        <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 4 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum === 1 ? t('venezuela.pedidos.containersStatus.new') : stateNum === 4 ? 'Received' : `State ${stateNum}`}</Badge>
                         {stateNum === 3 && (
                           <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-container', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ containerId: container.container_id ?? container.containers_id ?? container.id ?? id, nextState: 4 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'No se pudo actualizar el contenedor'); } await Promise.all([fetchContainers(), fetchBoxes(), fetchOrders()]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />Recibido</Button>
                         )}
-                        <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={() => { const containerId = container.container_id ?? container.containers_id ?? container.id; setModalVerCajas({ open: true, containerId }); if (containerId !== undefined) fetchBoxesByContainerId(containerId as any); }}><List className="h-4 w-4" />Ver cajas</Button>
+                        <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={() => { const containerId = container.container_id ?? container.containers_id ?? container.id; setModalVerCajas({ open: true, containerId }); if (containerId !== undefined) fetchBoxesByContainerId(containerId as any); }}><List className="h-4 w-4" />{t('venezuela.pedidos.actions.viewBoxes')}</Button>
                       </div>
                     </div>
                   );
                 })}
               </div>
             )}
-            {containersLoading && <p className="text-center text-sm text-slate-500 mt-4">Cargando contenedores...</p>}
+            {containersLoading && <p className="text-center text-sm text-slate-500 mt-4">{t('venezuela.pedidos.loadingContainers')}</p>}
           </CardContent>
         </Card>
       )}
@@ -506,16 +508,16 @@ export default function VenezuelaOrdersTabContent() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Pedidos de la caja #BOX-{String(modalVerPedidos.boxId ?? '')}</h3>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('venezuela.pedidos.modalOrdersTitle', { boxId: String(modalVerPedidos.boxId ?? '') })}</h3>
               <Button variant="ghost" size="sm" onClick={() => setModalVerPedidos({ open: false })} className="h-8 w-8 p-0">✕</Button>
             </div>
             {ordersByBoxLoading ? (
-              <p className="text-center text-sm text-slate-500 py-6">Cargando pedidos...</p>
+              <p className="text-center text-sm text-slate-500 py-6">{t('venezuela.pedidos.loadingOrders')}</p>
             ) : ordersByBox.length === 0 ? (
               <div className="text-center py-12">
                 <Package className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                <h4 className="text-base font-medium text-slate-900 dark:text-white mb-2">No hay pedidos asociados a esta caja</h4>
-                <p className="text-slate-500 dark:text-slate-400">Cuando asignes pedidos a esta caja, aparecerán aquí.</p>
+                <h4 className="text-base font-medium text-slate-900 dark:text-white mb-2">{t('venezuela.pedidos.modalOrdersEmptyTitle')}</h4>
+                <p className="text-slate-500 dark:text-slate-400">{t('venezuela.pedidos.modalOrdersEmptyDesc')}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -528,7 +530,7 @@ export default function VenezuelaOrdersTabContent() {
                         <p className="text-sm text-slate-600 dark:text-slate-400">{o.productName}</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => { if (o.pdfRoutes) { const win = window.open(o.pdfRoutes, '_blank'); if (!win) alert('No se pudo abrir el PDF'); } else { alert('No hay PDF disponible'); } }} className="flex items-center gap-1"><Eye className="h-4 w-4" /> Ver</Button>
+                    <Button variant="outline" size="sm" onClick={() => { if (o.pdfRoutes) { const win = window.open(o.pdfRoutes, '_blank'); if (!win) alert('No se pudo abrir el PDF'); } else { alert('No hay PDF disponible'); } }} className="flex items-center gap-1"><Eye className="h-4 w-4" /> {t('admin.orders.actions.view')}</Button>
                   </div>
                 ))}
               </div>
@@ -541,16 +543,16 @@ export default function VenezuelaOrdersTabContent() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Cajas del contenedor #CONT-{String(modalVerCajas.containerId ?? '')}</h3>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('venezuela.pedidos.modalBoxesTitle', { containerId: String(modalVerCajas.containerId ?? '') })}</h3>
               <Button variant="ghost" size="sm" onClick={() => setModalVerCajas({ open: false })} className="h-8 w-8 p-0">✕</Button>
             </div>
             {boxesByContainerLoading ? (
-              <p className="text-center text-sm text-slate-500 py-6">Cargando cajas...</p>
+              <p className="text-center text-sm text-slate-500 py-6">{t('venezuela.pedidos.loadingBoxes')}</p>
             ) : boxesByContainer.length === 0 ? (
               <div className="text-center py-12">
                 <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                <h4 className="text-base font-medium text-slate-900 dark:text-white mb-2">No hay cajas asociadas a este contenedor</h4>
-                <p className="text-slate-500 dark:text-slate-400">Cuando se asignen cajas a este contenedor, aparecerán aquí.</p>
+                <h4 className="text-base font-medium text-slate-900 dark:text-white mb-2">{t('venezuela.pedidos.modalBoxesEmptyTitle')}</h4>
+                <p className="text-slate-500 dark:text-slate-400">{t('venezuela.pedidos.modalBoxesEmptyDesc')}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -566,12 +568,12 @@ export default function VenezuelaOrdersTabContent() {
                           <h3 className="font-semibold text-slate-900 dark:text-white">#BOX-{id}</h3>
                           <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
                             <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created ? new Date(created).toLocaleString('es-ES') : '—'}</span>
-                            <span className="flex items-center gap-1"><List className="h-3 w-3" />Pedidos: {orderCountsByBox[id as any] ?? 0}</span>
+                            <span className="flex items-center gap-1"><List className="h-3 w-3" />{t('venezuela.pedidos.labels.ordersCount')} {orderCountsByBox[id as any] ?? 0}</span>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum === 1 ? 'Nueva' : stateNum === 2 ? 'Empaquetada' : stateNum === 5 ? 'Contenedor recibido' : stateNum === 6 ? 'Recibida' : `Estado ${stateNum}`}</Badge>
+                        <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum === 1 ? t('venezuela.pedidos.boxesStatus.new') : stateNum === 2 ? t('venezuela.pedidos.boxesStatus.packed') : stateNum === 5 ? 'Container received' : stateNum === 6 ? 'Received' : `State ${stateNum}`}</Badge>
                         {stateNum === 5 && (
                           <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-box', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'No se pudo actualizar la caja'); } await Promise.all([ modalVerCajas.containerId ? fetchBoxesByContainerId(modalVerCajas.containerId) : Promise.resolve(), fetchOrders() ]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />Recibido</Button>
                         )}

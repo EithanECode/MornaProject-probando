@@ -184,8 +184,8 @@ export default function ConfiguracionPage() {
                 </Button>
                 
                 <div>
-                  <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Gestión del Sistema</h1>
-                  <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Ajuste los parametros de gestión del sistema</p>
+                  <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('admin.management.header.title')}</h1>
+                  <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('admin.management.header.subtitle')}</p>
                 </div>
               </div>
               
@@ -193,7 +193,7 @@ export default function ConfiguracionPage() {
                 {lastSaved && (
                   <div className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                     <Clock className="w-4 h-4 inline mr-1" />
-                    Guardado: {lastSaved.toLocaleString('es-VE')}
+                    {t('admin.management.header.lastSaved')} {lastSaved.toLocaleString('es-VE')}
                   </div>
                 )}
                 <Button 
@@ -317,7 +317,7 @@ export default function ConfiguracionPage() {
                     </div>
                     
                     <Badge variant="outline" className="w-full justify-center">
-                      ETA: {config.airDeliveryDays.min}-{config.airDeliveryDays.max} días
+                      {t('common.eta')}: {config.airDeliveryDays.min}-{config.airDeliveryDays.max} {t('common.dias')}
                     </Badge>
                   </CardContent>
                 </Card>
@@ -330,12 +330,12 @@ export default function ConfiguracionPage() {
 {t('admin.management.shipping.seaEconomic')}
                     </CardTitle>
                     <CardDescription className="text-black text-sm">
-                      Opciones y costos para envíos por barco
+                      {t('admin.management.shipping.seaDescription')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="seaRate" className="text-sm md:text-base">Tarifa por Metro Cúbico</Label>
+                      <Label htmlFor="seaRate" className="text-sm md:text-base">{t('admin.management.shipping.ratePerCubicMeter')}</Label>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                         <Input
@@ -353,14 +353,14 @@ export default function ConfiguracionPage() {
                           className="pl-10"
                         />
                       </div>
-                      <p className="text-xs text-slate-500">Costo por metro cúbico</p>
+                      <p className="text-xs text-slate-500">{t('admin.management.shipping.costPerCubicMeter')}</p>
                     </div>
                     
                     <Separator />
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="seaMin" className="text-sm">Días Mínimos</Label>
+                        <Label htmlFor="seaMin" className="text-sm">{t('admin.management.shipping.minDays')}</Label>
                         <Input
                           id="seaMin"
                           type="number"
@@ -378,7 +378,7 @@ export default function ConfiguracionPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="seaMax" className="text-sm">Días Máximos</Label>
+                        <Label htmlFor="seaMax" className="text-sm">{t('admin.management.shipping.maxDays')}</Label>
                         <Input
                           id="seaMax"
                           type="number"
@@ -398,7 +398,7 @@ export default function ConfiguracionPage() {
                     </div>
                     
                     <Badge variant="outline" className="w-full justify-center">
-                      ETA: {config.seaDeliveryDays.min}-{config.seaDeliveryDays.max} días
+                      {t('common.eta')}: {config.seaDeliveryDays.min}-{config.seaDeliveryDays.max} {t('common.dias')}
                     </Badge>
                   </CardContent>
                 </Card>
@@ -415,12 +415,12 @@ export default function ConfiguracionPage() {
 {t('admin.management.financial.exchangeRate')}
                     </CardTitle>
                     <CardDescription className="text-black text-sm">
-                      Valor del dólar estadounidense
+                      {t('admin.management.financial.usdValue')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="usdRate" className="text-sm md:text-base">1 USD = X Bs</Label>
+                      <Label htmlFor="usdRate" className="text-sm md:text-base">{t('admin.management.financial.usdRate')}</Label>
                       <Input
                         id="usdRate"
                         type="number"
@@ -438,7 +438,7 @@ export default function ConfiguracionPage() {
                     <Alert>
                       <CheckCircle className="h-4 w-4" />
                       <AlertDescription>
-                        Actualizar diariamente según el mercado paralelo
+                        {t('admin.management.financial.updateDaily')}
                       </AlertDescription>
                     </Alert>
                   </CardContent>
@@ -448,15 +448,15 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Percent className="w-5 h-5 mr-2 text-purple-600" />
-                      Márgenes y Descuentos
+                      {t('admin.management.financial.marginsDiscounts')}
                     </CardTitle>
                     <CardDescription className="text-black text-sm">
-                      Configuración de rentabilidad
+                      {t('admin.management.financial.profitabilityConfig')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="profit" className="text-sm md:text-base">Margen de Ganancia (%)</Label>
+                      <Label htmlFor="profit" className="text-sm md:text-base">{t('admin.management.financial.profitMargin')}</Label>
                       <Input
                         id="profit"
                         type="number"
@@ -471,7 +471,7 @@ export default function ConfiguracionPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="discount" className="text-sm md:text-base">Descuento por Pago en USD (%)</Label>
+                      <Label htmlFor="discount" className="text-sm md:text-base">{t('admin.management.financial.usdDiscount')}</Label>
                       <Input
                         id="discount"
                         type="number"
@@ -496,10 +496,10 @@ export default function ConfiguracionPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center text-black text-base md:text-lg">
                     <Bell className="w-5 h-5 mr-2 text-red-600" />
-                    Sistema de Notificaciones
+                    {t('admin.management.notifications.notificationSystem')}
                   </CardTitle>
                   <CardDescription className="text-black text-sm">
-                    Configuración de alertas y comunicaciones
+                    {t('admin.management.notifications.description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -507,8 +507,8 @@ export default function ConfiguracionPage() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                          <Label htmlFor="email-notifications" className="text-sm md:text-base">Notificaciones por Email</Label>
-                          <p className="text-xs md:text-sm text-slate-500">Enviar alertas por correo electrónico</p>
+                          <Label htmlFor="email-notifications" className="text-sm md:text-base">{t('admin.management.notifications.email')}</Label>
+                          <p className="text-xs md:text-sm text-slate-500">{t('admin.management.notifications.emailDesc')}</p>
                         </div>
                         <Switch
                           id="email-notifications"
@@ -519,8 +519,8 @@ export default function ConfiguracionPage() {
                       
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                          <Label htmlFor="whatsapp-notifications" className="text-sm md:text-base">Notificaciones por WhatsApp</Label>
-                          <p className="text-xs md:text-sm text-slate-500">Enviar alertas por WhatsApp</p>
+                          <Label htmlFor="whatsapp-notifications" className="text-sm md:text-base">{t('admin.management.notifications.whatsapp')}</Label>
+                          <p className="text-xs md:text-sm text-slate-500">{t('admin.management.notifications.whatsappDesc')}</p>
                         </div>
                         <Switch
                           id="whatsapp-notifications"
@@ -531,7 +531,7 @@ export default function ConfiguracionPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="alertDays" className="text-sm md:text-base">Alertar después de (días)</Label>
+                      <Label htmlFor="alertDays" className="text-sm md:text-base">{t('admin.management.notifications.alertAfterDays')}</Label>
                       <Input
                         id="alertDays"
                         type="number"
@@ -544,7 +544,7 @@ export default function ConfiguracionPage() {
                           }
                         }}
                       />
-                      <p className="text-xs text-slate-500">Días sin atención antes de generar alerta</p>
+                      <p className="text-xs text-slate-500">{t('admin.management.notifications.alertAfterDaysHelp')}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -559,25 +559,25 @@ export default function ConfiguracionPage() {
             <CardHeader>
               <CardTitle className="flex items-center text-black text-base md:text-lg">
                 <Calculator className="w-5 h-5 mr-2 text-blue-600" />
-                Resumen de Configuración Actual
+                {t('admin.management.summary.title')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div className="text-center p-3 bg-white rounded-lg">
-                  <p className="text-slate-600">Envío Aéreo</p>
+                  <p className="text-slate-600">{t('admin.management.summary.airShipping')}</p>
                   <p className="font-bold text-blue-600">{formatCurrency(config.airShippingRate)}/kg</p>
                 </div>
                 <div className="text-center p-3 bg-white rounded-lg">
-                  <p className="text-slate-600">Envío Marítimo</p>
+                  <p className="text-slate-600">{t('admin.management.summary.seaShipping')}</p>
                   <p className="font-bold text-teal-600">{formatCurrency(config.seaShippingRate)}/m³</p>
                 </div>
                 <div className="text-center p-3 bg-white rounded-lg">
-                  <p className="text-slate-600">Tasa USD</p>
+                  <p className="text-slate-600">{t('admin.management.summary.usdRate')}</p>
                   <p className="font-bold text-green-600">{config.usdRate} Bs</p>
                 </div>
                 <div className="text-center p-3 bg-white rounded-lg">
-                  <p className="text-slate-600">Margen</p>
+                  <p className="text-slate-600">{t('admin.management.summary.margin')}</p>
                   <p className="font-bold text-purple-600">{config.profitMargin}%</p>
               </div>
             </div>

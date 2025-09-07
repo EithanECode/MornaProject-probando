@@ -121,6 +121,7 @@ const TRACKING_UPDATES = [
 
 export default function VenezuelaDashboard() {
   const { vzlaId } = useVzlaContext();
+  const { t, language } = require('@/hooks/useTranslation').useTranslation();
   const { data: vzlaOrdersRaw } = require('@/hooks/use-vzla-orders').useVzlaOrders();
   const vzlaOrders = Array.isArray(vzlaOrdersRaw) ? vzlaOrdersRaw : [];
 
@@ -188,7 +189,7 @@ export default function VenezuelaDashboard() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+          <p className="mt-4 text-gray-600">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -210,8 +211,8 @@ export default function VenezuelaDashboard() {
         <Header 
           notifications={stats.pendingOrders + stats.activeChats}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title="Panel Venezuela"
-          subtitle="Revisión de pedidos, soporte al cliente y tracking"
+          title={t('venezuela.dashboard.title')}
+          subtitle={t('venezuela.dashboard.subtitle')}
         />
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
@@ -221,14 +222,14 @@ export default function VenezuelaDashboard() {
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h2>
-                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">Panel de Control - Empleado Venezuela</p>
-                  <p className="text-blue-200 mt-2 text-xs md:text-sm">Gestiona pedidos, soporte y tracking desde un solo lugar</p>
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">{t('venezuela.dashboard.welcome')}</h2>
+                  <p className="text-blue-100 text-sm md:text-base lg:text-lg">{t('venezuela.dashboard.panel')}</p>
+                  <p className="text-blue-200 mt-2 text-xs md:text-sm">{t('venezuela.dashboard.manage')}</p>
                 </div>
                 <div className="flex md:hidden lg:flex items-center space-x-4 md:space-x-6">
                   <div className="text-center">
                     <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{pedidosPendientes + pedidosTracking}</div>
-                    <p className="text-blue-100 text-xs md:text-sm">Tareas Pendientes</p>
+                    <p className="text-blue-100 text-xs md:text-sm">{t('venezuela.dashboard.pendingTasks')}</p>
                   </div>
                 </div>
               </div>
@@ -241,14 +242,14 @@ export default function VenezuelaDashboard() {
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-blue-800">Pedidos Pendientes</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-blue-800">{t('venezuela.dashboard.pendingOrders')}</CardTitle>
                   <div className="p-1 md:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Package className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{pedidosPendientes}</div>
-                  <p className="text-xs text-blue-700">Esperando revisión</p>
+                  <p className="text-xs text-blue-700">{t('venezuela.dashboard.pendingOrdersDesc')}</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                     <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / Math.max(totalPedidos, 1)) * 100}%`}}></div>
                   </div>
@@ -257,14 +258,14 @@ export default function VenezuelaDashboard() {
 
               <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-green-800">Chats Activos</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-green-800">{t('venezuela.dashboard.activeChats')}</CardTitle>
                   <div className="p-1 md:p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
                     <MessageSquare className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{stats.activeChats}</div>
-                  <p className="text-xs text-green-700">Clientes en línea</p>
+                  <p className="text-xs text-green-700">{t('venezuela.dashboard.activeChatsDesc')}</p>
                   <div className="mt-2 w-full bg-green-200 rounded-full h-2">
                     <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.activeChats / 5) * 100}%`}}></div>
                   </div>
@@ -273,14 +274,14 @@ export default function VenezuelaDashboard() {
 
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-purple-800">Tracking Activo</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-purple-800">{t('venezuela.dashboard.trackingUpdates')}</CardTitle>
                   <div className="p-1 md:p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
                     <MapPin className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{pedidosTracking}</div>
-                  <p className="text-xs text-purple-700">Pendientes</p>
+                  <p className="text-xs text-purple-700">{t('venezuela.dashboard.trackingUpdatesDesc')}</p>
                   <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
                     <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(pedidosTracking / Math.max(totalPedidos, 1)) * 100}%`}}></div>
                   </div>
@@ -289,7 +290,7 @@ export default function VenezuelaDashboard() {
 
               <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-orange-800">Satisfacción</CardTitle>
+                  <CardTitle className="text-xs md:text-sm font-medium text-orange-800">{t('venezuela.dashboard.satisfaction')}</CardTitle>
                   <div className="p-1 md:p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Star className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
@@ -306,8 +307,8 @@ export default function VenezuelaDashboard() {
             {/* Acciones Rápidas */}
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-lg md:text-xl font-semibold">Acciones Rápidas</CardTitle>
-                <p className="text-xs md:text-sm text-slate-600">Accede rápidamente a las funciones más utilizadas</p>
+                <CardTitle className="text-lg md:text-xl font-semibold">{t('venezuela.quickActions.title')}</CardTitle>
+                <p className="text-xs md:text-sm text-slate-600">{t('venezuela.quickActions.subtitle')}</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-4 lg:gap-6">
@@ -316,7 +317,7 @@ export default function VenezuelaDashboard() {
                       <div className="p-2 md:p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
                         <Package className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8 text-blue-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">Revisar Pedido</span>
+                      <span className="text-xs md:text-sm font-medium">{t('venezuela.quickActions.reviewOrder')}</span>
                     </Button>
                   </Link>
                   <Link href="/venezuela/soporte">
@@ -324,7 +325,7 @@ export default function VenezuelaDashboard() {
                       <div className="p-2 md:p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
                         <MessageSquare className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8 text-green-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">Chat Soporte</span>
+                      <span className="text-xs md:text-sm font-medium">{t('venezuela.quickActions.chatSupport')}</span>
                     </Button>
                   </Link>
                   <Link href="/venezuela/tracking">
@@ -332,14 +333,14 @@ export default function VenezuelaDashboard() {
                       <div className="p-2 md:p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
                         <MapPin className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8 text-purple-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">Actualizar Tracking</span>
+                      <span className="text-xs md:text-sm font-medium">{t('venezuela.quickActions.updateTracking')}</span>
                     </Button>
                   </Link>
                   <Button variant="outline" className="h-16 md:h-20 lg:h-24 flex flex-col gap-2 md:gap-3 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group w-full">
                     <div className="p-2 md:p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
                       <DollarSign className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8 text-red-600" />
                     </div>
-                    <span className="text-xs md:text-sm font-medium">Validar Pago</span>
+                    <span className="text-xs md:text-sm font-medium">{t('venezuela.quickActions.validatePayment')}</span>
                   </Button>
                 </div>
               </CardContent>

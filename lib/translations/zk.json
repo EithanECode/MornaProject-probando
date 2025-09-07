@@ -1,0 +1,2394 @@
+{
+  "auth": {
+    "common": {
+      "languageLabel": "语言:",
+      "email": "电子邮件",
+      "password": "密码",
+      "confirmPassword": "确认密码",
+      "fullName": "全名",
+      "fullNamePlaceholder": "你的名字",
+      "emailPlaceholder": "usuario@correo.com",
+      "passwordPlaceholder": "********",
+      "login": "登录",
+      "register": "注册",
+      "loadingLogin": "登录中...",
+      "loadingRegister": "创建账户...",
+      "forgotPassword": "忘记密码？",
+      "passwordRequired": "密码是必填项",
+      "invalidEmail": "邮箱无效",
+      "invalidEmailAlt": "邮箱格式不正确",
+      "nameInvalid": "姓名至少 3 个字母且仅包含有效字符。",
+      "passwordsNoMatch": "密码不匹配。",
+      "passwordLevelLow": "弱",
+      "passwordLevelMedium": "一般",
+      "passwordLevelStrong": "强",
+      "passwordLevelVeryStrong": "非常强",
+      "passwordMustBeNormal": "密码至少需要达到‘一般’强度才能注册。",
+      "passwordMustBeVeryStrong": "密码需要达到‘非常强’才能继续。",
+      "animationLoadError": "无法加载动画",
+      "registerAnimationLoadError": "无法加载注册动画"
+    },
+    "login": {
+      "title": "登录",
+      "welcomeBack": "欢迎回来！",
+      "welcomeMessage": "请使用你的个人信息登录以保持连接。",
+      "errorFallback": "登录错误"
+    },
+    "register": {
+      "title": "注册",
+      "helloFriend": "你好，朋友！",
+      "helloMessage": "输入你的个人信息，开始与我们一起的旅程。",
+      "success": "注册成功！请查看邮箱确认你的账号。",
+      "errorFallback": "注册错误"
+    },
+    "panels": {
+      "welcomeBack": "欢迎回来！",
+      "welcomeMessage": "请使用你的个人信息登录以保持连接。",
+      "helloFriend": "你好，朋友！",
+      "helloMessage": "输入你的个人信息，开始与我们一起的旅程。"
+    },
+    "passwordReset": {
+      "titles": {
+        "reset": "重置密码",
+        "verify": "验证代码",
+        "new": "新密码"
+      },
+      "descriptions": {
+        "enterEmail": "输入你的邮箱以重置密码",
+        "codeSent": "我们已发送验证码到 {{contact}}。请在此输入。",
+        "createNew": "创建一个新的安全密码"
+      },
+      "placeholders": {
+        "email": "输入你的邮箱",
+        "newPassword": "新密码",
+        "confirmPassword": "确认密码"
+      },
+      "buttons": {
+        "continue": "继续",
+        "back": "返回",
+        "reset": "重置密码"
+      },
+      "tooltips": {
+        "backToLogin": "返回登录"
+      },
+      "alts": {
+        "securityShield": "安全盾"
+      },
+      "passwordsNoMatchAlert": "密码不匹配。",
+      "resetSuccess": "密码重置成功！将跳转到登录页面。",
+      "resetError": "重置密码时发生错误。",
+      "sendCode": "发送代码",
+      "verifyCode": "验证代码",
+      "newPassword": "新密码",
+      "confirmNewPassword": "确认新密码"
+    }
+  },
+  "authPasswordResetModal": {
+    "title": "链接已发送",
+    "subtitle": "我们已发送重置链接至",
+    "checkInbox": "检查你的收件箱并按照说明操作。",
+    "resendQuestion": "没有收到？",
+    "resendLink": "重新发送",
+    "close": "关闭",
+    "sentTo": "发送到：{{email}}",
+    "copy": "复制邮箱",
+    "copied": "已复制",
+    "openMail": "打开邮箱",
+    "resending": "重新发送中...",
+    "resent": "链接已重新发送",
+    "info": "如果几分钟后仍未出现，请检查垃圾邮件文件夹。"
+  },
+  "passwordResetSide": {
+    "slides": [
+      { "title": "安全保障", "desc": "你的信息由银行级加密保护" },
+      { "title": "即时访问", "desc": "无需等待验证码即可重置密码" },
+      { "title": "邮箱找回", "desc": "使用你的邮箱进行安全访问" },
+      { "title": "简单流程", "desc": "仅需两步即可重置密码" }
+    ]
+  },
+  "client": {
+    "support": {
+      "title": "支持",
+      "subtitle": "需要帮助吗？我们随时为你服务",
+      "headerTitle": "客户支持",
+      "headerSubtitle": "有问题吗？我们的团队已准备好帮助你",
+      "onlineNow": "现在在线",
+      "responseTime": "回复时间：< 2 分钟",
+      "support": "支持",
+      "satisfaction": "满意度",
+      "channels": {
+  "chatTitle": "在线聊天",
+  "chatDesc": "与我们的支持团队实时聊天",
+  "available": "可用",
+  "phoneTitle": "电话",
+  "phoneDesc": "直接致电我们以获得即时协助",
+  "emailTitle": "电子邮件",
+  "emailDesc": "给我们发邮件，我们会在 24 小时内回复"
+      },
+  "schedule": {
+  "faq": {
+  "chatTitle": "支持聊天",
+  "agentOnline": "{{name}} - 在线",
+        "title": "常见问题",
+        "subtitle": "快速查找最常见问题的答案",
+        "placeholder": "搜索常见问题...",
+        "tags": {
+          "tracking": "追踪",
+          "envío": "运输",
+          "seguimiento": "追踪",
+          "entrega": "交付",
+          "tiempo": "时间",
+          "pago": "支付",
+          "tarjeta": "卡",
+          "paypal": "PayPal",
+          "transferencia": "转账",
+          "devolución": "退货",
+          "reembolso": "退款",
+          "producto": "产品",
+          "contraseña": "密码",
+          "cuenta": "账户",
+          "seguridad": "安全",
+          "factura": "发票",
+          "facturación": "账单",
+          "pdf": "PDF"
+        },
+        "all": "全部",
+        "categories": {
+          "tracking": "追踪",
+          "shipping": "运输",
+          "payments": "支付",
+          "returns": "退货",
+          "account": "账户",
+          "billing": "账单"
+        },
+        "q1": {
+          "question": "我如何追踪我的包裹？",
+          "answer": "你可以通过多种方式追踪你的包裹：\n\n1. 在我们的追踪页面输入追踪号\n2. 点击你收到的邮件中的链接\n3. 使用我们的移动应用\n4. 在实时聊天中询问\n\n追踪号格式为 TRK123456789，并会在发货后 24 小时内发送。如果找不到，请检查垃圾邮箱。"
+        },
+        "q2": {
+          "question": "交付需要多长时间？",
+          "answer": "交付时间因目的地和运输类型而异：\n\n• 国内：24-48 小时\n• 国际：3-10 个工作日\n• 快递：1-3 个工作日\n• 经济：5-15 个工作日\n\n时间可能因海关、天气或特殊事件而变化。"
+        },
+        "q3": {
+          "question": "你们接受哪些支付方式？",
+          "answer": "我们接受多种支付方式以方便你：\n\n• 信用/借记卡 (Visa, MasterCard, American Express)\n• PayPal\n• 银行转账\n• 移动支付\n• 加密货币 (Bitcoin, Ethereum)\n• 货到付款（仅限国内运输）\n\n所有支付都通过 SSL 加密安全处理。"
+        },
+        "q4": {
+          "question": "我如何退货？",
+          "answer": "要退货，请按照以下步骤：\n\n1. 前往你的账户中的“我的订单”\n2. 选择你想退的产品\n3. 点击“申请退货”\n4. 填写原因表格\n5. 打印退货标签\n6. 在 7 天内寄出产品\n\n如果产品损坏或与订单不符，退货免费。"
+        },
+        "q5": {
+          "question": "我如何修改我的密码？",
+          "answer": "要修改密码：\n\n1. 登录你的账户\n2. 前往“设置” → “安全”\n3. 点击“修改密码”\n4. 输入你当前的密码\n5. 输入新密码\n6. 确认新密码\n7. 点击“保存更改”\n\n修改成功后你会收到确认邮件。"
+        },
+        "q6": {
+          "question": "我如何获取我的发票？",
+          "answer": "要获取你的发票：\n\n1. 前往“我的订单”\n2. 选择具体订单\n3. 点击“下载发票”\n4. 发票将以 PDF 格式下载\n\n你也可以发送订单号到 facturacion@morna.com 来邮件索取发票。\n\n发票在支付确认后 24 小时内可用。"
+        }
+      },
+        "title": "支持时间",
+        "weekdays": "周一至周五",
+        "saturday": "周六",
+        "sunday": "周日",
+        "chat247": "聊天 24/7",
+        "automatic": "自动支持",
+        "open": "开放",
+        "limited": "有限",
+        "closed": "关闭"
+      }
+    },
+    "configuration": {
+      "security": {
+        "title": "安全设置",
+        "subtitle": "管理你的账户安全",
+        "twoFactor": "双重身份验证",
+        "twoFactorDesc": "为你的账户增加一层额外保护",
+        "activeSessions": "活动会话",
+        "lastAccess": "上次访问",
+        "ipAddress": "IP 地址",
+        "sessionInfo": "会话信息",
+        "closeAllSessions": "关闭所有会话",
+        "closeAllSessionsDesc": "关闭除当前会话外的所有活动会话",
+        "devicesConnected": "已连接 {{count}} 台设备",
+        "deviceConnected": "已连接 1 台设备",
+        "viewAllSessions": "查看所有会话",
+        "lastAccessIP": "上次访问 IP",
+        "saveButton": "保存配置",
+        "recentActivity": {
+          "title": "最近活动",
+          "loginSuccess": "登录成功",
+          "passwordChange": "密码更改",
+          "newDevice": "检测到新设备",
+          "timeAgo": {
+            "hours": "{{count}} 小时前",
+            "hour": "1 小时前",
+            "days": "{{count}} 天前",
+            "day": "1 天前",
+            "weeks": "{{count}} 周前",
+            "week": "1 周前"
+          }
+        }
+      },
+      "notifications": {
+        "title": "通知偏好",
+        "subtitle": "控制你想接收的通知",
+        "email": "电子邮件通知",
+        "emailDesc": "通过电子邮件接收重要通知",
+        "push": "推送通知",
+        "pushDesc": "在浏览器中接收推送通知",
+        "critical": "关键警报",
+        "criticalDesc": "关于关键系统问题的通知",
+        "marketing": "营销通知",
+        "marketingDesc": "特别优惠与促销内容",
+        "orders": "订单通知",
+        "ordersDesc": "关于你的订单状态的更新",
+        "dailyReports": "每日报告",
+        "dailyReportsDesc": "接收每日活动摘要",
+        "systemUpdates": "系统更新",
+        "systemUpdatesDesc": "关于新功能和更新的通知",
+        "saveButton": "保存偏好"
+      },
+      "title": "配置",
+      "subtitle": "管理你的资料、安全与偏好",
+      "tabs": {
+        "profile": "个人资料",
+        "security": "安全",
+        "notifications": "通知",
+        "preferences": "偏好"
+      },
+      "profile": {
+        "title": "个人信息",
+        "fields": {
+          "name": "全名",
+          "email": "电子邮箱",
+          "phone": "电话",
+          "language": "语言"
+        },
+        "placeholders": {
+          "name": "你的全名",
+          "email": "you@email.com",
+          "phone": "+1 555-123-4567",
+          "selectLanguage": "选择语言"
+        },
+        "profilePicture": {
+          "title": "头像",
+          "altText": "头像",
+          "uploadButton": "更换照片",
+          "deleteButton": "移除照片"
+        },
+        "accountInfo": {
+          "title": "账户信息",
+          "role": "角色",
+          "memberSince": "会员自",
+          "accountStatus": "账户状态",
+          "lastLogin": "上次登录",
+          "roles": {
+            "Administrador": "管理员",
+            "Cliente": "客户",
+            "Empleado China": "中国员工",
+            "Empleado Vzla": "委内瑞拉员工"
+          },
+          "statuses": {
+            "Activo": "启用",
+            "Inactivo": "停用"
+          },
+          "months": {
+            "Enero": "一月",
+            "Febrero": "二月",
+            "Marzo": "三月",
+            "Abril": "四月",
+            "Mayo": "五月",
+            "Junio": "六月",
+            "Julio": "七月",
+            "Agosto": "八月",
+            "Septiembre": "九月",
+            "Octubre": "十月",
+            "Noviembre": "十一月",
+            "Diciembre": "十二月"
+          }
+        }
+      },
+      "password": {
+        "title": "修改密码",
+        "fields": {
+          "current": "当前密码",
+          "new": "新密码",
+          "confirm": "确认新密码"
+        },
+        "placeholders": {
+          "current": "输入当前密码",
+          "new": "输入新密码",
+          "confirm": "确认新密码"
+        }
+      }
+  },
+  "dashboard": {
+      "title": "客户控制面板",
+      "subtitle": "欢迎回来，这是你的活动摘要",
+      "welcome": "欢迎回来！",
+      "panel": "控制面板 - 客户",
+      "manage": "在一个地方管理你的订单、追踪和支付",
+      "activeShipments": "进行中运输",
+      "totalOrders": "总订单",
+      "ordersPlaced": "已下订单",
+      "inTransit": "运输中",
+      "activeShipmentsShort": "活跃运输",
+      "totalSpent": "总支出",
+      "totalInvestment": "总投资",
+      "completed": "已完成",
+      "ordersDelivered": "已交付订单"
+  },
+  "quickActions": {
+      "title": "快速操作",
+      "subtitle": "快速访问最常用功能",
+      "newOrder": "创建新订单",
+      "newOrderDesc": "请求产品进口",
+      "trackOrder": "追踪订单",
+      "trackOrderDesc": "查看你的运输状态",
+      "support": "联系支持",
+      "supportDesc": "需要时获得帮助",
+      "payments": "我的支付",
+      "paymentsDesc": "管理你的交易"
+  },
+    "recentOrders": {
+    "payments": {
+      "title": "支付记录",
+      "subtitle": "查看并管理你所有已完成的支付",
+      "dashboard": "支付控制面板",
+      "totalPayments": "总支付次数",
+      "totalPaid": "总支付金额",
+      "paid": "已支付",
+      "paidDesc": "成功交易",
+      "pending": "待处理",
+      "pendingDesc": "等待确认",
+      "processing": "处理中",
+      "processingDesc": "处理进行中",
+      "failed": "失败",
+      "failedDesc": "失败交易",
+      "filtersTitle": "过滤与搜索",
+      "filtersSubtitle": "快速查找你的交易",
+      "searchPlaceholder": "按产品、订单或支付 ID 搜索...",
+      "status": "状态",
+      "allStatuses": "全部状态",
+      "paidStatus": "已支付",
+      "pendingStatus": "待处理",
+      "processingStatus": "处理中",
+      "failedStatus": "失败",
+      "refundedStatus": "已退款",
+      "method": "方式",
+      "allMethods": "全部方式",
+      "pago_movil": "移动支付",
+      "transfer": "转账",
+      "binance": "Binance USDT",
+      "zelle": "Zelle",
+      "paypal": "PayPal",
+      "card": "银行卡",
+      "date": "日期",
+      "allDates": "全部日期",
+      "today": "今天",
+      "week": "本周",
+      "month": "本月",
+      "transactions": "交易",
+      "amount": "金额：",
+      "methodLabel": "方式：",
+      "paymentDate": "支付日期：",
+      "confirmed": "已确认：",
+      "paymentDetails": "支付详情：",
+      "bank": "银行：",
+      "account": "账户：",
+      "phone": "电话：",
+      "wallet": "钱包：",
+      "email": "电子邮件：",
+      "reference": "参考：",
+      "viewDetails": "查看详情",
+      "retry": "重试",
+      "noTransactions": "无交易",
+      "noPayments": "暂无支付或无匹配过滤结果。"
+    },
+      "title": "我的订单",
+      "subtitle": "查看并管理你所有已下的订单",
+      "noOrders": "你没有注册的订单。",
+  "emptyHint": "创建后订单将显示在这里",
+      "status": "状态：",
+      "budget": "预算",
+      "details": "查看详情",
+      "search": "搜索订单、产品或追踪...",
+      "filter": "按状态过滤",
+      "table": {
+        "id": "订单 ID",
+        "product": "产品",
+        "description": "描述",
+        "amount": "金额",
+        "status": "状态",
+        "createdAt": "创建时间",
+        "actions": "操作"
+      },
+      "statuses": {
+        "pending": "待处理",
+        "quoted": "已报价",
+        "processing": "处理中",
+        "shipped": "已发货",
+        "delivered": "已交付",
+        "cancelled": "已取消"
+      },
+      "actions": {
+        "view": "查看详情",
+        "track": "追踪订单",
+        "pay": "支付",
+        "download": "下载 PDF"
+      },
+      "progress": "订单进度",
+      "estimatedDelivery": "预计交付",
+      "modal": {
+        "detailsTitle": "订单详情",
+        "detailsSubtitle": "订单完整信息与文件",
+        "product": "产品",
+        "amount": "金额",
+        "status": "状态",
+        "description": "描述",
+        "currentProgress": "当前进度",
+        "tracking": "追踪",
+        "downloadInvoice": "下载发票"
+      },
+      "newOrder": {
+        "step": "步骤 {{current}} / {{total}}",
+        "percentComplete": "已完成 {{percent}}%",
+        "productTab": "产品",
+        "shippingTab": "运输",
+        "summaryTab": "摘要",
+        "productName": "产品名称",
+        "productNamePlaceholder": "例如：iPhone 15 Pro Max",
+        "productDescription": "产品描述",
+        "productDescriptionPlaceholder": "详细描述你想进口的产品...",
+        "quantity": "数量",
+        "invalidQuantity": "数量必须大于零。",
+        "specifications": "技术规格",
+        "specificationsPlaceholder": "颜色、尺寸、型号、特性等",
+        "requestType": "请求类型",
+        "linkTitle": "产品链接",
+        "linkSubtitle": "粘贴商店链接",
+        "photoTitle": "照片 + 描述",
+        "photoSubtitle": "上传产品图片",
+        "productUrl": "产品 URL *",
+        "productUrlPlaceholder": "https://example.com/product",
+        "invalidUrl": "URL 无效。",
+        "productImage": "产品图片",
+        "change": "更换",
+        "delete": "删除",
+        "dragDrop": "将图片拖到此处或点击选择",
+        "selectImage": "选择图片",
+        "deliveryType": "运输类型",
+        "doorToDoor": "门到门",
+        "doorToDoorDesc": "我们到你地址取件",
+        "air": "空运",
+        "airDesc": "飞机快速运输",
+        "maritime": "海运",
+        "maritimeDesc": "船舶经济运输",
+        "deliveryVenezuela": "委内瑞拉交付选项",
+        "deliveryVenezuelaPlaceholder": "选择你希望收到订单的方式",
+        "pickup": "办公室自取",
+        "delivery": "送货上门",
+        "express": "特快交付",
+        "estimatedBudget": "预估预算 (USD)",
+        "estimatedBudgetPlaceholder": "例如：500",
+        "invalidBudget": "预估预算必须为有效金额。",
+        "summaryTitle": "订单摘要",
+        "almostReady": "快完成了！",
+        "reviewMessage": "你的请求将由我们的团队审核，你将在接下来的 24 小时内收到报价。",
+        "transitioning": "转换中...",
+        "previous": "上一步",
+        "next": "下一步",
+        "createOrder": "创建订单",
+        "dialogDescription": "按照步骤创建你的进口请求",
+        "stepTitles": {
+          "productInfo": "产品信息",
+          "shippingDetails": "运输详情",
+          "summaryConfirmation": "摘要与确认"
+        },
+        "stepDescriptions": {
+          "productInfo": "告诉我们你想进口的产品",
+          "shippingDetails": "配置你想如何接收订单",
+          "summaryConfirmation": "复核并确认你的请求"
+        },
+        "success": {
+          "title": "订单已创建！",
+          "message": "你的请求已成功发送",
+          "button": "很好！"
+        }
+      },
+      "paymentModal": {
+        "title": "进行支付",
+        "selectMethod": "选择你偏好的支付方式",
+        "confirmDetails": "确认你的支付详情",
+        "quoteValidUntil": "报价有效至：{{date}}",
+        "automatic": "自动",
+        "manual": "手动",
+        "paymentInfo": "支付信息",
+        "phoneNumber": "电话号码：",
+        "reference": "参考：",
+        "bank": "银行：",
+        "accountNumber": "账号：",
+        "email": "电子邮件：",
+        "importantInstructions": "重要说明：",
+        "instructions": {
+          "exactReference": "使用精确参考进行支付",
+          "saveReceipt": "保存支付凭证",
+          "processTime": "处理可能需要长达 24 小时",
+          "manualValidation": "我们的团队将手动验证你的支付"
+        },
+        "cancel": "取消",
+        "back": "返回",
+        "processing": "处理中...",
+        "confirmPayment": "确认支付"
+      },
+      "trackingModal": {
+        "trackingNumber": "追踪号",
+        "carrier": "承运商",
+        "estimatedDelivery": "预计交付",
+        "currentStatus": "当前状态",
+        "historyTitle": "追踪历史",
+        "states": {
+          "created": "订单已创建",
+          "processing": "处理中",
+          "shipped": "已发货",
+          "in_transit": "运输中",
+          "customs": "海关处理中",
+          "delivered": "已交付"
+        }
+      }
+    }
+  },
+
+  "sidebar":{
+    "dashboard": "控制面板",
+    "users": "用户",
+    "usuarios": "用户",
+    "orders": "订单",
+    "pedidos": "订单",
+    "reports": "报告",
+    "alerts": "警报",
+    "management": "管理",
+    "gestion": "管理",
+    "payments-validation": "支付",
+    "payments": "支付",
+    "support": "支持",
+    "settings": "设置",
+    "configuration": "配置",
+    "clients": "客户",
+    "tracking": "追踪",
+    "profile": "个人资料",
+    "logout": "退出登录",
+    "dashboardAdmin": "管理员面板",
+    "dashboardClient": "客户面板",
+    "dashboardChina": "中国面板",
+    "dashboardVzla": "委内瑞拉面板"
+  },
+
+  "admin": {
+    "configuration": {
+      "title": "配置",
+      "subtitle": "管理你的个人资料、安全与偏好设置",
+      "tabs": {
+        "profile": "个人资料",
+        "security": "安全",
+        "notifications": "通知",
+        "preferences": "偏好"
+      },
+      "profile": {
+        "title": "个人信息",
+        "subtitle": "更新你的个人信息与头像",
+        "fields": {
+          "name": "全名",
+          "email": "电子邮箱",
+          "phone": "电话",
+          "language": "语言",
+          "timezone": "时区",
+          "profilePicture": "头像"
+        },
+        "placeholders": {
+          "name": "你的全名",
+          "email": "you@email.com",
+          "phone": "+1 555-123-4567",
+          "selectLanguage": "选择语言"
+        },
+        "profilePicture": {
+          "title": "头像",
+          "subtitle": "更新你的个人头像",
+          "altText": "头像",
+          "uploadButton": "更换照片",
+          "deleteButton": "移除照片",
+          "supportedFormats": "JPG、PNG 或 GIF (最大 2MB)"
+        },
+        "accountInfo": {
+          "title": "账户信息",
+          "role": "角色",
+          "memberSince": "会员自",
+          "accountStatus": "账户状态",
+          "lastLogin": "上次登录",
+          "roles": {
+            "Administrador": "管理员",
+            "Cliente": "客户",
+            "Empleado China": "中国员工",
+            "Empleado Vzla": "委内瑞拉员工"
+          },
+          "statuses": {
+            "Activo": "启用",
+            "Inactivo": "停用"
+          },
+          "months": {
+            "Enero": "一月",
+            "Febrero": "二月",
+            "Marzo": "三月",
+            "Abril": "四月",
+            "Mayo": "五月",
+            "Junio": "六月",
+            "Julio": "七月",
+            "Agosto": "八月",
+            "Septiembre": "九月",
+            "Octubre": "十月",
+            "Noviembre": "十一月",
+            "Diciembre": "十二月"
+          }
+        }
+      },
+      "password": {
+        "title": "修改密码",
+        "subtitle": "使用强密码保护你的账户安全",
+        "fields": {
+          "current": "当前密码",
+          "new": "新密码",
+          "confirm": "确认新密码"
+        },
+        "placeholders": {
+          "current": "输入当前密码",
+          "new": "输入新密码",
+          "confirm": "确认新密码"
+        }
+      },
+      "notifications": {
+        "title": "通知偏好",
+        "subtitle": "控制你想接收的通知",
+        "email": "电子邮件通知",
+        "emailDesc": "通过电子邮件接收重要通知",
+        "push": "推送通知",
+        "pushDesc": "在浏览器中接收推送通知",
+        "critical": "关键警报",
+        "criticalDesc": "关于关键系统问题的通知",
+        "marketing": "营销通知",
+        "marketingDesc": "特别优惠与促销内容",
+        "orders": "订单通知",
+        "ordersDesc": "关于订单状态的更新",
+        "dailyReports": "每日报告",
+        "dailyReportsDesc": "接收每日活动摘要",
+        "systemUpdates": "系统更新",
+        "systemUpdatesDesc": "关于新功能和更新的通知",
+        "saveButton": "保存偏好"
+      },
+      "security": {
+        "title": "安全设置",
+        "subtitle": "管理你的账户安全",
+        "twoFactor": "双重身份验证",
+        "twoFactorDesc": "为你的账户增加额外一层保护",
+        "activeSessions": "活动会话",
+        "lastAccess": "上次访问",
+        "ipAddress": "IP 地址",
+        "sessionInfo": "会话信息",
+        "closeAllSessions": "关闭所有会话",
+        "closeAllSessionsDesc": "关闭除当前会话外的所有活动会话",
+        "devicesConnected": "已连接 {{count}} 台设备",
+        "deviceConnected": "已连接 1 台设备",
+        "viewAllSessions": "查看所有会话",
+        "lastAccessIP": "上次访问 IP",
+        "recentActivity": {
+          "title": "最近活动",
+          "loginSuccess": "登录成功",
+          "passwordChange": "密码更改",
+          "newDevice": "检测到新设备",
+          "timeAgo": {
+            "hours": "{{count}} 小时前",
+            "hour": "1 小时前",
+            "days": "{{count}} 天前",
+            "day": "1 天前",
+            "weeks": "{{count}} 周前",
+            "week": "1 周前"
+          }
+        }
+      },
+      "preferences": {
+        "title": "应用偏好",
+        "subtitle": "自定义你的应用体验",
+        "regional": {
+          "title": "区域设置"
+        },
+        "theme": {
+          "title": "应用主题",
+          "subtitle": "选择你偏好的界面主题",
+          "light": "浅色",
+          "dark": "深色",
+          "system": "系统",
+          "appearance": "外观",
+          "currentTheme": "当前主题",
+          "fontSize": "字体大小",
+          "interfaceDensity": "界面密度",
+          "fontSizes": {
+            "small": "小",
+            "medium": "中",
+            "large": "大"
+          },
+          "densities": {
+            "compact": "紧凑",
+            "comfortable": "舒适",
+            "spacious": "宽松"
+          }
+        },
+        "language": {
+          "title": "语言",
+          "subtitle": "选择你偏好的语言"
+        },
+        "timezone": {
+          "title": "时区",
+          "subtitle": "设置你的本地时区",
+          "placeholder": "选择你的时区"
+        },
+        "dateFormat": {
+          "title": "日期格式",
+          "placeholder": "选择格式"
+        },
+        "timeFormat": {
+          "title": "时间格式",
+          "placeholder": "选择格式",
+          "24h": "24 小时",
+          "12h": "12 小时 (AM/PM)"
+        }
+      },
+      "messages": {
+        "profileUpdated": "资料已更新",
+        "profileUpdatedDesc": "更改已成功保存，包括应用语言。",
+        "passwordUpdated": "密码已更新",
+        "passwordUpdatedDesc": "你的密码已成功更改。",
+        "passwordMismatch": "密码不匹配。",
+        "notificationsUpdated": "通知已更新",
+        "notificationsUpdatedDesc": "你的通知偏好已保存。",
+        "securityUpdated": "安全设置已更新",
+        "securityUpdatedDesc": "安全更改已成功应用。"
+      }
+    },
+    "dashboard": {
+      "title": "管理面板",
+      "subtitle": "Morna 系统全面监督",
+      "welcome": {
+        "title": "欢迎回来！",
+        "subtitle": "控制面板 - 主管理员",
+        "description": "从一个地方监督并管理整个系统"
+      },
+      "stats": {
+        "totalUsers": "总用户",
+        "activeUsers": "活跃用户",
+        "activeOrders": "活跃订单",
+        "inProcess": "进行中",
+        "criticalAlerts": "关键警报",
+        "requireAttention": "需要关注",
+        "totalRevenue": "总收入"
+      },
+      "quickActions": {
+        "title": "快速操作",
+        "subtitle": "快速访问管理功能",
+        "manageUsers": "管理用户",
+        "configuration": "配置",
+        "alerts": "警报",
+        "reports": "报告"
+      },
+      "recentActivity": {
+        "title": "最近系统活动",
+        "subtitle": "最新操作与系统事件",
+        "activities": {
+          "newUserRegistered": "新用户注册",
+          "paymentValidated": "支付已验证",
+          "criticalAlert": "关键警报",
+          "configurationUpdated": "配置已更新",
+          "system": "系统"
+        },
+        "timeAgo": {
+          "minAgo": "{{count}} 分钟前",
+          "minsAgo": "{{count}} 分钟前"
+        }
+      }
+    },
+    "users": {
+      "title": "用户管理",
+      "subtitle": "安全与访问",
+      "description": "用户与访问管理",
+      "listTitle": "用户列表",
+      "listDescription": "管理平台角色、状态与访问",
+      "search": "按姓名、邮箱或 ID 搜索...",
+      "filters": {
+        "all": "全部",
+        "allRoles": "全部角色",
+        "role": "按角色过滤",
+        "status": "按状态过滤"
+      },
+      "table": {
+        "name": "姓名",
+        "email": "邮箱",
+        "role": "角色",
+        "status": "状态",
+        "createdAt": "创建时间",
+        "actions": "操作",
+        "user": "用户"
+      },
+      "pagination": {
+        "previous": "上一页",
+        "next": "下一页",
+        "showing": "用户",
+        "perPage": "每页"
+      },
+      "actions": {
+        "edit": "编辑",
+        "delete": "删除",
+        "view": "查看"
+      },
+      "roles": {
+        "Cliente": "客户",
+        "Empleado China": "中国员工",
+        "Empleado Vzla": "委内瑞拉员工",
+        "Admin": "管理员"
+      },
+      "status": {
+        "activo": "启用",
+        "inactivo": "停用"
+      },
+      "form": {
+        "newUser": "新用户",
+        "createUser": "创建用户",
+        "editUser": "编辑用户",
+        "description": "定义角色、状态与联系方式。",
+        "fullName": "全名",
+        "email": "电子邮箱",
+        "role": "角色",
+        "selectRole": "选择角色",
+        "cancel": "取消",
+        "save": "保存",
+        "active": "启用"
+      },
+      "messages": {
+        "userCreated": "用户已创建",
+        "userCreatedDesc": "邀请已发送到邮箱。",
+        "changesSaved": "更改已保存",
+        "changesSavedDesc": "用户信息已更新。",
+        "errorSaving": "保存出错",
+        "couldNotSave": "无法保存"
+      },
+      "common": {
+        "loading": "加载中...",
+        "showing": "显示",
+        "of": "共",
+        "perPage": "每页"
+      },
+      "empty": {
+        "noUsersFound": "没有注册的用户。",
+        "tryAdjustFilters": "尝试调整过滤或创建新用户。"
+      }
+    },
+    "orders": {
+      "title": "订单管理",
+      "subtitle": "管理与追踪所有订单",
+      "chinaTabLabel": "中国",
+      "vzlaTabLabel": "委内瑞拉",
+      "listTitle": "订单列表",
+      "listDescription": "找到 {{count}} 个订单",
+      "search": "搜索订单...",
+      "stats": {
+        "totalOrders": "总订单",
+        "pending": "待处理",
+        "inTransit": "运输中",
+        "delivered": "已交付"
+      },
+      "filters": {
+        "all": "全部",
+        "allStates": "全部状态",
+        "status": "按状态过滤",
+        "client": "按客户过滤"
+      },
+      "table": {
+        "id": "ID",
+        "client": "客户",
+        "description": "描述",
+        "status": "状态",
+        "assignedTo": "分配",
+        "assigned": "已分配",
+        "time": "时间",
+        "days": "天",
+        "actions": "操作",
+        "daysElapsed": "经过天数"
+      },
+      "status": {
+        "cotizacion": "报价",
+        "esperando-pago": "等待支付",
+        "en-transito": "运输中",
+        "entregado": "已交付",
+        "pendiente-china": "待 中国",
+        "pendiente-vzla": "待 委内瑞拉",
+        "cancelado": "已取消"
+      },
+      "assigned": {
+        "china": "分配中国",
+        "vzla": "分配委内瑞拉"
+      },
+      "actions": {
+        "view": "查看",
+        "edit": "编辑",
+        "delete": "删除",
+        "export": "导出 PDF",
+        "create": "✨ 创建新订单",
+        "newOrder": "新订单",
+        "saveChanges": "保存更改",
+        "viewDocuments": "查看文件"
+      },
+      "modal": {
+        "createOrder": "创建新订单",
+        "orderDetails": "订单详情",
+        "createdBy": "创建者"
+      },
+      "deliveryTypes": {
+        "doorToDoor": "门到门",
+        "air": "空运",
+        "maritime": "海运"
+      },
+      "form": {
+        "productName": "产品名称",
+        "productNameLabel": "产品名称",
+        "productNamePlaceholder": "例如：iPhone 15 Pro Max",
+        "description": "描述",
+        "productDescription": "产品描述",
+        "productDescriptionPlaceholder": "描述产品...",
+        "quantity": "数量",
+        "invalidQuantity": "数量必须大于零。",
+        "requestType": "请求类型",
+        "productLink": "产品链接",
+        "productLinkDescription": "粘贴商店链接",
+        "photoDescription": "照片 + 描述",
+        "photoDescriptionDetail": "上传产品图片",
+        "productUrl": "产品 URL",
+        "productUrlPlaceholder": "https://example.com/product",
+        "invalidUrl": "URL 无效。",
+        "productImage": "产品图片",
+        "productImageAlt": "产品图片",
+        "dragImageHere": "拖拽图片到此或点击选择",
+        "selectImage": "选择图片",
+        "change": "更换",
+        "remove": "移除",
+        "specifications": "规格",
+        "deliveryType": "交付类型",
+        "deliveryVenezuela": "委内瑞拉交付",
+        "estimatedBudget": "预估预算",
+        "estimatedBudgetPlaceholder": "例如：500",
+        "invalidBudget": "预估预算必须为有效金额。",
+        "estimatedBudgetUsd": "预估预算 (USD)",
+        "selectClient": "选择客户",
+        "selectDelivery": "选择交付方式",
+        "selectLocation": "选择地点",
+        "pickupOffice": "办公室取件",
+        "homeDelivery": "送货上门",
+        "expressDelivery": "特快交付",
+        "client": "客户",
+        "clientId": "客户 ID",
+        "userName": "用户名",
+        "followSteps": "按步骤创建订单"
+      },
+      "steps": {
+        "step": "步骤",
+        "of": "共",
+        "completed": "% 已完成",
+        "step1": "客户 + 产品",
+        "step2": "运输与预算",
+        "step3": "摘要",
+        "previous": "上一步",
+        "next": "下一步"
+      },
+      "summary": {
+        "title": "请求摘要",
+        "client": "客户",
+        "product": "产品",
+        "quantity": "数量",
+        "shippingType": "运输类型",
+        "estimatedBudget": "预估预算",
+        "description": "描述",
+        "createOrder": "创建订单"
+      },
+      "pagination": {
+        "previous": "上一页",
+        "next": "下一页",
+        "results": "显示 {{from}} - {{to}} / 共 {{total}} 条",
+        "perPage": "每页"
+      },
+      "time": {
+        "days": "{{count}} 天"
+      },
+      "alerts": {
+        "onlyImages": "仅允许 JPG, JPEG, PNG 或 WEBP 图片。"
+      },
+      "messages": {
+        "createError": "无法创建订单。",
+        "deleteConfirm": "确定删除订单 #{{id}} 吗？该操作不可撤销。",
+        "updateError": "无法更新订单。",
+        "deleteError": "无法删除订单。"
+      },
+      "export": {
+        "reportTitle": "订单报告",
+        "fileName": "orders_report.pdf",
+        "button": "导出 PDF"
+      },
+      "pdf": {
+        "summaryTitle": "订单摘要",
+        "order": "订单：",
+        "date": "日期：",
+        "generatedAt": "生成：",
+        "field": "字段",
+        "value": "值",
+        "information": "信息",
+        "productUrl": "产品 URL",
+        "fields": {
+          "orderId": "订单 ID",
+          "clientId": "客户 ID",
+          "userName": "用户名",
+          "date": "日期",
+          "shippingType": "运输类型",
+          "deliveryVzla": "委内瑞拉交付",
+          "product": "产品",
+          "quantity": "数量",
+          "estimatedBudget": "预估预算",
+          "description": "描述",
+          "specifications": "规格",
+          "url": "产品 URL"
+        }
+      },
+      "common": {
+        "unknown": "未知"
+      },
+      "china": {
+        "tabLabel": "中国",
+        "title": "订单管理",
+        "subtitle": "管理并为客户订单报价",
+        "pageTitle": "订单",
+        "stats": {
+          "pending": "待处理",
+          "quoted": "已报价",
+          "processing": "处理中",
+          "shipped": "已发货",
+          "totalQuoted": "总报价"
+        },
+        "badges": {
+          "unknown": "未知",
+          "quoted": "已报价",
+          "processing": "处理中",
+          "readyToPack": "准备打包",
+          "inBox": "在箱中",
+          "inContainer": "在集装箱中",
+          "shippedVzla": "发往委内瑞拉",
+          "state": "状态 {{num}}"
+        },
+        "boxBadges": {
+          "new": "新建",
+          "packed": "已打包",
+          "inContainer": "在集装箱中",
+          "shipped": "已发货",
+          "state": "状态 {{num}}"
+        },
+        "containerBadges": {
+          "new": "新建",
+          "loading": "装载中",
+          "shipped": "已发货",
+          "state": "状态 {{num}}"
+        },
+        "tabs": {
+          "ordersList": "订单列表",
+          "boxes": "箱子",
+          "containers": "集装箱"
+        },
+        "filters": {
+          "searchClientPlaceholder": "按客户搜索...",
+          "searchBoxPlaceholder": "按箱 (ID) 搜索...",
+          "searchContainerPlaceholder": "按集装箱 (ID) 搜索...",
+          "status": "状态",
+          "all": "全部",
+          "pending": "待处理",
+          "quoted": "已报价",
+          "processing": "处理中",
+          "shipped": "已发货"
+        },
+        "orders": {
+          "listTitle": "订单列表",
+          "refreshing": "刷新中...",
+          "refresh": "刷新",
+          "order": "订单",
+          "client": "客户",
+          "qtyShort": "数量",
+          "qtyLabel": "数量：",
+          "view": "查看",
+          "pack": "打包",
+          "unpack": "解包",
+          "quote": "报价",
+          "editQuote": "编辑",
+          "notFoundTitle": "未找到订单",
+          "notFoundSubtitle": "尝试调整搜索过滤",
+          "noPdfAlert": "此订单无可用 PDF。",
+          "pdfMissingToastTitle": "无 PDF",
+          "pdfMissingToastDesc": "此订单无可用 PDF。",
+          "date": "日期"
+        },
+        "boxes": {
+          "title": "箱子",
+          "create": "创建箱子",
+          "noneTitle": "无箱子创建",
+          "noneSubtitle": "使用上方按钮创建你的第一个箱子。",
+          "notFoundTitle": "未找到箱子",
+          "notFoundSubtitle": "尝试调整 ID 搜索。",
+          "ordersCount": "订单：",
+          "pack": "打包",
+          "unpack": "解包",
+          "viewOrders": "查看订单",
+          "delete": "删除",
+          "loading": "加载箱子..."
+        },
+        "containers": {
+          "title": "集装箱",
+          "create": "创建集装箱",
+          "noneTitle": "无集装箱创建",
+          "noneSubtitle": "使用上方按钮创建你的第一个集装箱。",
+          "notFoundTitle": "未找到集装箱",
+          "notFoundSubtitle": "尝试调整 ID 搜索。",
+          "send": "发送",
+          "viewBoxes": "查看箱子",
+          "delete": "删除",
+          "loading": "加载集装箱...",
+          "sentToastTitle": "集装箱已发送",
+          "sentToastDesc": "集装箱 #CONT-{{id}} 已标记为已发货。",
+          "sendErrorTitle": "无法发送",
+          "sendErrorDesc": "稍后再试。"
+        },
+        "modals": {
+          "quote": {
+            "title": "订单报价",
+            "summaryTitle": "订单摘要",
+            "client": "客户：",
+            "product": "产品：",
+            "quantity": "数量：",
+            "specifications": "规格：",
+            "specificationsNA": "无",
+            "unitPriceLabel": "单价报价 *",
+            "totalToPay": "应付总额",
+            "cancel": "取消",
+            "sendQuote": "发送报价"
+          },
+          "selectContainerForBox": {
+            "title": "为箱 #BOX-{{id}} 选择集装箱",
+            "loading": "加载集装箱...",
+            "noneTitle": "无可用集装箱",
+            "noneSubtitle": "在集装箱标签中创建一个集装箱以打包。",
+            "select": "选择"
+          },
+          "createContainer": {
+            "title": "创建集装箱",
+            "question": "你想创建一个新的集装箱吗？",
+            "creating": "创建中...",
+            "accept": "接受",
+            "cancel": "取消"
+          },
+          "containerBoxes": {
+            "title": "集装箱 #CONT-{{id}} 的箱子",
+            "loading": "加载箱子...",
+            "noneTitle": "此集装箱无关联箱子",
+            "noneSubtitle": "当你将箱子分配到此集装箱时会显示在这里。",
+            "unpack": "解包",
+            "viewOrders": "查看订单"
+          },
+          "deleteContainer": {
+            "title": "删除集装箱",
+            "question": "确定要删除集装箱 #CONT-{{id}} 吗？此操作不可撤销。",
+            "deleting": "删除中...",
+            "delete": "删除",
+            "cancel": "取消"
+          },
+          "createBox": {
+            "title": "创建箱子",
+            "question": "你想创建一个新的箱子吗？",
+            "creating": "创建中...",
+            "accept": "接受",
+            "cancel": "取消"
+          },
+          "boxOrders": {
+            "title": "箱 #BOX-{{id}} 的订单",
+            "loading": "加载订单...",
+            "noneTitle": "此箱无关联订单",
+            "noneSubtitle": "当你将订单分配到此箱时会显示在这里。",
+            "view": "查看"
+          },
+          "selectBoxForOrder": {
+            "title": "为订单 #ORD-{{id}} 选择箱子",
+            "loading": "加载箱子...",
+            "noneTitle": "无可用箱子",
+            "noneSubtitle": "在箱子标签中创建一个箱子以打包。",
+            "select": "选择"
+          },
+          "deleteBox": {
+            "title": "删除箱子",
+            "question": "确定要删除箱子 #BOX-{{id}} 吗？此操作不可撤销。",
+            "deleting": "删除中...",
+            "delete": "删除",
+            "cancel": "取消"
+          }
+        },
+        "toasts": {
+          "boxCreateErrorTitle": "无法创建箱子",
+          "boxCreateErrorDesc": "几秒后再试。",
+          "boxCreatedTitle": "箱子已创建",
+          "boxCreatedDesc": "箱子创建成功。",
+          "boxesLoadErrorTitle": "无法加载箱子",
+          "boxesLoadErrorDesc": "稍后再试。",
+          "containerCreateErrorTitle": "无法创建集装箱",
+          "containerCreateErrorDesc": "几秒后再试。",
+          "containerCreatedTitle": "集装箱已创建",
+          "containerCreatedDesc": "集装箱创建成功。",
+          "containersLoadErrorTitle": "无法加载集装箱",
+          "containersLoadErrorDesc": "稍后再试。",
+          "containerInvalidTitle": "无效集装箱",
+          "containerInvalidDesc": "无法确定集装箱 ID。",
+          "notAllowedTitle": "不允许",
+          "assignBoxNotAllowedDesc": "你不能向已发货的集装箱分配箱子。",
+          "assignBoxErrorTitle": "未分配集装箱",
+          "assignBoxErrorDesc": "稍后再试。",
+          "boxAssignedTitle": "箱子已分配",
+          "boxAssignedDesc": "箱 #BOX-{{boxId}} 已分配到集装箱 #CONT-{{containerId}}。",
+          "unexpectedErrorTitle": "意外错误",
+          "unexpectedErrorDesc": "稍后再试。",
+          "boxUnpackErrorTitle": "无法解包",
+          "boxUnpackNotAllowedDesc": "你不能从已发货的集装箱中解包箱子。",
+          "boxUnpackedTitle": "箱子已解包",
+          "boxUnpackedDesc": "订单与箱 #BOX-{{boxId}} 已释放。",
+          "orderAssignBoxInvalidTitle": "无效箱子",
+          "orderAssignBoxInvalidDesc": "无法确定箱子 ID。",
+          "orderAssignNotAllowedDesc": "你不能在已发货的箱子中打包。",
+          "orderAssignedTitle": "订单已分配",
+          "orderAssignedDesc": "订单 #ORD-{{orderId}} 已分配到箱 {{boxId}}。",
+          "orderUnpackErrorTitle": "无法解包",
+          "orderNoBoxTitle": "订单无箱子",
+          "orderNoBoxDesc": "此订单未分配箱子。",
+          "orderUnpackNotAllowedDesc": "你不能从已发货的集装箱中解包订单。",
+          "orderUnpackedTitle": "订单已解包",
+          "orderUnpackedDesc": "订单 #ORD-{{orderId}} 已从箱子释放。",
+          "containerSendNotAllowedDesc": "你不能删除已发货的集装箱。",
+          "containerDeletedTitle": "集装箱已删除",
+          "containerDeletedDesc": "集装箱已成功删除。",
+          "containerDeleteErrorTitle": "无法删除集装箱",
+          "boxDeletedTitle": "箱子已删除",
+          "boxDeletedDesc": "箱子已成功删除。",
+          "boxDeleteErrorTitle": "无法删除箱子",
+          "orderPdfMissingTitle": "无 PDF",
+          "orderPdfMissingDesc": "此订单无可用 PDF。",
+          "boxDeleteIdInvalidTitle": "无法删除",
+          "boxDeleteIdInvalidDesc": "无效箱子 ID。",
+          "containerDeleteIdInvalidDesc": "无效集装箱 ID。"
+        }
+      }
+    },
+    "management": {
+      "title": "业务配置",
+      "subtitle": "运营与财务参数",
+      "header": {
+        "title": "系统管理",
+        "subtitle": "调整系统管理参数",
+        "lastSaved": "已保存："
+      },
+      "warning": {
+        "title": "警告：",
+        "description": "这些参数的更改会直接影响业务运营。请确保将任何修改传达给运营团队。"
+      },
+      "tabs": {
+        "shipping": "运输",
+        "financial": "财务",
+        "notifications": "通知"
+      },
+      "shipping": {
+        "airExpress": "空运快线",
+        "airDescription": "快速空运的费率与时间",
+        "seaShipping": "海运",
+        "seaEconomic": "海运经济",
+        "seaDescription": "经济海运的费率与时间",
+        "ratePerKg": "体积公斤费率",
+        "costPerKg": "每体积公斤成本",
+        "ratePerCubicMeter": "每立方米费率",
+        "costPerCubicMeter": "每立方米成本",
+        "minDays": "最少天数",
+        "maxDays": "最多天数"
+      },
+      "financial": {
+        "exchangeRate": "汇率",
+        "usdValue": "美元价值",
+        "usdRate": "1 USD = X Bs",
+        "updateDaily": "每日根据平行市场更新",
+        "marginsDiscounts": "利润与折扣",
+        "profitabilityConfig": "盈利配置",
+        "profitMargin": "利润率 (%)",
+        "usdDiscount": "美元支付折扣 (%)"
+      },
+      "notifications": {
+        "notificationSystem": "通知系统",
+        "description": "警报与通信配置",
+        "email": "电子邮件通知",
+        "emailDesc": "通过电子邮件发送警报",
+        "whatsapp": "WhatsApp 通知",
+        "whatsappDesc": "通过 WhatsApp 发送警报",
+        "alertAfterDays": "多少天后警报",
+        "alertAfterDaysHelp": "未处理天数后生成警报"
+      },
+      "common": {
+        "loading": "加载中..."
+      },
+      "actions": {
+        "save": "保存配置",
+        "saving": "保存中..."
+      },
+      "messages": {
+        "configSaved": "配置已保存",
+        "configSavedDesc": "业务参数已成功更新。"
+      },
+      "summary": {
+        "title": "当前配置摘要",
+        "airShipping": "空运",
+        "seaShipping": "海运",
+        "usdRate": "美元汇率",
+        "margin": "利润率"
+      }
+    },
+    "alerts": {
+      "title": "警报",
+      "subtitle": "需要立即关注的关键通知",
+      "stats": {
+        "total": "总计",
+        "critical": "关键",
+        "warning": "警告",
+        "info": "信息",
+        "resolved": "今日已解决"
+      },
+      "sections": {
+        "critical": "关键警报",
+        "warning": "警告",
+        "info": "信息"
+      },
+      "actions": {
+        "generateNew": "生成新警报",
+        "resolveAll": "全部解决",
+        "refresh": "刷新",
+        "view": "查看",
+        "resolve": "解决"
+      },
+      "filters": {
+        "search": "搜索警报...",
+        "type": "按类型过滤",
+        "priority": "按优先级过滤",
+        "all": "全部"
+      },
+      "modal": {
+        "details": "警报详情",
+        "message": "消息：",
+        "category": "类别：",
+        "created": "创建时间：",
+        "status": "状态：",
+        "pending": "待处理",
+        "recommendedAction": "推荐操作",
+        "alertResolved": "警报已解决"
+      },
+      "header": {
+        "trackingPanel": "追踪面板",
+        "activeAlerts": "活跃警报："
+      }
+    }
+  },
+  "common": {
+    "save": "保存更改",
+    "cancel": "取消",
+    "edit": "编辑",
+    "delete": "删除",
+    "confirm": "确认",
+    "close": "关闭",
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+  "language": "语言",
+  "selectLanguage": "选择语言",
+  "chinese": "中文",
+  "english": "英语",
+  "spanish": "西班牙语",
+    "cargando": "加载中...",
+    "guardado": "已保存",
+    "exportarPdf": "导出为 PDF",
+    "reporte": "报告",
+    "resumen": "摘要",
+    "configuracion": "配置",
+    "actual": "当前",
+    "sistema": "系统",
+  "gestion": "管理",
+  "ajuste": "调整",
+    "dias": "天",
+    "eta": "预计到达",
+    "tarifa": "费率",
+    "costo": "成本",
+    "minimo": "最小",
+    "maximo": "最大",
+    "margen": "利润",
+    "descuento": "折扣",
+    "notificaciones": "通知",
+    "alertas": "警报",
+    "comunicaciones": "通信",
+    "enviar": "发送",
+    "correo": "邮件",
+    "electronico": "电子",
+    "whatsapp": "WhatsApp",
+    "alertar": "警示",
+    "despues": "之后",
+    "atencion": "注意",
+    "antes": "之前",
+    "generar": "生成",
+    "alerta": "警报",
+    "aereo": "空运",
+    "maritimo": "海运",
+    "tasa": "汇率",
+    "usd": "美元",
+    "bs": "玻利瓦尔",
+    "metro": "米",
+    "cubico": "立方",
+    "kg": "千克",
+    "opciones": "选项",
+    "costos": "成本",
+    "barco": "船",
+    "valor": "价值",
+    "dolar": "美元",
+    "estadounidense": "美国",
+    "actualizar": "更新",
+    "diariamente": "每日",
+    "segun": "根据",
+    "mercado": "市场",
+    "paralelo": "平行",
+    "margenes": "利润率",
+    "descuentos": "折扣",
+    "rentabilidad": "盈利能力",
+    "ganancia": "收益",
+    "pago": "支付",
+    "por": "按",
+    "email": "电子邮件",
+    "sin": "无",
+    "envio": "运输",
+    "economico": "经济",
+    "express": "快递",
+    "rapidos": "快速",
+    "avion": "飞机",
+    "economicos": "经济",
+    "volumetrico": "体积",
+    "kilogramo": "千克",
+    "minimos": "最小值",
+    "maximos": "最大值",
+    "cambio": "兑换",
+    "intercambio": "交换",
+    "financiero": "财务",
+    "operativos": "运营",
+    "adicionales": "附加",
+    "negocio": "业务",
+    "operaciones": "运营",
+    "directamente": "直接",
+    "afectan": "影响",
+    "asegurate": "确保",
+    "comunicar": "沟通",
+    "cualquier": "任何",
+    "modificacion": "修改",
+    "equipo": "团队",
+    "operativo": "运营",
+    "envios": "发货",
+    "tiempos": "时间",
+    "tarifas": "费率",
+    "guardando": "保存中",
+    "guardada": "已保存",
+    "correctamente": "成功",
+    "han": "已",
+    "sido": "被",
+    "actualizados": "更新",
+    "actualizada": "更新",
+    "del": "的",
+    "se": "已",
+    "actualizado": "更新"
+  },
+  "header": {
+    "notifications": "通知"
+  },
+
+  "venezuela": {
+    "dashboard": {
+      "title": "委内瑞拉面板",
+      "subtitle": "订单审核、客户支持与追踪",
+      "welcome": "欢迎回来！",
+      "panel": "控制面板 - 委内瑞拉员工",
+      "manage": "在一个地方管理订单、支持与追踪",
+      "pendingTasks": "待办任务",
+      "pendingOrders": "待处理订单",
+      "pendingOrdersDesc": "等待审核",
+      "activeChats": "活跃聊天",
+      "activeChatsDesc": "在线客户",
+      "trackingUpdates": "活跃追踪",
+      "trackingUpdatesDesc": "待处理",
+      "satisfaction": "满意度",
+      "averageRating": "平均评分",
+      "deliveredOrders": "已交付订单",
+      "responseTime": "响应时间",
+      "satisfactionRate": "满意率"
+    },
+    "pedidos": {
+      "title": "订单",
+      "subtitle": "审核并发送订单至中国报价",
+      "stats": {
+        "pending": "待处理",
+        "reviewing": "审核中",
+        "quoted": "已报价",
+        "processing": "处理中"
+      },
+      "badges": {
+        "delivered": "已交付",
+        "readyToDeliver": "准备交付",
+        "received": "已接收",
+        "customs": "海关中",
+        "arrivedVzla": "已到达委内瑞拉",
+        "onWayVzla": "运往委内瑞拉途中",
+        "pending": "待处理",
+        "reviewing": "审核中",
+        "quoted": "已报价",
+        "processing": "处理中",
+        "inProcess": "进行中"
+      },
+      "tabs": {
+        "ordersList": "订单列表",
+        "boxes": "箱子",
+        "containers": "集装箱"
+      },
+      "searchPlaceholder": "按客户、产品或 ID 搜索...",
+      "refresh": "刷新",
+      "filters": {
+        "status": "状态",
+        "all": "全部",
+        "pending": "待处理",
+        "reviewing": "审核中",
+        "quoted": "已报价",
+        "processing": "处理中",
+        "searchBoxPlaceholder": "按箱 (ID) 搜索...",
+        "searchContainerPlaceholder": "按集装箱 (ID) 搜索..."
+      },
+      "emptyOrdersTitle": "无订单待审核",
+      "emptyOrdersDesc": "所有订单已处理或没有符合过滤条件的结果。",
+      "emptyBoxesTitle": "无箱子",
+      "emptyBoxesDesc": "没有找到箱子。",
+      "emptyBoxesSearchTitle": "未找到箱子",
+      "emptyBoxesSearchDesc": "调整 ID 搜索。",
+      "emptyContainersTitle": "无集装箱",
+      "emptyContainersDesc": "没有找到集装箱。",
+      "emptyContainersSearchTitle": "未找到集装箱",
+      "emptyContainersSearchDesc": "调整 ID 搜索。",
+      "loadingOrders": "加载订单...",
+      "loadingBoxes": "加载箱子...",
+      "loadingContainers": "加载集装箱...",
+      "labels": {
+        "quantity": "数量：",
+        "deliveryType": "交付类型：",
+        "shippingType": "运输类型：",
+        "orders": "订单："
+      },
+      
+      "deliveryTypes": {
+        "office": "办公室",
+        "warehouse": "仓库"
+      },
+      "shippingTypes": {
+        "doorToDoor": "门到门",
+        "maritime": "海运",
+        "air": "空运"
+      },
+      "modalOrdersTitle": "箱 #BOX-{{boxId}} 的订单",
+      "modalOrdersEmptyTitle": "此箱无关联订单",
+      "modalOrdersEmptyDesc": "当你将订单分配到此箱时会显示在这里。",
+      "modalBoxesTitle": "集装箱 #CONT-{{containerId}} 的箱子",
+      "modalBoxesEmptyTitle": "此集装箱无关联箱子",
+      "modalBoxesEmptyDesc": "当你将箱子分配到此集装箱时会显示在这里。",
+      "tooltips": {
+        "markBoxReceived": "标记箱子为已接收",
+        "markContainerReceived": "标记集装箱为已接收"
+      },
+      "pdf": {
+        "openError": "无法打开 PDF。请检查浏览器是否阻止弹出窗口。",
+        "notAvailableOrder": "此订单无可用 PDF。",
+        "notAvailable": "无可用 PDF"
+      },
+      "errors": {
+        "getUser": "无法获取已登录用户",
+        "fetchOrders": "获取订单出错",
+        "updateOrder": "无法更新订单",
+        "sendToChina": "发送到中国时出错",
+        "updateStatus": "更新状态出错",
+        "updateBox": "无法更新箱子",
+        "boxUpdate": "更新箱子出错",
+        "updateContainer": "无法更新集装箱",
+        "containerUpdate": "更新集装箱出错"
+      },
+      "boxesBadges": {
+        "new": "新建",
+        "ready": "就绪",
+        "received": "已接收",
+        "completed": "已完成",
+        "state": "状态{{num}}"
+      },
+      "containersBadges": {
+        "new": "新建",
+        "inTransit": "运输中",
+        "received": "已接收",
+        "state": "状态{{num}}"
+      }
+    },
+    "soporte": {
+      "title": "客户支持",
+      "subtitle": "管理客户聊天与咨询",
+      "headerTitle": "客户支持",
+      "headerSubtitle": "管理客户聊天与咨询",
+      "stats": {
+        "active": "活跃",
+        "waiting": "等待",
+        "unread": "未读"
+      },
+      "listTitle": "聊天列表",
+      "searchPlaceholder": "按客户或消息搜索...",
+      "filters": {
+        "status": "状态",
+        "all": "全部状态",
+        "active": "活跃",
+        "waiting": "等待",
+        "resolved": "已解决",
+        "priority": "优先级",
+        "allPriorities": "全部优先级",
+        "high": "高",
+        "medium": "中",
+        "low": "低"
+      },
+      "badges": {
+        "priority": {
+          "high": "高",
+          "medium": "中",
+          "low": "低"
+        },
+        "status": {
+          "active": "活跃",
+          "waiting": "等待",
+          "resolved": "已解决",
+          "unknown": "未知"
+        }
+      },
+      "chat": {
+        "lastMessage": "最后消息：",
+        "unreadMessages": "未读消息：",
+        "openChat": "打开聊天",
+        "openChatShort": "聊天",
+        "email": "邮箱",
+        "phone": "电话"
+      },
+      "empty": {
+        "title": "无活跃聊天",
+        "description": "所有聊天已解决或没有匹配当前过滤条件的结果。"
+      }
+    },
+    "pagos": {
+      "title": "支付验证",
+      "subtitle": "管理并追踪所有订单",
+      "error": {
+        "loadErrorTitle": "加载订单出错",
+        "retry": "重试"
+      },
+      "stats": {
+        "totalSpent": "总支出",
+        "totalPayments": "总支付",
+        "completed": "已完成",
+        "pending": "待处理"
+      },
+      "tabs": {
+        "ordersList": "订单列表",
+        "pendingPayments": "待处理支付"
+      },
+      "listCardTitle": "支付",
+      "searchPlaceholder": "搜索订单...",
+      "filters": {
+        "allStatuses": "全部状态",
+        "completed": "已完成",
+        "pending": "待处理",
+        "rejected": "已拒绝"
+      },
+      "actions": {
+        "refresh": "刷新",
+        "refreshShort": "刷新",
+        "export": "导出",
+        "exportShort": "导出",
+        "view": "查看",
+        "approve": "批准",
+        "reject": "拒绝",
+        "undo": "撤销"
+      },
+      "table": {
+        "pendingApprovalTitle": "待审批支付",
+        "ordersListTitle": "订单列表",
+        "loading": "加载中...",
+        "resultsFound": "找到 {{count}} 个订单",
+        "headers": {
+          "id": "订单 ID",
+          "client": "客户",
+          "status": "状态",
+          "date": "日期",
+          "amount": "金额",
+          "reference": "参考",
+          "destination": "目的地",
+          "actions": "操作"
+        }
+      },
+      "mobile": {
+        "date": "日期：",
+        "amount": "金额：",
+        "method": "方式：",
+        "destination": "目的地："
+      },
+      "empty": {
+        "title": "未找到支付",
+        "subtitle": "尝试调整过滤或搜索词"
+      },
+      "footer": {
+        "showing": "显示 {{shown}} / {{total}} 笔交易"
+      },
+      "modal": {
+        "details": {
+          "title": "支付详情",
+          "clientInfo": "客户信息",
+          "paymentInfo": "支付信息",
+          "additionalDetails": "附加详情",
+          "fields": {
+            "user": "用户：",
+            "productId": "产品 ID：",
+            "amount": "金额：",
+            "date": "日期：",
+            "reference": "参考：",
+            "method": "方式：",
+            "destination": "目的地：",
+            "description": "描述："
+          }
+        },
+        "reject": {
+          "title": "确认拒绝",
+          "message": "确定要拒绝此支付吗？此操作不可撤销。",
+          "cancel": "取消",
+          "confirm": "确认拒绝"
+        }
+      },
+      "toasts": {
+        "undoTitle": "操作已撤销",
+        "undoDesc": "支付已恢复到之前的状态。",
+        "undoErrorTitle": "无法撤销",
+        "undoErrorDesc": "数据库回滚出错。",
+        "approveErrorTitle": "批准出错",
+        "approveErrorDesc": "订单无法更新。",
+        "approvedTitle": "支付已批准",
+        "approvedDesc": "支付 {{id}} 已成功批准。",
+        "rejectedTitle": "支付已拒绝",
+        "rejectedDesc": "支付 {{id}} 已被拒绝。"
+      },
+      "status": {
+        "completado": "已完成",
+        "pendiente": "待处理",
+        "rechazado": "已拒绝"
+      },
+      "export": {
+        "sheetName": "支付",
+        "fileName": "payments_validation.xlsx",
+        "columns": {
+          "orderId": "订单 ID",
+          "client": "客户",
+          "status": "状态",
+          "date": "日期",
+          "amount": "金额",
+          "reference": "参考",
+          "destination": "目的地",
+          "description": "描述"
+        }
+      }
+    },
+    "reportes": {
+      "title": "报告",
+      "subtitle": "分析你的运营表现与指标",
+      "filters": {
+        "title": "报告类型",
+        "types": {
+          "month": "按月",
+          "order": "按订单",
+          "satisfaction": "客户满意度"
+        },
+        "export": "导出"
+      },
+      "charts": {
+        "monthlyTrendTitle": "月度趋势",
+        "orderStatusTitle": "订单状态",
+        "satisfactionDistributionTitle": "满意度分布"
+      },
+      "metrics": {
+        "month": {
+          "totalOrders": "总订单",
+          "completed": "已完成",
+          "satisfaction": "满意度",
+          "revenue": "收入"
+        },
+        "order": {
+          "totalOrders": "总订单",
+          "delivered": "已交付",
+          "inTransit": "运输中",
+          "averageValue": "平均价值"
+        },
+        "satisfaction": {
+          "average": "总体平均",
+          "totalReviews": "总评价数",
+          "fiveStars": "5 星",
+          "satisfied": "满意"
+        }
+      },
+      "modal": {
+        "title": "报告详情",
+        "monthly": {
+          "period": "周期",
+          "revenue": "收入",
+          "totalOrders": "总订单",
+          "completed": "已完成",
+          "satisfaction": "满意度",
+          "exportAsPdf": "导出为 PDF"
+        },
+        "order": {
+          "infoTitle": "订单信息",
+          "fields": {
+            "number": "编号：",
+            "client": "客户：",
+            "product": "产品：",
+            "date": "日期：",
+            "status": "状态：",
+            "value": "价值：",
+            "deliveryTime": "交付时间："
+          },
+          "notRated": "未评分",
+          "exportAsPdf": "导出为 PDF"
+        },
+        "satisfaction": {
+          "average": "总体平均",
+          "outOf5": "满分 5 星",
+          "distributionTitle": "评分分布"
+        }
+      },
+      "list": {
+        "title": "报告列表 - {{filter}}",
+        "monthlyItem": "{{orders}} 订单 • {{rating}}/5 ⭐ • ${{revenue}}",
+        "satisfactionItem": "{{avg}}/5 ⭐ • {{reviews}} 条评价",
+        "viewDetails": "查看详情",
+        "view": "查看",
+        "emptyMonthly": "暂无月度报告。",
+        "emptySatisfaction": "暂无满意度报告。",
+        "emptyOrders": "暂无订单。",
+        "errorOrders": "获取订单时出现意外错误。"
+      },
+      "pagination": {
+        "showing": "显示 {{from}} - {{to}}，共 {{total}} 个订单",
+        "previous": "上一页",
+        "next": "下一页"
+      },
+      "pdf": {
+        "headerBrand": "PITA",
+        "brandLine": "PITA | 物流与订单系统",
+        "contactLine": "info@pita.com   |   +58 424-1234567   |   www.pita.com",
+        "generatedAt": "生成：",
+        "pageOf": "第 {{current}} / {{total}} 页",
+        "titles": {
+          "monthlySummary": "月度摘要",
+          "ordersSummary": "订单摘要",
+          "satisfaction": "客户满意度"
+        },
+        "table": {
+          "field": "字段",
+          "value": "值"
+        },
+        "fields": {
+          "period": "周期",
+          "revenue": "收入",
+          "totalOrders": "总订单",
+          "completed": "已完成",
+          "satisfaction": "满意度",
+          "delivered": "已交付",
+          "inTransit": "运输中",
+          "averageValue": "平均价值"
+        },
+        "charts": {
+          "orderStates": "订单状态",
+          "monthlyTrend": "月度趋势",
+          "satisfactionDistribution": "满意度分布"
+        }
+      },
+      "statuses": {
+        "delivered": "已交付",
+        "inTransit": "运输中",
+        "pending": "待处理"
+      },
+      "cards": {
+        "keyMetrics": "关键指标"
+      }
+    },
+    "configuracion": {
+      "title": "配置",
+      "subtitle": "管理你的资料、安全与偏好",
+      "tabs": {
+        "perfil": "个人资料",
+        "seguridad": "安全",
+        "notificaciones": "通知",
+        "preferencias": "偏好"
+      },
+      "profile": {
+        "title": "个人信息",
+        "fields": {
+          "name": "全名",
+          "email": "电子邮箱",
+          "phone": "电话"
+        },
+        "placeholders": {
+          "name": "你的全名",
+          "email": "you@email.com",
+          "phone": "+58 412-123-4567"
+        },
+        "saveButton": "保存更改",
+        "profilePicture": {
+          "title": "头像",
+          "altText": "头像",
+          "uploadButton": "更换照片",
+          "deleteButton": "移除照片"
+        },
+        "accountInfo": {
+          "title": "账户信息",
+          "role": "角色",
+          "status": "状态",
+          "active": "启用",
+          "memberSince": "会员自",
+          "lastLogin": "上次访问",
+          "months": {
+            "Enero": "一月",
+            "Febrero": "二月",
+            "Marzo": "三月",
+            "Abril": "四月",
+            "Mayo": "五月",
+            "Junio": "六月",
+            "Julio": "七月",
+            "Agosto": "八月",
+            "Septiembre": "九月",
+            "Octubre": "十月",
+            "Noviembre": "十一月",
+            "Diciembre": "十二月"
+          }
+        }
+      },
+      "password": {
+        "title": "修改密码",
+        "fields": {
+          "current": "当前密码",
+          "new": "新密码",
+          "confirm": "确认新密码"
+        },
+        "placeholders": {
+          "current": "输入当前密码",
+          "new": "输入新密码",
+          "confirm": "确认新密码"
+        },
+        "saveButton": "修改密码"
+      },
+      "security": {
+      "title": "安全设置",
+      "twoFactor": "双重身份验证",
+      "twoFactorDesc": "为你的账户增加一层额外保护",
+      "activeSessions": "活动会话",
+      "devicesConnected": "已连接 {{count}} 台设备",
+      "viewAllSessions": "查看所有会话",
+      "lastAccessIP": "上次访问 IP",
+      "saveButton": "保存配置",
+      "recentActivity": {
+        "title": "最近活动",
+        "loginSuccess": "登录成功",
+        "passwordChange": "密码更改",
+        "newDevice": "检测到新设备"
+      }
+    },
+      "notifications": {
+        "title": "通知偏好",
+        "email": "电子邮件通知",
+        "emailDesc": "通过电子邮件接收重要更新",
+        "push": "推送通知",
+        "pushDesc": "在浏览器中实时接收通知",
+        "critical": "关键警报",
+        "criticalDesc": "系统紧急通知",
+        "orders": "订单通知",
+        "ordersDesc": "订单与发货更新",
+        "systemUpdates": "系统更新",
+        "systemUpdatesDesc": "关于新版本与改进的通知",
+        "saveButton": "保存偏好"
+      },
+      "preferences": {
+        "regional": {
+          "title": "区域设置"
+        },
+        "timezone": {
+          "label": "时区",
+          "placeholder": "选择你的时区"
+        },
+        "dateFormat": {
+          "label": "日期格式",
+          "placeholder": "选择格式"
+        },
+        "timeFormat": {
+          "label": "时间格式",
+          "placeholder": "选择格式",
+          "24h": "24 小时",
+          "12h": "12 小时 (AM/PM)"
+        },
+        "appearance": {
+          "title": "外观"
+        },
+        "theme": {
+          "label": "主题",
+          "light": "浅色",
+          "dark": "深色",
+          "system": "系统",
+          "fontSize": "字体大小",
+          "interfaceDensity": "界面密度",
+          "fontSizes" : {
+            "small": "小",
+            "medium": "中",
+            "large": "大"
+          },
+          "densities": {
+            "comfortable": "舒适",
+            "compact": "紧凑",
+            "spacious": "宽松"
+          }
+        },
+        "fontSize": {
+          "label": "字体大小",
+          "small": "小",
+          "medium": "中",
+          "large": "大"
+        },
+        "density": {
+          "label": "界面密度",
+          "comfortable": "舒适",
+          "compact": "紧凑",
+          "spacious": "宽松"
+        }
+      },
+      "messages": {
+        "profileUpdated": "资料已更新",
+        "profileUpdatedDesc": "更改已成功保存。",
+        "passwordUpdated": "密码已更新",
+        "passwordUpdatedDesc": "你的密码已成功更改。",
+        "passwordMismatch": "密码不匹配。",
+        "notificationsUpdated": "通知已更新",
+        "notificationsUpdatedDesc": "你的通知偏好已保存。",
+        "securityUpdated": "安全设置已更新",
+        "securityUpdatedDesc": "安全更改已成功应用。"
+      }
+    },
+    "quickActions": {
+      "title": "快速操作",
+      "subtitle": "快速访问最常用功能",
+      "reviewOrder": "审核订单",
+      "chatSupport": "支持聊天",
+      "updateTracking": "更新追踪",
+      "validatePayment": "验证支付"
+    }
+  },
+  "chinese": {
+    "title": "中国面板",
+    "subtitle": "管理与追踪来自中国的运输",
+    "welcome": "欢迎回来，这是你的活动摘要",
+    "panel": "控制面板 - 中国员工",
+    "manage": "管理运输、订单与客户沟通",
+    "activeShipments": "进行中运输",
+    "totalOrders": "总订单",
+    "ordersPlaced": "已下订单",
+    "inTransit": "运输中",
+    "activeShipmentsShort": "活跃运输",
+    "totalHandled": "总处理量",
+    "totalInvestment": "总投资",
+    "completed": "已完成",
+    "ordersDelivered": "已交付订单",
+    "newOrder": "新订单",
+    "processOrder": "处理订单",
+    "prepareShipment": "准备发货",
+    "recentOrders": "最近订单",
+    "recentOrdersSubtitle": "最新处理的订单",
+    "noOrders": "暂无订单显示",
+    "client": "客户",
+    "status": "状态",
+    "product": "产品",
+    "description": "描述",
+    "quantity": "数量",
+    "priority": "优先级",
+    "supplier": "供应商",
+    "receivedDate": "接收日期",
+    "estimatedDelivery": "预计交付",
+    "finalPrice": "最终价格",
+    "currency": "货币",
+    "actions": "操作",
+    "high": "高",
+    "medium": "中",
+    "low": "低",
+    "pending": "待处理",
+    "processing": "处理中",
+    "shipped": "已发货",
+    "completedStatus": "已完成",
+    "orderId": "订单 ID",
+    "state": "状态",
+    "clientLabel": "客户",
+    "orderProduct": "产品",
+    "orderStatus": "订单状态",
+    "orderPriority": "优先级",
+    "orderSupplier": "供应商",
+    "orderReceived": "已接收",
+    "orderEstimatedDelivery": "预计交付",
+    "orderFinalPrice": "最终价格",
+  "orderCurrency": "货币",
+  "quickActions": "快速操作",
+  "quickActionsSubtitle": "快速访问中国操作中最常用的功能",
+  "quality": "质量",
+  "qualityscore": "质量评分"
+  ,
+  "ordersPage": {
+    "title": "订单管理",
+    "subtitle": "管理并为客户订单报价",
+    "pageTitle": "订单",
+    "stats": {
+      "pending": "待处理",
+      "quoted": "已报价",
+      "processing": "处理中",
+      "shipped": "已发货"
+    },
+    "badges": {
+      "unknown": "未知",
+      "quoted": "已报价",
+      "processing": "处理中",
+      "readyToPack": "准备打包",
+      "inBox": "在箱中",
+      "inContainer": "在集装箱中",
+      "shippedVzla": "发往委内瑞拉",
+      "state": "状态 {{num}}"
+    },
+    "boxBadges": {
+      "new": "新建",
+      "packed": "已打包",
+      "inContainer": "在集装箱中",
+      "shipped": "已发货",
+      "state": "状态 {{num}}"
+    },
+    "containerBadges": {
+      "new": "新建",
+      "loading": "装载中",
+      "shipped": "已发货",
+      "state": "状态 {{num}}"
+    },
+    "tabs": {
+      "ordersList": "订单列表",
+      "boxes": "箱子",
+      "containers": "集装箱"
+    },
+    "filters": {
+      "searchClientPlaceholder": "按客户搜索...",
+      "searchBoxPlaceholder": "按箱 (ID) 搜索...",
+      "searchContainerPlaceholder": "按集装箱 (ID) 搜索...",
+      "status": "状态",
+      "all": "全部",
+      "pending": "待处理",
+      "quoted": "已报价",
+      "processing": "处理中",
+      "shipped": "已发货"
+    },
+    "orders": {
+      "listTitle": "订单列表",
+      "refreshing": "刷新中...",
+      "refresh": "刷新",
+      "order": "订单",
+      "client": "客户",
+      "qtyShort": "数量",
+      "qtyLabel": "数量：",
+      "view": "查看",
+      "pack": "打包",
+      "unpack": "解包",
+      "quote": "报价",
+      "editQuote": "编辑",
+      "notFoundTitle": "未找到订单",
+      "notFoundSubtitle": "尝试调整搜索过滤",
+      "noPdfAlert": "此订单无可用 PDF。",
+      "pdfMissingToastTitle": "无 PDF",
+      "pdfMissingToastDesc": "此订单无可用 PDF。",
+      "date": "日期"
+    },
+    "boxes": {
+      "title": "箱子",
+      "create": "创建箱子",
+      "noneTitle": "无箱子创建",
+      "noneSubtitle": "使用上方按钮创建你的第一个箱子。",
+      "notFoundTitle": "未找到箱子",
+      "notFoundSubtitle": "尝试调整 ID 搜索。",
+      "ordersCount": "订单：",
+      "pack": "打包",
+      "unpack": "解包",
+      "viewOrders": "查看订单",
+      "delete": "删除",
+      "loading": "加载箱子..."
+    },
+    "containers": {
+      "title": "集装箱",
+      "create": "创建集装箱",
+      "noneTitle": "无集装箱创建",
+      "noneSubtitle": "使用上方按钮创建你的第一个集装箱。",
+      "notFoundTitle": "未找到集装箱",
+      "notFoundSubtitle": "尝试调整 ID 搜索。",
+      "send": "发送",
+      "viewBoxes": "查看箱子",
+      "delete": "删除",
+      "loading": "加载集装箱...",
+      "sentToastTitle": "集装箱已发送",
+      "sentToastDesc": "集装箱 #CONT-{{id}} 已标记为已发货。",
+      "sendErrorTitle": "无法发送",
+      "sendErrorDesc": "稍后再试。"
+    },
+    "modals": {
+      "quote": {
+        "title": "订单报价",
+        "summaryTitle": "订单摘要",
+        "client": "客户：",
+        "product": "产品：",
+        "quantity": "数量：",
+        "specifications": "规格：",
+        "specificationsNA": "无",
+        "unitPriceLabel": "单价报价 *",
+        "totalToPay": "应付总额",
+        "cancel": "取消",
+        "sendQuote": "发送报价"
+      },
+      "selectContainerForBox": {
+        "title": "为箱 #BOX-{{id}} 选择集装箱",
+        "loading": "加载集装箱...",
+        "noneTitle": "无可用集装箱",
+        "noneSubtitle": "在集装箱标签中创建一个集装箱以打包。",
+        "select": "选择"
+      },
+      "createContainer": {
+        "title": "创建集装箱",
+        "question": "你想创建一个新的集装箱吗？",
+        "creating": "创建中...",
+        "accept": "接受",
+        "cancel": "取消"
+      },
+      "containerBoxes": {
+        "title": "集装箱 #CONT-{{id}} 的箱子",
+        "loading": "加载箱子...",
+        "noneTitle": "此集装箱无关联箱子",
+        "noneSubtitle": "当你将箱子分配到此集装箱时会显示在这里。",
+        "unpack": "解包",
+        "viewOrders": "查看订单"
+      },
+      "deleteContainer": {
+        "title": "删除集装箱",
+        "question": "确定要删除集装箱 #CONT-{{id}} 吗？此操作不可撤销。",
+        "deleting": "删除中...",
+        "delete": "删除",
+        "cancel": "取消"
+      },
+      "createBox": {
+        "title": "创建箱子",
+        "question": "你想创建一个新的箱子吗？",
+        "creating": "创建中...",
+        "accept": "接受",
+        "cancel": "取消"
+      },
+      "boxOrders": {
+        "title": "箱 #BOX-{{id}} 的订单",
+        "loading": "加载订单...",
+        "noneTitle": "此箱无关联订单",
+        "noneSubtitle": "当你将订单分配到此箱时会显示在这里。",
+        "view": "查看"
+      },
+      "selectBoxForOrder": {
+        "title": "为订单 #ORD-{{id}} 选择箱子",
+        "loading": "加载箱子...",
+        "noneTitle": "无可用箱子",
+        "noneSubtitle": "在箱子标签中创建一个箱子以打包。",
+        "select": "选择"
+      },
+      "deleteBox": {
+        "title": "删除箱子",
+        "question": "确定要删除箱子 #BOX-{{id}} 吗？此操作不可撤销。",
+        "deleting": "删除中...",
+        "delete": "删除",
+        "cancel": "取消"
+      }
+    },
+    "toasts": {
+      "boxCreateErrorTitle": "无法创建箱子",
+      "boxCreateErrorDesc": "几秒后再试。",
+      "boxCreatedTitle": "箱子已创建",
+      "boxCreatedDesc": "箱子创建成功。",
+      "boxesLoadErrorTitle": "无法加载箱子",
+      "boxesLoadErrorDesc": "稍后再试。",
+      "containerCreateErrorTitle": "无法创建集装箱",
+      "containerCreateErrorDesc": "几秒后再试。",
+      "containerCreatedTitle": "集装箱已创建",
+      "containerCreatedDesc": "集装箱创建成功。",
+      "containersLoadErrorTitle": "无法加载集装箱",
+      "containersLoadErrorDesc": "稍后再试。",
+      "containerInvalidTitle": "无效集装箱",
+      "containerInvalidDesc": "无法确定集装箱 ID。",
+      "notAllowedTitle": "不允许",
+      "assignBoxNotAllowedDesc": "你不能向已发货的集装箱分配箱子。",
+      "assignBoxErrorTitle": "未分配集装箱",
+      "assignBoxErrorDesc": "稍后再试。",
+      "boxAssignedTitle": "箱子已分配",
+      "boxAssignedDesc": "箱 #BOX-{{boxId}} 已分配到集装箱 #CONT-{{containerId}}。",
+      "unexpectedErrorTitle": "意外错误",
+      "unexpectedErrorDesc": "稍后再试。",
+      "boxUnpackErrorTitle": "无法解包",
+      "boxUnpackNotAllowedDesc": "你不能从已发货的集装箱中解包箱子。",
+      "boxUnpackedTitle": "箱子已解包",
+      "boxUnpackedDesc": "订单与箱 #BOX-{{boxId}} 已释放。",
+      "orderAssignBoxInvalidTitle": "无效箱子",
+      "orderAssignBoxInvalidDesc": "无法确定箱子 ID。",
+      "orderAssignNotAllowedDesc": "你不能在已发货的箱子中打包。",
+      "orderAssignedTitle": "订单已分配",
+      "orderAssignedDesc": "订单 #ORD-{{orderId}} 已分配到箱 {{boxId}}。",
+      "orderUnpackErrorTitle": "无法解包",
+      "orderNoBoxTitle": "订单无箱子",
+      "orderNoBoxDesc": "此订单未分配箱子。",
+      "orderUnpackNotAllowedDesc": "你不能从已发货的集装箱中解包订单。",
+      "orderUnpackedTitle": "订单已解包",
+      "orderUnpackedDesc": "订单 #ORD-{{orderId}} 已从箱子释放。",
+      "containerSendNotAllowedDesc": "你不能删除已发货的集装箱。",
+      "containerDeletedTitle": "集装箱已删除",
+      "containerDeletedDesc": "集装箱已成功删除。",
+      "containerDeleteErrorTitle": "无法删除集装箱",
+      "boxDeletedTitle": "箱子已删除",
+      "boxDeletedDesc": "箱子已成功删除。",
+      "boxDeleteErrorTitle": "无法删除箱子",
+      "orderPdfMissingTitle": "无 PDF",
+      "orderPdfMissingDesc": "此订单无可用 PDF。",
+      "boxDeleteIdInvalidTitle": "无法删除",
+      "boxDeleteIdInvalidDesc": "无效箱子 ID。",
+      "containerDeleteIdInvalidDesc": "无效集装箱 ID。"
+    }
+  }
+  }
+}
+
+

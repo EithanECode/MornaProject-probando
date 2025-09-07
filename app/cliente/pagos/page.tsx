@@ -564,7 +564,7 @@ export default function PagosPage() {
             {/* Lista de Pagos */}
             <div className="space-y-6">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
-                <h3 className="text-lg md:text-xl font-semibold">Transacciones ({filteredPayments.length})</h3>
+                <h3 className="text-lg md:text-xl font-semibold">{t('client.recentOrders.payments.transactions')} ({filteredPayments.length})</h3>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">

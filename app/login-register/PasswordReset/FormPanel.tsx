@@ -6,6 +6,7 @@ import Lottie from "react-lottie";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { STEPS } from "@/lib/constants/auth";
 import Image from "next/image";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type Props = {
   step: number;
@@ -29,6 +30,7 @@ type Props = {
 };
 
 export default function FormPanel(props: Props) {
+  const { t } = useTranslation();
   const {
     step,
     setStep,
@@ -110,16 +112,16 @@ export default function FormPanel(props: Props) {
     if (pwd.length >= 10 && /[0-9]/.test(pwd)) strength++;
     if (pwd.length >= 12 && /[^A-Za-z0-9]/.test(pwd)) strength++;
     if (strength === 1) {
-      text = "Débil";
+  text = t('auth.common.passwordLevelLow');
       level = "low";
     } else if (strength === 2) {
-      text = "Normal";
+  text = t('auth.common.passwordLevelMedium');
       level = "medium";
     } else if (strength === 3) {
-      text = "Fuerte";
+  text = t('auth.common.passwordLevelStrong');
       level = "strong";
     } else if (strength >= 4) {
-      text = "Muy Fuerte";
+  text = t('auth.common.passwordLevelVeryStrong');
       level = "very-strong";
     }
     return { text, level };
@@ -209,26 +211,26 @@ export default function FormPanel(props: Props) {
   const getStepTitle = (): string => {
     switch (step) {
       case STEPS.CONTACT_METHOD:
-        return "Restablecer Contraseña";
+  return t('auth.passwordReset.titles.reset');
       case STEPS.VERIFICATION:
-        return "Verificar Código";
+  return t('auth.passwordReset.titles.verify');
       case STEPS.NEW_PASSWORD:
-        return "Nueva Contraseña";
+  return t('auth.passwordReset.titles.new');
       default:
-        return "Restablecer Contraseña";
+  return t('auth.passwordReset.titles.reset');
     }
   };
 
   const getStepDescription = (): string => {
     switch (step) {
       case STEPS.CONTACT_METHOD:
-        return "Ingresa tu correo electrónico para restablecer tu contraseña";
+  return t('auth.passwordReset.descriptions.enterEmail');
       case STEPS.VERIFICATION:
-        return `Hemos enviado un código a ${contactValue}. Ingresa el código aquí.`;
+  return t('auth.passwordReset.descriptions.codeSent', { contact: contactValue });
       case STEPS.NEW_PASSWORD:
-        return "Crea una nueva contraseña segura";
+  return t('auth.passwordReset.descriptions.createNew');
       default:
-        return "Ingresa tu correo electrónico para restablecer tu contraseña";
+  return t('auth.passwordReset.descriptions.enterEmail');
     }
   };
 
@@ -246,7 +248,7 @@ export default function FormPanel(props: Props) {
               </div>
               <input
                 type="email"
-                placeholder="Ingresa tu correo electrónico"
+                placeholder={t('auth.passwordReset.placeholders.email')}
                 value={contactValue}
                 onChange={(e) => setContactValue(e.target.value)}
                 className="input-field-with-icon"
@@ -258,7 +260,7 @@ export default function FormPanel(props: Props) {
                 <LoadingSpinner />
               ) : (
                 <>
-                  <span>Continuar</span>
+                  <span>{t('auth.passwordReset.buttons.continue')}</span>
                   <ChevronRight size={20} />
                 </>
               )}
@@ -273,12 +275,12 @@ export default function FormPanel(props: Props) {
           >
             <button onClick={() => setStep(STEPS.CONTACT_METHOD)} className="back-step-btn">
               <ArrowLeft size={20} />
-              <span>Volver</span>
+              <span>{t('auth.passwordReset.buttons.back')}</span>
             </button>
             <div className="password-input-container">
               <input
                 type={showNewPassword ? "text" : "password"}
-                placeholder="Nueva contraseña"
+                placeholder={t('auth.passwordReset.placeholders.newPassword')}
                 value={newPassword}
                 onChange={handleNewPasswordChange}
                 onFocus={handlePasswordFocus}
@@ -305,7 +307,7 @@ export default function FormPanel(props: Props) {
             <div className="password-input-container">
               <input
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirmar contraseña"
+                placeholder={t('auth.passwordReset.placeholders.confirmPassword')}
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
                 className="input-field password-input"
@@ -315,7 +317,7 @@ export default function FormPanel(props: Props) {
                 {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </span>
               {showMatchErrorDiv && (
-                <p className={`password-error-message ${animateMatchError ? "active" : ""}`}>Las contraseñas no coinciden.</p>
+                <p className={`password-error-message ${animateMatchError ? "active" : ""}`}>{t('auth.common.passwordsNoMatch')}</p>
               )}
               {showCheckmark && defaultCheckmarkOptions && (
                 <div className="checkmark-icon-container">
@@ -328,7 +330,7 @@ export default function FormPanel(props: Props) {
                 <LoadingSpinner />
               ) : (
                 <>
-                  <span>Restablecer Contraseña</span>
+                  <span>{t('auth.passwordReset.buttons.reset')}</span>
                   <Check size={20} />
                 </>
               )}
@@ -351,7 +353,7 @@ export default function FormPanel(props: Props) {
             onNavigateToAuth?.();
           }}
           className="back-to-login-btn"
-          title="Volver al inicio de sesión"
+          title={t('auth.passwordReset.tooltips.backToLogin')}
         >
           <ArrowLeft size={20} />
         </button>
@@ -360,7 +362,7 @@ export default function FormPanel(props: Props) {
       <div className="form-content">
         <div className="form-header">
           <div className="header-icon">
-            <Image src="/images/escudo.gif" alt="Escudo de seguridad" width={48} height={48} className="shield-gif" />
+            <Image src="/images/escudo.gif" alt={t('auth.passwordReset.alts.securityShield')} width={48} height={48} className="shield-gif" />
           </div>
           <h1 className="form-title">{getStepTitle()}</h1>
           <p className="form-description">{getStepDescription()}</p>

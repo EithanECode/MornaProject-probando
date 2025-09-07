@@ -4,8 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import Lottie from "react-lottie";
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function RegisterForm() {
+  const { t } = useTranslation();
   const [registerAnim, setRegisterAnim] = useState<any | null>(null);
   const [successAnim, setSuccessAnim] = useState<any | null>(null);
   const [registerAnimError, setRegisterAnimError] = useState<boolean>(false);
@@ -14,11 +16,11 @@ export default function RegisterForm() {
     let cancelled = false;
     Promise.all([
       fetch("/animations/Register.json").then((r) => {
-        if (!r.ok) throw new Error("No se pudo cargar la animación Register");
+  if (!r.ok) throw new Error(t('auth.common.registerAnimationLoadError'));
         return r.json();
       }),
       fetch("/animations/Success.json").then((r) => {
-        if (!r.ok) throw new Error("No se pudo cargar la animación Success");
+  if (!r.ok) throw new Error(t('auth.common.animationLoadError'));
         return r.json();
       })
     ])
@@ -88,16 +90,16 @@ export default function RegisterForm() {
     if (pwd.length >= 12 && /[^A-Za-z0-9]/.test(pwd)) strength++;
 
     if (strength === 1) {
-      text = "Débil";
+  text = t('auth.common.passwordLevelLow');
       level = "low";
     } else if (strength === 2) {
-      text = "Normal";
+  text = t('auth.common.passwordLevelMedium');
       level = "medium";
     } else if (strength === 3) {
-      text = "Fuerte";
+  text = t('auth.common.passwordLevelStrong');
       level = "strong";
     } else if (strength >= 4) {
-      text = "Muy Fuerte";
+  text = t('auth.common.passwordLevelVeryStrong');
       level = "very-strong";
     }
 
@@ -143,12 +145,12 @@ export default function RegisterForm() {
 
     // Validación de nombre
     if (fullName.trim().length < 3 || !/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/.test(fullName.trim())) {
-      setNameError("El nombre debe tener al menos 3 letras y solo caracteres válidos.");
+  setNameError(t('auth.common.nameInvalid'));
       valid = false;
     }
     // Validación de email
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
-      setEmailError("El correo electrónico no es válido.");
+  setEmailError(t('auth.common.invalidEmailAlt'));
       valid = false;
     }
     // Validación de contraseñas
@@ -157,7 +159,7 @@ export default function RegisterForm() {
       valid = false;
     }
     if (passwordStrength === "low" || passwordStrength === "none") {
-      alert('La contraseña debe ser al menos "Normal" para registrarse.');
+  alert(t('auth.common.passwordMustBeNormal'));
       valid = false;
     }
     if (!valid) return;
@@ -208,14 +210,14 @@ export default function RegisterForm() {
           console.warn("after-signup fetch failed", e);
         }
       }
-      setSuccessMsg("¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.");
+  setSuccessMsg(t('auth.register.success'));
       setFullName("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      setErrorMsg(message || "Error al registrarse");
+  setErrorMsg(message || t('auth.register.errorFallback'));
     } finally {
       setLoading(false);
     }
@@ -284,13 +286,13 @@ export default function RegisterForm() {
           </div>
         )}
       </div>
-      <h2>Registrarse</h2>
+  <h2>{t('auth.register.title')}</h2>
 
-      <label htmlFor="register-fullname">Nombre completo</label>
+      <label htmlFor="register-fullname">{t('auth.common.fullName')}</label>
       <input
         type="text"
         id="register-fullname"
-        placeholder="Tu nombre"
+        placeholder={t('auth.common.fullNamePlaceholder')}
         value={fullName}
         onChange={(e) => setFullName(e.target.value)}
         required
@@ -299,11 +301,11 @@ export default function RegisterForm() {
         <p className="text-red-500 text-sm mt-1" role="alert">{nameError}</p>
       )}
 
-      <label htmlFor="register-email">Correo electrónico</label>
+      <label htmlFor="register-email">{t('auth.common.email')}</label>
       <input
         type="email"
         id="register-email"
-        placeholder="usuario@correo.com"
+        placeholder={t('auth.common.emailPlaceholder')}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
@@ -312,12 +314,12 @@ export default function RegisterForm() {
         <p className="text-red-500 text-sm mt-1" role="alert">{emailError}</p>
       )}
 
-      <label htmlFor="register-password">Contraseña</label>
+    <label htmlFor="register-password">{t('auth.common.password')}</label>
       <div className="password-input-container">
         <input
           type={showPassword ? "text" : "password"}
           id="register-password"
-          placeholder="********"
+      placeholder={t('auth.common.passwordPlaceholder')}
           value={password}
           onChange={handlePasswordChange}
           onFocus={handlePasswordFocus}
@@ -348,12 +350,12 @@ export default function RegisterForm() {
         )}
       </div>
 
-      <label htmlFor="register-confirm-password">Confirmar Contraseña</label>
+    <label htmlFor="register-confirm-password">{t('auth.common.confirmPassword')}</label>
       <div className="password-input-container">
         <input
           type={showConfirmPassword ? "text" : "password"}
           id="register-confirm-password"
-          placeholder="********"
+      placeholder={t('auth.common.passwordPlaceholder')}
           value={confirmPassword}
           onChange={handleConfirmPasswordChange}
           required
@@ -366,7 +368,7 @@ export default function RegisterForm() {
         </span>
         {showMatchErrorDiv && (
           <p className={`password-error-message ${animateMatchError ? "active" : ""}`}>
-            Las contraseñas no coinciden.
+            {t('auth.common.passwordsNoMatch')}
           </p>
         )}
         {showCheckmark && defaultCheckmarkOptions && (
@@ -383,7 +385,7 @@ export default function RegisterForm() {
         <p className="text-green-600 text-sm mt-2" role="status">{successMsg}</p>
       )}
       <button type="submit" disabled={loading}>
-        {loading ? "Creando cuenta..." : "Registrarse"}
+        {loading ? t('auth.common.loadingRegister') : t('auth.common.register')}
       </button>
     </form>
   );

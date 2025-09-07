@@ -1,270 +1,142 @@
 {
-    "client": {
-      "dashboard": {
-        "title": "Dashboard Cliente",
-        "subtitle": "Bienvenido de vuelta, aquí tienes un resumen de tu actividad",
-        "welcome": "¡Bienvenido de vuelta!",
-        "panel": "Panel de Control - Cliente",
-        "manage": "Gestiona tus pedidos, tracking y pagos desde un solo lugar",
-        "activeShipments": "Envíos Activos",
-        "totalOrders": "Total Pedidos",
-        "ordersPlaced": "Pedidos realizados",
-        "inTransit": "En Tránsito",
-        "activeShipmentsShort": "Envíos activos",
-        "totalSpent": "Total Gastado",
-        "totalInvestment": "Inversión total",
-        "completed": "Completados",
-        "ordersDelivered": "Pedidos entregados"
-      },
-      "quickActions": {
-        "title": "Acciones Rápidas",
-        "subtitle": "Accede rápidamente a las funciones más utilizadas",
-        "newOrder": "Crear Nuevo Pedido",
-        "newOrderDesc": "Solicita la importación de un producto",
-        "trackOrder": "Seguir Pedido",
-        "trackOrderDesc": "Consulta el estado de tus envíos",
-        "support": "Contactar Soporte",
-        "supportDesc": "Obtén ayuda cuando la necesites",
-        "payments": "Mis Pagos",
-        "paymentsDesc": "Gestiona tus transacciones"
-      },
-      "support": {
-        "title": "Soporte",
-        "subtitle": "¿Necesitas ayuda? Estamos aquí para ti",
-        "headerTitle": "Soporte al Cliente",
-        "headerSubtitle": "¿Tienes alguna pregunta? Nuestro equipo está listo para ayudarte",
-        "onlineNow": "En línea ahora",
-        "responseTime": "Tiempo de respuesta: < 2 min",
-        "support": "Soporte",
-        "satisfaction": "Satisfacción",
-        "channels": {
-          "chatTitle": "Chat en Línea",
-          "chatDesc": "Chatea con nuestro equipo de soporte en tiempo real",
-          "available": "Disponible",
-          "phoneTitle": "Teléfono",
-          "phoneDesc": "Llámanos directamente para atención inmediata",
-          "emailTitle": "Email",
-          "emailDesc": "Envíanos un email y te responderemos en 24 horas"
-        },
-        "schedule": {
-          "faq": {
-            "chatTitle": "Chat con Soporte",
-            "agentOnline": "{{name}} - En línea",
-            "title": "Preguntas Frecuentes",
-            "subtitle": "Encuentra respuestas rápidas a las preguntas más comunes",
-            "placeholder": "Buscar en preguntas frecuentes...",
-            "tags": {
-              "tracking": "Tracking",
-              "envío": "Envío",
-              "seguimiento": "Seguimiento",
-              "entrega": "Entrega",
-              "tiempo": "Tiempo",
-              "pago": "Pago",
-              "tarjeta": "Tarjeta",
-              "paypal": "PayPal",
-              "transferencia": "Transferencia",
-              "devolución": "Devolución",
-              "reembolso": "Reembolso",
-              "producto": "Producto",
-              "contraseña": "Contraseña",
-              "cuenta": "Cuenta",
-              "seguridad": "Seguridad",
-              "factura": "Factura",
-              "facturación": "Facturación",
-              "pdf": "PDF"
-            },
-            "all": "Todas",
-            "categories": {
-              "tracking": "Tracking",
-              "shipping": "Envíos",
-              "payments": "Pagos",
-              "returns": "Devoluciones",
-              "account": "Cuenta",
-              "billing": "Facturación"
-            },
-            "q1": {
-              "question": "¿Cómo puedo rastrear mi paquete?",
-              "answer": "Puedes rastrear tu paquete de varias formas:\n\n1. Ingresa el número de seguimiento en nuestra página de rastreo\n2. Haz clic en el enlace que recibiste por email\n3. Usa nuestra app móvil\n4. Pregunta en el chat en vivo\n\nEl número de seguimiento tiene formato TRK123456789 y lo recibes dentro de las 24 horas posteriores al envío. Si no lo encuentras, revisa tu carpeta de spam."
-            },
-            "q2": {
-              "question": "¿Cuánto tiempo tarda la entrega?",
-              "answer": "Los tiempos de entrega varían según el destino y el tipo de envío:\n\n• Envíos Nacionales: 24-48h\n• Internacionales: 3-10 días hábiles\n• Express: 1-3 días hábiles\n• Económico: 5-15 días hábiles\n\nLos tiempos pueden variar por factores como aduanas, clima o eventos especiales."
-            },
-            "q3": {
-              "question": "¿Qué métodos de pago aceptan?",
-              "answer": "Aceptamos múltiples métodos de pago para tu comodidad:\n\n• Tarjetas de crédito/débito (Visa, MasterCard, American Express)\n• PayPal\n• Transferencias bancarias\n• Pago Móvil\n• Criptomonedas (Bitcoin, Ethereum)\n• Pago contra reembolso (solo envíos nacionales)\n\nTodos los pagos son procesados de forma segura con encriptación SSL."
-            },
-            "q4": {
-              "question": "¿Cómo devuelvo un producto?",
-              "answer": "Para devolver un producto sigue estos pasos:\n\n1. Ve a 'Mis Pedidos' en tu cuenta\n2. Selecciona el producto que deseas devolver\n3. Haz clic en 'Solicitar Devolución'\n4. Completa el formulario con el motivo\n5. Imprime la etiqueta de devolución\n6. Envía el producto en 7 días\n\nLas devoluciones son gratuitas si el producto llegó dañado o es diferente al solicitado."
-            },
-            "q5": {
-              "question": "¿Cómo cambio mi contraseña?",
-              "answer": "Para cambiar tu contraseña:\n\n1. Inicia sesión en tu cuenta\n2. Ve a 'Configuración' → 'Seguridad'\n3. Haz clic en 'Cambiar Contraseña'\n4. Ingresa tu contraseña actual\n5. Escribe la nueva contraseña\n6. Confirma la nueva contraseña\n7. Haz clic en 'Guardar Cambios'\n\nRecibirás un email de confirmación cuando el cambio sea exitoso."
-            },
-            "q6": {
-              "question": "¿Cómo obtengo mi factura?",
-              "answer": "Para obtener tu factura:\n\n1. Ve a 'Mis Pedidos'\n2. Selecciona el pedido específico\n3. Haz clic en 'Descargar Factura'\n4. La factura se descargará en formato PDF\n\nTambién puedes solicitar facturas por email enviando tu número de pedido a facturacion@morna.com\n\nLas facturas están disponibles 24 horas después de la confirmación del pago."
-            }
-          },
-          "title": "Horarios de Atención",
-          "weekdays": "Lunes a Viernes",
-          "saturday": "Sábados",
-          "sunday": "Domingos",
-          "chat247": "Chat 24/7",
-          "automatic": "Soporte automático",
-          "open": "Abierto",
-          "limited": "Limitado",
-          "closed": "Cerrado"
-        }
-      },
-      "recentOrders": {
-        "payments": {
-          "title": "Historial de Pagos",
-          "subtitle": "Consulta y gestiona todos tus pagos realizados",
-          "dashboard": "Panel de Control - Pagos",
-          "totalPayments": "Total Pagos",
-          "totalPaid": "Total Pagado",
-          "paid": "Pagados",
-          "paidDesc": "Transacciones exitosas",
-          "pending": "Pendientes",
-          "pendingDesc": "Esperando confirmación",
-          "processing": "Procesando",
-          "processingDesc": "En proceso",
-          "failed": "Fallidos",
-          "failedDesc": "Transacciones fallidas",
-          "filtersTitle": "Filtros y Búsqueda",
-          "filtersSubtitle": "Encuentra rápidamente tus transacciones",
-          "searchPlaceholder": "Buscar por producto, orden o ID de pago...",
-          "status": "Estado",
-          "allStatuses": "Todos los estados",
-          "paidStatus": "Pagado",
-          "pendingStatus": "Pendiente",
-          "processingStatus": "Procesando",
-          "failedStatus": "Fallido",
-          "refundedStatus": "Reembolsado",
-          "method": "Método",
-          "allMethods": "Todos los métodos",
-          "pago_movil": "Pago Móvil",
-          "transfer": "Transferencia",
-          "binance": "Binance USDT",
-          "zelle": "Zelle",
-          "paypal": "PayPal",
-          "card": "Tarjeta",
-          "date": "Fecha",
-          "allDates": "Todas las fechas",
-          "today": "Hoy",
-          "week": "Esta semana",
-          "month": "Este mes",
-          "transactions": "Transacciones",
-          "amount": "Monto:",
-          "methodLabel": "Método:",
-          "paymentDate": "Fecha de pago:",
-          "confirmed": "Confirmado:",
-          "paymentDetails": "Detalles de Pago:",
-          "bank": "Banco:",
-          "account": "Cuenta:",
-          "phone": "Teléfono:",
-          "wallet": "Wallet:",
-          "email": "Email:",
-          "reference": "Referencia:",
-          "viewDetails": "Ver Detalles",
-          "retry": "Reintentar",
-          "noTransactions": "No hay transacciones",
-          "noPayments": "No hay pagos disponibles o no hay coincidencias con los filtros aplicados."
-        },
-        "title": "Mis Pedidos",
-        "subtitle": "Consulta y gestiona todos tus pedidos realizados",
-        "noOrders": "No tienes pedidos registrados.",
-  "emptyHint": "Los pedidos aparecerán aquí cuando se creen",
-        "status": "Estado:",
-        "budget": "Presupuesto",
-        "details": "Ver detalles",
-        "search": "Buscar pedido, producto o tracking...",
-        "filter": "Filtrar por estado"
-      },
-      "configuration": {
-        "title": "Configuración",
-        "subtitle": "Gestiona tu perfil, seguridad y preferencias",
-        "tabs": {
-          "profile": "Perfil",
-          "security": "Seguridad",
-          "notifications": "Notificaciones",
-          "preferences": "Preferencias"
-        },
-        "profile": {
-          "title": "Información Personal",
-          "fields": {
-            "name": "Nombre completo",
-            "email": "Correo electrónico",
-            "phone": "Teléfono",
-            "language": "Idioma"
-          },
-          "placeholders": {
-            "name": "Tu nombre completo",
-            "email": "tu@email.com",
-            "phone": "+58 412-123-4567",
-            "selectLanguage": "Selecciona un idioma"
-          },
-          "profilePicture": {
-            "title": "Foto de Perfil",
-            "altText": "Foto de perfil",
-            "uploadButton": "Cambiar foto",
-            "deleteButton": "Eliminar foto"
-          },
-          "accountInfo": {
-            "title": "Información de la Cuenta",
-            "role": "Rol",
-            "memberSince": "Miembro desde",
-            "accountStatus": "Estado de la cuenta",
-            "lastLogin": "Último acceso",
-            "roles": {
-              "Administrador": "Administrador",
-              "Cliente": "Cliente",
-              "Empleado China": "Empleado China",
-              "Empleado Vzla": "Empleado Vzla"
-            },
-            "statuses": {
-              "Activo": "Activo",
-              "Inactivo": "Inactivo"
-            },
-            "months": {
-              "Enero": "Enero",
-              "Febrero": "Febrero",
-              "Marzo": "Marzo",
-              "Abril": "Abril",
-              "Mayo": "Mayo",
-              "Junio": "Junio",
-              "Julio": "Julio",
-              "Agosto": "Agosto",
-              "Septiembre": "Septiembre",
-              "Octubre": "Octubre",
-              "Noviembre": "Noviembre",
-              "Diciembre": "Diciembre"
-            }
-          }
-        },
-        "password": {
-          "title": "Cambiar Contraseña",
-          "fields": {
-            "current": "Contraseña actual",
-            "new": "Nueva contraseña",
-            "confirm": "Confirmar nueva contraseña"
-          },
-          "placeholders": {
-            "current": "Ingresa tu contraseña actual",
-            "new": "Ingresa tu nueva contraseña",
-            "confirm": "Confirma tu nueva contraseña"
-          }
-        }
-      }
+  "auth": {
+    "common": {
+      "languageLabel": "Idioma:",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar Contraseña",
+      "fullName": "Nombre completo",
+      "fullNamePlaceholder": "Tu nombre",
+      "emailPlaceholder": "usuario@correo.com",
+      "passwordPlaceholder": "********",
+      "login": "Iniciar Sesión",
+      "register": "Registrarse",
+      "loadingLogin": "Ingresando...",
+      "loadingRegister": "Creando cuenta...",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "passwordRequired": "La contraseña es obligatoria",
+      "invalidEmail": "Correo electrónico inválido",
+      "invalidEmailAlt": "El correo electrónico no es válido.",
+      "nameInvalid": "El nombre debe tener al menos 3 letras y solo caracteres válidos.",
+      "passwordsNoMatch": "Las contraseñas no coinciden.",
+      "passwordLevelLow": "Débil",
+      "passwordLevelMedium": "Normal",
+      "passwordLevelStrong": "Fuerte",
+      "passwordLevelVeryStrong": "Muy Fuerte",
+      "passwordMustBeNormal": "La contraseña debe ser al menos \"Normal\" para registrarse.",
+      "passwordMustBeVeryStrong": "La contraseña debe ser \"Muy Fuerte\" para continuar.",
+      "animationLoadError": "No se pudo cargar la animación",
+      "registerAnimationLoadError": "No se pudo cargar la animación de registro"
     },
+    "login": {
+      "title": "Iniciar Sesión",
+      "welcomeBack": "¡Bienvenido de Nuevo!",
+      "welcomeMessage": "Para mantenerte conectado, por favor inicia sesión con tu información personal.",
+      "errorFallback": "Error al iniciar sesión"
+    },
+    "register": {
+      "title": "Registrarse",
+      "helloFriend": "¡Hola Amigo!",
+      "helloMessage": "Introduce tus datos personales y comienza tu viaje con nosotros.",
+      "success": "¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.",
+      "errorFallback": "Error al registrarse"
+    },
+    "panels": {
+      "welcomeBack": "¡Bienvenido de Nuevo!",
+      "welcomeMessage": "Para mantenerte conectado, por favor inicia sesión con tu información personal.",
+      "helloFriend": "¡Hola Amigo!",
+      "helloMessage": "Introduce tus datos personales y comienza tu viaje con nosotros."
+    },
+    "passwordReset": {
+      "titles": {
+        "reset": "Restablecer Contraseña",
+        "verify": "Verificar Código",
+        "new": "Nueva Contraseña"
+      },
+      "descriptions": {
+        "enterEmail": "Ingresa tu correo electrónico para restablecer tu contraseña",
+        "codeSent": "Hemos enviado un código a {{contact}}. Ingresa el código aquí.",
+        "createNew": "Crea una nueva contraseña segura"
+      },
+      "placeholders": {
+        "email": "Ingresa tu correo electrónico",
+        "newPassword": "Nueva contraseña",
+        "confirmPassword": "Confirmar contraseña"
+      },
+      "buttons": {
+        "continue": "Continuar",
+        "back": "Volver",
+        "reset": "Restablecer Contraseña"
+      },
+      "tooltips": {
+        "backToLogin": "Volver al inicio de sesión"
+      },
+      "alts": {
+        "securityShield": "Escudo de seguridad"
+      },
+      "passwordsNoMatchAlert": "Las contraseñas no coinciden.",
+      "resetSuccess": "¡Contraseña restablecida exitosamente! Serás redirigido al inicio de sesión.",
+      "resetError": "Ocurrió un error al restablecer la contraseña.",
+      "sendCode": "Enviar Código",
+      "verifyCode": "Verificar Código",
+      "newPassword": "Nueva Contraseña",
+      "confirmNewPassword": "Confirmar Nueva Contraseña"
+    }
+  },
+  "authPasswordResetModal": {
+    "title": "Enlace Enviado",
+    "subtitle": "Hemos enviado un enlace de restablecimiento a",
+    "checkInbox": "Revisa tu bandeja de entrada y sigue las instrucciones.",
+    "resendQuestion": "¿No lo recibiste?",
+    "resendLink": "Reenviar",
+    "close": "Cerrar",
+    "sentTo": "Enviado a: {{email}}",
+    "copy": "Copiar correo",
+    "copied": "Copiado",
+    "openMail": "Abrir correo",
+    "resending": "Reenviando...",
+    "resent": "Enlace reenviado",
+    "info": "Si no aparece en unos minutos, revisa también tu carpeta de spam."
+  },
+  "passwordResetSide": {
+    "slides": [
+      { "title": "Seguridad Garantizada", "desc": "Tu información está protegida con encriptación de nivel bancario" },
+      { "title": "Acceso Inmediato", "desc": "Restablece tu contraseña sin esperar códigos de verificación" },
+      { "title": "Recuperación por Email", "desc": "Utiliza tu correo electrónico para un acceso seguro" },
+      { "title": "Proceso Sencillo", "desc": "Restablece tu contraseña en solo 2 pasos" }
+    ]
+  },
+  "sidebar":{
+    "dashboard": "Panel",
+    "users": "Usuarios",
+    "usuarios": "Usuarios",
+    "orders": "Pedidos",
+    "pedidos": "Pedidos",
+    "reports": "Reportes",
+    "alerts": "Alertas",
+    "management": "Gestión",
+    "gestion": "Gestión",
+    "payments": "Pagos",
+    "payments-validation": "Pagos",
+    "support": "Soporte",
+    "settings": "Configuración",
+    "configuration": "Configuración",
+    "clients": "Clientes",
+    "tracking": "Seguimiento",
+    "profile": "Perfil",
+    "logout": "Cerrar sesión",
+    "dashboardAdmin": "Panel de Administración",
+    "dashboardClient": "Panel de Cliente",
+    "dashboardChina": "Panel de China",
+    "dashboardVzla": "Panel de Venezuela"
+  },
+  "client": {
     "dashboard": {
-      "title": "Dashboard Cliente",
+      "title": "Panel de Control del Cliente",
       "subtitle": "Bienvenido de vuelta, aquí tienes un resumen de tu actividad",
       "welcome": "¡Bienvenido de vuelta!",
       "panel": "Panel de Control - Cliente",
-      "manage": "Gestiona tus pedidos, tracking y pagos desde un solo lugar",
+      "manage": "Gestiona tus pedidos, seguimiento y pagos desde un solo lugar",
       "activeShipments": "Envíos Activos",
       "totalOrders": "Total Pedidos",
       "ordersPlaced": "Pedidos realizados",
@@ -275,6 +147,504 @@
       "completed": "Completados",
       "ordersDelivered": "Pedidos entregados"
     },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "subtitle": "Accede rápidamente a las funciones más utilizadas",
+      "newOrder": "Crear Nuevo Pedido",
+      "newOrderDesc": "Solicita la importación de un producto",
+      "trackOrder": "Seguir Pedido",
+      "trackOrderDesc": "Consulta el estado de tus envíos",
+      "support": "Contactar Soporte",
+      "supportDesc": "Obtén ayuda cuando la necesites",
+      "payments": "Mis Pagos",
+      "paymentsDesc": "Gestiona tus transacciones"
+    },
+    "support": {
+      "title": "Soporte",
+      "subtitle": "¿Necesitas ayuda? Estamos aquí para ti",
+      "headerTitle": "Soporte al Cliente",
+      "headerSubtitle": "¿Tienes alguna pregunta? Nuestro equipo está listo para ayudarte",
+      "onlineNow": "En línea ahora",
+      "responseTime": "Tiempo de respuesta: < 2 min",
+      "support": "Soporte",
+      "satisfaction": "Satisfacción",
+      "channels": {
+        "chatTitle": "Chat en Línea",
+        "chatDesc": "Chatea con nuestro equipo de soporte en tiempo real",
+        "available": "Disponible",
+        "phoneTitle": "Teléfono",
+        "phoneDesc": "Llámanos directamente para atención inmediata",
+        "emailTitle": "Email",
+        "emailDesc": "Envíanos un email y te responderemos en 24 horas"
+      },
+      "schedule": {
+        "faq": {
+          "chatTitle": "Chat con Soporte",
+          "agentOnline": "{{name}} - En línea",
+          "title": "Preguntas Frecuentes",
+          "subtitle": "Encuentra respuestas rápidas a las preguntas más comunes",
+          "placeholder": "Buscar en preguntas frecuentes...",
+          "tags": {
+            "tracking": "Seguimiento",
+            "envío": "Envío",
+            "seguimiento": "Seguimiento",
+            "entrega": "Entrega",
+            "tiempo": "Tiempo",
+            "pago": "Pago",
+            "tarjeta": "Tarjeta",
+            "paypal": "PayPal",
+            "transferencia": "Transferencia",
+            "devolución": "Devolución",
+            "reembolso": "Reembolso",
+            "producto": "Producto",
+            "contraseña": "Contraseña",
+            "cuenta": "Cuenta",
+            "seguridad": "Seguridad",
+            "factura": "Factura",
+            "facturación": "Facturación",
+            "pdf": "PDF"
+          },
+          "all": "Todas",
+          "categories": {
+            "tracking": "Seguimiento",
+            "shipping": "Envíos",
+            "payments": "Pagos",
+            "returns": "Devoluciones",
+            "account": "Cuenta",
+            "billing": "Facturación"
+          },
+          "q1": {
+            "question": "¿Cómo puedo rastrear mi paquete?",
+            "answer": "Puedes rastrear tu paquete de varias formas:\n\n1. Ingresa el número de seguimiento en nuestra página de rastreo\n2. Haz clic en el enlace que recibiste por email\n3. Usa nuestra app móvil\n4. Pregunta en el chat en vivo\n\nEl número de seguimiento tiene formato TRK123456789 y lo recibes dentro de las 24 horas posteriores al envío. Si no lo encuentras, revisa tu carpeta de spam."
+          },
+          "q2": {
+            "question": "¿Cuánto tiempo tarda la entrega?",
+            "answer": "Los tiempos de entrega varían según el destino y el tipo de envío:\n\n• Envíos Nacionales: 24-48h\n• Internacionales: 3-10 días hábiles\n• Express: 1-3 días hábiles\n• Económico: 5-15 días hábiles\n\nLos tiempos pueden variar por factores como aduanas, clima o eventos especiales."
+          },
+          "q3": {
+            "question": "¿Qué métodos de pago aceptan?",
+            "answer": "Aceptamos múltiples métodos de pago para tu comodidad:\n\n• Tarjetas de crédito/débito (Visa, MasterCard, American Express)\n• PayPal\n• Transferencias bancarias\n• Pago Móvil\n• Criptomonedas (Bitcoin, Ethereum)\n• Pago contra reembolso (solo envíos nacionales)\n\nTodos los pagos son procesados de forma segura con encriptación SSL."
+          },
+          "q4": {
+            "question": "¿Cómo devuelvo un producto?",
+            "answer": "Para devolver un producto sigue estos pasos:\n\n1. Ve a 'Mis Pedidos' en tu cuenta\n2. Selecciona el producto que deseas devolver\n3. Haz clic en 'Solicitar Devolución'\n4. Completa el formulario con el motivo\n5. Imprime la etiqueta de devolución\n6. Envía el producto en 7 días\n\nLas devoluciones son gratuitas si el producto llegó dañado o es diferente al solicitado."
+          },
+          "q5": {
+            "question": "¿Cómo cambio mi contraseña?",
+            "answer": "Para cambiar tu contraseña:\n\n1. Inicia sesión en tu cuenta\n2. Ve a 'Configuración' → 'Seguridad'\n3. Haz clic en 'Cambiar Contraseña'\n4. Ingresa tu contraseña actual\n5. Escribe la nueva contraseña\n6. Confirma la nueva contraseña\n7. Haz clic en 'Guardar Cambios'\n\nRecibirás un email de confirmación cuando el cambio sea exitoso."
+          },
+          "q6": {
+            "question": "¿Cómo obtengo mi factura?",
+            "answer": "Para obtener tu factura:\n\n1. Ve a 'Mis Pedidos'\n2. Selecciona el pedido específico\n3. Haz clic en 'Descargar Factura'\n4. La factura se descargará en formato PDF\n\nTambién puedes solicitar facturas por email enviando tu número de pedido a facturacion@morna.com\n\nLas facturas están disponibles 24 horas después de la confirmación del pago."
+          }
+        },
+        "title": "Horarios de Atención",
+        "weekdays": "Lunes a Viernes",
+        "saturday": "Sábados",
+        "sunday": "Domingos",
+        "chat247": "Chat 24/7",
+        "automatic": "Soporte automático",
+        "open": "Abierto",
+        "limited": "Limitado",
+        "closed": "Cerrado"
+      }
+    },
+    "recentOrders": {
+      "payments": {
+        "title": "Historial de Pagos",
+        "subtitle": "Consulta y gestiona todos tus pagos realizados",
+        "dashboard": "Panel de Control - Pagos",
+        "totalPayments": "Total Pagos",
+        "totalPaid": "Total Pagado",
+        "paid": "Pagados",
+        "paidDesc": "Transacciones exitosas",
+        "pending": "Pendientes",
+        "pendingDesc": "Esperando confirmación",
+        "processing": "Procesando",
+        "processingDesc": "En proceso",
+        "failed": "Fallidos",
+        "failedDesc": "Transacciones fallidas",
+        "filtersTitle": "Filtros y Búsqueda",
+        "filtersSubtitle": "Encuentra rápidamente tus transacciones",
+        "searchPlaceholder": "Buscar por producto, orden o ID de pago...",
+        "status": "Estado",
+        "allStatuses": "Todos los estados",
+        "paidStatus": "Pagado",
+        "pendingStatus": "Pendiente",
+        "processingStatus": "Procesando",
+        "failedStatus": "Fallido",
+        "refundedStatus": "Reembolsado",
+        "method": "Método",
+        "allMethods": "Todos los métodos",
+        "pago_movil": "Pago Móvil",
+        "transfer": "Transferencia",
+        "binance": "Binance USDT",
+        "zelle": "Zelle",
+        "paypal": "PayPal",
+        "card": "Tarjeta",
+        "date": "Fecha",
+        "allDates": "Todas las fechas",
+        "today": "Hoy",
+        "week": "Esta semana",
+        "month": "Este mes",
+        "transactions": "Transacciones",
+        "amount": "Monto:",
+        "methodLabel": "Método:",
+        "paymentDate": "Fecha de pago:",
+        "confirmed": "Confirmado:",
+        "paymentDetails": "Detalles de Pago:",
+        "bank": "Banco:",
+        "account": "Cuenta:",
+        "phone": "Teléfono:",
+        "wallet": "Wallet:",
+        "email": "Email:",
+        "reference": "Referencia:",
+        "viewDetails": "Ver Detalles",
+        "retry": "Reintentar",
+        "noTransactions": "No hay transacciones",
+        "noPayments": "No hay pagos disponibles o no hay coincidencias con los filtros aplicados."
+      },
+      "title": "Mis Pedidos",
+      "subtitle": "Consulta y gestiona todos tus pedidos realizados",
+      "noOrders": "No tienes pedidos registrados.",
+      "emptyHint": "Los pedidos aparecerán aquí cuando se creen",
+      "status": "Estado:",
+      "budget": "Presupuesto",
+      "details": "Ver detalles",
+      "search": "Buscar pedido, producto o seguimiento...",
+      "filter": "Filtrar por estado",
+      "table": {
+        "id": "ID Pedido",
+        "product": "Producto",
+        "description": "Descripción",
+        "amount": "Monto",
+        "status": "Estado",
+        "createdAt": "Fecha de creación",
+        "actions": "Acciones"
+      },
+      "statuses": {
+        "pending": "Pendiente",
+        "quoted": "Cotizado",
+        "processing": "Procesando",
+        "shipped": "Enviado",
+        "delivered": "Entregado",
+        "cancelled": "Cancelado"
+      },
+      "actions": {
+        "view": "Ver detalles",
+        "track": "Ver seguimiento",
+        "pay": "Pagar",
+        "download": "Descargar PDF"
+      },
+      "progress": "Progreso del pedido",
+      "estimatedDelivery": "Entrega estimada",
+      "modal": {
+        "detailsTitle": "Detalles del pedido",
+        "detailsSubtitle": "Información completa y documentos del pedido",
+        "product": "Producto",
+        "amount": "Monto",
+        "status": "Estado",
+        "description": "Descripción",
+        "currentProgress": "Progreso actual",
+        "tracking": "Seguimiento",
+        "downloadInvoice": "Descargar factura"
+      },
+      "newOrder": {
+        "step": "Paso {{current}} de {{total}}",
+        "percentComplete": "{{percent}}% completado",
+        "productTab": "Producto",
+        "shippingTab": "Envío",
+        "summaryTab": "Resumen",
+        "productName": "Nombre del Producto",
+        "productNamePlaceholder": "Ej: iPhone 15 Pro Max",
+        "productDescription": "Descripción del Producto",
+        "productDescriptionPlaceholder": "Describe detalladamente el producto que deseas importar...",
+        "quantity": "Cantidad",
+        "invalidQuantity": "La cantidad debe ser un número mayor que cero.",
+        "specifications": "Especificaciones Técnicas",
+        "specificationsPlaceholder": "Color, talla, modelo, características específicas, etc.",
+        "requestType": "Tipo de Solicitud",
+        "linkTitle": "Link del Producto",
+        "linkSubtitle": "Pega el enlace de la tienda",
+        "photoTitle": "Foto + Descripción",
+        "photoSubtitle": "Sube una imagen del producto",
+        "productUrl": "URL del Producto *",
+        "productUrlPlaceholder": "https://ejemplo.com/producto",
+        "invalidUrl": "La URL no es válida.",
+        "productImage": "Imagen del Producto",
+        "change": "Cambiar",
+        "delete": "Eliminar",
+        "dragDrop": "Arrastra una imagen aquí o haz clic para seleccionar",
+        "selectImage": "Seleccionar Imagen",
+        "deliveryType": "Tipo de Envío",
+        "doorToDoor": "Puerta a Puerta",
+        "doorToDoorDesc": "Recogemos en tu dirección",
+        "air": "Envío Aéreo",
+        "airDesc": "Envío rápido por avión",
+        "maritime": "Envío Marítimo",
+        "maritimeDesc": "Envío económico por barco",
+        "deliveryVenezuela": "Opción de Entrega en Venezuela",
+        "deliveryVenezuelaPlaceholder": "Selecciona cómo quieres recibir tu pedido",
+        "pickup": "Recoger en oficina",
+        "delivery": "Entrega a domicilio",
+        "express": "Entrega express",
+        "estimatedBudget": "Presupuesto Estimado (USD)",
+        "estimatedBudgetPlaceholder": "Ej: 500",
+        "invalidBudget": "El presupuesto estimado debe ser un monto válido.",
+        "summaryTitle": "Resumen de tu Solicitud",
+        "almostReady": "¡Casi listo!",
+        "reviewMessage": "Tu solicitud será revisada por nuestro equipo y recibirás una cotización en las próximas 24 horas.",
+        "transitioning": "Transicionando...",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "createOrder": "Crear Pedido",
+        "dialogDescription": "Sigue los pasos para crear tu solicitud de importación",
+        "stepTitles": {
+          "productInfo": "Información del Producto",
+          "shippingDetails": "Detalles del Envío",
+          "summaryConfirmation": "Resumen y Confirmación"
+        },
+        "stepDescriptions": {
+          "productInfo": "Cuéntanos qué producto deseas importar",
+          "shippingDetails": "Configura cómo quieres recibir tu pedido",
+          "summaryConfirmation": "Revisa y confirma tu solicitud"
+        },
+        "success": {
+          "title": "¡Pedido Creado!",
+          "message": "Tu solicitud ha sido enviada exitosamente",
+          "button": "¡Perfecto!"
+        }
+      },
+      "paymentModal": {
+        "title": "Realizar Pago",
+        "selectMethod": "Selecciona tu método de pago preferido",
+        "confirmDetails": "Confirma los detalles de tu pago",
+        "quoteValidUntil": "Cotización válida hasta: {{date}}",
+        "automatic": "Automático",
+        "manual": "Manual",
+        "paymentInfo": "Información de Pago",
+        "phoneNumber": "Número de Teléfono:",
+        "reference": "Referencia:",
+        "bank": "Banco:",
+        "accountNumber": "Número de Cuenta:",
+        "email": "Email:",
+        "importantInstructions": "Instrucciones importantes:",
+        "instructions": {
+          "exactReference": "Realiza el pago con la referencia exacta",
+          "saveReceipt": "Guarda el comprobante de pago",
+          "processTime": "El proceso puede tomar hasta 24 horas",
+          "manualValidation": "Nuestro equipo validará tu pago manualmente"
+        },
+        "cancel": "Cancelar",
+        "back": "Volver",
+        "processing": "Procesando...",
+        "confirmPayment": "Confirmar Pago"
+      },
+      "trackingModal": {
+        "trackingNumber": "Número de Seguimiento",
+        "carrier": "Transportista",
+        "estimatedDelivery": "Entrega estimada",
+        "currentStatus": "Estado actual",
+        "historyTitle": "Historial de seguimiento",
+        "states": {
+          "created": "Pedido creado",
+          "processing": "En procesamiento",
+          "shipped": "Enviado",
+          "in_transit": "En tránsito",
+          "customs": "En aduana",
+          "delivered": "Entregado"
+        }
+      }
+    },
+    "configuration": {
+      "title": "Configuración",
+      "subtitle": "Gestiona tu perfil, seguridad y preferencias",
+      "tabs": {
+        "profile": "Perfil",
+        "security": "Seguridad",
+        "notifications": "Notificaciones",
+        "preferences": "Preferencias"
+      },
+      "profile": {
+        "title": "Información Personal",
+        "fields": {
+          "name": "Nombre completo",
+          "email": "Correo electrónico",
+          "phone": "Teléfono",
+          "language": "Idioma"
+        },
+        "placeholders": {
+          "name": "Tu nombre completo",
+          "email": "tu@email.com",
+          "phone": "+58 412-123-4567",
+          "selectLanguage": "Selecciona un idioma"
+        },
+        "profilePicture": {
+          "title": "Foto de Perfil",
+          "altText": "Foto de perfil",
+          "uploadButton": "Cambiar foto",
+          "deleteButton": "Eliminar foto"
+        },
+        "accountInfo": {
+          "title": "Información de la Cuenta",
+          "role": "Rol",
+          "memberSince": "Miembro desde",
+          "accountStatus": "Estado de la cuenta",
+          "lastLogin": "Último acceso",
+          "roles": {
+            "Administrador": "Administrador",
+            "Cliente": "Cliente",
+            "Empleado China": "Empleado China",
+            "Empleado Vzla": "Empleado Vzla"
+          },
+          "statuses": {
+            "Activo": "Activo",
+            "Inactivo": "Inactivo"
+          },
+          "months": {
+            "Enero": "Enero",
+            "Febrero": "Febrero",
+            "Marzo": "Marzo",
+            "Abril": "Abril",
+            "Mayo": "Mayo",
+            "Junio": "Junio",
+            "Julio": "Julio",
+            "Agosto": "Agosto",
+            "Septiembre": "Septiembre",
+            "Octubre": "Octubre",
+            "Noviembre": "Noviembre",
+            "Diciembre": "Diciembre"
+          }
+        }
+      },
+      "password": {
+        "title": "Cambiar Contraseña",
+        "fields": {
+          "current": "Contraseña actual",
+          "new": "Nueva contraseña",
+          "confirm": "Confirmar nueva contraseña"
+        },
+        "placeholders": {
+          "current": "Ingresa tu contraseña actual",
+          "new": "Ingresa tu nueva contraseña",
+          "confirm": "Confirma tu nueva contraseña"
+        }
+      },
+      "security": {
+        "title": "Configuración de Seguridad",
+        "subtitle": "Gestiona la seguridad de tu cuenta",
+        "twoFactor": "Autenticación de dos factores",
+        "twoFactorDesc": "Añade una capa extra de seguridad a tu cuenta",
+        "activeSessions": "Sesiones activas",
+        "lastAccess": "Último acceso",
+        "ipAddress": "Dirección IP",
+        "sessionInfo": "Información de sesiones",
+        "closeAllSessions": "Cerrar todas las sesiones",
+        "closeAllSessionsDesc": "Cierra todas las sesiones activas excepto la actual",
+        "devicesConnected": "{{count}} dispositivos conectados",
+        "deviceConnected": "1 dispositivo conectado",
+        "viewAllSessions": "Ver todas las sesiones",
+        "lastAccessIP": "IP del último acceso",
+        "saveButton": "Guardar configuración",
+        "recentActivity": {
+          "title": "Actividad Reciente",
+          "loginSuccess": "Inicio de sesión exitoso",
+          "passwordChange": "Cambio de contraseña",
+          "newDevice": "Nuevo dispositivo detectado",
+          "timeAgo": {
+            "hours": "Hace {{count}} horas",
+            "hour": "Hace 1 hora",
+            "days": "Hace {{count}} días",
+            "day": "Hace 1 día",
+            "weeks": "Hace {{count}} semanas",
+            "week": "Hace 1 semana"
+          }
+        }
+      },
+      "notifications": {
+        "title": "Preferencias de Notificaciones",
+        "subtitle": "Controla qué notificaciones quieres recibir",
+        "email": "Notificaciones por email",
+        "emailDesc": "Recibir notificaciones importantes por correo electrónico",
+        "push": "Notificaciones push",
+        "pushDesc": "Recibir notificaciones push en el navegador",
+        "critical": "Alertas críticas",
+        "criticalDesc": "Notificaciones sobre problemas críticos del sistema",
+        "marketing": "Notificaciones de marketing",
+        "marketingDesc": "Ofertas especiales y contenido promocional",
+        "orders": "Notificaciones de pedidos",
+        "ordersDesc": "Actualizaciones sobre el estado de tus pedidos",
+        "dailyReports": "Reportes diarios",
+        "dailyReportsDesc": "Recibir resúmenes diarios de actividades",
+        "systemUpdates": "Actualizaciones del sistema",
+        "systemUpdatesDesc": "Notificaciones sobre nuevas funciones y actualizaciones",
+        "saveButton": "Guardar preferencias"
+      },
+      "preferences": {
+        "title": "Preferencias de la Aplicación",
+        "subtitle": "Personaliza tu experiencia en la aplicación",
+        "regional": {
+          "title": "Configuración Regional"
+        },
+        "theme": {
+          "title": "Tema de la aplicación",
+          "subtitle": "Elige el tema que prefieras para la interfaz",
+          "light": "Claro",
+          "dark": "Oscuro",
+          "system": "Sistema",
+          "appearance": "Apariencia",
+          "currentTheme": "Tema actual",
+          "fontSize": "Tamaño de fuente",
+          "interfaceDensity": "Densidad de la interfaz",
+          "fontSizes": {
+            "small": "Pequeño",
+            "medium": "Mediano",
+            "large": "Grande"
+          },
+          "densities": {
+            "compact": "Compacta",
+            "comfortable": "Cómoda",
+            "spacious": "Espaciosa"
+          }
+        },
+        "language": {
+          "title": "Idioma",
+          "subtitle": "Selecciona tu idioma preferido"
+        },
+        "timezone": {
+          "title": "Zona horaria",
+          "subtitle": "Configura tu zona horaria local",
+          "placeholder": "Selecciona tu zona horaria"
+        },
+        "dateFormat": {
+          "title": "Formato de fecha",
+          "placeholder": "Selecciona el formato"
+        },
+        "timeFormat": {
+          "title": "Formato de hora",
+          "placeholder": "Selecciona el formato",
+          "24h": "24 horas",
+          "12h": "12 horas (AM/PM)"
+        }
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Panel de Control del Cliente",
+    "subtitle": "Bienvenido de vuelta, aquí tienes un resumen de tu actividad",
+    "welcome": "¡Bienvenido de vuelta!",
+    "panel": "Panel de Control - Cliente",
+    "manage": "Gestiona tus pedidos, seguimiento y pagos desde un solo lugar",
+    "activeShipments": "Envíos Activos",
+    "totalOrders": "Total Pedidos",
+    "ordersPlaced": "Pedidos realizados",
+    "inTransit": "En Tránsito",
+    "activeShipmentsShort": "Envíos activos",
+    "totalSpent": "Total Gastado",
+    "totalInvestment": "Inversión total",
+    "completed": "Completados",
+    "ordersDelivered": "Pedidos entregados"
+  },
   "quickActions": {
     "title": "Acciones Rápidas",
     "subtitle": "Accede rápidamente a las funciones más utilizadas",
@@ -305,15 +675,15 @@
       "emailTitle": "Email",
       "emailDesc": "Envíanos un email y te responderemos en 24 horas"
     },
-  "schedule": {
-  "faq": {
-  "chatTitle": "Chat con Soporte",
-  "agentOnline": "{{name}} - En línea",
+    "schedule": {
+      "faq": {
+        "chatTitle": "Chat con Soporte",
+        "agentOnline": "{{name}} - En línea",
         "title": "Preguntas Frecuentes",
         "subtitle": "Encuentra respuestas rápidas a las preguntas más comunes",
         "placeholder": "Buscar en preguntas frecuentes...",
         "tags": {
-          "tracking": "Tracking",
+          "tracking": "Seguimiento",
           "envío": "Envío",
           "seguimiento": "Seguimiento",
           "entrega": "Entrega",
@@ -334,7 +704,7 @@
         },
         "all": "Todas",
         "categories": {
-          "tracking": "Tracking",
+          "tracking": "Seguimiento",
           "shipping": "Envíos",
           "payments": "Pagos",
           "returns": "Devoluciones",
@@ -377,7 +747,7 @@
       "closed": "Cerrado"
     }
   },
-    "recentOrders": {
+  "recentOrders": {
     "payments": {
       "title": "Historial de Pagos",
       "subtitle": "Consulta y gestiona todos tus pagos realizados",
@@ -432,141 +802,155 @@
       "noTransactions": "No hay transacciones",
       "noPayments": "No hay pagos disponibles o no hay coincidencias con los filtros aplicados."
     },
-      "title": "Mis Pedidos",
-      "subtitle": "Consulta y gestiona todos tus pedidos realizados",
-      "noOrders": "No tienes pedidos registrados.",
-      "status": "Estado:",
-      "budget": "Presupuesto",
-      "details": "Ver detalles",
-      "search": "Buscar pedido, producto o tracking...",
-      "filter": "Filtrar por estado",
-      "table": {
-        "id": "ID Pedido",
-        "product": "Producto",
-        "description": "Descripción",
-        "amount": "Monto",
-        "status": "Estado",
-        "createdAt": "Fecha de creación",
-        "actions": "Acciones"
+    "title": "Mis Pedidos",
+    "subtitle": "Consulta y gestiona todos tus pedidos realizados",
+    "noOrders": "No tienes pedidos registrados.",
+    "emptyHint": "Los pedidos aparecerán aquí cuando se creen",
+    "status": "Estado:",
+    "budget": "Presupuesto",
+    "details": "Ver detalles",
+    "search": "Buscar pedido, producto o seguimiento...",
+    "filter": "Filtrar por estado",
+    "table": {
+      "id": "ID Pedido",
+      "product": "Producto",
+      "description": "Descripción",
+      "amount": "Monto",
+      "status": "Estado",
+      "createdAt": "Fecha de creación",
+      "actions": "Acciones"
+    },
+    "statuses": {
+      "pending": "Pendiente",
+      "quoted": "Cotizado",
+      "processing": "Procesando",
+      "shipped": "Enviado",
+      "delivered": "Entregado",
+      "cancelled": "Cancelado"
+    },
+    "actions": {
+      "view": "Ver detalles",
+      "track": "Ver seguimiento",
+      "pay": "Pagar",
+      "download": "Descargar PDF"
+    },
+    "progress": "Progreso del pedido",
+    "estimatedDelivery": "Entrega estimada",
+    "modal": {
+      "detailsTitle": "Detalles del pedido",
+      "detailsSubtitle": "Información completa y documentos del pedido",
+      "product": "Producto",
+      "amount": "Monto",
+      "status": "Estado",
+      "description": "Descripción",
+      "currentProgress": "Progreso actual",
+      "tracking": "Seguimiento",
+      "downloadInvoice": "Descargar factura"
+    },
+    "newOrder": {
+      "step": "Paso {{current}} de {{total}}",
+      "percentComplete": "{{percent}}% completado",
+      "productTab": "Producto",
+      "shippingTab": "Envío",
+      "summaryTab": "Resumen",
+      "productName": "Nombre del Producto",
+      "productNamePlaceholder": "Ej: iPhone 15 Pro Max",
+      "productDescription": "Descripción del Producto",
+      "productDescriptionPlaceholder": "Describe detalladamente el producto que deseas importar...",
+      "quantity": "Cantidad",
+      "invalidQuantity": "La cantidad debe ser un número mayor que cero.",
+      "specifications": "Especificaciones Técnicas",
+      "specificationsPlaceholder": "Color, talla, modelo, características específicas, etc.",
+      "requestType": "Tipo de Solicitud",
+      "linkTitle": "Link del Producto",
+      "linkSubtitle": "Pega el enlace de la tienda",
+      "photoTitle": "Foto + Descripción",
+      "photoSubtitle": "Sube una imagen del producto",
+      "productUrl": "URL del Producto *",
+      "productUrlPlaceholder": "https://ejemplo.com/producto",
+      "invalidUrl": "La URL no es válida.",
+      "productImage": "Imagen del Producto",
+      "change": "Cambiar",
+      "delete": "Eliminar",
+      "dragDrop": "Arrastra una imagen aquí o haz clic para seleccionar",
+      "selectImage": "Seleccionar Imagen",
+      "deliveryType": "Tipo de Envío",
+      "doorToDoor": "Puerta a Puerta",
+      "doorToDoorDesc": "Recogemos en tu dirección",
+      "air": "Envío Aéreo",
+      "airDesc": "Envío rápido por avión",
+      "maritime": "Envío Marítimo",
+      "maritimeDesc": "Envío económico por barco",
+      "deliveryVenezuela": "Opción de Entrega en Venezuela",
+      "deliveryVenezuelaPlaceholder": "Selecciona cómo quieres recibir tu pedido",
+      "pickup": "Recoger en oficina",
+      "delivery": "Entrega a domicilio",
+      "express": "Entrega express",
+      "estimatedBudget": "Presupuesto Estimado (USD)",
+      "estimatedBudgetPlaceholder": "Ej: 500",
+      "invalidBudget": "El presupuesto estimado debe ser un monto válido.",
+      "summaryTitle": "Resumen de tu Solicitud",
+      "almostReady": "¡Casi listo!",
+      "reviewMessage": "Tu solicitud será revisada por nuestro equipo y recibirás una cotización en las próximas 24 horas.",
+      "transitioning": "Transicionando...",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "createOrder": "Crear Pedido",
+      "dialogDescription": "Sigue los pasos para crear tu solicitud de importación",
+      "stepTitles": {
+        "productInfo": "Información del Producto",
+        "shippingDetails": "Detalles del Envío",
+        "summaryConfirmation": "Resumen y Confirmación"
       },
-      "statuses": {
-        "pending": "Pendiente",
-        "quoted": "Cotizado",
-        "processing": "Procesando",
+      "stepDescriptions": {
+        "productInfo": "Cuéntanos qué producto deseas importar",
+        "shippingDetails": "Configura cómo quieres recibir tu pedido",
+        "summaryConfirmation": "Revisa y confirma tu solicitud"
+      },
+      "success": {
+        "title": "¡Pedido Creado!",
+        "message": "Tu solicitud ha sido enviada exitosamente",
+        "button": "¡Perfecto!"
+      }
+    },
+    "paymentModal": {
+      "title": "Realizar Pago",
+      "selectMethod": "Selecciona tu método de pago preferido",
+      "confirmDetails": "Confirma los detalles de tu pago",
+      "quoteValidUntil": "Cotización válida hasta: {{date}}",
+      "automatic": "Automático",
+      "manual": "Manual",
+      "paymentInfo": "Información de Pago",
+      "phoneNumber": "Número de Teléfono:",
+      "reference": "Referencia:",
+      "bank": "Banco:",
+      "accountNumber": "Número de Cuenta:",
+      "email": "Email:",
+      "importantInstructions": "Instrucciones importantes:",
+      "instructions": {
+        "exactReference": "Realiza el pago con la referencia exacta",
+        "saveReceipt": "Guarda el comprobante de pago",
+        "processTime": "El proceso puede tomar hasta 24 horas",
+        "manualValidation": "Nuestro equipo validará tu pago manualmente"
+      },
+      "cancel": "Cancelar",
+      "back": "Volver",
+      "processing": "Procesando...",
+      "confirmPayment": "Confirmar Pago"
+    },
+    "trackingModal": {
+      "trackingNumber": "Número de Seguimiento",
+      "carrier": "Transportista",
+      "estimatedDelivery": "Entrega estimada",
+      "currentStatus": "Estado actual",
+      "historyTitle": "Historial de seguimiento",
+      "states": {
+        "created": "Pedido creado",
+        "processing": "En procesamiento",
         "shipped": "Enviado",
-        "delivered": "Entregado",
-        "cancelled": "Cancelado"
-      },
-      "actions": {
-        "view": "Ver detalles",
-        "track": "Ver tracking",
-        "pay": "Pagar",
-        "download": "Descargar PDF"
-      },
-      "progress": "Progreso del pedido",
-      "estimatedDelivery": "Entrega estimada"
-      ,
-      "modal": {
-        "detailsTitle": "Detalles del pedido",
-        "detailsSubtitle": "Información completa y documentos del pedido",
-        "product": "Producto",
-        "amount": "Monto",
-        "status": "Estado",
-        "description": "Descripción",
-        "currentProgress": "Progreso actual",
-        "tracking": "Seguimiento",
-        "downloadInvoice": "Descargar factura"
-      },
-      "trackingModal": {
-      "newOrder": {
-        "step": "Paso {{current}} de {{total}}",
-        "percentComplete": "{{percent}}% completado",
-        "productTab": "Producto",
-        "shippingTab": "Envío",
-        "summaryTab": "Resumen",
-        "productName": "Nombre del Producto",
-        "productNamePlaceholder": "Ej: iPhone 15 Pro Max",
-        "productDescription": "Descripción del Producto",
-        "productDescriptionPlaceholder": "Describe detalladamente el producto que deseas importar...",
-        "quantity": "Cantidad",
-        "invalidQuantity": "La cantidad debe ser un número mayor que cero.",
-        "specifications": "Especificaciones Técnicas",
-        "specificationsPlaceholder": "Color, talla, modelo, características específicas, etc.",
-        "requestType": "Tipo de Solicitud",
-        "linkTitle": "Link del Producto",
-        "linkSubtitle": "Pega el enlace de la tienda",
-        "photoTitle": "Foto + Descripción",
-        "photoSubtitle": "Sube una imagen del producto",
-        "productUrl": "URL del Producto *",
-        "productUrlPlaceholder": "https://ejemplo.com/producto",
-        "invalidUrl": "La URL no es válida.",
-        "productImage": "Imagen del Producto",
-        "change": "Cambiar",
-        "delete": "Eliminar",
-        "dragDrop": "Arrastra una imagen aquí o haz clic para seleccionar",
-        "selectImage": "Seleccionar Imagen",
-        "deliveryType": "Tipo de Envío",
-        "doorToDoor": "Puerta a Puerta",
-        "doorToDoorDesc": "Recogemos en tu dirección",
-        "air": "Envío Aéreo",
-        "airDesc": "Envío rápido por avión",
-        "maritime": "Envío Marítimo",
-        "maritimeDesc": "Envío económico por barco",
-        "deliveryVenezuela": "Opción de Entrega en Venezuela",
-        "deliveryVenezuelaPlaceholder": "Selecciona cómo quieres recibir tu pedido",
-        "pickup": "Recoger en oficina",
-        "delivery": "Entrega a domicilio",
-        "express": "Entrega express",
-        "estimatedBudget": "Presupuesto Estimado (USD)",
-        "estimatedBudgetPlaceholder": "Ej: 500",
-        "invalidBudget": "El presupuesto estimado debe ser un monto válido.",
-        "summaryTitle": "Resumen de tu Solicitud",
-        "almostReady": "¡Casi listo!",
-        "reviewMessage": "Tu solicitud será revisada por nuestro equipo y recibirás una cotización en las próximas 24 horas.",
-        "transitioning": "Transicionando...",
-        "previous": "Anterior",
-        "next": "Siguiente",
-        "createOrder": "Crear Pedido"
-      },
-      "paymentModal": {
-        "title": "Realizar Pago",
-        "selectMethod": "Selecciona tu método de pago preferido",
-        "confirmDetails": "Confirma los detalles de tu pago",
-        "quoteValidUntil": "Cotización válida hasta: {{date}}",
-        "automatic": "Automático",
-        "manual": "Manual",
-        "paymentInfo": "Información de Pago",
-        "phoneNumber": "Número de Teléfono:",
-        "reference": "Referencia:",
-        "bank": "Banco:",
-        "accountNumber": "Número de Cuenta:",
-        "email": "Email:",
-        "importantInstructions": "Instrucciones importantes:",
-        "instructions": {
-          "exactReference": "Realiza el pago con la referencia exacta",
-          "saveReceipt": "Guarda el comprobante de pago",
-          "processTime": "El proceso puede tomar hasta 24 horas",
-          "manualValidation": "Nuestro equipo validará tu pago manualmente"
-        },
-        "cancel": "Cancelar",
-        "back": "Volver",
-        "processing": "Procesando...",
-        "confirmPayment": "Confirmar Pago"
-      },
-      "trackingModal": {
-        "trackingNumber": "Número de Tracking",
-        "carrier": "Transportista",
-        "estimatedDelivery": "Entrega estimada",
-        "currentStatus": "Estado actual",
-        "historyTitle": "Historial de seguimiento",
-        "states": {
-          "created": "Pedido creado",
-          "processing": "En procesamiento",
-          "shipped": "Enviado",
-          "in_transit": "En tránsito",
-          "customs": "En aduana",
-          "delivered": "Entregado"
-        }
+        "in_transit": "En tránsito",
+        "customs": "En aduana",
+        "delivered": "Entregado"
       }
     }
   },
@@ -579,29 +963,14 @@
     "close": "Cerrar",
     "loading": "Cargando...",
     "error": "Error",
-    "success": "Éxito"
+  "success": "Éxito",
+  "language": "Idioma",
+  "selectLanguage": "Selecciona un idioma",
+  "chinese": "Chino",
+  "english": "Inglés",
+  "spanish": "Español"
   },
   "admin": {
-    "sidebar": {
-      "dashboard": "Inicio",
-      "users": "Usuarios",
-      "orders": "Pedidos",
-      "reports": "Reportes",
-      "alerts": "Alertas",
-      "management": "Gestión",
-      "payments": "Pagos",
-      "support": "Soporte",
-      "settings": "Configuración",
-      "configuration": "Configuración",
-      "clients": "Clientes",
-      "tracking": "Tracking",
-      "profile": "Perfil",
-      "logout": "Cerrar sesión",
-      "dashboardAdmin": "Dashboard Admin",
-      "dashboardClient": "Dashboard Cliente",
-      "dashboardChina": "Dashboard China",
-      "dashboardVzla": "Dashboard Venezuela"
-    },
     "configuration": {
       "title": "Configuración",
       "subtitle": "Gestiona tu perfil, seguridad y preferencias",
@@ -670,7 +1039,7 @@
       },
       "password": {
         "title": "Cambiar Contraseña",
-        "subtitle": "Mantén tu cuenta segura con una contraseña fuerte",
+        "subtitle": "Mantén tu cuenta segura con una contraseña robusta",
         "fields": {
           "current": "Contraseña actual",
           "new": "Nueva contraseña",
@@ -689,20 +1058,20 @@
         "emailDesc": "Recibir notificaciones importantes por correo electrónico",
         "push": "Notificaciones push",
         "pushDesc": "Recibir notificaciones push en el navegador",
-  "critical": "Alertas críticas",
-  "criticalDesc": "Notificaciones sobre problemas críticos del sistema",
-  "marketing": "Notificaciones de marketing",
-  "marketingDesc": "Ofertas especiales y contenido promocional",
-  "orders": "Notificaciones de pedidos",
-  "ordersDesc": "Actualizaciones sobre el estado de tus pedidos",
-  "dailyReports": "Reportes diarios",
-  "dailyReportsDesc": "Recibir resumen diario de actividades",
-  "systemUpdates": "Actualizaciones del sistema",
-  "systemUpdatesDesc": "Notificaciones sobre nuevas funciones y actualizaciones",
-  "saveButton": "Guardar preferencias"
+        "critical": "Alertas críticas",
+        "criticalDesc": "Notificaciones sobre problemas críticos del sistema",
+        "marketing": "Notificaciones de marketing",
+        "marketingDesc": "Ofertas especiales y contenido promocional",
+        "orders": "Notificaciones de pedidos",
+        "ordersDesc": "Actualizaciones sobre el estado de tus pedidos",
+        "dailyReports": "Reportes diarios",
+        "dailyReportsDesc": "Recibir resúmenes diarios de actividades",
+        "systemUpdates": "Actualizaciones del sistema",
+        "systemUpdatesDesc": "Notificaciones sobre nuevas funciones y actualizaciones",
+        "saveButton": "Guardar preferencias"
       },
       "security": {
-        "title": "Configuración de seguridad",
+        "title": "Configuración de Seguridad",
         "subtitle": "Gestiona la seguridad de tu cuenta",
         "twoFactor": "Autenticación de dos factores",
         "twoFactorDesc": "Añade una capa extra de seguridad a tu cuenta",
@@ -716,9 +1085,8 @@
         "deviceConnected": "1 dispositivo conectado",
         "viewAllSessions": "Ver todas las sesiones",
         "lastAccessIP": "IP del último acceso",
-        "saveButton": "Guardar configuración",
         "recentActivity": {
-          "title": "Actividad reciente",
+          "title": "Actividad Reciente",
           "loginSuccess": "Inicio de sesión exitoso",
           "passwordChange": "Cambio de contraseña",
           "newDevice": "Nuevo dispositivo detectado",
@@ -781,7 +1149,7 @@
       },
       "messages": {
         "profileUpdated": "Perfil actualizado",
-        "profileUpdatedDesc": "Los cambios se han guardado correctamente, incluyendo el idioma de la aplicación.",
+        "profileUpdatedDesc": "Los cambios se han guardado correctamente, incluido el idioma de la aplicación.",
         "passwordUpdated": "Contraseña actualizada",
         "passwordUpdatedDesc": "Tu contraseña se ha cambiado exitosamente.",
         "passwordMismatch": "Las contraseñas no coinciden.",
@@ -800,7 +1168,7 @@
         "description": "Supervisa y gestiona todo el sistema desde un solo lugar"
       },
       "stats": {
-        "totalUsers": "Total Usuarios",
+        "totalUsers": "Usuarios Totales",
         "activeUsers": "Usuarios activos",
         "activeOrders": "Pedidos Activos",
         "inProcess": "En proceso",
@@ -810,7 +1178,7 @@
       },
       "quickActions": {
         "title": "Acciones Rápidas",
-        "subtitle": "Accede rápidamente a las funciones de administración",
+        "subtitle": "Accede rápidamente a funciones de administración",
         "manageUsers": "Gestionar Usuarios",
         "configuration": "Configuración",
         "alerts": "Alertas",
@@ -827,8 +1195,8 @@
           "system": "Sistema"
         },
         "timeAgo": {
-          "minAgo": "{{count}} min ago",
-          "minsAgo": "{{count}} min ago"
+          "minAgo": "Hace {{count}} min",
+          "minsAgo": "Hace {{count}} min"
         }
       }
     },
@@ -836,9 +1204,9 @@
       "title": "Gestión de Usuarios",
       "subtitle": "Seguridad y acceso",
       "description": "Gestión de usuarios y accesos",
-      "listTitle": "Listado de Usuarios",
+      "listTitle": "Lista de Usuarios",
       "listDescription": "Administra roles, estados y accesos de la plataforma",
-      "search": "Buscar por nombre, correo o ID...",
+      "search": "Buscar por nombre, email o ID...",
       "filters": {
         "all": "Todos",
         "allRoles": "Todos los roles",
@@ -853,6 +1221,12 @@
         "createdAt": "Creado",
         "actions": "Acciones",
         "user": "Usuario"
+      },
+      "pagination": {
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "showing": "Usuarios",
+        "perPage": "Por página"
       },
       "actions": {
         "edit": "Editar",
@@ -873,32 +1247,45 @@
         "newUser": "Nuevo Usuario",
         "createUser": "Crear Usuario",
         "editUser": "Editar Usuario",
-        "description": "Define el rol, el estado y los datos de contacto.",
+        "description": "Define el rol, estado y datos de contacto.",
         "fullName": "Nombre completo",
-        "email": "Correo",
+        "email": "Email",
         "role": "Rol",
-        "selectRole": "Seleccionar rol",
+        "selectRole": "Selecciona un rol",
         "cancel": "Cancelar",
         "save": "Guardar",
         "active": "Activo"
+      },
+      "messages": {
+        "userCreated": "Usuario creado",
+        "userCreatedDesc": "Invitación enviada al correo.",
+        "changesSaved": "Cambios guardados",
+        "changesSavedDesc": "La información del usuario ha sido actualizada.",
+        "errorSaving": "Error al guardar",
+        "couldNotSave": "No se pudo guardar"
       },
       "common": {
         "loading": "Cargando...",
         "showing": "Mostrando",
         "of": "de",
         "perPage": "por página"
+      },
+      "empty": {
+        "noUsersFound": "No hay usuarios registrados.",
+        "tryAdjustFilters": "Intenta ajustar los filtros o crea un nuevo usuario."
       }
     },
     "orders": {
       "title": "Gestión de Pedidos",
-      "subtitle": "Administra y da seguimiento a todos los pedidos",
+      "subtitle": "Administra y rastrea todos los pedidos",
+  "chinaTabLabel": "China",
       "listTitle": "Lista de Pedidos",
       "listDescription": "{{count}} pedidos encontrados",
       "search": "Buscar pedidos...",
       "stats": {
-        "totalOrders": "Total Pedidos",
+        "totalOrders": "Total de Pedidos",
         "pending": "Pendientes",
-        "inTransit": "En Tránsito",
+        "inTransit": "En tránsito",
         "delivered": "Entregados"
       },
       "filters": {
@@ -913,14 +1300,16 @@
         "description": "Descripción",
         "status": "Estado",
         "assignedTo": "Asignado",
+        "assigned": "Asignado",
         "time": "Tiempo",
+        "days": "Días",
         "actions": "Acciones",
         "daysElapsed": "Días transcurridos"
       },
       "status": {
         "cotizacion": "Cotización",
-        "esperando-pago": "Esperando Pago",
-        "en-transito": "En Tránsito",
+        "esperando-pago": "Esperando pago",
+        "en-transito": "En tránsito",
         "entregado": "Entregado",
         "pendiente-china": "Pend. China",
         "pendiente-vzla": "Pend. Vzla",
@@ -953,18 +1342,22 @@
       "form": {
         "productName": "Nombre del producto",
         "productNameLabel": "Nombre del Producto",
+        "productNamePlaceholder": "Ej.: iPhone 15 Pro Max",
         "description": "Descripción",
         "productDescription": "Descripción del Producto",
         "productDescriptionPlaceholder": "Describe el producto...",
         "quantity": "Cantidad",
+        "invalidQuantity": "La cantidad debe ser mayor que cero.",
         "requestType": "Tipo de Solicitud",
-        "productLink": "Link del Producto",
+        "productLink": "Enlace del Producto",
         "productLinkDescription": "Pega el enlace de la tienda",
         "photoDescription": "Foto + Descripción",
         "photoDescriptionDetail": "Sube una imagen del producto",
         "productUrl": "URL del Producto",
-        "productUrlPlaceholder": "https://ejemplo.com/producto",
+        "productUrlPlaceholder": "https://example.com/product",
+        "invalidUrl": "La URL no es válida.",
         "productImage": "Imagen del Producto",
+        "productImageAlt": "Imagen del producto",
         "dragImageHere": "Arrastra una imagen aquí o haz clic para seleccionar",
         "selectImage": "Seleccionar Imagen",
         "change": "Cambiar",
@@ -973,15 +1366,17 @@
         "deliveryType": "Tipo de entrega",
         "deliveryVenezuela": "Entrega en Venezuela",
         "estimatedBudget": "Presupuesto estimado",
+        "estimatedBudgetPlaceholder": "Ej.: 500",
+        "invalidBudget": "El presupuesto estimado debe ser un monto válido.",
         "estimatedBudgetUsd": "Presupuesto Estimado (USD)",
         "selectClient": "Selecciona un cliente",
         "selectDelivery": "Selecciona cómo quieres recibir tu pedido",
         "selectLocation": "Selecciona una ubicación",
-        "pickupOffice": "Recoger en oficina",
+        "pickupOffice": "Retirar en oficina",
         "homeDelivery": "Entrega a domicilio",
         "expressDelivery": "Entrega express",
         "client": "Cliente",
-        "clientId": "Cliente ID",
+        "clientId": "ID Cliente",
         "userName": "Nombre de Usuario",
         "followSteps": "Sigue los pasos para crear el pedido"
       },
@@ -1008,61 +1403,345 @@
       "pagination": {
         "previous": "Anterior",
         "next": "Siguiente",
-        "results": "Mostrando {{from}} a {{to}} de {{total}} resultados"
+        "results": "Mostrando {{from}} a {{to}} de {{total}} resultados",
+        "perPage": "por página"
       },
       "time": {
         "days": "{{count}} días"
       },
       "alerts": {
         "onlyImages": "Solo se permiten imágenes JPG, JPEG, PNG o WEBP."
+      },
+      "messages": {
+        "createError": "No se pudo crear el pedido.",
+        "deleteConfirm": "¿Seguro que deseas eliminar el pedido #{{id}}? Esta acción no se puede deshacer.",
+        "updateError": "No se pudo actualizar el pedido.",
+        "deleteError": "No se pudo eliminar el pedido."
+      },
+      "export": {
+        "reportTitle": "Reporte de Pedidos",
+        "fileName": "orders_report.pdf",
+        "button": "Exportar a PDF"
+      },
+      "pdf": {
+        "summaryTitle": "RESUMEN DEL PEDIDO",
+        "order": "Pedido:",
+        "date": "Fecha:",
+        "generatedAt": "Generado:",
+        "field": "Campo",
+        "value": "Valor",
+        "information": "Información",
+        "productUrl": "URL del producto",
+        "fields": {
+          "orderId": "ID Pedido",
+          "clientId": "ID Cliente",
+          "userName": "Nombre de Usuario",
+          "date": "Fecha",
+          "shippingType": "Tipo de Envío",
+          "deliveryVzla": "Entrega en Venezuela",
+          "product": "Producto",
+          "quantity": "Cantidad",
+          "estimatedBudget": "Presupuesto Estimado",
+          "description": "Descripción",
+          "specifications": "Especificaciones",
+          "url": "URL del producto"
+        }
+      },
+      "common": {
+        "unknown": "Desconocido"
+      },
+      "china": {
+        "tabLabel": "China",
+        "title": "Gestión de Pedidos",
+        "subtitle": "Gestiona y cotiza pedidos de clientes",
+        "pageTitle": "Pedidos",
+        "stats": {
+          "pending": "PENDIENTES",
+          "quoted": "COTIZADOS",
+          "processing": "PROCESANDO",
+          "shipped": "ENVIADOS"
+        },
+        "badges": {
+          "unknown": "Desconocido",
+          "quoted": "Cotizado",
+          "processing": "Procesando",
+          "readyToPack": "Listo para empaquetar",
+          "inBox": "En caja",
+          "inContainer": "En contenedor",
+          "shippedVzla": "Enviado a Venezuela",
+          "state": "Estado {{num}}"
+        },
+        "boxBadges": {
+          "new": "Nueva",
+          "packed": "Empaquetada",
+          "inContainer": "En contenedor",
+          "shipped": "Enviada",
+          "state": "Estado {{num}}"
+        },
+        "containerBadges": {
+          "new": "Nuevo",
+          "loading": "Cargando",
+          "shipped": "Enviado",
+          "state": "Estado {{num}}"
+        },
+        "tabs": {
+          "ordersList": "Lista de pedidos",
+          "boxes": "Cajas",
+          "containers": "Contenedores"
+        },
+        "filters": {
+          "searchClientPlaceholder": "Buscar por cliente...",
+          "searchBoxPlaceholder": "Buscar por caja (ID)...",
+          "searchContainerPlaceholder": "Buscar por contenedor (ID)...",
+          "status": "Estado",
+          "all": "Todos",
+          "pending": "Pendiente",
+          "quoted": "Cotizado",
+          "processing": "Procesando",
+          "shipped": "Enviado"
+        },
+        "orders": {
+          "listTitle": "Lista de Pedidos",
+          "refreshing": "Actualizando...",
+          "refresh": "Actualizar",
+          "order": "Pedido",
+          "client": "Cliente",
+          "qtyShort": "Cant",
+          "qtyLabel": "Cant:",
+          "view": "Ver",
+          "pack": "Empaquetar",
+          "unpack": "Desempaquetar",
+          "quote": "Cotizar",
+          "editQuote": "Editar",
+          "notFoundTitle": "No se encontraron pedidos",
+          "notFoundSubtitle": "Intenta ajustar los filtros de búsqueda",
+          "noPdfAlert": "No hay PDF disponible para este pedido.",
+          "pdfMissingToastTitle": "No PDF",
+          "pdfMissingToastDesc": "No hay PDF disponible para este pedido.",
+          "date": "Fecha"
+        },
+        "boxes": {
+          "title": "Cajas",
+          "create": "Crear cajas",
+          "noneTitle": "No hay cajas creadas",
+          "noneSubtitle": "Crea tu primera caja con el botón de arriba.",
+          "notFoundTitle": "No se encontraron cajas",
+          "notFoundSubtitle": "Intenta ajustar la búsqueda por ID.",
+          "ordersCount": "Pedidos:",
+          "pack": "Empaquetar",
+          "unpack": "Desempaquetar",
+          "viewOrders": "Ver pedidos",
+          "delete": "Eliminar",
+          "loading": "Cargando cajas..."
+        },
+        "containers": {
+          "title": "Contenedores",
+          "create": "Crear contenedor",
+          "noneTitle": "No hay contenedores creados",
+          "noneSubtitle": "Crea tu primer contenedor con el botón de arriba.",
+          "notFoundTitle": "No se encontraron contenedores",
+          "notFoundSubtitle": "Intenta ajustar la búsqueda por ID.",
+          "send": "Enviar",
+          "viewBoxes": "Ver cajas",
+          "delete": "Eliminar",
+          "loading": "Cargando contenedores...",
+          "sentToastTitle": "Contenedor enviado",
+          "sentToastDesc": "Contenedor #CONT-{{id}} fue marcado como enviado.",
+          "sendErrorTitle": "No se pudo enviar",
+          "sendErrorDesc": "Intenta de nuevo más tarde."
+        },
+        "modals": {
+          "quote": {
+            "title": "Cotizar Pedido",
+            "summaryTitle": "Resumen del Pedido",
+            "client": "Cliente:",
+            "product": "Producto:",
+            "quantity": "Cantidad:",
+            "specifications": "Especificaciones:",
+            "specificationsNA": "N/A",
+            "unitPriceLabel": "Precio de cotización unitario *",
+            "totalToPay": "Total a Pagar",
+            "cancel": "Cancelar",
+            "sendQuote": "Enviar Cotización"
+          },
+          "selectContainerForBox": {
+            "title": "Seleccionar contenedor para caja #BOX-{{id}}",
+            "loading": "Cargando contenedores...",
+            "noneTitle": "No hay contenedores disponibles",
+            "noneSubtitle": "Crea un contenedor desde la pestaña Contenedores para empaquetar.",
+            "select": "Seleccionar"
+          },
+          "createContainer": {
+            "title": "Crear contenedor",
+            "question": "¿Quieres crear un nuevo contenedor?",
+            "creating": "Creando...",
+            "accept": "Aceptar",
+            "cancel": "Cancelar"
+          },
+          "containerBoxes": {
+            "title": "Cajas del contenedor #CONT-{{id}}",
+            "loading": "Cargando cajas...",
+            "noneTitle": "No hay cajas asociadas a este contenedor",
+            "noneSubtitle": "Cuando asignes cajas a este contenedor aparecerán aquí.",
+            "unpack": "Desempaquetar",
+            "viewOrders": "Ver pedidos"
+          },
+          "deleteContainer": {
+            "title": "Eliminar contenedor",
+            "question": "¿Estás seguro de que quieres eliminar el contenedor #CONT-{{id}}? Esta acción no se puede deshacer.",
+            "deleting": "Eliminando...",
+            "delete": "Eliminar",
+            "cancel": "Cancelar"
+          },
+          "createBox": {
+            "title": "Crear caja",
+            "question": "¿Quieres crear una nueva caja?",
+            "creating": "Creando...",
+            "accept": "Aceptar",
+            "cancel": "Cancelar"
+          },
+          "boxOrders": {
+            "title": "Pedidos de la caja #BOX-{{id}}",
+            "loading": "Cargando pedidos...",
+            "noneTitle": "No hay pedidos asociados a esta caja",
+            "noneSubtitle": "Cuando asignes pedidos a esta caja aparecerán aquí.",
+            "view": "Ver"
+          },
+          "selectBoxForOrder": {
+            "title": "Seleccionar caja para pedido #ORD-{{id}}",
+            "loading": "Cargando cajas...",
+            "noneTitle": "No hay cajas disponibles",
+            "noneSubtitle": "Crea una caja desde la pestaña Cajas para empaquetar.",
+            "select": "Seleccionar"
+          },
+          "deleteBox": {
+            "title": "Eliminar caja",
+            "question": "¿Estás seguro de que quieres eliminar la caja #BOX-{{id}}? Esta acción no se puede deshacer.",
+            "deleting": "Eliminando...",
+            "delete": "Eliminar",
+            "cancel": "Cancelar"
+          }
+        },
+        "toasts": {
+          "boxCreateErrorTitle": "La caja no se pudo crear",
+          "boxCreateErrorDesc": "Intenta de nuevo en unos segundos.",
+          "boxCreatedTitle": "Caja creada",
+          "boxCreatedDesc": "La caja se creó exitosamente.",
+          "boxesLoadErrorTitle": "Las cajas no se pudieron cargar",
+          "boxesLoadErrorDesc": "Intenta de nuevo más tarde.",
+          "containerCreateErrorTitle": "El contenedor no se pudo crear",
+          "containerCreateErrorDesc": "Intenta de nuevo en unos segundos.",
+          "containerCreatedTitle": "Contenedor creado",
+          "containerCreatedDesc": "El contenedor se creó exitosamente.",
+          "containersLoadErrorTitle": "Los contenedores no se pudieron cargar",
+          "containersLoadErrorDesc": "Intenta de nuevo más tarde.",
+          "containerInvalidTitle": "Contenedor inválido",
+          "containerInvalidDesc": "El ID del contenedor no se pudo determinar.",
+          "notAllowedTitle": "No permitido",
+          "assignBoxNotAllowedDesc": "No puedes asignar cajas a un contenedor enviado.",
+          "assignBoxErrorTitle": "Contenedor no asignado",
+          "assignBoxErrorDesc": "Intenta de nuevo más tarde.",
+          "boxAssignedTitle": "Caja asignada",
+          "boxAssignedDesc": "Caja #BOX-{{boxId}} asignada al contenedor #CONT-{{containerId}}.",
+          "unexpectedErrorTitle": "Error inesperado",
+          "unexpectedErrorDesc": "Intenta de nuevo más tarde.",
+          "boxUnpackErrorTitle": "No se pudo desempaquetar",
+          "boxUnpackNotAllowedDesc": "No puedes desempaquetar una caja de un contenedor enviado.",
+          "boxUnpackedTitle": "Caja desempaquetada",
+          "boxUnpackedDesc": "Pedidos y caja #BOX-{{boxId}} liberados.",
+          "orderAssignBoxInvalidTitle": "Caja inválida",
+          "orderAssignBoxInvalidDesc": "El ID de la caja no se pudo determinar.",
+          "orderAssignNotAllowedDesc": "No puedes empaquetar en una caja enviada.",
+          "orderAssignedTitle": "Pedido asignado",
+          "orderAssignedDesc": "Pedido #ORD-{{orderId}} asignado a caja {{boxId}}.",
+          "orderUnpackErrorTitle": "No se pudo desempaquetar",
+          "orderNoBoxTitle": "Pedido sin caja",
+          "orderNoBoxDesc": "Este pedido no tiene caja asignada.",
+          "orderUnpackNotAllowedDesc": "No puedes desempaquetar pedidos de un contenedor enviado.",
+          "orderUnpackedTitle": "Pedido desempaquetado",
+          "orderUnpackedDesc": "Pedido #ORD-{{orderId}} liberado de la caja.",
+          "containerSendNotAllowedDesc": "No puedes eliminar un contenedor enviado.",
+          "containerDeletedTitle": "Contenedor eliminado",
+          "containerDeletedDesc": "El contenedor se eliminó exitosamente.",
+          "containerDeleteErrorTitle": "El contenedor no se pudo eliminar",
+          "boxDeletedTitle": "Caja eliminada",
+          "boxDeletedDesc": "La caja se eliminó exitosamente.",
+          "boxDeleteErrorTitle": "La caja no se pudo eliminar",
+          "orderPdfMissingTitle": "No PDF",
+          "orderPdfMissingDesc": "No hay PDF disponible para este pedido.",
+          "boxDeleteIdInvalidTitle": "No se pudo eliminar",
+          "boxDeleteIdInvalidDesc": "ID de caja inválido.",
+          "containerDeleteIdInvalidDesc": "ID de contenedor inválido."
+        }
       }
     },
     "management": {
       "title": "Configuración del Negocio",
       "subtitle": "Parámetros operativos y financieros",
+      "header": {
+        "title": "Gestión del Sistema",
+        "subtitle": "Ajusta los parámetros de gestión del sistema",
+        "lastSaved": "Guardado:"
+      },
       "warning": {
         "title": "Advertencia:",
-        "description": "Los cambios en estos parámetros afectan directamente las operaciones del negocio. Asegúrate de comunicar cualquier modificación al equipo operativo."
+        "description": "Los cambios en estos parámetros afectan directamente la operación del negocio. Asegúrate de comunicar cualquier modificación al equipo operativo."
       },
       "tabs": {
         "shipping": "Envíos",
-        "financial": "Financiero",
+        "financial": "Finanzas",
         "notifications": "Notificaciones"
       },
       "shipping": {
-        "airExpress": "Envío Aéreo Express",
-        "airDescription": "Tarifas y tiempos para envíos rápidos por avión",
+        "airExpress": "Envío Aéreo Exprés",
+        "airDescription": "Tarifas y tiempos para envíos aéreos rápidos",
         "seaShipping": "Envío Marítimo",
-        "seaEconomic": "Envío Marítimo Económico",
-        "seaDescription": "Tarifas y tiempos para envíos económicos por barco",
+        "seaEconomic": "Marítimo Económico",
+        "seaDescription": "Tarifas y tiempos para envíos marítimos económicos",
         "ratePerKg": "Tarifa por Kg Volumétrico",
         "costPerKg": "Costo por kilogramo volumétrico",
-        "minDays": "Días Mínimos",
-        "maxDays": "Días Máximos"
+        "ratePerCubicMeter": "Tarifa por Metro Cúbico",
+        "costPerCubicMeter": "Costo por metro cúbico",
+        "minDays": "Días mínimos",
+        "maxDays": "Días máximos"
       },
       "financial": {
-        "exchangeRate": "Tasa de Cambio",
-        "usdValue": "Valor del dólar estadounidense",
+        "exchangeRate": "Tasa de cambio",
+        "usdValue": "Valor del dólar",
         "usdRate": "1 USD = X Bs",
-        "updateDaily": "Actualizar diariamente según el mercado paralelo",
+        "updateDaily": "Actualizar diariamente según mercado paralelo",
         "marginsDiscounts": "Márgenes y Descuentos",
         "profitabilityConfig": "Configuración de rentabilidad",
-        "profitMargin": "Margen de Ganancia (%)",
-        "usdDiscount": "Descuento por Pago en USD (%)"
+        "profitMargin": "Margen de ganancia (%)",
+        "usdDiscount": "Descuento por pago en USD (%)"
       },
       "notifications": {
-        "notificationSystem": "Sistema de Notificaciones"
+        "notificationSystem": "Sistema de notificaciones",
+        "description": "Configuración de alertas y comunicaciones",
+        "email": "Notificaciones por email",
+        "emailDesc": "Enviar alertas por correo",
+        "whatsapp": "Notificaciones por WhatsApp",
+        "whatsappDesc": "Enviar alertas vía WhatsApp",
+        "alertAfterDays": "Alertar después de (días)",
+        "alertAfterDaysHelp": "Días sin atención antes de generar una alerta"
       },
       "common": {
         "loading": "Cargando..."
       },
       "actions": {
-        "save": "Guardar Configuración",
+        "save": "Guardar configuración",
         "saving": "Guardando..."
       },
       "messages": {
         "configSaved": "Configuración guardada",
         "configSavedDesc": "Los parámetros del negocio se han actualizado correctamente."
+      },
+      "summary": {
+        "title": "Resumen de la Configuración Actual",
+        "airShipping": "Envío Aéreo",
+        "seaShipping": "Envío Marítimo",
+        "usdRate": "Tasa USD",
+        "margin": "Margen"
       }
     },
     "alerts": {
@@ -1076,13 +1755,13 @@
         "resolved": "Resueltas hoy"
       },
       "sections": {
-        "critical": "Alertas Críticas",
+        "critical": "Alertas críticas",
         "warning": "Advertencias",
         "info": "Informativas"
       },
       "actions": {
-        "generateNew": "Generar Nueva Alerta",
-        "resolveAll": "Resolver Todas",
+        "generateNew": "Generar nueva alerta",
+        "resolveAll": "Resolver todas",
         "refresh": "Actualizar",
         "view": "Ver",
         "resolve": "Resolver"
@@ -1091,25 +1770,921 @@
         "search": "Buscar alertas...",
         "type": "Filtrar por tipo",
         "priority": "Filtrar por prioridad",
-        "all": "Todas"
+        "all": "Todos"
       },
       "modal": {
-        "details": "Detalles de la Alerta",
+        "details": "Detalles de la alerta",
         "message": "Mensaje:",
         "category": "Categoría:",
         "created": "Creada:",
         "status": "Estado:",
         "pending": "Pendiente",
-        "recommendedAction": "Acción Recomendada",
+        "recommendedAction": "Acción recomendada",
         "alertResolved": "Alerta resuelta"
       },
       "header": {
-        "trackingPanel": "Panel de Tracking",
+        "trackingPanel": "Panel de Seguimiento",
         "activeAlerts": "Alertas Activas:"
       }
     }
   },
   "header": {
     "notifications": "Notificaciones"
+  },
+  "venezuela": {
+    "dashboard": {
+      "title": "Panel de control de Venezuela",
+      "subtitle": "Revisión de pedidos, soporte al cliente y seguimiento",
+      "welcome": "¡Bienvenido de vuelta!",
+      "panel": "Panel de Control - Empleado Venezuela",
+      "manage": "Gestiona pedidos, soporte y seguimiento desde un solo lugar",
+      "pendingTasks": "Tareas Pendientes",
+      "pendingOrders": "Pedidos Pendientes",
+      "pendingOrdersDesc": "Esperando revisión",
+      "activeChats": "Chats Activos",
+      "activeChatsDesc": "Clientes en línea",
+      "trackingUpdates": "Seguimiento Activo",
+      "trackingUpdatesDesc": "Pendiente",
+      "satisfaction": "Satisfacción",
+      "averageRating": "Calificación Promedio",
+      "deliveredOrders": "Pedidos Entregados",
+      "responseTime": "Tiempo de Respuesta",
+      "satisfactionRate": "Tasa de Satisfacción"
+    },
+    "pedidos": {
+      "title": "Pedidos",
+      "subtitle": "Revisa y envía pedidos a China para cotización",
+      "stats": {
+        "pending": "PENDIENTES",
+        "reviewing": "REVISANDO",
+        "quoted": "COTIZADOS",
+        "processing": "PROCESANDO"
+      },
+      "statusExtended": {
+        "delivered": "Entregado",
+        "readyToDeliver": "Listo para entrega",
+        "received": "Recibido",
+        "customs": "In customs",
+        "arrivedVzla": "Arrived in Vzla",
+        "onWayVzla": "On the way to Vzla",
+        "pending": "Pendiente",
+        "reviewing": "En revisión",
+        "quoted": "Cotizado",
+        "processing": "Proecesando",
+        "inProcess": "In process"
+      },
+      "badges": {
+        "delivered": "ENTREGADO",
+        "readyToDeliver": "LISTO PARA ENTREGA",
+        "received": "RECIBIDO",
+        "customs": "EN ADUANA",
+        "arrivedVzla": "LLEGADO A Vzla",
+        "onWayVzla": "EN CAMINO A Vzla",
+        "pending": "PENDIENTE",
+        "reviewing": "REVISANDO",
+        "quoted": "COTIZADO",
+        "processing": "PROCESANDO",
+        "inProcess": "EN PROCESO"
+      },
+      "tabs": {
+        "ordersList": "Lista de Pedidos",
+        "boxes": "Cajas",
+        "containers": "Contenedores"
+      },
+      "searchPlaceholder": "Buscar por cliente, producto o ID...",
+      "refresh": "Actualizar",
+      "filters": {
+        "status": "Estado",
+        "all": "Todos",
+        "pending": "Pendiente",
+        "reviewing": "Revisando",
+        "quoted": "Cotizado",
+        "processing": "Procesando",
+        "searchBoxPlaceholder": "Buscar por caja (ID)...",
+        "searchContainerPlaceholder": "Buscar por contenedor (ID)..."
+      },
+      "emptyOrdersTitle": "No hay pedidos para revisar",
+      "emptyOrdersDesc": "Todos los pedidos han sido procesados o no hay coincidencias con los filtros.",
+      "emptyBoxesTitle": "No hay cajas",
+      "emptyBoxesDesc": "No se encontraron cajas.",
+      "emptyBoxesSearchTitle": "No se encontraron cajas",
+      "emptyBoxesSearchDesc": "Ajusta la búsqueda por ID.",
+      "emptyContainersTitle": "No hay contenedores",
+      "emptyContainersDesc": "No se encontraron contenedores.",
+      "emptyContainersSearchTitle": "No se encontraron contenedores",
+      "emptyContainersSearchDesc": "Ajusta la búsqueda por ID.",
+      "loadingOrders": "Cargando pedidos...",
+      "loadingBoxes": "Cargando cajas...",
+      "loadingContainers": "Cargando contenedores...",
+      "labels": {
+        "quantity": "Cantidad:",
+        "deliveryType": "Tipo de Entrega:",
+        "shippingType": "Tipo de Envío:",
+        "orders": "Pedidos:"
+      },
+      "deliveryTypes": {
+        "office": "Oficina",
+        "warehouse": "Almacén"
+      },
+      "shippingTypes": {
+        "doorToDoor": "Puerta a Puerta",
+        "maritime": "Envío Marítimo",
+        "air": "Envío Aéreo"
+      },
+      "modalOrdersTitle": "Pedidos de la caja #BOX-{{boxId}}",
+      "modalOrdersEmptyTitle": "No hay pedidos asociados a esta caja",
+      "modalOrdersEmptyDesc": "Cuando asignes pedidos a esta caja, aparecerán aquí.",
+      "modalBoxesTitle": "Cajas del contenedor #CONT-{{containerId}}",
+      "modalBoxesEmptyTitle": "No hay cajas asociadas a este contenedor",
+      "modalBoxesEmptyDesc": "Cuando asignes cajas a este contenedor, aparecerán aquí.",
+      "tooltips": {
+        "markBoxReceived": "Marcar caja como recibida",
+        "markContainerReceived": "Marcar contenedor como recibido"
+      },
+      "pdf": {
+        "openError": "No se pudo abrir el PDF. Verifica que tu navegador no esté bloqueando ventanas emergentes.",
+        "notAvailableOrder": "No hay PDF disponible para este pedido.",
+        "notAvailable": "No hay PDF disponible"
+      },
+      "errors": {
+        "getUser": "No se pudo obtener el usuario logueado",
+        "fetchOrders": "Error al obtener pedidos",
+        "updateOrder": "No se pudo actualizar el pedido",
+        "sendToChina": "Error al enviar a China",
+        "updateStatus": "Error al actualizar estado",
+        "updateBox": "No se pudo actualizar la caja",
+        "boxUpdate": "Error al actualizar caja",
+        "updateContainer": "No se pudo actualizar el contenedor",
+        "containerUpdate": "Error al actualizar contenedor"
+      },
+      "boxesBadges": {
+        "new": "Nueva",
+        "ready": "Lista",
+        "received": "Recibida",
+        "completed": "Completada",
+        "state": "Est.{{num}}"
+      },
+      "boxesStatus": {
+        "new": "Nuevo",
+        "ready": "Listo",
+        "received": "Recibido",
+        "completed": "Completado",
+        "state": "Edo.{{num}}"
+      },
+      "containersBadges": {
+        "new": "Nuevo",
+        "inTransit": "En tránsito",
+        "received": "Recibido",
+        "state": "Est.{{num}}"
+      },
+      "actions": {
+        "viewOrders": "Ver Pedidos",
+        "viewBoxes": "Ver Cajas",
+        "viewContainers": "Ver Contenedores",
+        "sendToChina": "Enviar a China",
+        "markAsReceived": "Marcar como Recibido",
+        "exportPdf": "Exportar a PDF",
+        "exportPdfShort": "PDF"
+      }
+    },
+    "soporte": {
+      "title": "Soporte al Cliente",
+      "subtitle": "Gestiona chats de clientes e consultas",
+      "headerTitle": "Soporte al Cliente",
+      "headerSubtitle": "Gestiona chats de clientes e consultas",
+      "stats": {
+        "active": "Activos",
+        "waiting": "Esperando",
+        "unread": "Sin leer"
+      },
+      "listTitle": "Lista de chats",
+      "searchPlaceholder": "Buscar por cliente o mensaje...",
+      "filters": {
+        "status": "Estado",
+        "all": "Todos los estados",
+        "active": "Activo",
+        "waiting": "Esperando",
+        "resolved": "Resuelto",
+        "priority": "Prioridad",
+        "allPriorities": "Todas las prioridades",
+        "high": "Alta",
+        "medium": "Media",
+        "low": "Baja"
+      },
+      "badges": {
+        "priority": {
+          "high": "Alta",
+          "medium": "Media",
+          "low": "Baja"
+        },
+        "status": {
+          "active": "Activo",
+          "waiting": "Esperando",
+          "resolved": "Resuelto",
+          "unknown": "Desconocido"
+        }
+      },
+      "chat": {
+        "lastMessage": "Último mensaje:",
+        "unreadMessages": "Mensajes sin leer:",
+        "openChat": "Abrir Chat",
+        "openChatShort": "Chat",
+        "email": "Email",
+        "phone": "Teléfono"
+      },
+      "empty": {
+        "title": "No hay chats activos",
+        "description": "Todos los chats han sido resueltos o no hay coincidencias con los filtros aplicados."
+      }
+    },
+    "pagos": {
+      "title": "Validación de Pagos",
+      "subtitle": "Gestiona y rastrea todos los pedidos",
+      "error": {
+        "loadErrorTitle": "Error al cargar pedidos",
+        "retry": "Reintentar"
+      },
+      "stats": {
+        "totalSpent": "Total Gastado",
+        "totalPayments": "Total Pagos",
+        "completed": "Completados",
+        "pending": "Pendientes"
+      },
+      "tabs": {
+        "ordersList": "Lista de Pedidos",
+        "pendingPayments": "Pagos Pendientes"
+      },
+      "listCardTitle": "Pagos",
+      "searchPlaceholder": "Buscar pedidos...",
+      "filters": {
+        "allStatuses": "Todos los estados",
+        "completed": "Completado",
+        "pending": "Pendiente",
+        "rejected": "Rechazado"
+      },
+      "actions": {
+        "refresh": "Actualizar",
+        "refreshShort": "Actualizar",
+        "export": "Exportar",
+        "exportShort": "Exportar",
+        "view": "Ver",
+        "approve": "Aprobar",
+        "reject": "Rechazar",
+        "undo": "Deshacer"
+      },
+      "table": {
+        "pendingApprovalTitle": "Pagos Pendientes de Aprobación",
+        "ordersListTitle": "Lista de Pedidos",
+        "loading": "Cargando...",
+        "resultsFound": "{{count}} pedidos encontrados",
+        "headers": {
+          "id": "ID Pedido",
+          "client": "Cliente",
+          "status": "Estado",
+          "date": "Fecha",
+          "amount": "Monto",
+          "reference": "Referencia",
+          "destination": "Destino",
+          "actions": "Acciones"
+        }
+      },
+      "mobile": {
+        "date": "Fecha:",
+        "amount": "Monto:",
+        "method": "Método:",
+        "destination": "Destino:"
+      },
+      "empty": {
+        "title": "No se encontraron pagos",
+        "subtitle": "Intenta ajustar filtros o términos de búsqueda"
+      },
+      "footer": {
+        "showing": "Mostrando {{shown}} de {{total}} transacciones"
+      },
+      "modal": {
+        "details": {
+          "title": "Detalles del Pago",
+          "clientInfo": "Información del Cliente",
+          "paymentInfo": "Información del Pago",
+          "additionalDetails": "Detalles Adicionales",
+          "fields": {
+            "user": "Usuario:",
+            "productId": "ID Producto:",
+            "amount": "Monto:",
+            "date": "Fecha:",
+            "reference": "Referencia:",
+            "method": "Método:",
+            "destination": "Destino:",
+            "description": "Descripción:"
+          }
+        },
+        "reject": {
+          "title": "Confirmar Rechazo",
+          "message": "Estás seguro de que quieres rechazar este pago? Esta acción no se puede deshacer.",
+          "cancel": "Cancelar",
+          "confirm": "Confirmar Rechazo"
+        }
+      },
+      "toasts": {
+        "undoTitle": "Acción deshecha",
+        "undoDesc": "El pago ha regresado a su estado anterior.",
+        "undoErrorTitle": "No se pudo deshacer",
+        "undoErrorDesc": "Error al revertir en la base de datos.",
+        "approveErrorTitle": "Error al aprobar",
+        "approveErrorDesc": "El pedido no se pudo actualizar.",
+        "approvedTitle": "Pago aprobado",
+        "approvedDesc": "Pago {{id}} ha sido aprobado exitosamente.",
+        "rejectedTitle": "Pago rechazado",
+        "rejectedDesc": "Pago {{id}} ha sido rechazado."
+      },
+      "status": {
+        "completado": "Completado",
+        "pendiente": "Pendiente",
+        "rechazado": "Rechazado"
+      },
+      "export": {
+        "sheetName": "Pagos",
+        "fileName": "pagos_validacion.xlsx",
+        "columns": {
+          "orderId": "ID Pedido",
+          "client": "Cliente",
+          "status": "Estado",
+          "date": "Fecha",
+          "amount": "Monto",
+          "reference": "Referencia",
+          "destination": "Destino",
+          "description": "Descripción"
+        }
+      }
+    },
+    "reportes": {
+      "title": "Reportes",
+      "subtitle": "Analiza el rendimiento y métricas de tu operación",
+      "filters": {
+        "title": "Tipo de Reporte",
+        "types": {
+          "month": "Por Mes",
+          "order": "Por Pedido",
+          "satisfaction": "Satisfacción del Cliente"
+        },
+        "export": "Exportar"
+      },
+      "charts": {
+        "monthlyTrendTitle": "Tendencia Mensual",
+        "orderStatusTitle": "Estados de Pedidos",
+        "satisfactionDistributionTitle": "Distribución de Satisfacción"
+      },
+      "metrics": {
+        "month": {
+          "totalOrders": "Total Pedidos",
+          "completed": "Completados",
+          "satisfaction": "Satisfacción",
+          "revenue": "Ingresos"
+        },
+        "order": {
+          "totalOrders": "Total Pedidos",
+          "delivered": "Entregados",
+          "inTransit": "En Tránsito",
+          "averageValue": "Valor Promedio"
+        },
+        "satisfaction": {
+          "average": "Promedio General",
+          "totalReviews": "Total Reseñas",
+          "fiveStars": "5 Estrellas",
+          "satisfied": "Satisfechos"
+        }
+      },
+      "modal": {
+        "title": "Detalles del Reporte",
+        "monthly": {
+          "period": "PERIODO",
+          "revenue": "INGRESOS",
+          "totalOrders": "TOTAL PEDIDOS",
+          "completed": "COMPLETADOS",
+          "satisfaction": "SATISFACCIÓN",
+          "exportAsPdf": "EXPORTAR COMO PDF"
+        },
+        "order": {
+          "infoTitle": "Información del Pedido",
+          "fields": {
+            "number": "Número:",
+            "client": "Cliente:",
+            "product": "Producto:",
+            "date": "Fecha:",
+            "status": "Estado:",
+            "value": "Valor:",
+            "deliveryTime": "Tiempo de Entrega:"
+          },
+          "notRated": "No calificado",
+          "exportAsPdf": "EXPORTAR COMO PDF"
+        },
+        "satisfaction": {
+          "average": "Promedio General",
+          "outOf5": "de 5 estrellas",
+          "distributionTitle": "Distribución de Calificaciones"
+        }
+      },
+      "list": {
+        "title": "Lista de Reportes - {{filter}}",
+        "monthlyItem": "{{orders}} pedidos • {{rating}}/5 ⭐ • ${{revenue}}",
+        "satisfactionItem": "{{avg}}/5 ⭐ • {{reviews}} reseñas",
+        "viewDetails": "Ver Detalles",
+        "view": "Ver",
+        "emptyMonthly": "No hay reportes mensuales registrados.",
+        "emptySatisfaction": "No hay reportes de satisfacción registrados.",
+        "emptyOrders": "No hay pedidos registrados.",
+        "errorOrders": "Error inesperado al obtener pedidos."
+      },
+      "pagination": {
+        "showing": "Mostrando {{from}} - {{to}} de {{total}} pedidos",
+        "previous": "Anterior",
+        "next": "Siguiente"
+      },
+      "pdf": {
+        "headerBrand": "PITA",
+        "brandLine": "PITA | Sistema de Logística y Pedidos",
+        "contactLine": "info@pita.com   |   +58 424-1234567   |   www.pita.com",
+        "generatedAt": "Generado:",
+        "pageOf": "Página {{current}} de {{total}}",
+        "titles": {
+          "monthlySummary": "RESUMEN MENSUAL",
+          "ordersSummary": "RESUMEN DE PEDIDOS",
+          "satisfaction": "SATISFACCIÓN DEL CLIENTE"
+        },
+        "table": {
+          "field": "Campo",
+          "value": "Valor"
+        },
+        "fields": {
+          "period": "Período",
+          "revenue": "Ingresos",
+          "totalOrders": "Total Pedidos",
+          "completed": "Completados",
+          "satisfaction": "Satisfacción",
+          "delivered": "Entregados",
+          "inTransit": "En Tránsito",
+          "averageValue": "Valor Promedio"
+        },
+        "charts": {
+          "orderStates": "Estados de Pedidos",
+          "monthlyTrend": "Tendencia Mensual",
+          "satisfactionDistribution": "Distribución de Satisfacción"
+        }
+      },
+      "statuses": {
+        "delivered": "Entregado",
+        "inTransit": "En Tránsito",
+        "pending": "Pendiente"
+      },
+      "cards": {
+        "keyMetrics": "Métricas Clave"
+      }
+    },
+    "configuracion": {
+      "title": "Configuración",
+      "subtitle": "Gestiona tu perfil, seguridad y preferencias",
+      "tabs": {
+        "perfil": "Perfil",
+        "seguridad": "Seguridad",
+        "notificaciones": "Notificaciones",
+        "preferencias": "Preferencias"
+      },
+      "profile": {
+        "title": "Información Personal",
+        "fields": {
+          "name": "Nombre completo",
+          "email": "Correo electrónico",
+          "phone": "Teléfono"
+        },
+        "placeholders": {
+          "name": "Tu nombre completo",
+          "email": "tu@email.com",
+          "phone": "+58 412-123-4567"
+        },
+        "saveButton": "Guardar cambios",
+        "profilePicture": {
+          "title": "Foto de Perfil",
+          "altText": "Foto de perfil",
+          "uploadButton": "Cambiar foto",
+          "deleteButton": "Eliminar foto"
+        },
+        "accountInfo": {
+          "title": "Información de la Cuenta",
+          "role": "Rol",
+          "status": "Estado",
+          "active": "Activo",
+          "memberSince": "Miembro desde",
+          "lastLogin": "Último acceso",
+          "months": {
+            "Enero": "Enero",
+            "Febrero": "Febrero",
+            "Marzo": "Marzo",
+            "Abril": "Abril",
+            "Mayo": "Mayo",
+            "Junio": "Junio",
+            "Julio": "Julio",
+            "Agosto": "Agosto",
+            "Septiembre": "Septiembre",
+            "Octubre": "Octubre",
+            "Noviembre": "Noviembre",
+            "Diciembre": "Diciembre"
+          }
+        }
+      },
+      "password": {
+        "title": "Cambiar Contraseña",
+        "fields": {
+          "current": "Contraseña actual",
+          "new": "Nueva contraseña",
+          "confirm": "Confirmar nueva contraseña"
+        },
+        "placeholders": {
+          "current": "Ingresa tu contraseña actual",
+          "new": "Ingresa tu nueva contraseña",
+          "confirm": "Confirma tu nueva contraseña"
+        },
+        "saveButton": "Cambiar contraseña"
+      },
+      "security": {
+        "title": "Configuración de Seguridad",
+        "twoFactor": "Autenticación de dos factores",
+        "twoFactorDesc": "Añade una capa extra de seguridad a tu cuenta",
+        "activeSessions": "Sesiones activas",
+        "devicesConnected": "{{count}} dispositivos conectados",
+        "viewAllSessions": "Ver todas las sesiones",
+        "lastAccessIP": "IP del último acceso",
+        "saveButton": "Guardar configuración",
+        "recentActivity": {
+          "title": "Actividad Reciente",
+          "loginSuccess": "Inicio de sesión exitoso",
+          "passwordChange": "Cambio de contraseña",
+          "newDevice": "Nuevo dispositivo detectado"
+        }
+      },
+      "notifications": {
+        "title": "Preferencias de Notificaciones",
+        "email": "Notificaciones por email",
+        "emailDesc": "Recibir actualizaciones importantes por correo electrónico",
+        "push": "Notificaciones push",
+        "pushDesc": "Recibir notificaciones en tiempo real en tu navegador",
+        "critical": "Alertas críticas",
+        "criticalDesc": "Notificaciones urgentes sobre el sistema",
+        "orders": "Notificaciones de pedidos",
+        "ordersDesc": "Actualizaciones sobre pedidos y envíos",
+        "systemUpdates": "Actualizaciones del sistema",
+        "systemUpdatesDesc": "Notificaciones sobre nuevas versiones y mejoras",
+        "saveButton": "Guardar preferencias"
+      },
+      "preferences": {
+        "regional": {
+          "title": "Configuración Regional"
+        },
+        "timezone": {
+          "label": "Zona horaria",
+          "placeholder": "Selecciona tu zona horaria"
+        },
+        "dateFormat": {
+          "label": "Formato de fecha",
+          "placeholder": "Selecciona el formato"
+        },
+        "timeFormat": {
+          "label": "Formato de hora",
+          "placeholder": "Selecciona el formato",
+          "24h": "24 horas",
+          "12h": "12 horas (AM/PM)"
+        },
+        "appearance": {
+          "title": "Apariencia"
+        },
+        "theme": {
+          "label": "Tema",
+          "light": "Claro",
+          "dark": "Oscuro",
+          "system": "Sistema",
+          "fontSize": "Tamaño de Fuente",
+          "interfaceDensity": "Densidad de la Interfaz",
+          "fontSizes": {
+            "small": "Pequeño",
+            "medium": "Mediano",
+            "large": "Grande"
+          },
+          "densities": {
+            "comfortable": "Cómoda",
+            "compact": "Compacta",
+            "spacious": "Espaciosa"
+          }
+        },
+        "fontSize": {
+          "label": "Tamaño de fuente",
+          "small": "Pequeño",
+          "medium": "Mediano",
+          "large": "Grande"
+        },
+        "density": {
+          "label": "Densidad de la interfaz",
+          "comfortable": "Cómoda",
+          "compact": "Compacta",
+          "spacious": "Espaciosa"
+        }
+      },
+      "messages": {
+        "profileUpdated": "Perfil actualizado",
+        "profileUpdatedDesc": "Los cambios se han guardado correctamente.",
+        "passwordUpdated": "Contraseña actualizada",
+        "passwordUpdatedDesc": "Tu contraseña se ha cambiado exitosamente.",
+        "passwordMismatch": "Las contraseñas no coinciden.",
+        "notificationsUpdated": "Notificaciones actualizadas",
+        "notificationsUpdatedDesc": "Tus preferencias de notificación se han guardado.",
+        "securityUpdated": "Configuración de seguridad actualizada",
+        "securityUpdatedDesc": "Los cambios de seguridad se han aplicado."
+      }
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "subtitle": "Accede rápidamente a las funciones más utilizadas",
+      "reviewOrder": "Revisar Pedido",
+      "chatSupport": "Chat de Soporte",
+      "updateTracking": "Actualizar Seguimiento",
+      "validatePayment": "Validar Pago"
+    }
+  },
+  "chinese": {
+    "title": "Dashboard Chino",
+    "subtitle": "Gestiona y rastrea envíos desde China",
+    "welcome": "¡Bienvenido de vuelta, aquí tienes un resumen de tu actividad",
+    "panel": "Panel de Control - Empleado China",
+    "manage": "Gestiona envíos, pedidos y comunicaciones con clientes",
+    "activeShipments": "Envíos Activos",
+    "totalOrders": "Total Pedidos",
+    "ordersPlaced": "Pedidos realizados",
+    "inTransit": "En Tránsito",
+    "activeShipmentsShort": "Envíos activos",
+    "totalHandled": "Total Gestionados",
+    "totalInvestment": "Inversión total",
+    "completed": "Completados",
+    "ordersDelivered": "Pedidos entregados",
+    "newOrder": "Nuevo Pedido",
+    "processOrder": "Procesar Pedido",
+    "prepareShipment": "Preparar Envío",
+    "recentOrders": "Pedidos Recientes",
+    "recentOrdersSubtitle": "Últimos pedidos procesados",
+    "noOrders": "No hay pedidos para mostrar",
+    "client": "Cliente",
+    "status": "Estado",
+    "product": "Producto",
+    "description": "Descripción",
+    "quantity": "Cantidad",
+    "priority": "Prioridad",
+    "supplier": "Proveedor",
+    "receivedDate": "Fecha de Recepción",
+    "estimatedDelivery": "Entrega Estimada",
+    "finalPrice": "Precio Final",
+    "currency": "Moneda",
+    "actions": "Acciones",
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Baja",
+    "pending": "Pendiente",
+    "processing": "Procesando",
+    "shipped": "Enviado",
+    "completedStatus": "Completado",
+    "orderId": "ID Pedido",
+    "state": "Estado",
+    "clientLabel": "Cliente",
+    "orderProduct": "Producto",
+    "orderStatus": "Estado del Pedido",
+    "orderPriority": "Prioridad",
+    "orderSupplier": "Proveedor",
+    "orderReceived": "Recibido",
+    "orderEstimatedDelivery": "Entrega Estimada",
+    "orderFinalPrice": "Precio Final",
+    "orderCurrency": "Moneda",
+    "quickActions": "Acciones Rápidas",
+    "quickActionsSubtitle": "Accede rápidamente a las funciones más utilizadas para operaciones en China",
+    "quality": "Calidad",
+    "qualityscore": "Puntuación de Calidad",
+    "ordersPage": {
+      "title": "Gestión de Pedidos",
+      "subtitle": "Gestiona y cotiza pedidos de clientes",
+      "pageTitle": "Pedidos",
+      "stats": {
+        "pending": "PENDIENTES",
+        "quoted": "COTIZADOS",
+        "processing": "PROCESANDO",
+        "shipped": "ENVIADOS"
+      },
+      "badges": {
+        "unknown": "Desconocido",
+        "quoted": "Cotizado",
+        "processing": "Procesando",
+        "readyToPack": "Listo para empaquetar",
+        "inBox": "En caja",
+        "inContainer": "En contenedor",
+        "shippedVzla": "Enviado a Venezuela",
+        "state": "Estado {{num}}"
+      },
+      "boxBadges": {
+        "new": "Nueva",
+        "packed": "Empaquetada",
+        "inContainer": "En contenedor",
+        "shipped": "Enviada",
+        "state": "Estado {{num}}"
+      },
+      "containerBadges": {
+        "new": "Nuevo",
+        "loading": "Cargando",
+        "shipped": "Enviado",
+        "state": "Estado {{num}}"
+      },
+      "tabs": {
+        "ordersList": "Lista de pedidos",
+        "boxes": "Cajas",
+        "containers": "Contenedores"
+      },
+      "filters": {
+        "searchClientPlaceholder": "Buscar por cliente...",
+        "searchBoxPlaceholder": "Buscar por caja (ID)...",
+        "searchContainerPlaceholder": "Buscar por contenedor (ID)...",
+        "status": "Estado",
+        "all": "Todos",
+        "pending": "Pendiente",
+        "quoted": "Cotizado",
+        "processing": "Procesando",
+        "shipped": "Enviado"
+      },
+      "orders": {
+        "listTitle": "Lista de Pedidos",
+        "refreshing": "Actualizando...",
+        "refresh": "Actualizar",
+        "order": "Pedido",
+        "client": "Cliente",
+        "qtyShort": "Cant",
+        "qtyLabel": "Cant:",
+        "view": "Ver",
+        "pack": "Empaquetar",
+        "unpack": "Desempaquetar",
+        "quote": "Cotizar",
+        "editQuote": "Editar",
+        "notFoundTitle": "No se encontraron pedidos",
+        "notFoundSubtitle": "Intenta ajustar los filtros de búsqueda",
+        "noPdfAlert": "No hay PDF disponible para este pedido.",
+        "pdfMissingToastTitle": "No PDF",
+        "pdfMissingToastDesc": "No hay PDF disponible para este pedido.",
+        "date": "Fecha"
+      },
+      "boxes": {
+        "title": "Cajas",
+        "create": "Crear cajas",
+        "noneTitle": "No hay cajas creadas",
+        "noneSubtitle": "Crea tu primera caja con el botón de arriba.",
+        "notFoundTitle": "No se encontraron cajas",
+        "notFoundSubtitle": "Intenta ajustar la búsqueda por ID.",
+        "ordersCount": "Pedidos:",
+        "pack": "Empaquetar",
+        "unpack": "Desempaquetar",
+        "viewOrders": "Ver pedidos",
+        "delete": "Eliminar",
+        "loading": "Cargando cajas..."
+      },
+      "containers": {
+        "title": "Contenedores",
+        "create": "Crear contenedor",
+        "noneTitle": "No hay contenedores creados",
+        "noneSubtitle": "Crea tu primer contenedor con el botón de arriba.",
+        "notFoundTitle": "No se encontraron contenedores",
+        "notFoundSubtitle": "Intenta ajustar la búsqueda por ID.",
+        "send": "Enviar",
+        "viewBoxes": "Ver cajas",
+        "delete": "Eliminar",
+        "loading": "Cargando contenedores...",
+        "sentToastTitle": "Contenedor enviado",
+        "sentToastDesc": "Contenedor #CONT-{{id}} fue marcado como enviado.",
+        "sendErrorTitle": "No se pudo enviar",
+        "sendErrorDesc": "Intenta de nuevo más tarde."
+      },
+      "modals": {
+        "quote": {
+          "title": "Cotizar Pedido",
+          "summaryTitle": "Resumen del Pedido",
+          "client": "Cliente:",
+          "product": "Producto:",
+          "quantity": "Cantidad:",
+          "specifications": "Especificaciones:",
+          "specificationsNA": "N/A",
+          "unitPriceLabel": "Precio de cotización unitario *",
+          "totalToPay": "Total a Pagar",
+          "cancel": "Cancelar",
+          "sendQuote": "Enviar Cotización"
+        },
+        "selectContainerForBox": {
+          "title": "Seleccionar contenedor para caja #BOX-{{id}}",
+          "loading": "Cargando contenedores...",
+          "noneTitle": "No hay contenedores disponibles",
+          "noneSubtitle": "Crea un contenedor desde la pestaña Contenedores para empaquetar.",
+          "select": "Seleccionar"
+        },
+        "createContainer": {
+          "title": "Crear contenedor",
+          "question": "¿Quieres crear un nuevo contenedor?",
+          "creating": "Creando...",
+          "accept": "Aceptar",
+          "cancel": "Cancelar"
+        },
+        "containerBoxes": {
+          "title": "Cajas del contenedor #CONT-{{id}}",
+          "loading": "Cargando cajas...",
+          "noneTitle": "No hay cajas asociadas a este contenedor",
+          "noneSubtitle": "Cuando asignes cajas a este contenedor aparecerán aquí.",
+          "unpack": "Desempaquetar",
+          "viewOrders": "Ver pedidos"
+        },
+        "deleteContainer": {
+          "title": "Eliminar contenedor",
+          "question": "¿Estás seguro de que quieres eliminar el contenedor #CONT-{{id}}? Esta acción no se puede deshacer.",
+          "deleting": "Eliminando...",
+          "delete": "Eliminar",
+          "cancel": "Cancelar"
+        },
+        "createBox": {
+          "title": "Crear caja",
+          "question": "¿Quieres crear una nueva caja?",
+          "creating": "Creando...",
+          "accept": "Aceptar",
+          "cancel": "Cancelar"
+        },
+        "boxOrders": {
+          "title": "Pedidos de la caja #BOX-{{id}}",
+          "loading": "Cargando pedidos...",
+          "noneTitle": "No hay pedidos asociados a esta caja",
+          "noneSubtitle": "Cuando asignes pedidos a esta caja aparecerán aquí.",
+          "view": "Ver"
+        },
+        "selectBoxForOrder": {
+          "title": "Seleccionar caja para pedido #ORD-{{id}}",
+          "loading": "Cargando cajas...",
+          "noneTitle": "No hay cajas disponibles",
+          "noneSubtitle": "Crea una caja desde la pestaña Cajas para empaquetar.",
+          "select": "Seleccionar"
+        },
+        "deleteBox": {
+          "title": "Eliminar caja",
+          "question": "¿Estás seguro de que quieres eliminar la caja #BOX-{{id}}? Esta acción no se puede deshacer.",
+          "deleting": "Eliminando...",
+          "delete": "Eliminar",
+          "cancel": "Cancelar"
+        }
+      },
+      "toasts": {
+        "boxCreateErrorTitle": "La caja no se pudo crear",
+        "boxCreateErrorDesc": "Intenta de nuevo en unos segundos.",
+        "boxCreatedTitle": "Caja creada",
+        "boxCreatedDesc": "La caja se creó exitosamente.",
+        "boxesLoadErrorTitle": "Las cajas no se pudieron cargar",
+        "boxesLoadErrorDesc": "Intenta de nuevo más tarde.",
+        "containerCreateErrorTitle": "El contenedor no se pudo crear",
+        "containerCreateErrorDesc": "Intenta de nuevo en unos segundos.",
+        "containerCreatedTitle": "Contenedor creado",
+        "containerCreatedDesc": "El contenedor se creó exitosamente.",
+        "containersLoadErrorTitle": "Los contenedores no se pudieron cargar",
+        "containersLoadErrorDesc": "Intenta de nuevo más tarde.",
+        "containerInvalidTitle": "Contenedor inválido",
+        "containerInvalidDesc": "El ID del contenedor no se pudo determinar.",
+        "notAllowedTitle": "No permitido",
+        "assignBoxNotAllowedDesc": "No puedes asignar cajas a un contenedor enviado.",
+        "assignBoxErrorTitle": "Contenedor no asignado",
+        "assignBoxErrorDesc": "Intenta de nuevo más tarde.",
+        "boxAssignedTitle": "Caja asignada",
+        "boxAssignedDesc": "Caja #BOX-{{boxId}} asignada al contenedor #CONT-{{containerId}}.",
+        "unexpectedErrorTitle": "Error inesperado",
+        "unexpectedErrorDesc": "Intenta de nuevo más tarde.",
+        "boxUnpackErrorTitle": "No se pudo desempaquetar",
+        "boxUnpackNotAllowedDesc": "No puedes desempaquetar una caja de un contenedor enviado.",
+        "boxUnpackedTitle": "Caja desempaquetada",
+        "boxUnpackedDesc": "Pedidos y caja #BOX-{{boxId}} liberados.",
+        "orderAssignBoxInvalidTitle": "Caja inválida",
+        "orderAssignBoxInvalidDesc": "El ID de la caja no se pudo determinar.",
+        "orderAssignNotAllowedDesc": "No puedes empaquetar en una caja enviada.",
+        "orderAssignedTitle": "Pedido asignado",
+        "orderAssignedDesc": "Pedido #ORD-{{orderId}} asignado a caja {{boxId}}.",
+        "orderUnpackErrorTitle": "No se pudo desempaquetar",
+        "orderNoBoxTitle": "Pedido sin caja",
+        "orderNoBoxDesc": "Este pedido no tiene caja asignada.",
+        "orderUnpackNotAllowedDesc": "No puedes desempaquetar pedidos de un contenedor enviado.",
+        "orderUnpackedTitle": "Pedido desempaquetado",
+        "orderUnpackedDesc": "Pedido #ORD-{{orderId}} liberado de la caja.",
+        "containerSendNotAllowedDesc": "No puedes eliminar un contenedor enviado.",
+        "containerDeletedTitle": "Contenedor eliminado",
+        "containerDeletedDesc": "El contenedor se eliminó exitosamente.",
+        "containerDeleteErrorTitle": "El contenedor no se pudo eliminar",
+        "boxDeletedTitle": "Caja eliminada",
+        "boxDeletedDesc": "La caja se eliminó exitosamente.",
+        "boxDeleteErrorTitle": "La caja no se pudo eliminar",
+        "orderPdfMissingTitle": "No PDF",
+        "orderPdfMissingDesc": "No hay PDF disponible para este pedido.",
+        "boxDeleteIdInvalidTitle": "No se pudo eliminar",
+        "boxDeleteIdInvalidDesc": "ID de caja inválido.",
+        "containerDeleteIdInvalidDesc": "ID de contenedor inválido."
+      }
+    }
   }
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PasswordReset from "../PasswordReset/PasswordReset";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import { STEPS } from "@/lib/constants/auth";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -51,6 +52,7 @@ export default function PasswordResetRedirectPage() {
           initialStep={STEPS.NEW_PASSWORD}
         />
       </div>
+  <LanguageSwitcher />
     </main>
   );
 }

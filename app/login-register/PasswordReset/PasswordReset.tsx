@@ -5,6 +5,8 @@ import FormPanel from "./FormPanel";
 import AnimatedPanel from "@/components/auth/AnimatedPanel";
 import { STEPS, CONTACT_METHODS } from "@/lib/constants/auth";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import ResetLinkSentModal from "@/components/ui/ResetLinkSentModal";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type Props = {
   onNavigateToAuth: () => void;
@@ -12,6 +14,7 @@ type Props = {
 };
 
 export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<number>(initialStep ?? STEPS.CONTACT_METHOD);
   const [contactMethod, setContactMethod] = useState<string>(CONTACT_METHODS.EMAIL);
   const [contactValue, setContactValue] = useState<string>("");
@@ -20,6 +23,7 @@ export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) 
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isExpanding, setIsExpanding] = useState<boolean>(true);
+  const [showLinkSent, setShowLinkSent] = useState<boolean>(false);
 
   const handleSendCode = async (): Promise<void> => {
     if (!contactValue) return;
@@ -33,7 +37,8 @@ export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) 
           : undefined,
       });
       if (error) throw error;
-      // Permanecemos en paso inicial mostrando feedback mediante UI externa
+      // Mostrar modal de enlace enviado
+      setShowLinkSent(true);
     } catch (err) {
       // Podríamos integrar toast; por ahora silencioso para no romper UI
     } finally {
@@ -48,7 +53,7 @@ export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) 
 
   const handleResetPassword = async (): Promise<void> => {
     if (newPassword !== confirmPassword) {
-      alert("Las contraseñas no coinciden.");
+  alert(t('auth.passwordReset.passwordsNoMatchAlert'));
       return;
     }
 
@@ -74,7 +79,7 @@ export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) 
 
     const passwordStrength = getPasswordStrengthLevel(newPassword);
     if (passwordStrength === "low" || passwordStrength === "none") {
-      alert('La contraseña debe ser "Muy Fuerte" para continuar.');
+  alert(t('auth.common.passwordMustBeVeryStrong'));
       return;
     }
 
@@ -83,7 +88,7 @@ export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) 
       const supabase = getSupabaseBrowserClient();
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-      alert("¡Contraseña restablecida exitosamente! Serás redirigido al inicio de sesión.");
+  alert(t('auth.passwordReset.resetSuccess'));
       setStep(STEPS.CONTACT_METHOD);
       setContactValue("");
       setVerificationCode(["", "", "", "", "", ""]);
@@ -93,7 +98,7 @@ export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) 
       sessionStorage.setItem('fromPasswordReset', 'true');
       onNavigateToAuth?.();
     } catch (err) {
-      alert("Ocurrió un error al restablecer la contraseña.");
+  alert(t('auth.passwordReset.resetError'));
     } finally {
       setIsLoading(false);
     }
@@ -150,6 +155,21 @@ export default function PasswordReset({ onNavigateToAuth, initialStep }: Props) 
         />
         <AnimatedPanel />
       </div>
+      <ResetLinkSentModal
+        email={contactValue}
+        open={showLinkSent}
+        onClose={() => setShowLinkSent(false)}
+        onResend={async () => {
+          // reutiliza handleSendCode pero sin cerrar modal
+          if (!contactValue) return;
+          const supabase = getSupabaseBrowserClient();
+          await supabase.auth.resetPasswordForEmail(contactValue, {
+            redirectTo: process.env.NEXT_PUBLIC_SITE_URL
+              ? `${process.env.NEXT_PUBLIC_SITE_URL}/login-register/reset`
+              : undefined,
+          });
+        }}
+      />
     </div>
   );
 }

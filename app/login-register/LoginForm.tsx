@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import Lottie from "react-lottie";
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type Props = {
   onNavigateToPasswordReset: () => void;
@@ -11,6 +12,7 @@ type Props = {
 
 
 export default function LoginForm({ onNavigateToPasswordReset }: Props) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
@@ -23,7 +25,7 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
     let cancelled = false;
     fetch("/animations/login.json")
       .then((res) => {
-        if (!res.ok) throw new Error("No se pudo cargar la animación");
+  if (!res.ok) throw new Error(t('auth.common.animationLoadError'));
         return res.json();
       })
       .then((data) => {
@@ -61,7 +63,7 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
 
     // Validar email
     if (!validateEmail(email)) {
-      setEmailError("Correo electrónico inválido");
+  setEmailError(t('auth.common.invalidEmail'));
       valid = false;
     } else {
       setEmailError("");
@@ -69,7 +71,7 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
 
     // Validar contraseña
     if (!password) {
-      setPasswordError("La contraseña es obligatoria");
+  setPasswordError(t('auth.common.passwordRequired'));
       valid = false;
     } else {
       setPasswordError("");
@@ -136,7 +138,7 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      setErrorMsg(message || "Error al iniciar sesión");
+  setErrorMsg(message || t('auth.login.errorFallback'));
     } finally {
       setLoading(false);
     }
@@ -158,16 +160,16 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
         {animError && (
           <div style={{ color: 'red', fontSize: 14, textAlign: 'center' }}>
             <span style={{ fontSize: 24 }}>⚠️</span>
-            <div>No se pudo cargar la animación</div>
+            <div>{t('auth.common.animationLoadError')}</div>
           </div>
         )}
       </div>
-      <h2>Iniciar Sesión</h2>
-      <label htmlFor="login-email">Correo electrónico</label>
+      <h2>{t('auth.login.title')}</h2>
+      <label htmlFor="login-email">{t('auth.common.email')}</label>
       <input
         type="email"
         id="login-email"
-        placeholder="usuario@correo.com"
+        placeholder={t('auth.common.emailPlaceholder')}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
@@ -176,12 +178,12 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
         <p className="text-red-500 text-xs mt-1" role="alert">{emailError}</p>
       )}
 
-      <label htmlFor="login-password">Contraseña</label>
+    <label htmlFor="login-password">{t('auth.common.password')}</label>
       <div className="password-input-container">
         <input
           type={showPassword ? "text" : "password"}
           id="login-password"
-          placeholder="********"
+      placeholder={t('auth.common.passwordPlaceholder')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -195,14 +197,14 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
       )}
 
       <a href="#" className="forgot-password-link" onClick={handleForgotPassword}>
-        ¿Olvidaste tu contraseña?
+        {t('auth.common.forgotPassword')}
       </a>
 
       {errorMsg && (
         <p className="text-red-500 text-sm mt-2" role="alert">{errorMsg}</p>
       )}
       <button type="submit" disabled={loading}>
-        {loading ? "Ingresando..." : "Iniciar Sesión"}
+        {loading ? t('auth.common.loadingLogin') : t('auth.common.login')}
       </button>
     </form>
   );

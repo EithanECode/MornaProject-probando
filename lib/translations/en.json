@@ -1,8 +1,111 @@
-      
 {
-
-
-
+  "auth": {
+    "common": {
+      "languageLabel": "Language:",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Your name",
+      "emailPlaceholder": "user@email.com",
+      "passwordPlaceholder": "********",
+      "login": "Login",
+      "register": "Register",
+      "loadingLogin": "Signing in...",
+      "loadingRegister": "Creating account...",
+      "forgotPassword": "Forgot your password?",
+      "passwordRequired": "Password is required",
+      "invalidEmail": "Invalid email",
+      "invalidEmailAlt": "Email is not valid.",
+      "nameInvalid": "Name must have at least 3 letters and valid characters only.",
+      "passwordsNoMatch": "Passwords do not match.",
+      "passwordLevelLow": "Weak",
+      "passwordLevelMedium": "Normal",
+      "passwordLevelStrong": "Strong",
+      "passwordLevelVeryStrong": "Very Strong",
+      "passwordMustBeNormal": "Password must be at least 'Normal' to register.",
+      "passwordMustBeVeryStrong": "Password must be 'Very Strong' to continue.",
+      "animationLoadError": "Could not load animation",
+      "registerAnimationLoadError": "Could not load register animation"
+    },
+    "login": {
+      "title": "Login",
+      "welcomeBack": "Welcome Back!",
+      "welcomeMessage": "To keep you connected, please sign in with your personal info.",
+      "errorFallback": "Login error"
+    },
+    "register": {
+      "title": "Register",
+      "helloFriend": "Hello Friend!",
+      "helloMessage": "Enter your personal details and start your journey with us.",
+      "success": "Registration successful! Check your email to confirm your account.",
+      "errorFallback": "Registration error"
+    },
+    "panels": {
+      "welcomeBack": "Welcome Back!",
+      "welcomeMessage": "To keep you connected, please sign in with your personal info.",
+      "helloFriend": "Hello Friend!",
+      "helloMessage": "Enter your personal details and start your journey with us."
+    },
+    "passwordReset": {
+      "titles": {
+        "reset": "Reset Password",
+        "verify": "Verify Code",
+        "new": "New Password"
+      },
+      "descriptions": {
+        "enterEmail": "Enter your email to reset your password",
+        "codeSent": "We've sent a code to {{contact}}. Enter the code here.",
+        "createNew": "Create a new secure password"
+      },
+      "placeholders": {
+        "email": "Enter your email",
+        "newPassword": "New password",
+        "confirmPassword": "Confirm password"
+      },
+      "buttons": {
+        "continue": "Continue",
+        "back": "Back",
+        "reset": "Reset Password"
+      },
+      "tooltips": {
+        "backToLogin": "Back to login"
+      },
+      "alts": {
+        "securityShield": "Security shield"
+      },
+      "passwordsNoMatchAlert": "Passwords do not match.",
+      "resetSuccess": "Password reset successfully! You will be redirected to login.",
+      "resetError": "An error occurred while resetting the password.",
+      "sendCode": "Send Code",
+      "verifyCode": "Verify Code",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password"
+    }
+  },
+  "authPasswordResetModal": {
+    "title": "Link Sent",
+    "subtitle": "We've sent a reset link to",
+    "checkInbox": "Check your inbox and follow the instructions.",
+    "resendQuestion": "Didn't get it?",
+    "resendLink": "Resend",
+    "close": "Close",
+    "sentTo": "Sent to: {{email}}",
+    "copy": "Copy email",
+    "copied": "Copied",
+    "openMail": "Open mail",
+    "resending": "Resending...",
+    "resent": "Link resent",
+    "info": "If it doesn't show up in a few minutes, also check your spam folder."
+  },
+  "passwordResetSide": {
+    "slides": [
+      { "title": "Guaranteed Security", "desc": "Your information is protected with bank-level encryption" },
+      { "title": "Immediate Access", "desc": "Reset your password without waiting for verification codes" },
+      { "title": "Email Recovery", "desc": "Use your email for secure access" },
+      { "title": "Simple Process", "desc": "Reset your password in just 2 steps" }
+    ]
+  },
   "client": {
     "support": {
       "title": "Support",
@@ -348,7 +451,6 @@
         "tracking": "Tracking",
         "downloadInvoice": "Download invoice"
       },
-      "trackingModal": {
       "newOrder": {
         "step": "Step {{current}} of {{total}}",
         "percentComplete": "{{percent}}% complete",
@@ -397,7 +499,23 @@
         "transitioning": "Transitioning...",
         "previous": "Previous",
         "next": "Next",
-        "createOrder": "Create Order"
+        "createOrder": "Create Order",
+        "dialogDescription": "Follow the steps to create your import request",
+        "stepTitles": {
+          "productInfo": "Product Information",
+          "shippingDetails": "Shipping Details",
+          "summaryConfirmation": "Summary & Confirmation"
+        },
+        "stepDescriptions": {
+          "productInfo": "Tell us which product you want to import",
+          "shippingDetails": "Configure how you want to receive your order",
+          "summaryConfirmation": "Review and confirm your request"
+        },
+        "success": {
+          "title": "Order Created!",
+          "message": "Your request has been sent successfully",
+          "button": "Great!"
+        }
       },
       "paymentModal": {
         "title": "Make Payment",
@@ -424,6 +542,7 @@
         "processing": "Processing...",
         "confirmPayment": "Confirm Payment"
       },
+      "trackingModal": {
         "trackingNumber": "Tracking number",
         "carrier": "Carrier",
         "estimatedDelivery": "Estimated delivery",
@@ -444,10 +563,13 @@
   "sidebar":{
     "dashboard": "Dashboard",
     "users": "Users",
+    "usuarios": "Users",
     "orders": "Orders",
+    "pedidos": "Orders",
     "reports": "Reports",
     "alerts": "Alerts",
     "management": "Management",
+    "gestion": "Management",
     "payments": "Payments",
     "support": "Support",
     "settings": "Settings",
@@ -597,6 +719,7 @@
         "subtitle": "Customize your application experience",
         "regional": {
           "title": "Regional Settings"
+
         },
         "theme": {
           "title": "Application theme",
@@ -716,7 +839,9 @@
       },
       "pagination": {
         "previous": "Previous",
-        "next": "Next"
+        "next": "Next",
+        "showing": "Users",
+        "perPage": "Per page"
       },
       "actions": {
         "edit": "Edit",
@@ -759,11 +884,16 @@
         "showing": "Showing",
         "of": "of",
         "perPage": "per page"
+      },
+      "empty": {
+        "noUsersFound": "There are no users registered.",
+        "tryAdjustFilters": "Try adjusting the filters or create a new user."
       }
     },
     "orders": {
       "title": "Order Management",
       "subtitle": "Manage and track all orders",
+  "chinaTabLabel": "China",
       "listTitle": "Order List",
       "listDescription": "{{count}} orders found",
       "search": "Search orders...",
@@ -784,8 +914,10 @@
         "client": "Client",
         "description": "Description",
         "status": "Status",
-        "assignedTo": "Assigned",
+  "assignedTo": "Assigned",
+  "assigned": "Assigned",
         "time": "Time",
+  "days": "Days",
         "actions": "Actions",
         "daysElapsed": "Days elapsed"
       },
@@ -825,10 +957,12 @@
       "form": {
         "productName": "Product name",
         "productNameLabel": "Product Name",
+  "productNamePlaceholder": "E.g.: iPhone 15 Pro Max",
         "description": "Description",
         "productDescription": "Product Description",
         "productDescriptionPlaceholder": "Describe the product...",
         "quantity": "Quantity",
+  "invalidQuantity": "Quantity must be greater than zero.",
         "requestType": "Request Type",
         "productLink": "Product Link",
         "productLinkDescription": "Paste the store link",
@@ -836,7 +970,9 @@
         "photoDescriptionDetail": "Upload a product image",
         "productUrl": "Product URL",
         "productUrlPlaceholder": "https://example.com/product",
+  "invalidUrl": "The URL is not valid.",
         "productImage": "Product Image",
+  "productImageAlt": "Product image",
         "dragImageHere": "Drag an image here or click to select",
         "selectImage": "Select Image",
         "change": "Change",
@@ -844,7 +980,9 @@
         "specifications": "Specifications",
         "deliveryType": "Delivery type",
         "deliveryVenezuela": "Delivery in Venezuela",
-        "estimatedBudget": "Estimated budget",
+  "estimatedBudget": "Estimated budget",
+  "estimatedBudgetPlaceholder": "E.g.: 500",
+  "invalidBudget": "Estimated budget must be a valid amount.",
         "estimatedBudgetUsd": "Estimated Budget (USD)",
         "selectClient": "Select a client",
         "selectDelivery": "Select how you want to receive your order",
@@ -888,11 +1026,278 @@
       },
       "alerts": {
         "onlyImages": "Only JPG, JPEG, PNG or WEBP images are allowed."
+      },
+      "messages": {
+  "createError": "Could not create the order.",
+        "deleteConfirm": "Are you sure you want to delete order #{{id}}? This action can't be undone.",
+        "updateError": "Could not update the order.",
+        "deleteError": "Could not delete the order."
+      },
+      "export": {
+        "reportTitle": "Orders Report",
+        "fileName": "orders_report.pdf",
+        "button": "Export to PDF"
+      },
+      "pdf": {
+        "summaryTitle": "ORDER SUMMARY",
+        "order": "Order:",
+        "date": "Date:",
+        "generatedAt": "Generated:",
+        "field": "Field",
+        "value": "Value",
+        "information": "Information",
+        "productUrl": "Product URL",
+        "fields": {
+          "orderId": "Order ID",
+          "clientId": "Client ID",
+          "userName": "User Name",
+          "date": "Date",
+          "shippingType": "Shipping Type",
+          "deliveryVzla": "Delivery in Venezuela",
+          "product": "Product",
+          "quantity": "Quantity",
+          "estimatedBudget": "Estimated Budget",
+          "description": "Description",
+          "specifications": "Specifications",
+          "url": "Product URL"
+        }
+      },
+      "common": {
+        "unknown": "Unknown"
+      },
+      "china": {
+  "tabLabel": "China",
+        "title": "Order Management",
+        "subtitle": "Manage and quote customer orders",
+        "pageTitle": "Orders",
+        "stats": {
+          "pending": "PENDING",
+          "quoted": "QUOTED",
+          "processing": "PROCESSING",
+          "shipped": "SHIPPED"
+        },
+        "badges": {
+          "unknown": "Unknown",
+          "quoted": "Quoted",
+          "processing": "Processing",
+          "readyToPack": "Ready to pack",
+          "inBox": "In box",
+          "inContainer": "In container",
+          "shippedVzla": "Shipped to Venezuela",
+          "state": "State {{num}}"
+        },
+        "boxBadges": {
+          "new": "New",
+          "packed": "Packed",
+          "inContainer": "In container",
+          "shipped": "Shipped",
+          "state": "State {{num}}"
+        },
+        "containerBadges": {
+          "new": "New",
+          "loading": "Loading",
+          "shipped": "Shipped",
+          "state": "State {{num}}"
+        },
+        "tabs": {
+          "ordersList": "Orders list",
+          "boxes": "Boxes",
+          "containers": "Containers"
+        },
+        "filters": {
+          "searchClientPlaceholder": "Search by client...",
+          "searchBoxPlaceholder": "Search by box (ID)...",
+          "searchContainerPlaceholder": "Search by container (ID)...",
+          "status": "Status",
+          "all": "All",
+          "pending": "Pending",
+          "quoted": "Quoted",
+          "processing": "Processing",
+          "shipped": "Shipped"
+        },
+        "orders": {
+          "listTitle": "Orders List",
+          "refreshing": "Refreshing...",
+          "refresh": "Refresh",
+          "order": "Order",
+          "client": "Client",
+          "qtyShort": "Qty",
+          "qtyLabel": "Qty:",
+          "view": "View",
+          "pack": "Pack",
+          "unpack": "Unpack",
+          "quote": "Quote",
+          "editQuote": "Edit",
+          "notFoundTitle": "No orders found",
+          "notFoundSubtitle": "Try adjusting the search filters",
+          "noPdfAlert": "No PDF available for this order.",
+          "pdfMissingToastTitle": "No PDF",
+          "pdfMissingToastDesc": "No PDF available for this order.",
+          "date": "Date"
+        },
+        "boxes": {
+          "title": "Boxes",
+          "create": "Create boxes",
+          "noneTitle": "No boxes created",
+          "noneSubtitle": "Create your first box with the button above.",
+          "notFoundTitle": "No boxes found",
+          "notFoundSubtitle": "Try adjusting the ID search.",
+          "ordersCount": "Orders:",
+          "pack": "Pack",
+          "unpack": "Unpack",
+          "viewOrders": "View orders",
+          "delete": "Delete",
+          "loading": "Loading boxes..."
+        },
+        "containers": {
+          "title": "Containers",
+          "create": "Create container",
+          "noneTitle": "No containers created",
+          "noneSubtitle": "Create your first container with the button above.",
+          "notFoundTitle": "No containers found",
+          "notFoundSubtitle": "Try adjusting the ID search.",
+          "send": "Send",
+          "viewBoxes": "View boxes",
+          "delete": "Delete",
+          "loading": "Loading containers...",
+          "sentToastTitle": "Container sent",
+          "sentToastDesc": "Container #CONT-{{id}} was marked as shipped.",
+          "sendErrorTitle": "Could not send",
+          "sendErrorDesc": "Try again later."
+        },
+        "modals": {
+          "quote": {
+            "title": "Quote Order",
+            "summaryTitle": "Order Summary",
+            "client": "Client:",
+            "product": "Product:",
+            "quantity": "Quantity:",
+            "specifications": "Specifications:",
+            "specificationsNA": "N/A",
+            "unitPriceLabel": "Unit quotation price *",
+            "totalToPay": "Total to Pay",
+            "cancel": "Cancel",
+            "sendQuote": "Send Quote"
+          },
+          "selectContainerForBox": {
+            "title": "Select container for box #BOX-{{id}}",
+            "loading": "Loading containers...",
+            "noneTitle": "No containers available",
+            "noneSubtitle": "Create a container from the Containers tab to pack.",
+            "select": "Select"
+          },
+          "createContainer": {
+            "title": "Create container",
+            "question": "Do you want to create a new container?",
+            "creating": "Creating...",
+            "accept": "Accept",
+            "cancel": "Cancel"
+          },
+          "containerBoxes": {
+            "title": "Boxes of container #CONT-{{id}}",
+            "loading": "Loading boxes...",
+            "noneTitle": "No boxes associated to this container",
+            "noneSubtitle": "When you assign boxes to this container they will appear here.",
+            "unpack": "Unpack",
+            "viewOrders": "View orders"
+          },
+          "deleteContainer": {
+            "title": "Delete container",
+            "question": "Are you sure you want to delete container #CONT-{{id}}? This action can't be undone.",
+            "deleting": "Deleting...",
+            "delete": "Delete",
+            "cancel": "Cancel"
+          },
+          "createBox": {
+            "title": "Create box",
+            "question": "Do you want to create a new box?",
+            "creating": "Creating...",
+            "accept": "Accept",
+            "cancel": "Cancel"
+          },
+          "boxOrders": {
+            "title": "Orders of box #BOX-{{id}}",
+            "loading": "Loading orders...",
+            "noneTitle": "No orders associated to this box",
+            "noneSubtitle": "When you assign orders to this box they will appear here.",
+            "view": "View"
+          },
+          "selectBoxForOrder": {
+            "title": "Select box for order #ORD-{{id}}",
+            "loading": "Loading boxes...",
+            "noneTitle": "No boxes available",
+            "noneSubtitle": "Create a box from the Boxes tab to pack.",
+            "select": "Select"
+          },
+          "deleteBox": {
+            "title": "Delete box",
+            "question": "Are you sure you want to delete box #BOX-{{id}}? This action can't be undone.",
+            "deleting": "Deleting...",
+            "delete": "Delete",
+            "cancel": "Cancel"
+          }
+        },
+        "toasts": {
+          "boxCreateErrorTitle": "Box couldn't be created",
+          "boxCreateErrorDesc": "Try again in a few seconds.",
+          "boxCreatedTitle": "Box created",
+          "boxCreatedDesc": "The box was created successfully.",
+          "boxesLoadErrorTitle": "Boxes couldn't be loaded",
+          "boxesLoadErrorDesc": "Try again later.",
+          "containerCreateErrorTitle": "Container couldn't be created",
+          "containerCreateErrorDesc": "Try again in a few seconds.",
+          "containerCreatedTitle": "Container created",
+          "containerCreatedDesc": "The container was created successfully.",
+          "containersLoadErrorTitle": "Containers couldn't be loaded",
+          "containersLoadErrorDesc": "Try again later.",
+          "containerInvalidTitle": "Invalid container",
+          "containerInvalidDesc": "Container ID couldn't be determined.",
+          "notAllowedTitle": "Not allowed",
+          "assignBoxNotAllowedDesc": "You can't assign boxes to a shipped container.",
+          "assignBoxErrorTitle": "Container not assigned",
+          "assignBoxErrorDesc": "Try again later.",
+          "boxAssignedTitle": "Box assigned",
+          "boxAssignedDesc": "Box #BOX-{{boxId}} assigned to container #CONT-{{containerId}}.",
+          "unexpectedErrorTitle": "Unexpected error",
+          "unexpectedErrorDesc": "Try again later.",
+          "boxUnpackErrorTitle": "Couldn't unpack",
+          "boxUnpackNotAllowedDesc": "You can't unpack a box from a shipped container.",
+          "boxUnpackedTitle": "Box unpacked",
+          "boxUnpackedDesc": "Orders and box #BOX-{{boxId}} released.",
+          "orderAssignBoxInvalidTitle": "Invalid box",
+          "orderAssignBoxInvalidDesc": "Box ID couldn't be determined.",
+          "orderAssignNotAllowedDesc": "You can't pack into a shipped box.",
+          "orderAssignedTitle": "Order assigned",
+          "orderAssignedDesc": "Order #ORD-{{orderId}} assigned to box {{boxId}}.",
+          "orderUnpackErrorTitle": "Couldn't unpack",
+          "orderNoBoxTitle": "Order without box",
+          "orderNoBoxDesc": "This order has no box assigned.",
+          "orderUnpackNotAllowedDesc": "You can't unpack orders from a shipped container.",
+          "orderUnpackedTitle": "Order unpacked",
+          "orderUnpackedDesc": "Order #ORD-{{orderId}} released from box.",
+          "containerSendNotAllowedDesc": "You can't delete a shipped container.",
+          "containerDeletedTitle": "Container deleted",
+          "containerDeletedDesc": "The container was deleted successfully.",
+          "containerDeleteErrorTitle": "Container couldn't be deleted",
+          "boxDeletedTitle": "Box deleted",
+          "boxDeletedDesc": "The box was deleted successfully.",
+          "boxDeleteErrorTitle": "Box couldn't be deleted",
+          "orderPdfMissingTitle": "No PDF",
+          "orderPdfMissingDesc": "No PDF available for this order.",
+          "boxDeleteIdInvalidTitle": "Couldn't delete",
+          "boxDeleteIdInvalidDesc": "Invalid box ID.",
+          "containerDeleteIdInvalidDesc": "Invalid container ID."
+        }
       }
     },
     "management": {
       "title": "Business Configuration",
       "subtitle": "Operational and financial parameters",
+      "header": {
+        "title": "System Management",
+        "subtitle": "Adjust system management parameters",
+        "lastSaved": "Saved:"
+      },
       "warning": {
         "title": "Warning:",
         "description": "Changes to these parameters directly affect business operations. Make sure to communicate any modifications to the operational team."
@@ -910,6 +1315,8 @@
         "seaDescription": "Rates and times for economical sea shipments",
         "ratePerKg": "Rate per Volumetric Kg",
         "costPerKg": "Cost per volumetric kilogram",
+        "ratePerCubicMeter": "Rate per Cubic Meter",
+        "costPerCubicMeter": "Cost per cubic meter",
         "minDays": "Minimum Days",
         "maxDays": "Maximum Days"
       },
@@ -924,7 +1331,14 @@
         "usdDiscount": "USD Payment Discount (%)"
       },
       "notifications": {
-        "notificationSystem": "Notification System"
+        "notificationSystem": "Notification System",
+        "description": "Alert and communications configuration",
+        "email": "Email notifications",
+        "emailDesc": "Send alerts by email",
+        "whatsapp": "WhatsApp notifications",
+        "whatsappDesc": "Send alerts via WhatsApp",
+        "alertAfterDays": "Alert after (days)",
+        "alertAfterDaysHelp": "Days without attention before generating an alert"
       },
       "common": {
         "loading": "Loading..."
@@ -936,6 +1350,13 @@
       "messages": {
         "configSaved": "Configuration saved",
         "configSavedDesc": "Business parameters have been updated successfully."
+      },
+      "summary": {
+        "title": "Current Configuration Summary",
+        "airShipping": "Air Shipping",
+        "seaShipping": "Sea Shipping",
+        "usdRate": "USD Rate",
+        "margin": "Margin"
       }
     },
     "alerts": {
@@ -992,6 +1413,11 @@
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
+  "language": "Language",
+  "selectLanguage": "Select a language",
+  "chinese": "Chinese",
+  "english": "English",
+  "spanish": "Spanish",
     "cargando": "Loading...",
     "guardado": "Saved",
     "exportarPdf": "Export to PDF",
@@ -1093,6 +1519,624 @@
     "notifications": "Notifications"
   },
 
+  "venezuela": {
+    "dashboard": {
+      "title": "Venezuela Dashboard",
+      "subtitle": "Order review, customer support and tracking",
+      "welcome": "Welcome back!",
+      "panel": "Control Panel - Venezuela Employee",
+      "manage": "Manage orders, support and tracking from one place",
+      "pendingTasks": "Pending Tasks",
+      "pendingOrders": "Pending Orders",
+      "pendingOrdersDesc": "Waiting for review",
+      "activeChats": "Active Chats",
+      "activeChatsDesc": "Clients online",
+      "trackingUpdates": "Active Tracking",
+      "trackingUpdatesDesc": "Pending",
+      "satisfaction": "Satisfaction",
+      "averageRating": "Average Rating",
+      "deliveredOrders": "Delivered Orders",
+      "responseTime": "Response Time",
+      "satisfactionRate": "Satisfaction Rate"
+    },
+    "pedidos": {
+      "title": "Orders",
+      "subtitle": "Review and send orders to China for quotation",
+      "stats": {
+        "pending": "PENDING",
+        "reviewing": "REVIEWING",
+        "quoted": "QUOTED",
+        "processing": "PROCESSING"
+      },
+      "statusExtended": {
+        "delivered": "Delivered",
+        "readyToDeliver": "Ready for delivery",
+        "received": "Received",
+        "customs": "In customs",
+        "arrivedVzla": "Arrived in Vzla",
+        "onWayVzla": "On the way to Vzla",
+        "pending": "Pending",
+        "reviewing": "Reviewing",
+        "quoted": "Quoted",
+        "processing": "Processing",
+        "inProcess": "In process"
+      },
+      "badges": {
+        "delivered": "DELIVERED",
+        "readyToDeliver": "READY FOR DELIVERY",
+        "received": "RECEIVED",
+        "customs": "IN CUSTOMS",
+        "arrivedVzla": "ARRIVED IN Vzla",
+        "onWayVzla": "ON THE WAY TO Vzla",
+        "pending": "PENDING",
+        "reviewing": "REVIEWING",
+        "quoted": "QUOTED",
+        "processing": "PROCESSING",
+        "inProcess": "IN PROCESS"
+      },
+      "tabs": {
+        "ordersList": "Order List",
+        "boxes": "Boxes",
+        "containers": "Containers"
+      },
+      "searchPlaceholder": "Search by client, product or ID...",
+      "refresh": "Refresh",
+      "filters": {
+        "status": "Status",
+        "all": "All",
+        "pending": "Pending",
+        "reviewing": "Reviewing",
+        "quoted": "Quoted",
+        "processing": "Processing",
+        "searchBoxPlaceholder": "Search by box (ID)...",
+        "searchContainerPlaceholder": "Search by container (ID)..."
+      },
+      "emptyOrdersTitle": "No orders to review",
+      "emptyOrdersDesc": "All orders have been processed or there are no matches with the filters.",
+      "emptyBoxesTitle": "No boxes",
+      "emptyBoxesDesc": "No boxes found.",
+      "emptyBoxesSearchTitle": "No boxes found",
+      "emptyBoxesSearchDesc": "Adjust the search by ID.",
+      "emptyContainersTitle": "No containers",
+      "emptyContainersDesc": "No containers found.",
+      "emptyContainersSearchTitle": "No containers found",
+      "emptyContainersSearchDesc": "Adjust the search by ID.",
+      "loadingOrders": "Loading orders...",
+      "loadingBoxes": "Loading boxes...",
+      "loadingContainers": "Loading containers...",
+      "labels": {
+        "quantity": "Quantity:",
+        "deliveryType": "Delivery Type:",
+        "shippingType": "Shipping Type:",
+        "orders": "Orders:"
+      },
+      
+      "deliveryTypes": {
+        "office": "Office",
+        "warehouse": "Warehouse"
+      },
+      "shippingTypes": {
+        "doorToDoor": "Door to Door",
+        "maritime": "Maritime Shipping",
+        "air": "Air Shipping"
+      },
+      "modalOrdersTitle": "Orders of box #BOX-{{boxId}}",
+      "modalOrdersEmptyTitle": "No orders associated with this box",
+      "modalOrdersEmptyDesc": "When you assign orders to this box, they will appear here.",
+      "modalBoxesTitle": "Boxes of container #CONT-{{containerId}}",
+      "modalBoxesEmptyTitle": "No boxes associated with this container",
+      "modalBoxesEmptyDesc": "When you assign boxes to this container, they will appear here.",
+      "tooltips": {
+        "markBoxReceived": "Mark box as received",
+        "markContainerReceived": "Mark container as received"
+      },
+      "pdf": {
+        "openError": "Could not open the PDF. Check that your browser isn't blocking pop-up windows.",
+        "notAvailableOrder": "No PDF available for this order.",
+        "notAvailable": "No PDF available"
+      },
+      "errors": {
+        "getUser": "Could not get the logged-in user",
+        "fetchOrders": "Error fetching orders",
+        "updateOrder": "Could not update the order",
+        "sendToChina": "Error sending to China",
+        "updateStatus": "Error updating status",
+        "updateBox": "Could not update the box",
+        "boxUpdate": "Error updating box",
+        "updateContainer": "Could not update the container",
+        "containerUpdate": "Error updating container"
+      },
+      "boxesBadges": {
+        "new": "New",
+        "ready": "Ready",
+        "received": "Received",
+        "completed": "Completed",
+        "state": "St.{{num}}"
+      },
+      "boxesStatus": {
+        "new": "New",
+        "ready": "Ready",
+        "received": "Received",
+        "completed": "Completed",
+        "state": "St.{{num}}"
+      },
+      "containersBadges": {
+        "new": "New",
+        "inTransit": "In transit",
+        "received": "Received",
+        "state": "St.{{num}}"
+      },
+      "actions": {
+        "viewOrders": "View Orders",
+        "viewBoxes": "View Boxes",
+        "viewContainers": "View Containers",
+        "sendToChina": "Send to China",
+        "markAsReceived": "Mark as Received",
+        "exportPdf": "Export to PDF",
+        "exportPdfShort": "PDF"
+      }
+    },
+    "soporte": {
+      "title": "Customer Support",
+      "subtitle": "Manage customer chats and inquiries",
+      "headerTitle": "Customer Support",
+      "headerSubtitle": "Manage customer chats and inquiries",
+      "stats": {
+        "active": "Active",
+        "waiting": "Waiting",
+        "unread": "Unread"
+      },
+      "listTitle": "Chat list",
+      "searchPlaceholder": "Search by client or message...",
+      "filters": {
+        "status": "Status",
+        "all": "All statuses",
+        "active": "Active",
+        "waiting": "Waiting",
+        "resolved": "Resolved",
+        "priority": "Priority",
+        "allPriorities": "All priorities",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "badges": {
+        "priority": {
+          "high": "High",
+          "medium": "Medium",
+          "low": "Low"
+        },
+        "status": {
+          "active": "Active",
+          "waiting": "Waiting",
+          "resolved": "Resolved",
+          "unknown": "Unknown"
+        }
+      },
+      "chat": {
+        "lastMessage": "Last message:",
+        "unreadMessages": "Unread messages:",
+        "openChat": "Open Chat",
+        "openChatShort": "Chat",
+        "email": "Email",
+        "phone": "Phone"
+      },
+      "empty": {
+        "title": "No active chats",
+        "description": "All chats have been resolved or there are no matches with the applied filters."
+      }
+    },
+    "pagos": {
+      "title": "Payment Validation",
+      "subtitle": "Manage and track all orders",
+      "error": {
+        "loadErrorTitle": "Error loading orders",
+        "retry": "Retry"
+      },
+      "stats": {
+        "totalSpent": "Total Spent",
+        "totalPayments": "Total Payments",
+        "completed": "Completed",
+        "pending": "Pending"
+      },
+      "tabs": {
+        "ordersList": "Orders List",
+        "pendingPayments": "Pending Payments"
+      },
+      "listCardTitle": "Payments",
+      "searchPlaceholder": "Search orders...",
+      "filters": {
+        "allStatuses": "All statuses",
+        "completed": "Completed",
+        "pending": "Pending",
+        "rejected": "Rejected"
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "refreshShort": "Refresh",
+        "export": "Export",
+        "exportShort": "Export",
+        "view": "View",
+        "approve": "Approve",
+        "reject": "Reject",
+        "undo": "Undo"
+      },
+      "table": {
+        "pendingApprovalTitle": "Payments Pending Approval",
+        "ordersListTitle": "Orders List",
+        "loading": "Loading...",
+        "resultsFound": "{{count}} orders found",
+        "headers": {
+          "id": "Order ID",
+          "client": "Client",
+          "status": "Status",
+          "date": "Date",
+          "amount": "Amount",
+          "reference": "Reference",
+          "destination": "Destination",
+          "actions": "Actions"
+        }
+      },
+      "mobile": {
+        "date": "Date:",
+        "amount": "Amount:",
+        "method": "Method:",
+        "destination": "Destination:"
+      },
+      "empty": {
+        "title": "No payments found",
+        "subtitle": "Try adjusting filters or search terms"
+      },
+      "footer": {
+        "showing": "Showing {{shown}} of {{total}} transactions"
+      },
+      "modal": {
+        "details": {
+          "title": "Payment Details",
+          "clientInfo": "Client Information",
+          "paymentInfo": "Payment Information",
+          "additionalDetails": "Additional Details",
+          "fields": {
+            "user": "User:",
+            "productId": "Product ID:",
+            "amount": "Amount:",
+            "date": "Date:",
+            "reference": "Reference:",
+            "method": "Method:",
+            "destination": "Destination:",
+            "description": "Description:"
+          }
+        },
+        "reject": {
+          "title": "Confirm Rejection",
+          "message": "Are you sure you want to reject this payment? This action cannot be undone.",
+          "cancel": "Cancel",
+          "confirm": "Confirm Rejection"
+        }
+      },
+      "toasts": {
+        "undoTitle": "Action undone",
+        "undoDesc": "The payment has returned to its previous state.",
+        "undoErrorTitle": "Couldn't undo",
+        "undoErrorDesc": "Error reverting in the database.",
+        "approveErrorTitle": "Error approving",
+        "approveErrorDesc": "The order couldn't be updated.",
+        "approvedTitle": "Payment approved",
+        "approvedDesc": "Payment {{id}} has been approved successfully.",
+        "rejectedTitle": "Payment rejected",
+        "rejectedDesc": "Payment {{id}} has been rejected."
+      },
+      "status": {
+        "completado": "Completed",
+        "pendiente": "Pending",
+        "rechazado": "Rejected"
+      },
+      "export": {
+        "sheetName": "Payments",
+        "fileName": "payments_validation.xlsx",
+        "columns": {
+          "orderId": "Order ID",
+          "client": "Client",
+          "status": "Status",
+          "date": "Date",
+          "amount": "Amount",
+          "reference": "Reference",
+          "destination": "Destination",
+          "description": "Description"
+        }
+      }
+    },
+    "reportes": {
+      "title": "Reports",
+      "subtitle": "Analyze your operation's performance and metrics",
+      "filters": {
+        "title": "Report Type",
+        "types": {
+          "month": "By Month",
+          "order": "By Order",
+          "satisfaction": "Customer Satisfaction"
+        },
+        "export": "Export"
+      },
+      "charts": {
+        "monthlyTrendTitle": "Monthly Trend",
+        "orderStatusTitle": "Order Statuses",
+        "satisfactionDistributionTitle": "Satisfaction Distribution"
+      },
+      "metrics": {
+        "month": {
+          "totalOrders": "Total Orders",
+          "completed": "Completed",
+          "satisfaction": "Satisfaction",
+          "revenue": "Revenue"
+        },
+        "order": {
+          "totalOrders": "Total Orders",
+          "delivered": "Delivered",
+          "inTransit": "In Transit",
+          "averageValue": "Average Value"
+        },
+        "satisfaction": {
+          "average": "Overall Average",
+          "totalReviews": "Total Reviews",
+          "fiveStars": "5 Stars",
+          "satisfied": "Satisfied"
+        }
+      },
+      "modal": {
+        "title": "Report Details",
+        "monthly": {
+          "period": "PERIOD",
+          "revenue": "REVENUE",
+          "totalOrders": "TOTAL ORDERS",
+          "completed": "COMPLETED",
+          "satisfaction": "SATISFACTION",
+          "exportAsPdf": "EXPORT AS PDF"
+        },
+        "order": {
+          "infoTitle": "Order Information",
+          "fields": {
+            "number": "Number:",
+            "client": "Client:",
+            "product": "Product:",
+            "date": "Date:",
+            "status": "Status:",
+            "value": "Value:",
+            "deliveryTime": "Delivery Time:"
+          },
+          "notRated": "Not rated",
+          "exportAsPdf": "EXPORT AS PDF"
+        },
+        "satisfaction": {
+          "average": "Overall Average",
+          "outOf5": "out of 5 stars",
+          "distributionTitle": "Ratings Distribution"
+        }
+      },
+      "list": {
+        "title": "Reports List - {{filter}}",
+        "monthlyItem": "{{orders}} orders • {{rating}}/5 ⭐ • ${{revenue}}",
+        "satisfactionItem": "{{avg}}/5 ⭐ • {{reviews}} reviews",
+        "viewDetails": "View Details",
+        "view": "View",
+        "emptyMonthly": "No monthly reports registered.",
+        "emptySatisfaction": "No satisfaction reports registered.",
+        "emptyOrders": "No orders registered.",
+        "errorOrders": "Unexpected error fetching orders."
+      },
+      "pagination": {
+        "showing": "Showing {{from}} - {{to}} of {{total}} orders",
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "pdf": {
+        "headerBrand": "PITA",
+        "brandLine": "PITA | Logistics and Orders System",
+        "contactLine": "info@pita.com   |   +58 424-1234567   |   www.pita.com",
+        "generatedAt": "Generated:",
+        "pageOf": "Page {{current}} of {{total}}",
+        "titles": {
+          "monthlySummary": "MONTHLY SUMMARY",
+          "ordersSummary": "ORDERS SUMMARY",
+          "satisfaction": "CUSTOMER SATISFACTION"
+        },
+        "table": {
+          "field": "Field",
+          "value": "Value"
+        },
+        "fields": {
+          "period": "Period",
+          "revenue": "Revenue",
+          "totalOrders": "Total Orders",
+          "completed": "Completed",
+          "satisfaction": "Satisfaction",
+          "delivered": "Delivered",
+          "inTransit": "In Transit",
+          "averageValue": "Average Value"
+        },
+        "charts": {
+          "orderStates": "Order States",
+          "monthlyTrend": "Monthly Trend",
+          "satisfactionDistribution": "Satisfaction Distribution"
+        }
+      },
+      "statuses": {
+        "delivered": "Delivered",
+        "inTransit": "In Transit",
+        "pending": "Pending"
+      },
+      "cards": {
+        "keyMetrics": "Key Metrics"
+      }
+    },
+    "configuracion": {
+      "title": "Configuration",
+      "subtitle": "Manage your profile, security and preferences",
+      "tabs": {
+        "perfil": "Profile",
+        "seguridad": "Security",
+        "notificaciones": "Notifications",
+        "preferencias": "Preferences"
+      },
+      "profile": {
+        "title": "Personal Information",
+        "fields": {
+          "name": "Full name",
+          "email": "Email",
+          "phone": "Phone"
+        },
+        "placeholders": {
+          "name": "Your full name",
+          "email": "you@email.com",
+          "phone": "+58 412-123-4567"
+        },
+        "saveButton": "Save changes",
+        "profilePicture": {
+          "title": "Profile Picture",
+          "altText": "Profile picture",
+          "uploadButton": "Change photo",
+          "deleteButton": "Remove photo"
+        },
+        "accountInfo": {
+          "title": "Account Information",
+          "role": "Role",
+          "status": "Status",
+          "active": "Active",
+          "memberSince": "Member since",
+          "lastLogin": "Last access",
+          "months": {
+            "Enero": "January",
+            "Febrero": "February",
+            "Marzo": "March",
+            "Abril": "April",
+            "Mayo": "May",
+            "Junio": "June",
+            "Julio": "July",
+            "Agosto": "August",
+            "Septiembre": "September",
+            "Octubre": "October",
+            "Noviembre": "November",
+            "Diciembre": "December"
+          }
+        }
+      },
+      "password": {
+        "title": "Change Password",
+        "fields": {
+          "current": "Current password",
+          "new": "New password",
+          "confirm": "Confirm new password"
+        },
+        "placeholders": {
+          "current": "Enter your current password",
+          "new": "Enter your new password",
+          "confirm": "Confirm your new password"
+        },
+        "saveButton": "Change password"
+      },
+      "security": {
+        "title": "Security Settings",
+        "twoFactor": "Two-factor authentication",
+        "twoFactorDesc": "Add an extra layer of security to your account",
+        "activeSessions": "Active sessions",
+        "devicesConnected": "{{count}} devices connected",
+        "viewAllSessions": "View all sessions",
+        "lastAccessIP": "Last access IP",
+        "saveButton": "Save configuration",
+        "recentActivity": {
+          "title": "Recent Activity",
+          "loginSuccess": "Successful login",
+          "passwordChange": "Password change",
+          "newDevice": "New device detected"
+        }
+      },
+      "notifications": {
+        "title": "Notification Preferences",
+        "email": "Email notifications",
+        "emailDesc": "Receive important updates by email",
+        "push": "Push notifications",
+        "pushDesc": "Receive real-time notifications in your browser",
+        "critical": "Critical alerts",
+        "criticalDesc": "Urgent notifications about the system",
+        "orders": "Order notifications",
+        "ordersDesc": "Updates about orders and shipments",
+        "systemUpdates": "System updates",
+        "systemUpdatesDesc": "Notifications about new versions and improvements",
+        "saveButton": "Save preferences"
+      },
+      "preferences": {
+        "regional": {
+          "title": "Regional Settings"
+        },
+        "timezone": {
+          "label": "Timezone",
+          "placeholder": "Select your timezone"
+        },
+        "dateFormat": {
+          "label": "Date format",
+          "placeholder": "Select format"
+        },
+        "timeFormat": {
+          "label": "Time format",
+          "placeholder": "Select format",
+          "24h": "24 hours",
+          "12h": "12 hours (AM/PM)"
+        },
+        "appearance": {
+          "title": "Appearance"
+        },
+        "theme": {
+          "label": "Theme",
+          "light": "Light",
+          "dark": "Dark",
+          "system": "System",
+          "fontSize": "Font Size",
+          "interfaceDensity": "Interface Density",
+          "fontSizes" : {
+            "small": "Small",
+            "medium": "Medium",
+            "large": "Large"
+          },
+          "densities": {
+            "comfortable": "Comfortable",
+            "compact": "Compact",
+            "spacious": "Spacious"
+          }
+        },
+        "fontSize": {
+          "label": "Font size",
+          "small": "Small",
+          "medium": "Medium",
+          "large": "Large"
+        },
+        "density": {
+          "label": "Interface density",
+          "comfortable": "Comfortable",
+          "compact": "Compact",
+          "spacious": "Spacious"
+        }
+      },
+      "messages": {
+        "profileUpdated": "Profile updated",
+        "profileUpdatedDesc": "Changes have been saved successfully.",
+        "passwordUpdated": "Password updated",
+        "passwordUpdatedDesc": "Your password has been changed successfully.",
+        "passwordMismatch": "Passwords do not match.",
+        "notificationsUpdated": "Notifications updated",
+        "notificationsUpdatedDesc": "Your notification preferences have been saved.",
+        "securityUpdated": "Security settings updated",
+        "securityUpdatedDesc": "Security changes have been applied."
+      }
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "subtitle": "Quickly access the most used functions",
+      "reviewOrder": "Review Order",
+      "chatSupport": "Support Chat",
+      "updateTracking": "Update Tracking",
+      "validatePayment": "Validate Payment"
+    }
+  },
   "chinese": {
     "title": "Chinese Dashboard",
     "subtitle": "Manage and track shipments from China",
@@ -1147,7 +2191,231 @@
   "quickActions": "Quick Actions",
   "quickActionsSubtitle": "Quickly access the most used functions for China operations",
   "quality": "Quality",
-  "qualityscore": "Quality Score"
+  "qualityScore": "Quality Score"
+  ,
+  "ordersPage": {
+    "title": "Order Management",
+    "subtitle": "Manage and quote customer orders",
+    "pageTitle": "Orders",
+    "stats": {
+      "pending": "PENDING",
+      "quoted": "QUOTED",
+      "processing": "PROCESSING",
+      "shipped": "SHIPPED"
+    },
+    "badges": {
+      "unknown": "Unknown",
+      "quoted": "Quoted",
+      "processing": "Processing",
+      "readyToPack": "Ready to pack",
+      "inBox": "In box",
+      "inContainer": "In container",
+      "shippedVzla": "Shipped to Venezuela",
+      "state": "State {{num}}"
+    },
+    "boxBadges": {
+      "new": "New",
+      "packed": "Packed",
+      "inContainer": "In container",
+      "shipped": "Shipped",
+      "state": "State {{num}}"
+    },
+    "containerBadges": {
+      "new": "New",
+      "loading": "Loading",
+      "shipped": "Shipped",
+      "state": "State {{num}}"
+    },
+    "tabs": {
+      "ordersList": "Orders list",
+      "boxes": "Boxes",
+      "containers": "Containers"
+    },
+    "filters": {
+      "searchClientPlaceholder": "Search by client...",
+      "searchBoxPlaceholder": "Search by box (ID)...",
+      "searchContainerPlaceholder": "Search by container (ID)...",
+      "status": "Status",
+      "all": "All",
+      "pending": "Pending",
+      "quoted": "Quoted",
+      "processing": "Processing",
+      "shipped": "Shipped"
+    },
+    "orders": {
+      "listTitle": "Orders List",
+      "refreshing": "Refreshing...",
+      "refresh": "Refresh",
+      "order": "Order",
+      "client": "Client",
+      "qtyShort": "Qty",
+      "qtyLabel": "Qty:",
+      "view": "View",
+      "pack": "Pack",
+      "unpack": "Unpack",
+      "quote": "Quote",
+      "editQuote": "Edit",
+      "notFoundTitle": "No orders found",
+      "notFoundSubtitle": "Try adjusting the search filters",
+      "noPdfAlert": "No PDF available for this order.",
+      "pdfMissingToastTitle": "No PDF",
+      "pdfMissingToastDesc": "No PDF available for this order.",
+      "date": "Date"
+    },
+    "boxes": {
+      "title": "Boxes",
+      "create": "Create boxes",
+      "noneTitle": "No boxes created",
+      "noneSubtitle": "Create your first box with the button above.",
+      "notFoundTitle": "No boxes found",
+      "notFoundSubtitle": "Try adjusting the ID search.",
+      "ordersCount": "Orders:",
+      "pack": "Pack",
+      "unpack": "Unpack",
+      "viewOrders": "View orders",
+      "delete": "Delete",
+      "loading": "Loading boxes..."
+    },
+    "containers": {
+      "title": "Containers",
+      "create": "Create container",
+      "noneTitle": "No containers created",
+      "noneSubtitle": "Create your first container with the button above.",
+      "notFoundTitle": "No containers found",
+      "notFoundSubtitle": "Try adjusting the ID search.",
+      "send": "Send",
+      "viewBoxes": "View boxes",
+      "delete": "Delete",
+      "loading": "Loading containers...",
+      "sentToastTitle": "Container sent",
+      "sentToastDesc": "Container #CONT-{{id}} was marked as shipped.",
+      "sendErrorTitle": "Could not send",
+      "sendErrorDesc": "Try again later."
+    },
+    "modals": {
+      "quote": {
+        "title": "Quote Order",
+        "summaryTitle": "Order Summary",
+        "client": "Client:",
+        "product": "Product:",
+        "quantity": "Quantity:",
+        "specifications": "Specifications:",
+        "specificationsNA": "N/A",
+        "unitPriceLabel": "Unit quotation price *",
+        "totalToPay": "Total to Pay",
+        "cancel": "Cancel",
+        "sendQuote": "Send Quote"
+      },
+      "selectContainerForBox": {
+        "title": "Select container for box #BOX-{{id}}",
+        "loading": "Loading containers...",
+        "noneTitle": "No containers available",
+        "noneSubtitle": "Create a container from the Containers tab to pack.",
+        "select": "Select"
+      },
+      "createContainer": {
+        "title": "Create container",
+        "question": "Do you want to create a new container?",
+        "creating": "Creating...",
+        "accept": "Accept",
+        "cancel": "Cancel"
+      },
+      "containerBoxes": {
+        "title": "Boxes of container #CONT-{{id}}",
+        "loading": "Loading boxes...",
+        "noneTitle": "No boxes associated to this container",
+        "noneSubtitle": "When you assign boxes to this container they will appear here.",
+        "unpack": "Unpack",
+        "viewOrders": "View orders"
+      },
+      "deleteContainer": {
+        "title": "Delete container",
+        "question": "Are you sure you want to delete container #CONT-{{id}}? This action can't be undone.",
+        "deleting": "Deleting...",
+        "delete": "Delete",
+        "cancel": "Cancel"
+      },
+      "createBox": {
+        "title": "Create box",
+        "question": "Do you want to create a new box?",
+        "creating": "Creating...",
+        "accept": "Accept",
+        "cancel": "Cancel"
+      },
+      "boxOrders": {
+        "title": "Orders of box #BOX-{{id}}",
+        "loading": "Loading orders...",
+        "noneTitle": "No orders associated to this box",
+        "noneSubtitle": "When you assign orders to this box they will appear here.",
+        "view": "View"
+      },
+      "selectBoxForOrder": {
+        "title": "Select box for order #ORD-{{id}}",
+        "loading": "Loading boxes...",
+        "noneTitle": "No boxes available",
+        "noneSubtitle": "Create a box from the Boxes tab to pack.",
+        "select": "Select"
+      },
+      "deleteBox": {
+        "title": "Delete box",
+        "question": "Are you sure you want to delete box #BOX-{{id}}? This action can't be undone.",
+        "deleting": "Deleting...",
+        "delete": "Delete",
+        "cancel": "Cancel"
+      }
+    },
+    "toasts": {
+      "boxCreateErrorTitle": "Box couldn't be created",
+      "boxCreateErrorDesc": "Try again in a few seconds.",
+      "boxCreatedTitle": "Box created",
+      "boxCreatedDesc": "The box was created successfully.",
+      "boxesLoadErrorTitle": "Boxes couldn't be loaded",
+      "boxesLoadErrorDesc": "Try again later.",
+      "containerCreateErrorTitle": "Container couldn't be created",
+      "containerCreateErrorDesc": "Try again in a few seconds.",
+      "containerCreatedTitle": "Container created",
+      "containerCreatedDesc": "The container was created successfully.",
+      "containersLoadErrorTitle": "Containers couldn't be loaded",
+      "containersLoadErrorDesc": "Try again later.",
+      "containerInvalidTitle": "Invalid container",
+      "containerInvalidDesc": "Container ID couldn't be determined.",
+      "notAllowedTitle": "Not allowed",
+      "assignBoxNotAllowedDesc": "You can't assign boxes to a shipped container.",
+      "assignBoxErrorTitle": "Container not assigned",
+      "assignBoxErrorDesc": "Try again later.",
+      "boxAssignedTitle": "Box assigned",
+      "boxAssignedDesc": "Box #BOX-{{boxId}} assigned to container #CONT-{{containerId}}.",
+      "unexpectedErrorTitle": "Unexpected error",
+      "unexpectedErrorDesc": "Try again later.",
+      "boxUnpackErrorTitle": "Couldn't unpack",
+      "boxUnpackNotAllowedDesc": "You can't unpack a box from a shipped container.",
+      "boxUnpackedTitle": "Box unpacked",
+      "boxUnpackedDesc": "Orders and box #BOX-{{boxId}} released.",
+      "orderAssignBoxInvalidTitle": "Invalid box",
+      "orderAssignBoxInvalidDesc": "Box ID couldn't be determined.",
+      "orderAssignNotAllowedDesc": "You can't pack into a shipped box.",
+      "orderAssignedTitle": "Order assigned",
+      "orderAssignedDesc": "Order #ORD-{{orderId}} assigned to box {{boxId}}.",
+      "orderUnpackErrorTitle": "Couldn't unpack",
+      "orderNoBoxTitle": "Order without box",
+      "orderNoBoxDesc": "This order has no box assigned.",
+      "orderUnpackNotAllowedDesc": "You can't unpack orders from a shipped container.",
+      "orderUnpackedTitle": "Order unpacked",
+      "orderUnpackedDesc": "Order #ORD-{{orderId}} released from box.",
+      "containerSendNotAllowedDesc": "You can't delete a shipped container.",
+      "containerDeletedTitle": "Container deleted",
+      "containerDeletedDesc": "The container was deleted successfully.",
+      "containerDeleteErrorTitle": "Container couldn't be deleted",
+      "boxDeletedTitle": "Box deleted",
+      "boxDeletedDesc": "The box was deleted successfully.",
+      "boxDeleteErrorTitle": "Box couldn't be deleted",
+      "orderPdfMissingTitle": "No PDF",
+      "orderPdfMissingDesc": "No PDF available for this order.",
+      "boxDeleteIdInvalidTitle": "Couldn't delete",
+      "boxDeleteIdInvalidDesc": "Invalid box ID.",
+      "containerDeleteIdInvalidDesc": "Invalid container ID."
+    }
+  }
   }
 
 }

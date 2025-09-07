@@ -67,10 +67,10 @@ import ChinaOrdersTabContent from '@/components/china/ChinaOrdersTabContent';
 // html2canvas se importará dinámicamente para evitar errores de SSR
 
 // Lazy load components pesados
-const LazyExportButton = dynamicImport(() => Promise.resolve(({ onClick }: { onClick: () => void }) => (
+const LazyExportButton = dynamicImport(() => Promise.resolve(({ onClick, label }: { onClick: () => void; label: string }) => (
   <Button variant="outline" size="sm" onClick={onClick}>
     <Download className="w-4 h-4 mr-2" />
-    Exportar a PDF
+    {label}
   </Button>
 )), { ssr: false });
 
@@ -443,7 +443,7 @@ export default function PedidosPage() {
       const file = files[0];
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
+        alert(t('admin.orders.alerts.onlyImages'));
         return;
       }
       setNewOrderData((prev) => ({ ...prev, productImage: file }));
@@ -456,7 +456,7 @@ export default function PedidosPage() {
       const file = e.target.files[0];
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
+        alert(t('admin.orders.alerts.onlyImages'));
         return;
       }
       setNewOrderData((prev) => ({ ...prev, productImage: file }));
@@ -532,20 +532,20 @@ export default function PedidosPage() {
       };
 
       const pedidoTable: [string, string][] = [
-        ['ID Pedido', `${numeroPedido}`],
-        ['Cliente ID', `${newOrderData.client_id}`],
-        ['Nombre de Usuario', `${newOrderData.client_name || '-'}`],
-        ['Fecha', `${fechaPedidoLegible}`],
-        ['Tipo de Envío', `${newOrderData.deliveryType}`],
-        ['Entrega en Venezuela', `${newOrderData.deliveryVenezuela}`],
-        ['Producto', `${newOrderData.productName}`],
-        ['Cantidad', `${newOrderData.quantity}`],
-        ['Presupuesto Estimado', `$${newOrderData.estimatedBudget}`],
-        ['Descripción', newOrderData.description || '-'],
-        ['Especificaciones', newOrderData.specifications || '-'],
+        [t('admin.orders.pdf.fields.orderId'), `${numeroPedido}`],
+        [t('admin.orders.pdf.fields.clientId'), `${newOrderData.client_id}`],
+        [t('admin.orders.pdf.fields.userName'), `${newOrderData.client_name || t('admin.orders.common.unknown')}`],
+        [t('admin.orders.pdf.fields.date'), `${fechaPedidoLegible}`],
+        [t('admin.orders.pdf.fields.shippingType'), `${newOrderData.deliveryType}`],
+        [t('admin.orders.pdf.fields.deliveryVzla'), `${newOrderData.deliveryVenezuela}`],
+        [t('admin.orders.pdf.fields.product'), `${newOrderData.productName}`],
+        [t('admin.orders.pdf.fields.quantity'), `${newOrderData.quantity}`],
+        [t('admin.orders.pdf.fields.estimatedBudget'), `$${newOrderData.estimatedBudget}`],
+        [t('admin.orders.pdf.fields.description'), newOrderData.description || t('admin.orders.common.unknown')],
+        [t('admin.orders.pdf.fields.specifications'), newOrderData.specifications || t('admin.orders.common.unknown')],
       ];
       if (newOrderData.requestType === 'link') {
-        pedidoTable.push(['URL', newOrderData.productUrl || '-']);
+        pedidoTable.push([t('admin.orders.pdf.fields.url'), newOrderData.productUrl || t('admin.orders.common.unknown')]);
       }
 
       // Header
@@ -553,10 +553,10 @@ export default function PedidosPage() {
       doc.rect(0, 0, pageWidth, 35, 'F');
       doc.setFontSize(24);
       doc.setTextColor(255, 255, 255);
-      doc.text('RESUMEN DE PEDIDO', pageWidth / 2, 22, { align: 'center' });
+  doc.text(t('admin.orders.pdf.summaryTitle'), pageWidth / 2, 22, { align: 'center' });
       doc.setFontSize(10);
-      doc.text(`Pedido: #${numeroPedido}`, pageWidth - margin, 15, { align: 'right' });
-      doc.text(`Fecha: ${fechaPedidoLegible}`, pageWidth - margin, 21, { align: 'right' });
+  doc.text(`${t('admin.orders.pdf.order')}: #${numeroPedido}`, pageWidth - margin, 15, { align: 'right' });
+  doc.text(`${t('admin.orders.pdf.date')}: ${fechaPedidoLegible}`, pageWidth - margin, 21, { align: 'right' });
 
       let currentY = 50;
 
@@ -575,7 +575,7 @@ export default function PedidosPage() {
         const tableStartX = imgX + imgWidth + 15;
         const tableWidth = pageWidth - tableStartX - margin;
         autoTable(doc, {
-          head: [['Campo', 'Valor']],
+          head: [[t('admin.orders.pdf.field'), t('admin.orders.pdf.value')]],
           body: pedidoTable,
           startY: currentY,
           margin: { left: tableStartX, right: margin },
@@ -585,7 +585,7 @@ export default function PedidosPage() {
       } else {
         // Tabla completa
         autoTable(doc, {
-          head: [['Campo', 'Información']],
+          head: [[t('admin.orders.pdf.field'), t('admin.orders.pdf.information')]],
           body: pedidoTable,
           startY: currentY,
           margin: { left: margin, right: margin },
@@ -596,7 +596,7 @@ export default function PedidosPage() {
           const finalY = (doc as any).lastAutoTable?.finalY + 12;
           doc.setFontSize(10);
           doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-          doc.text('URL del Producto:', margin, finalY + 6);
+          doc.text(`${t('admin.orders.pdf.productUrl')}:`, margin, finalY + 6);
           doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
           const urlText = (doc as any).splitTextToSize(newOrderData.productUrl, pageWidth - (margin * 2));
           doc.text(urlText, margin, finalY + 14);
@@ -610,7 +610,7 @@ export default function PedidosPage() {
       doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
       doc.setFontSize(8);
       doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-      doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+  doc.text(`${t('admin.orders.pdf.generatedAt')}: ${new Date().toLocaleString()}`, margin, footerY + 13);
 
       // Subir PDF a Supabase Storage
       const pdfBlob = doc.output('blob');
@@ -653,7 +653,7 @@ export default function PedidosPage() {
               .from('orders')
               .insert([pedidoInsert]);
             if (dbInsertError) {
-              alert('Error al guardar el pedido en la base de datos.');
+              alert(t('admin.orders.messages.createError'));
             } else {
               setShowSuccessAnimation(true);
               setTimeout(() => {
@@ -688,8 +688,8 @@ export default function PedidosPage() {
     pdfContent.style.width = '210mm';
     pdfContent.style.padding = '10mm';
 
-    const title = document.createElement('h1');
-    title.innerText = 'Reporte de Pedidos';
+  const title = document.createElement('h1');
+  title.innerText = t('admin.orders.export.reportTitle');
     title.style.fontSize = '24px';
     title.style.marginBottom = '20px';
     pdfContent.appendChild(title);
@@ -774,7 +774,7 @@ export default function PedidosPage() {
     
     pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
     
-    pdf.save("reporte_pedidos.pdf");
+  pdf.save(t('admin.orders.export.fileName'));
   }, [filteredOrders]);
 
   // Funciones para manejo de modales y datos
@@ -817,7 +817,7 @@ export default function PedidosPage() {
           const json = await res.json();
           if (json?.error) message += ` - ${json.error}`;
         } catch {}
-        throw new Error(`Error al actualizar: ${message}`);
+        throw new Error(`${t('admin.orders.messages.updateError')}: ${message}`);
       }
 
       // Optimistic update local
@@ -829,20 +829,20 @@ export default function PedidosPage() {
       refetchStats();
     } catch (e) {
       console.error(e);
-      alert('No se pudo actualizar el pedido.');
+      alert(t('admin.orders.messages.updateError'));
     }
   };
 
   const handleDeleteOrder = async () => {
     if (!selectedOrder) return;
-    const confirm = window.confirm(`¿Estás seguro de que quieres eliminar el pedido ${selectedOrder.id}?`);
+  const confirm = window.confirm(t('admin.orders.messages.deleteConfirm', { id: selectedOrder.id }));
     if (!confirm) return;
 
     try {
       const res = await fetch(`/api/admin/orders/${encodeURIComponent(selectedOrder.id)}`, { method: 'DELETE', cache: 'no-store' });
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(`Error al eliminar: ${res.status} ${text}`);
+        throw new Error(`${t('admin.orders.messages.deleteError')}: ${res.status} ${text}`);
       }
       // Optimistic UI: eliminar del estado local
       setOrders(prev => prev.filter(o => o.id !== selectedOrder.id));
@@ -852,7 +852,7 @@ export default function PedidosPage() {
       refetchStats();
     } catch (e) {
       console.error(e);
-      alert('No se pudo eliminar el pedido.');
+      alert(t('admin.orders.messages.deleteError'));
     }
   };
 
@@ -1020,13 +1020,13 @@ export default function PedidosPage() {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="mb-8 flex flex-nowrap overflow-x-auto md:flex-wrap md:overflow-x-visible gap-3 rounded-2xl p-2 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
               <TabsTrigger value="admin" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
-                <Settings className="w-4 h-4" /> Admin
+                <Settings className="w-4 h-4" /> {t('sidebar.management')}
               </TabsTrigger>
               <TabsTrigger value="venezuela" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
-                <MapPin className="w-4 h-4" /> Venezuela
+                <MapPin className="w-4 h-4" /> {t('admin.orders.vzlaTabLabel')}
               </TabsTrigger>
               <TabsTrigger value="china" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
-                <Plane className="w-4 h-4" /> China
+                <Plane className="w-4 h-4" /> {t('admin.orders.chinaTabLabel')}
               </TabsTrigger>
               {/* Pestaña Cliente eliminada */}
             </TabsList>
@@ -1256,7 +1256,7 @@ export default function PedidosPage() {
                     <Package className="w-4 h-4 mr-2 text-blue-600" />
 {t('admin.orders.form.productNameLabel')}
                   </Label>
-                  <Input value={newOrderData.productName} onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })} placeholder="E.g: iPhone 15 Pro Max" />
+                  <Input value={newOrderData.productName} onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })} placeholder={t('admin.orders.form.productNamePlaceholder')} />
                 </div>
 
                 <div className="space-y-3">
@@ -1310,7 +1310,7 @@ export default function PedidosPage() {
                     <div className="space-y-2">
                       <Label htmlFor="productUrl">{t('admin.orders.form.productUrl')} *</Label>
                       <Input id="productUrl" type="url" value={newOrderData.productUrl || ''} onChange={(e) => setNewOrderData({ ...newOrderData, productUrl: e.target.value })} placeholder={t('admin.orders.form.productUrlPlaceholder')} />
-                      {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (<p className="text-xs text-red-500">La URL no es válida.</p>)}
+                      {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (<p className="text-xs text-red-500">{t('admin.orders.form.invalidUrl')}</p>)}
                     </div>
                   )}
 
@@ -1320,7 +1320,7 @@ export default function PedidosPage() {
                       {newOrderData.productImage ? (
                         <div className="relative">
                           <div className="border-2 border-slate-200 rounded-xl overflow-hidden bg-white">
-                            <img src={URL.createObjectURL(newOrderData.productImage)} alt="Producto" className="w-full h-48 object-cover" />
+                            <img src={URL.createObjectURL(newOrderData.productImage)} alt={t('admin.orders.form.productImageAlt')} className="w-full h-48 object-cover" />
                             <div className="p-3 flex gap-2">
                               <Button variant="outline" size="sm" onClick={() => document.getElementById('imageUpload')?.click()}><Upload className="w-4 h-4 mr-1" />{t('admin.orders.form.change')}</Button>
                               <Button variant="outline" size="sm" onClick={() => setNewOrderData({ ...newOrderData, productImage: undefined })} className="text-red-600"><X className="w-4 h-4 mr-1" />{t('admin.orders.form.remove')}</Button>
@@ -1392,8 +1392,8 @@ export default function PedidosPage() {
                   <Label htmlFor="estimatedBudget">{t('admin.orders.form.estimatedBudgetUsd')}</Label>
                   <Input id="estimatedBudget" type="number" min="0" value={newOrderData.estimatedBudget} onChange={(e) => {
                     const val = e.target.value; if (/^[0-9]*\.?[0-9]{0,2}$/.test(val)) { setNewOrderData({ ...newOrderData, estimatedBudget: val }); }
-                  }} placeholder="Ej: 500" />
-                  {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (<p className="text-xs text-red-500">El presupuesto estimado debe ser un monto válido.</p>)}
+                  }} placeholder={t('admin.orders.form.estimatedBudgetPlaceholder')} />
+                  {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (<p className="text-xs text-red-500">{t('admin.orders.form.invalidBudget')}</p>)}
                 </div>
               </div>
             )}

@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,16 +51,23 @@ export default function ConfiguracionPage() {
     color: 'bg-red-500'
   };
 
-  // Estados del formulario
+  const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
+  // Estados del formulario (sincroniza idioma del contexto)
   const [formData, setFormData] = useState({
     nombre: roleData.nombre,
     email: roleData.email,
     telefono: roleData.telefono,
-    idioma: 'zh',
+    idioma: language,
     zonaHoraria: 'Asia/Shanghai',
     fotoPerfil: null as File | null,
     fotoPreview: '/images/logos/logo.png'
   });
+
+  // Mantener formData.idioma actualizado cuando cambia el contexto
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, idioma: language }));
+  }, [language]);
 
   // Estados de contraseña
   const [passwordData, setPasswordData] = useState({
@@ -92,6 +101,9 @@ export default function ConfiguracionPage() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'idioma' && ['es','en','zh'].includes(value)) {
+      setLanguage(value as 'es'|'en'|'zh');
+    }
   };
 
   const handlePasswordChange = (field: string, value: string) => {
@@ -269,15 +281,15 @@ export default function ConfiguracionPage() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="idioma">Idioma</Label>
+                          <Label htmlFor="idioma">{t('common.language') || 'Idioma'}</Label>
                           <Select value={formData.idioma} onValueChange={(value) => handleInputChange('idioma', value)}>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecciona un idioma" />
+                              <SelectValue placeholder={t('common.selectLanguage') || 'Selecciona un idioma'} />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="zh">🇨🇳 中文</SelectItem>
-                              <SelectItem value="en">🇺🇸 English</SelectItem>
-                              <SelectItem value="es">🇪🇸 Español</SelectItem>
+                              <SelectItem value="zh">🇨🇳 {t('common.chinese') || '中文'}</SelectItem>
+                              <SelectItem value="en">🇺🇸 {t('common.english') || 'English'}</SelectItem>
+                              <SelectItem value="es">🇪🇸 {t('common.spanish') || 'Español'}</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>

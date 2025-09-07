@@ -3,21 +3,39 @@
 import React, { useEffect, useState } from "react";
 import { Mail, Phone, Shield, Check } from "lucide-react";
 import ProgressDots from "@/components/ui/progress-dots";
-import { ANIMATION_CONTENTS } from "@/lib/constants/auth";
+import { ANIMATION_CONTENTS } from "@/lib/constants/auth"; // se mantiene por compat si otros usan
+import { useTranslation } from "@/hooks/useTranslation";
 
 const ANIMATION_ICONS = [Shield, Mail, Phone, Check];
 
 export default function AnimatedPanel() {
   const [animationStep, setAnimationStep] = useState<number>(0);
+  const { t } = useTranslation();
+
+  // Longitud basada en slides traducidos para que no dependa de constante estática
+  // Número de slides definido (mantener sincronizado con traducciones)
+  const slideCount = 4; // si añades más, actualiza este valor
+  const slidesLength = slideCount;
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setAnimationStep((prev) => (prev + 1) % ANIMATION_CONTENTS.length);
+      setAnimationStep((prev) => (prev + 1) % slideCount);
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [slideCount]);
 
-  const getCurrentContent = () => ANIMATION_CONTENTS[animationStep];
+  const getCurrentContent = () => {
+    const titleKey = `passwordResetSide.slides.${animationStep}.title`;
+    const descKey = `passwordResetSide.slides.${animationStep}.desc`;
+    const title = t(titleKey);
+    const desc = t(descKey);
+    // Si devuelve la clave (fallback), usar constantes originales
+    if (title === titleKey || desc === descKey) {
+      const fallback = ANIMATION_CONTENTS[animationStep] || { title: '', desc: '' };
+      return fallback;
+    }
+    return { title, desc };
+  };
   const handleDotClick = (index: number): void => setAnimationStep(index);
   const CurrentIcon = ANIMATION_ICONS[animationStep];
 
@@ -40,7 +58,7 @@ export default function AnimatedPanel() {
           </p>
         </div>
         <div className="progress-dots-wrapper">
-          <ProgressDots total={ANIMATION_CONTENTS.length} current={animationStep} onDotClick={handleDotClick} />
+          <ProgressDots total={slidesLength} current={animationStep} onDotClick={handleDotClick} />
         </div>
       </div>
     </div>

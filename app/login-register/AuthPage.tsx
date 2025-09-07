@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 import Lottie from "react-lottie";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
@@ -16,6 +17,7 @@ export default function AuthPage({
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
   const [isReturningFromPasswordReset, setIsReturningFromPasswordReset] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   // Usar el hook optimizado para cargar la animación
   const { animationData: defaultOptions, isLoading, hasError } = useOptimizedLottie({
@@ -93,17 +95,17 @@ export default function AuthPage({
     <div className="auth-wrapper">
       {/* Mobile/Tablet Tabs Navigation */}
       <div className="auth-tabs">
-        <button 
+        <button
           className={`auth-tab ${isLogin ? 'active' : ''}`}
           onClick={() => handleToggle(true)}
         >
-          Iniciar Sesión
+          {t('auth.common.login')}
         </button>
-        <button 
+        <button
           className={`auth-tab ${!isLogin ? 'active' : ''}`}
           onClick={() => handleToggle(false)}
         >
-          Registrarse
+          {t('auth.common.register')}
         </button>
       </div>
 
@@ -123,13 +125,10 @@ export default function AuthPage({
               <div className="lottie-panel-icon">
                 <OptimizedLottie height={120} width={120} />
               </div>
-              <h2 style={{ fontWeight:"bold", fontSize: "1.25rem" }}>¡Bienvenido de Nuevo!</h2>
-              <p className="text-sm">
-                Para mantenerte conectado, por favor inicia sesión con tu
-                información personal.
-              </p>
+              <h2 style={{ fontWeight:"bold", fontSize: "1.25rem" }}>{t('auth.panels.welcomeBack')}</h2>
+              <p className="text-sm">{t('auth.panels.welcomeMessage')}</p>
               <button className="ghost-button" onClick={() => handleToggle(true)}>
-                Iniciar Sesión
+                {t('auth.common.login')}
               </button>
             </div>
 
@@ -137,10 +136,10 @@ export default function AuthPage({
               <div className="lottie-panel-icon">
                 <OptimizedLottie height={120} width={120} />
               </div>
-              <h2 style={{ fontWeight: "bold", fontSize: "1.25rem" }}>¡Hola Amigo!</h2>
-              <p className="text-sm">Introduce tus datos personales y comienza tu viaje con nosotros.</p>
+              <h2 style={{ fontWeight: "bold", fontSize: "1.25rem" }}>{t('auth.panels.helloFriend')}</h2>
+              <p className="text-sm">{t('auth.panels.helloMessage')}</p>
               <button className="ghost-button" onClick={() => handleToggle(false)}>
-                Registrarse
+                {t('auth.common.register')}
               </button>
             </div>
           </div>
@@ -156,8 +155,8 @@ export default function AuthPage({
                 <div className="lottie-mobile-icon">
                   <OptimizedLottie height={80} width={80} />
                 </div>
-                <h2>¡Bienvenido de Nuevo!</h2>
-                <p>Para mantenerte conectado, por favor inicia sesión con tu información personal.</p>
+                <h2>{t('auth.login.welcomeBack')}</h2>
+                <p>{t('auth.login.welcomeMessage')}</p>
               </div>
               <LoginForm onNavigateToPasswordReset={onNavigateToPasswordReset} />
             </div>
@@ -167,8 +166,8 @@ export default function AuthPage({
                 <div className="lottie-mobile-icon">
                   <OptimizedLottie height={80} width={80} />
                 </div>
-                <h2>¡Hola Amigo!</h2>
-                <p>Introduce tus datos personales y comienza tu viaje con nosotros.</p>
+                <h2>{t('auth.register.helloFriend')}</h2>
+                <p>{t('auth.register.helloMessage')}</p>
               </div>
               <RegisterForm />
             </div>

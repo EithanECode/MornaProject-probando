@@ -54,6 +54,7 @@ import {
   Target,
   X,
   Filter
+  ,Download
 } from 'lucide-react';
 
 // Rutas de animaciones Lottie (desde /public)
@@ -995,18 +996,18 @@ export default function MisPedidosPage() {
 
   const getStepTitle = (step: number) => {
     switch (step) {
-      case 1: return 'Información del Producto';
-      case 2: return 'Detalles del Envío';
-      case 3: return 'Resumen y Confirmación';
+      case 1: return t('client.recentOrders.newOrder.stepTitles.productInfo');
+      case 2: return t('client.recentOrders.newOrder.stepTitles.shippingDetails');
+      case 3: return t('client.recentOrders.newOrder.stepTitles.summaryConfirmation');
       default: return '';
     }
   };
 
   const getStepDescription = (step: number) => {
     switch (step) {
-      case 1: return 'Cuéntanos qué producto deseas importar';
-      case 2: return 'Configura cómo quieres recibir tu pedido';
-      case 3: return 'Revisa y confirma tu solicitud';
+      case 1: return t('client.recentOrders.newOrder.stepDescriptions.productInfo');
+      case 2: return t('client.recentOrders.newOrder.stepDescriptions.shippingDetails');
+      case 3: return t('client.recentOrders.newOrder.stepDescriptions.summaryConfirmation');
       default: return '';
     }
   };
@@ -1078,7 +1079,7 @@ export default function MisPedidosPage() {
                     </DialogTitle>
                   </div>
                   <DialogDescription className="text-lg text-slate-600 mt-2">
-                    Sigue los pasos para crear tu solicitud de importación
+                    {t('client.recentOrders.newOrder.dialogDescription')}
                   </DialogDescription>
                 </DialogHeader>
 
@@ -1138,14 +1139,14 @@ export default function MisPedidosPage() {
                             <Check className="w-12 h-12 text-white" />
                           </div>
                           <h3 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                            ¡Pedido Creado!
+                            {t('client.recentOrders.newOrder.success.title')}
                           </h3>
-                          <p className="text-slate-600 text-lg">Tu solicitud ha sido enviada exitosamente</p>
+                          <p className="text-slate-600 text-lg">{t('client.recentOrders.newOrder.success.message')}</p>
                           <Button
                             onClick={() => setShowSuccessAnimation(false)}
                             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all duration-300 transform hover:scale-105 shadow-lg mt-4"
                           >
-                            ¡Perfecto!
+                            {t('client.recentOrders.newOrder.success.button')}
                           </Button>
                         </div>
                       </div>
@@ -2033,11 +2034,8 @@ export default function MisPedidosPage() {
 
                 {/* Acciones */}
                 <div className="flex gap-2 pt-4 border-t">
-                  <Button className="flex-1" onClick={() => selectedOrder && openTrackingModal(selectedOrder)}>
-                    <MapPin className="h-4 w-4 mr-2" />
-                    {t('client.recentOrders.modal.tracking')}
-                  </Button>
                   <Button variant="outline" className="flex-1">
+                    <Download className="h-4 w-4 mr-2" />
                     {t('client.recentOrders.modal.downloadInvoice')}
                   </Button>
                 </div>
