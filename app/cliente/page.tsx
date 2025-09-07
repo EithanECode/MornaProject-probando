@@ -168,10 +168,10 @@ export default function DashboardPage() {
 
   // Variables de pedidos
   const totalPedidos = clientOrders?.length ?? 0;
-  const pedidosPendientes = clientOrders?.filter(order => order.state === 1).length ?? 0;
-  const pedidosEnTransito = clientOrders?.filter(order => order.state === 2).length ?? 0;
-  const pedidosCompletados = clientOrders?.filter(order => order.state === 3).length ?? 0;
-  const totalGastado = clientOrders?.reduce((acc, order) => acc + (order.estimatedBudget || 0), 0) ?? 0;
+  const pedidosPendientes = clientOrders?.filter(order => order.state >= 1 && order.state <= 5).length ?? 0;
+  const pedidosEnTransito = clientOrders?.filter(order => order.state >= 6 && order.state <= 12).length ?? 0;
+  const pedidosCompletados = clientOrders?.filter(order => order.state === 13).length ?? 0;
+  const totalGastado = clientOrders?.filter(order => order.state >= 4).reduce((acc, order) => acc + (order.totalQuote || 0), 0) ?? 0;
 
   // Datos de los 3 pedidos más recientes
   const pedidosRecientes = clientOrders?.slice(-3).reverse() ?? [];
@@ -246,7 +246,7 @@ export default function DashboardPage() {
           {/* Dashboard Principal */}
           <div className="space-y-6 md:space-y-6 lg:space-y-8">
             {/* Estadísticas Principales */}
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-blue-800">{t('client.dashboard.totalOrders')}</CardTitle>
@@ -259,6 +259,22 @@ export default function DashboardPage() {
                   <p className="text-xs text-blue-700">{t('client.dashboard.ordersPlaced')}</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                     <div className="bg-blue-500 h-2 rounded-full" style={{width: `100%`}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-yellow-800">Pendientes</CardTitle>
+                  <div className="p-2 bg-yellow-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <Clock className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-900">{pedidosPendientes}</div>
+                  <p className="text-xs text-yellow-700">Pedidos en proceso</p>
+                  <div className="mt-2 w-full bg-yellow-200 rounded-full h-2">
+                    <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / totalPedidos) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -279,6 +295,22 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
+              <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-orange-800">Completados</CardTitle>
+                  <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
+                    <CheckCircle className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{pedidosCompletados}</div>
+                  <p className="text-xs text-orange-700">{t('client.dashboard.ordersDelivered')}</p>
+                  <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
+                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(pedidosCompletados / totalPedidos) * 100}%`}}></div>
+                  </div>
+                </CardContent>
+              </Card>
+
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-purple-800">{t('client.dashboard.totalSpent')}</CardTitle>
@@ -291,22 +323,6 @@ export default function DashboardPage() {
                   <p className="text-xs text-purple-700">{t('client.dashboard.totalInvestment')}</p>
                   <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
                     <div className="bg-purple-500 h-2 rounded-full" style={{width: `100%`}}></div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-orange-800">{t('client.dashboard.completed')}</CardTitle>
-                  <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
-                    <CheckCircle className="h-4 w-4 text-white" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{pedidosCompletados}</div>
-                  <p className="text-xs text-orange-700">{t('client.dashboard.ordersDelivered')}</p>
-                  <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
-                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(pedidosCompletados / totalPedidos) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>

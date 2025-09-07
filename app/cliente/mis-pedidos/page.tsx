@@ -353,6 +353,32 @@ export default function MisPedidosPage() {
     if (clientId) fetchOrders();
   }, [clientId]);
 
+  // Agregar realtime para pedidos del cliente
+  useEffect(() => {
+    if (!clientId) return;
+
+    const ordersChannel = supabase
+      .channel(`client-orders-mis-pedidos-${clientId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'orders',
+          filter: `client_id=eq.${clientId}`,
+        },
+        (payload) => {
+          console.log('Realtime: Mis pedidos changed', payload);
+          fetchOrders();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ordersChannel);
+    };
+  }, [clientId, supabase]);
+
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
       order.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
