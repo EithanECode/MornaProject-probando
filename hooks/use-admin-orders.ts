@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { PENDING_STATES, TRANSIT_STATES, DELIVERED_STATES } from '@/lib/constants/orderStates';
 
 export interface AdminOrder {
   id: string;
@@ -23,18 +24,12 @@ export function useAdminOrders() {
       setLoading(true);
       setError(null);
 
-      const [
-        totalActivosRes,
-        pendientesRes,
-        transitoRes,
-        entregadosRes,
-        ingresosRes,
-      ] = await Promise.all([
-        supabase.from('orders').select('id', { count: 'exact', head: true }).neq('state', 5),
-        supabase.from('orders').select('id', { count: 'exact', head: true }).eq('state', 1),
-        supabase.from('orders').select('id', { count: 'exact', head: true }).eq('state', 2),
-        supabase.from('orders').select('id', { count: 'exact', head: true }).eq('state', 5),
-        supabase.from('orders').select('estimatedBudget').eq('state', 1),
+      const [totalActivosRes, pendientesRes, transitoRes, entregadosRes, ingresosRes] = await Promise.all([
+        supabase.from('orders').select('id', { count: 'exact', head: true }).in('state', [...PENDING_STATES, ...TRANSIT_STATES, ...DELIVERED_STATES]),
+        supabase.from('orders').select('id', { count: 'exact', head: true }).in('state', PENDING_STATES as any),
+        supabase.from('orders').select('id', { count: 'exact', head: true }).in('state', TRANSIT_STATES as any),
+        supabase.from('orders').select('id', { count: 'exact', head: true }).in('state', DELIVERED_STATES as any),
+        supabase.from('orders').select('estimatedBudget').in('state', PENDING_STATES as any),
       ]);
 
       if (totalActivosRes.error) throw totalActivosRes.error;

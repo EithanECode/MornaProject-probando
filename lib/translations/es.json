@@ -1347,6 +1347,7 @@
       "title": "Gestión de Pedidos",
       "subtitle": "Administra y rastrea todos los pedidos",
   "chinaTabLabel": "China",
+  "vzlaTabLabel": "Venezuela",
       "listTitle": "Lista de Pedidos",
       "listDescription": "{{count}} pedidos encontrados",
       "search": "Buscar pedidos...",

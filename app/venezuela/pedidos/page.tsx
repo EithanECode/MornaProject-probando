@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useTheme } from 'next-themes';
 import Sidebar from '@/components/layout/Sidebar';
@@ -11,8 +11,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertTriangle, Boxes, Calendar, CheckCircle, Clock, Eye, Filter, List, Package, RefreshCw, Search, Send } from 'lucide-react';
+import { AlertTriangle, Boxes, Calendar, CheckCircle, Clock, Eye, Filter, List, Package, Search, Send } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useRealtimeVzla } from '@/hooks/use-realtime-vzla';
+import { useRealtimeVzlaBoxesContainers } from '@/hooks/use-realtime-vzla-boxes-containers';
 export default function VenezuelaPedidosPage() {
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
@@ -80,10 +82,65 @@ export default function VenezuelaPedidosPage() {
     }
   };
 
+  // Obtener usuario y montar + primera carga
   useEffect(() => {
     setMounted(true);
     fetchOrders();
   }, []);
+
+  /* Realtime Orders (solo pestaña pedidos) */
+  const handleRealtimeOrdersUpdate = useCallback(() => {
+    // Refresca pedidos siempre
+    fetchOrders();
+    // Si el usuario está mirando cajas o contenedores, refrescamos conteos indirectamente
+    if (activeTab === 'cajas') {
+      fetchBoxes();
+    } else if (activeTab === 'contenedores') {
+      fetchContainers();
+    }
+    // Si hay un modal de caja abierto, refrescar contenido específico
+    if (modalVerPedidos.open && modalVerPedidos.boxId) {
+      fetchOrdersByBoxId(modalVerPedidos.boxId);
+    }
+    if (modalVerCajas.open && modalVerCajas.containerId) {
+      fetchBoxesByContainerId(modalVerCajas.containerId);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, modalVerPedidos.open, modalVerPedidos.boxId, modalVerCajas.open, modalVerCajas.containerId]);
+
+  // Obtener id del empleado para hook realtime
+  const [empleadoId, setEmpleadoId] = useState<string | undefined>();
+  useEffect(() => {
+    (async () => {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.id) setEmpleadoId(user.id);
+      } catch (e) {
+        console.warn('[Realtime Vzla] No se pudo obtener usuario para realtime');
+      }
+    })();
+  }, []);
+
+  useRealtimeVzla(handleRealtimeOrdersUpdate, empleadoId);
+
+  // Realtime para cajas y contenedores: activo siempre que exista empleadoId
+  const handleRealtimeBoxesUpdate = useCallback(() => {
+    if (activeTab === 'cajas') fetchBoxes();
+    if (modalVerPedidos.open && modalVerPedidos.boxId) fetchOrdersByBoxId(modalVerPedidos.boxId);
+    // Si se está mostrando contenedor con cajas
+    if (modalVerCajas.open && modalVerCajas.containerId) fetchBoxesByContainerId(modalVerCajas.containerId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, modalVerPedidos.open, modalVerPedidos.boxId, modalVerCajas.open, modalVerCajas.containerId]);
+
+  const handleRealtimeContainersUpdate = useCallback(() => {
+    if (activeTab === 'contenedores') fetchContainers();
+    // Si modal abierto de contenedor: refrescar cajas y pedidos de cajas
+    if (modalVerCajas.open && modalVerCajas.containerId) fetchBoxesByContainerId(modalVerCajas.containerId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, modalVerCajas.open, modalVerCajas.containerId]);
+
+  useRealtimeVzlaBoxesContainers(handleRealtimeBoxesUpdate, handleRealtimeContainersUpdate, !!empleadoId);
 
   // Carga cajas/contenedores al cambiar de pestaña
   useEffect(() => {
@@ -383,9 +440,7 @@ export default function VenezuelaPedidosPage() {
                         <SelectItem value="processing">{t('venezuela.pedidos.filters.processing')}</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="outline" className="h-10 flex items-center gap-2" onClick={fetchOrders} disabled={loading}>
-                      <RefreshCw className="w-4 h-4" /> {loading ? '...' : t('venezuela.pedidos.refresh')}
-                    </Button>
+                    {/* Botón de refrescar eliminado: realtime activo */}
                   </div>
                 </div>
               </CardHeader>
@@ -644,9 +699,7 @@ export default function VenezuelaPedidosPage() {
                       onChange={(e) => setFiltroCaja(e.target.value)}
                       className="h-10 w-56 md:w-64 px-3"
                     />
-                    <Button variant="outline" size="sm" onClick={fetchBoxes} disabled={boxesLoading} className="h-10 flex items-center gap-2">
-                      <RefreshCw className="w-4 h-4" /> {boxesLoading ? '...' : t('venezuela.pedidos.refresh')}
-                    </Button>
+                    {/* Botón de refrescar eliminado: realtime activo */}
                   </div>
                 </div>
               </CardHeader>
@@ -772,9 +825,7 @@ export default function VenezuelaPedidosPage() {
                       onChange={(e) => setFiltroContenedor(e.target.value)}
                       className="h-10 w-56 md:w-64 px-3"
                     />
-                    <Button variant="outline" size="sm" onClick={fetchContainers} disabled={containersLoading} className="h-10 flex items-center gap-2">
-                      <RefreshCw className="w-4 h-4" /> {containersLoading ? '...' : t('venezuela.pedidos.refresh')}
-                    </Button>
+                    {/* Botón de refrescar eliminado: realtime activo */}
                   </div>
                 </div>
               </CardHeader>
@@ -829,7 +880,15 @@ export default function VenezuelaPedidosPage() {
                                 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50 transition-colors'
                                 : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50 transition-colors'
                             }`}>
-                              {stateNum === 1 ? t('venezuela.pedidos.containersBadges.new') : stateNum === 2 ? t('venezuela.pedidos.containersBadges.inTransit') : stateNum === 4 ? t('venezuela.pedidos.containersBadges.received') : t('venezuela.pedidos.containersBadges.state', { num: stateNum })}
+                              {stateNum === 1
+                                ? t('venezuela.pedidos.containersBadges.new')
+                                : stateNum === 2
+                                ? t('venezuela.pedidos.containersBadges.inTransit')
+                                : stateNum === 3
+                                ? 'viajando'
+                                : stateNum === 4
+                                ? t('venezuela.pedidos.containersBadges.received')
+                                : t('venezuela.pedidos.containersBadges.state', { num: stateNum })}
                             </Badge>
                             {/* Botón Recibido: visible solo cuando containers.state === 3 */}
                             {stateNum === 3 && (

@@ -14,6 +14,6 @@ export function useVzlaOrders() {
     if (error) throw new Error(error.message);
     return data;
   };
-  const { data, loading, error } = useSupabaseQuery(queryKey, queryFn);
-  return { data, loading, error };
+  const { data, loading, error, refetch, isStale } = useSupabaseQuery(queryKey, queryFn);
+  return { data, loading, error, refetch, isStale };
 }

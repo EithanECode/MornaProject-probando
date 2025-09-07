@@ -124,9 +124,13 @@ export default function ChinaDashboard() {
   
   // Variables de pedidos
   const totalPedidos = chinaOrders?.length ?? 0;
-  const pedidosPendientes = chinaOrders?.filter((order: any) => order.state === 1).length ?? 0;
-  const pedidosEnProceso = chinaOrders?.filter((order: any) => order.state === 2).length ?? 0;
-  const pedidosEnviados = chinaOrders?.filter((order: any) => order.state === 3).length ?? 0;
+  // Ajuste: para el panel China ignoramos state === 1 (creación) y comenzamos a contar desde 2
+  // Pendientes: estado 2 (revisado Venezuela, listo para acción China)
+  const pedidosPendientes = chinaOrders?.filter((order: any) => order.state === 2).length ?? 0;
+  // En proceso: estados 3 y 4 (cotizaciones y proceso / pago)
+  const pedidosEnProceso = chinaOrders?.filter((order: any) => order.state === 3 || order.state === 4).length ?? 0;
+  // Enviados: estados 5 a 8 solamente (no incluimos >8 para mantener rango solicitado)
+  const pedidosEnviados = chinaOrders?.filter((order: any) => order.state >= 5 && order.state <= 8).length ?? 0;
   const reputaciones = chinaOrders?.map((order: any) => order.reputation).filter((r: number | undefined) => typeof r === 'number') ?? [];
   const promedioReputacion = reputaciones.length > 0 ? (reputaciones.reduce((acc: number, r: number) => acc + r, 0) / reputaciones.length) : 0;
   const sumaPresupuestos = chinaOrders?.reduce((acc: number, order: any) => acc + (order.estimatedBudget || 0), 0) ?? 0;

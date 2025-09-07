@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { useVzlaContext } from '@/lib/VzlaContext';
@@ -122,12 +122,20 @@ const TRACKING_UPDATES = [
 export default function VenezuelaDashboard() {
   const { vzlaId } = useVzlaContext();
   const { t, language } = require('@/hooks/useTranslation').useTranslation();
-  const { data: vzlaOrdersRaw } = require('@/hooks/use-vzla-orders').useVzlaOrders();
+  const { data: vzlaOrdersRaw, refetch: refetchVzlaOrders } = require('@/hooks/use-vzla-orders').useVzlaOrders();
+  // Suscripción realtime
+  const { useRealtimeVzla } = require('@/hooks/use-realtime-vzla');
+  const handleRealtimeUpdate = useCallback(() => {
+    // Refrescamos los pedidos asignados a este usuario
+    refetchVzlaOrders();
+  }, [refetchVzlaOrders]);
+  useRealtimeVzla(handleRealtimeUpdate, vzlaId);
   const vzlaOrders = Array.isArray(vzlaOrdersRaw) ? vzlaOrdersRaw : [];
 
   const totalPedidos = vzlaOrders.filter((order: any) => order.asignedEVzla === vzlaId).length;
-  const pedidosPendientes = vzlaOrders.filter((order: any) => order.state === 1).length;
-  const pedidosTracking = vzlaOrders.filter((order: any) => order.state === 2).length;
+  // Estados: 1-4 Pendientes, 5-13 Seguimiento Activo
+  const pedidosPendientes = vzlaOrders.filter((order: any) => order.state >= 1 && order.state <= 4).length;
+  const pedidosTracking = vzlaOrders.filter((order: any) => order.state >= 5 && order.state <= 13).length;
   const reputaciones = vzlaOrders.filter((order: any) => order.asignedEVzla === vzlaId && typeof order.reputation === 'number').map((order: any) => order.reputation);
   const promedioReputacion = reputaciones.length > 0 ? reputaciones.reduce((acc: number, r: number) => acc + r, 0) / reputaciones.length : 0;
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -350,4 +358,4 @@ export default function VenezuelaDashboard() {
       </main>
     </div>
   );
-} 
+}

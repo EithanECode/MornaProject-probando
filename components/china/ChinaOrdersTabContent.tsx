@@ -34,9 +34,14 @@ interface BoxItem { boxes_id?: number | string; id?: number | string; box_id?: n
 interface ContainerItem { containers_id?: number | string; id?: number | string; container_id?: number | string; state?: number; creation_date?: string; created_at?: string; }
 
 function mapStateToEstado(state: number): Pedido['estado'] {
-  if (state >= 5) return 'enviado';
-  if (state === 4) return 'procesando';
-  if (state === 3) return 'cotizado';
+  // Rango solicitado:
+  // 2: pendiente
+  // 3-4: procesando (incluye cotizado previo, lo mostramos como procesando/cotizado según UI secundaria)
+  // 5-8: enviado
+  if (state >= 5 && state <= 8) return 'enviado';
+  if (state === 3 || state === 4) return state === 3 ? 'cotizado' : 'procesando';
+  if (state === 2) return 'pendiente';
+  // Cualquier otro (1 u >8) se tratará como pendiente u enviado extendido según futuras reglas, aquí fallback a pendiente
   return 'pendiente';
 }
 function getOrderBadge(stateNum?: number) {
@@ -149,8 +154,9 @@ export default function ChinaOrdersTabContent() {
       const res = await fetch(`/china/pedidos/api/orders?asignedEChina=${empleadoId}`);
       const data = await res.json();
       if(!Array.isArray(data)){ setPedidos([]); return; }
-      setPedidos(
-        data.map((order:any)=>({
+      const mappedPedidos = data
+        .filter((order:any)=> Number(order.state) !== 1) // Ocultamos state 1 (creación)
+        .map((order:any)=>({
           id: order.id,
           cliente: order.clientName || '',
           producto: order.productName || '',
@@ -164,8 +170,8 @@ export default function ChinaOrdersTabContent() {
           shippingType: order.shippingType || '',
           totalQuote: order.totalQuote ?? null,
           numericState: typeof order.state === 'number'? order.state : undefined,
-        }))
-      );
+        }));
+      setPedidos(mappedPedidos);
     } finally { setLoadingPedidos(false); }
   }
 
