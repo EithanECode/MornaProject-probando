@@ -35,6 +35,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/lib/LanguageContext';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAdminContext } from '@/lib/AdminContext';
 
 export default function ConfiguracionPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -44,6 +45,7 @@ export default function ConfiguracionPage() {
   const { toast } = useToast();
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();
+  const { setAdmin } = useAdminContext();
 
   // Datos específicos para admin
   const roleData = {
@@ -199,7 +201,7 @@ export default function ConfiguracionPage() {
       return;
     }
 
-    const fileName = `${user.id}-avatar.jpg`;
+    const fileName = `${user.id}-avatar-${Date.now()}.jpg`; // Agregar timestamp para evitar cache
     console.log('Nombre del archivo:', fileName);
 
     const { data, error } = await supabase.storage
@@ -241,6 +243,9 @@ export default function ConfiguracionPage() {
 
     // Actualizar el estado local
     setFormData(prev => ({ ...prev, fotoPreview: urlData.publicUrl }));
+
+    // Actualizar el contexto para que el sidebar se actualice inmediatamente
+    setAdmin({ userImage: urlData.publicUrl });
 
     toast({
       title: 'Éxito',
@@ -561,8 +566,8 @@ export default function ConfiguracionPage() {
                               .list();
 
                             if (files && !listError) {
-                              // Filtrar archivos que empiecen con el prefijo
-                              const userFiles = files.filter(file => file.name === `${user.id}-avatar.jpg`);
+                              // Filtrar archivos que empiecen con el prefijo del usuario (ahora incluye timestamp)
+                              const userFiles = files.filter(file => file.name.startsWith(`${user.id}-avatar`));
                               const fileNames = userFiles.map(file => file.name);
                               
                               if (fileNames.length > 0) {
@@ -580,6 +585,9 @@ export default function ConfiguracionPage() {
 
                             // Resetear estado local
                             setFormData(prev => ({ ...prev, fotoPreview: null }));
+
+                            // Actualizar el contexto para que el sidebar se actualice inmediatamente
+                            setAdmin({ userImage: undefined });
 
                             toast({
                               title: 'Foto eliminada',

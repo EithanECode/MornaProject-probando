@@ -5,7 +5,8 @@ export type ChinaContextType = {
   chinaName?: string;
   chinaEmail?: string;
   chinaRole?: string;
-  setChina: (data: { chinaId?: string; chinaName?: string; chinaEmail?: string; chinaRole?: string }) => void;
+  userImage?: string;
+  setChina: (data: { chinaId?: string; chinaName?: string; chinaEmail?: string; chinaRole?: string; userImage?: string }) => void;
 };
 
 const ChinaContext = createContext<ChinaContextType | undefined>(undefined);
@@ -21,16 +22,18 @@ export const ChinaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [chinaName, setChinaName] = useState<string | undefined>(undefined);
   const [chinaEmail, setChinaEmail] = useState<string | undefined>(undefined);
   const [chinaRole, setChinaRole] = useState<string | undefined>(undefined);
+  const [userImage, setUserImage] = useState<string | undefined>(undefined);
 
-  const setChina = (data: { chinaId?: string; chinaName?: string; chinaEmail?: string; chinaRole?: string }) => {
+  const setChina = (data: { chinaId?: string; chinaName?: string; chinaEmail?: string; chinaRole?: string; userImage?: string }) => {
     if (data.chinaId !== undefined) setChinaId(data.chinaId);
     if (data.chinaName !== undefined) setChinaName(data.chinaName);
     if (data.chinaEmail !== undefined) setChinaEmail(data.chinaEmail);
     if (data.chinaRole !== undefined) setChinaRole(data.chinaRole);
+    if (data.userImage !== undefined) setUserImage(data.userImage);
   };
 
   return (
-    <ChinaContext.Provider value={{ chinaId, chinaName, chinaEmail, chinaRole, setChina }}>
+    <ChinaContext.Provider value={{ chinaId, chinaName, chinaEmail, chinaRole, userImage, setChina }}>
       {children}
     </ChinaContext.Provider>
   );

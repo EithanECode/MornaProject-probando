@@ -22,13 +22,15 @@ export default function AdminContextInitializer() {
 			const adminName = metaName || fallbackName;
 
 			// Optional: fetch role from userlevel (not required for Sidebar display)
-			// const { data: levelData } = await supabase
-			//   .from("userlevel")
-			//   .select("user_level")
-			//   .eq("id", userId)
-			//   .maybeSingle();
+			const { data: levelData } = await supabase
+			  .from("userlevel")
+			  .select("user_level, user_image")
+			  .eq("id", userId)
+			  .maybeSingle();
 
-			setAdmin({ adminId: userId, adminName, adminEmail: userEmail });
+			const userImage = levelData?.user_image || "";
+
+			setAdmin({ adminId: userId, adminName, adminEmail: userEmail, userImage });
 		};
 		fetchUserData();
 	}, [setAdmin]);

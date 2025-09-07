@@ -15,6 +15,7 @@ export default function ChinaContextInitializer() {
       const userEmail = data.user.email || "";
       let chinaName = "";
       let chinaRole = "";
+      let userImage = "";
       try {
         const { data: chinaData } = await supabase
           .from("china")
@@ -24,12 +25,13 @@ export default function ChinaContextInitializer() {
         chinaName = chinaData?.name || "";
         const { data: levelData } = await supabase
           .from("userlevel")
-          .select("user_level")
+          .select("user_level, user_image")
           .eq("id", userId)
           .maybeSingle();
         chinaRole = levelData?.user_level || "";
+        userImage = levelData?.user_image || "";
       } catch {}
-      setChina({ chinaId: userId, chinaName, chinaEmail: userEmail, chinaRole });
+      setChina({ chinaId: userId, chinaName, chinaEmail: userEmail, chinaRole, userImage });
     };
     fetchUserData();
   }, [setChina]);

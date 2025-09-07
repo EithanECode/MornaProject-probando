@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   LayoutDashboard, 
   Package, 
@@ -338,14 +339,15 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   const adminCtx = useSafeAdminContext();
 
   // Get dynamic user info from context if available
-  let userInfo: { name: string; email: string; flag?: string } = getUserInfoByRole(userRole);
+  let userInfo: { name: string; email: string; flag?: string; userImage?: string } = getUserInfoByRole(userRole);
   
   if (userRole === 'client' && clientCtx) {
     if (clientCtx.clientName || clientCtx.clientEmail) {
       userInfo = {
         name: clientCtx.clientName || userInfo.name,
         email: clientCtx.clientEmail || userInfo.email,
-        flag: userInfo.flag
+        flag: userInfo.flag,
+        userImage: clientCtx.userImage
       };
     }
   } else if (userRole === 'venezuela' && vzlaCtx) {
@@ -353,7 +355,8 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       userInfo = {
         name: vzlaCtx.vzlaName || userInfo.name,
         email: vzlaCtx.vzlaEmail || userInfo.email,
-        flag: userInfo.flag
+        flag: userInfo.flag,
+        userImage: vzlaCtx.userImage
       };
     }
   } else if (userRole === 'china' && chinaCtx) {
@@ -361,7 +364,8 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       userInfo = {
         name: chinaCtx.chinaName || userInfo.name,
         email: chinaCtx.chinaEmail || userInfo.email,
-        flag: userInfo.flag
+        flag: userInfo.flag,
+        userImage: chinaCtx.userImage
       };
     }
   } else if (userRole === 'admin' && adminCtx) {
@@ -369,13 +373,25 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       userInfo = {
         name: adminCtx.adminName || userInfo.name,
         email: adminCtx.adminEmail || userInfo.email,
-        flag: userInfo.flag
+        flag: userInfo.flag,
+        userImage: adminCtx.userImage
       };
     }
   }
   
+  // Reset image error when user info changes
+  useEffect(() => {
+    setImageError(false);
+    // Forzar recarga limpiando cache de imagen
+    if (userInfo.userImage) {
+      const preloadImg = new window.Image();
+      preloadImg.src = `${userInfo.userImage}?t=${Date.now()}`;
+    }
+  }, [userInfo.userImage]);
+  
   const pathname = usePathname();
   const activeItem = useActivePage(menuItems, userRole, pathname);
+  const [imageError, setImageError] = useState(false);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // === Client active orders badge (dynamic) ===
@@ -797,8 +813,20 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         <div className={`${responsiveConfig.padding} border-t border-slate-700/50 space-y-4 flex-shrink-0`}>
           {/* User Profile */}
           <div className={`flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : 'space-x-3'} ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
-            <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center`}>
-              {userRole === 'client' ? (
+            <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center overflow-hidden`}>
+              {userInfo.userImage && !imageError ? (
+                <Image
+                  key={userInfo.userImage} // Forzar recarga cuando cambie la URL
+                  src={`${userInfo.userImage}?t=${Date.now()}`} // Agregar timestamp para evitar cache del navegador
+                  alt="Foto de perfil"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover rounded-full"
+                  onError={() => setImageError(true)}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
+                />
+              ) : userRole === 'client' ? (
                 <VenezuelaFlag size={"sm"} animated={true} />
               ) : (
                 <span className="text-lg">{userInfo.flag}</span>

@@ -15,6 +15,7 @@ export default function VzlaInit() {
       const userEmail = data.user.email || "";
       let vzlaName = "";
       let vzlaRole = "";
+      let userImage = "";
       try {
         const { data: vzlaData } = await supabase
           .from("vzla")
@@ -24,12 +25,13 @@ export default function VzlaInit() {
         vzlaName = vzlaData?.name || "";
         const { data: levelData } = await supabase
           .from("userlevel")
-          .select("user_level")
+          .select("user_level, user_image")
           .eq("id", userId)
           .maybeSingle();
         vzlaRole = levelData?.user_level || "";
+        userImage = levelData?.user_image || "";
       } catch {}
-      setVzla({ vzlaId: userId, vzlaName, vzlaEmail: userEmail, vzlaRole });
+      setVzla({ vzlaId: userId, vzlaName, vzlaEmail: userEmail, vzlaRole, userImage });
     };
     fetchUserData();
   }, [setVzla]);

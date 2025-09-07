@@ -7,11 +7,13 @@ export type ClientContextType = {
   clientName?: string;
   clientEmail?: string;
   clientRole?: string;
+  userImage?: string;
   setClient: (data: {
     clientId?: string;
     clientName?: string;
     clientEmail?: string;
     clientRole?: string;
+    userImage?: string;
   }) => void;
 };
 
@@ -29,17 +31,20 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [clientName, setClientName] = useState<string | undefined>(undefined);
   const [clientEmail, setClientEmail] = useState<string | undefined>(undefined);
   const [clientRole, setClientRole] = useState<string | undefined>(undefined);
+  const [userImage, setUserImage] = useState<string | undefined>(undefined);
 
   const setClient = (data: {
     clientId?: string;
     clientName?: string;
     clientEmail?: string;
     clientRole?: string;
+    userImage?: string;
   }) => {
     if (data.clientId !== undefined) setClientId(data.clientId);
     if (data.clientName !== undefined) setClientName(data.clientName);
     if (data.clientEmail !== undefined) setClientEmail(data.clientEmail);
     if (data.clientRole !== undefined) setClientRole(data.clientRole);
+    if (data.userImage !== undefined) setUserImage(data.userImage);
   };
 
   return (
@@ -48,6 +53,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       clientName,
       clientEmail,
       clientRole,
+      userImage,
       setClient
     }}>
       {children}

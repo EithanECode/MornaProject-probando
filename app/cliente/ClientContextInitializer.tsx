@@ -15,6 +15,7 @@ export default function ClientContextInitializer() {
       const userEmail = data.user.email || "";
       let clientName = "";
       let clientRole = "";
+      let userImage = "";
       try {
         const { data: clientData } = await supabase
           .from("clients")
@@ -24,12 +25,13 @@ export default function ClientContextInitializer() {
         clientName = clientData?.name || "";
         const { data: levelData } = await supabase
           .from("userlevel")
-          .select("user_level")
+          .select("user_level, user_image")
           .eq("id", userId)
           .maybeSingle();
         clientRole = levelData?.user_level || "";
+        userImage = levelData?.user_image || "";
       } catch {}
-      setClient({ clientId: userId, clientName, clientEmail: userEmail, clientRole });
+      setClient({ clientId: userId, clientName, clientEmail: userEmail, clientRole, userImage });
     };
     fetchUserData();
   }, [setClient]);
