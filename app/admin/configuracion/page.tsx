@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/lib/LanguageContext';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export default function ConfiguracionPage() {
@@ -61,7 +62,7 @@ export default function ConfiguracionPage() {
     idioma: language,
     zonaHoraria: 'America/Caracas',
     fotoPerfil: null as File | null,
-    fotoPreview: '/images/logos/logo.png'
+    fotoPreview: null as string | null
   });
 
   // Estados de contraseña
@@ -93,6 +94,27 @@ export default function ConfiguracionPage() {
 
   useEffect(() => {
     setMounted(true);
+
+    // Cargar la imagen de perfil desde la base de datos
+    const loadUserImage = async () => {
+      const supabase = getSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('userlevel')
+          .select('user_image')
+          .eq('id', user.id)
+          .single();
+
+        if (data && data.user_image && !error) {
+          setFormData(prev => ({ ...prev, fotoPreview: data.user_image }));
+        } else {
+          setFormData(prev => ({ ...prev, fotoPreview: null }));
+        }
+      }
+    };
+
+    loadUserImage();
   }, []);
 
   // Sincronizar el idioma del contexto con el formulario
@@ -121,16 +143,110 @@ export default function ConfiguracionPage() {
     setSecurity(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setFormData(prev => ({ ...prev, fotoPerfil: file }));
+  // Función para convertir imagen a JPEG
+  const convertToJPEG = (file: File): Promise<Blob | null> => {
+    return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setFormData(prev => ({ ...prev, fotoPreview: e.target?.result as string }));
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx?.drawImage(img, 0, 0);
+          canvas.toBlob((blob) => {
+            resolve(blob);
+          }, 'image/jpeg', 0.8); // Calidad 80%
+        };
+        img.src = e.target?.result as string;
       };
       reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('Iniciando subida de archivo...');
+    const file = event.target.files?.[0];
+    if (!file) {
+      console.log('No se seleccionó archivo');
+      return;
     }
+    console.log('Archivo seleccionado:', file.name);
+
+    const supabase = getSupabaseBrowserClient();
+    console.log('Cliente Supabase obtenido');
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    console.log('Usuario obtenido:', user, 'Error:', userError);
+    if (!user) {
+      toast({
+        title: 'Error',
+        description: 'Usuario no autenticado.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Convertir imagen a JPEG
+    const jpegBlob = await convertToJPEG(file);
+    if (!jpegBlob) {
+      toast({
+        title: 'Error',
+        description: 'No se pudo convertir la imagen.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const fileName = `${user.id}-avatar.jpg`;
+    console.log('Nombre del archivo:', fileName);
+
+    const { data, error } = await supabase.storage
+      .from('avatar')
+      .upload(fileName, jpegBlob, { upsert: true }); // Usar upsert para sobrescribir
+    console.log('Resultado del upload:', data, 'Error:', error);
+
+    if (error) {
+      console.error('Error subiendo imagen:', error);
+      toast({
+        title: 'Error',
+        description: `No se pudo subir la imagen: ${error.message}`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('avatar')
+      .getPublicUrl(fileName);
+    console.log('URL obtenida:', urlData.publicUrl);
+
+    // Actualizar la tabla userlevel
+    const { error: updateError } = await supabase
+      .from('userlevel')
+      .update({ user_image: urlData.publicUrl })
+      .eq('id', user.id);
+    console.log('Resultado del update:', updateError);
+
+    if (updateError) {
+      console.error('Error actualizando tabla:', updateError);
+      toast({
+        title: 'Error',
+        description: `No se pudo guardar la URL: ${updateError.message}`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Actualizar el estado local
+    setFormData(prev => ({ ...prev, fotoPreview: urlData.publicUrl }));
+
+    toast({
+      title: 'Éxito',
+      description: 'Foto de perfil actualizada.',
+      variant: 'default',
+    });
   };
 
   const handleSaveProfile = () => {
@@ -407,11 +523,17 @@ export default function ConfiguracionPage() {
                     <CardContent className="space-y-4">
                       <div className="flex flex-col items-center space-y-4">
                         <div className="relative">
-                          <img
-                            src={formData.fotoPreview}
-                            alt={t('admin.configuration.profile.profilePicture.altText')}
-                            className="w-32 h-32 rounded-full object-cover border-4 border-slate-200 dark:border-slate-600"
-                          />
+                          {formData.fotoPreview ? (
+                            <img
+                              src={formData.fotoPreview}
+                              alt={t('admin.configuration.profile.profilePicture.altText')}
+                              className="w-32 h-32 rounded-full object-cover border-4 border-slate-200 dark:border-slate-600"
+                            />
+                          ) : (
+                            <div className="w-32 h-32 rounded-full bg-slate-200 dark:bg-slate-600 border-4 border-slate-200 dark:border-slate-600 flex items-center justify-center">
+                              <User className="w-16 h-16 text-slate-400 dark:text-slate-500" />
+                            </div>
+                          )}
                           <Badge className="absolute -bottom-2 -right-2 bg-green-500">
                             <CheckCircle className="w-3 h-3" />
                           </Badge>
@@ -428,7 +550,43 @@ export default function ConfiguracionPage() {
                             onChange={handleFileUpload}
                             className="hidden"
                           />
-                          <Button variant="outline" className="w-full" onClick={() => setFormData(prev => ({ ...prev, fotoPreview: '/images/logos/logo.png' }))}>
+                          <Button variant="outline" className="w-full" onClick={async () => {
+                            const supabase = getSupabaseBrowserClient();
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (!user) return;
+
+                            // Listar archivos del usuario en el bucket
+                            const { data: files, error: listError } = await supabase.storage
+                              .from('avatar')
+                              .list();
+
+                            if (files && !listError) {
+                              // Filtrar archivos que empiecen con el prefijo
+                              const userFiles = files.filter(file => file.name === `${user.id}-avatar.jpg`);
+                              const fileNames = userFiles.map(file => file.name);
+                              
+                              if (fileNames.length > 0) {
+                                await supabase.storage
+                                  .from('avatar')
+                                  .remove(fileNames);
+                              }
+                            }
+
+                            // Actualizar la tabla userlevel
+                            await supabase
+                              .from('userlevel')
+                              .update({ user_image: null })
+                              .eq('id', user.id);
+
+                            // Resetear estado local
+                            setFormData(prev => ({ ...prev, fotoPreview: null }));
+
+                            toast({
+                              title: 'Foto eliminada',
+                              description: 'La foto de perfil ha sido eliminada.',
+                              variant: 'default',
+                            });
+                          }}>
                             <Trash2 className="w-4 h-4 mr-2" />
                             {t('admin.configuration.profile.profilePicture.deleteButton')}
                           </Button>
