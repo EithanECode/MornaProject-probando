@@ -29,6 +29,8 @@ import { Badge } from '@/components/ui/badge';
 import { useClientContext } from '@/lib/ClientContext';
 import { useVzlaContext } from '@/lib/VzlaContext';
 import { useChinaContext } from '@/lib/ChinaContext';
+import { useAdminContext } from '@/lib/AdminContext';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 // Safe context hooks that don't throw errors
 const useSafeClientContext = () => {
@@ -55,6 +57,14 @@ const useSafeChinaContext = () => {
   }
 };
 
+const useSafeAdminContext = () => {
+  try {
+    return useAdminContext();
+  } catch {
+    return null;
+  }
+};
+
 interface SidebarProps {
   isExpanded: boolean;
   setIsExpanded: (expanded: boolean) => void;
@@ -75,14 +85,14 @@ const CLIENT_MENU_ITEMS = [
   {
     id: 'orders',
     icon: Package,
-    badge: 3,
+  badge: null,
     color: 'text-orange-500',
     path: '/cliente/mis-pedidos'
   },
   {
     id: 'payments',
     icon: CreditCard,
-    badge: 2,
+  badge: null,
     color: 'text-red-500',
     path: '/cliente/pagos'
   },
@@ -106,14 +116,14 @@ const VENEZUELA_MENU_ITEMS = [
   {
     id: 'orders',
     icon: Package,
-    badge: 5,
+  badge: null,
     color: 'text-orange-500',
     path: '/venezuela/pedidos'
   },
   {
     id: 'support',
     icon: MessageCircle,
-    badge: 3,
+  badge: null,
     color: 'text-green-500',
     path: '/venezuela/soporte'
   },
@@ -144,7 +154,7 @@ const CHINA_MENU_ITEMS = [
   {
     id: 'orders',
     icon: Package,
-    badge: 12,
+  badge: null,
     color: 'text-orange-500',
     path: '/china/pedidos'
   }
@@ -325,6 +335,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   const clientCtx = useSafeClientContext();
   const vzlaCtx = useSafeVzlaContext();
   const chinaCtx = useSafeChinaContext();
+  const adminCtx = useSafeAdminContext();
 
   // Get dynamic user info from context if available
   let userInfo: { name: string; email: string; flag?: string } = getUserInfoByRole(userRole);
@@ -353,11 +364,249 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         flag: userInfo.flag
       };
     }
+  } else if (userRole === 'admin' && adminCtx) {
+    if (adminCtx.adminName || adminCtx.adminEmail) {
+      userInfo = {
+        name: adminCtx.adminName || userInfo.name,
+        email: adminCtx.adminEmail || userInfo.email,
+        flag: userInfo.flag
+      };
+    }
   }
   
   const pathname = usePathname();
   const activeItem = useActivePage(menuItems, userRole, pathname);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  // === Client active orders badge (dynamic) ===
+  const [clientActiveOrders, setClientActiveOrders] = useState<number | null>(null);
+  useEffect(() => {
+    // Only fetch for client role with available context
+    if (userRole !== 'client' || !clientCtx?.clientId) {
+      setClientActiveOrders(null);
+      return;
+    }
+    const supabase = getSupabaseBrowserClient();
+    let isCancelled = false;
+    (async () => {
+      try {
+        // Count orders with state < 13 (considered activos/no entregados)
+        const { count, error } = await supabase
+          .from('orders')
+          .select('id', { count: 'exact', head: true })
+          .eq('client_id', clientCtx.clientId)
+          .lt('state', 13);
+        if (error) {
+          console.error('Sidebar orders count error:', error);
+          if (!isCancelled) setClientActiveOrders(null);
+          return;
+        }
+        if (!isCancelled) setClientActiveOrders(typeof count === 'number' ? count : 0);
+      } catch (e) {
+        console.error('Sidebar orders count exception:', e);
+        if (!isCancelled) setClientActiveOrders(null);
+      }
+    })();
+    return () => { isCancelled = true; };
+  }, [userRole, clientCtx?.clientId]);
+
+  // === Venezuela active orders badge (dynamic) ===
+  const [vzlaActiveOrders, setVzlaActiveOrders] = useState<number | null>(null);
+  useEffect(() => {
+    if (userRole !== 'venezuela' || !vzlaCtx?.vzlaId) {
+      setVzlaActiveOrders(null);
+      return;
+    }
+    const supabase = getSupabaseBrowserClient();
+    let isCancelled = false;
+    (async () => {
+      try {
+        const { count, error } = await supabase
+          .from('orders')
+          .select('id', { count: 'exact', head: true })
+          .eq('asignedEVzla', vzlaCtx.vzlaId)
+          .lt('state', 13);
+        if (error) {
+          console.error('Sidebar Vzla orders count error:', error);
+          if (!isCancelled) setVzlaActiveOrders(null);
+          return;
+        }
+        if (!isCancelled) setVzlaActiveOrders(typeof count === 'number' ? count : 0);
+      } catch (e) {
+        console.error('Sidebar Vzla orders count exception:', e);
+        if (!isCancelled) setVzlaActiveOrders(null);
+      }
+    })();
+    return () => { isCancelled = true; };
+  }, [userRole, vzlaCtx?.vzlaId]);
+
+  // === Client pending payments badge (dynamic) ===
+  const [clientPendingPayments, setClientPendingPayments] = useState<number | null>(null);
+  useEffect(() => {
+    if (userRole !== 'client' || !clientCtx?.clientId) {
+      setClientPendingPayments(null);
+      return;
+    }
+    const supabase = getSupabaseBrowserClient();
+    let isCancelled = false;
+    (async () => {
+      try {
+        // Pending payments are represented by orders with state === 4 (as used in pagos page)
+        const { count, error } = await supabase
+          .from('orders')
+          .select('id', { count: 'exact', head: true })
+          .eq('client_id', clientCtx.clientId)
+          .eq('state', 4);
+        if (error) {
+          console.error('Sidebar pending payments count error:', error);
+          if (!isCancelled) setClientPendingPayments(null);
+          return;
+        }
+        if (!isCancelled) setClientPendingPayments(typeof count === 'number' ? count : 0);
+      } catch (e) {
+        console.error('Sidebar pending payments count exception:', e);
+        if (!isCancelled) setClientPendingPayments(null);
+      }
+    })();
+    return () => { isCancelled = true; };
+  }, [userRole, clientCtx?.clientId]);
+
+  // === Venezuela active supports badge (dynamic) ===
+  const [vzlaActiveSupports, setVzlaActiveSupports] = useState<number | null>(null);
+  useEffect(() => {
+    if (userRole !== 'venezuela' || !vzlaCtx?.vzlaId) {
+      setVzlaActiveSupports(null);
+      return;
+    }
+    const supabase = getSupabaseBrowserClient();
+    let isCancelled = false;
+    (async () => {
+      try {
+        // Assumption: support tickets table and fields
+        // Table: 'support_tickets', assigned column: 'asignedEVzla', status: 'active' | 'waiting' | 'resolved'
+        const { count, error } = await supabase
+          .from('support_tickets')
+          .select('id', { count: 'exact', head: true })
+          .eq('asignedEVzla', vzlaCtx.vzlaId)
+          .eq('status', 'active');
+        if (error) {
+          console.error('Sidebar Vzla supports count error:', error);
+          if (!isCancelled) setVzlaActiveSupports(null);
+          return;
+        }
+        if (!isCancelled) setVzlaActiveSupports(typeof count === 'number' ? count : 0);
+      } catch (e) {
+        console.error('Sidebar Vzla supports count exception:', e);
+        if (!isCancelled) setVzlaActiveSupports(null);
+      }
+    })();
+    return () => { isCancelled = true; };
+  }, [userRole, vzlaCtx?.vzlaId]);
+
+  // === Venezuela pending payments (validaciones) badge (dynamic) ===
+  const [vzlaPendingPayments, setVzlaPendingPayments] = useState<number | null>(null);
+  useEffect(() => {
+    if (userRole !== 'venezuela' || !vzlaCtx?.vzlaId) {
+      setVzlaPendingPayments(null);
+      return;
+    }
+    const supabase = getSupabaseBrowserClient();
+    let isCancelled = false;
+    (async () => {
+      try {
+        // Pending payment validations are orders assigned to this Vzla employee with state === 4
+        const { count, error } = await supabase
+          .from('orders')
+          .select('id', { count: 'exact', head: true })
+          .eq('asignedEVzla', vzlaCtx.vzlaId)
+          .eq('state', 4);
+        if (error) {
+          console.error('Sidebar Vzla pending payments count error:', error);
+          if (!isCancelled) setVzlaPendingPayments(null);
+          return;
+        }
+        if (!isCancelled) setVzlaPendingPayments(typeof count === 'number' ? count : 0);
+      } catch (e) {
+        console.error('Sidebar Vzla pending payments count exception:', e);
+        if (!isCancelled) setVzlaPendingPayments(null);
+      }
+    })();
+    return () => { isCancelled = true; };
+  }, [userRole, vzlaCtx?.vzlaId]);
+
+  // === China active orders badge (dynamic) ===
+  const [chinaActiveOrders, setChinaActiveOrders] = useState<number | null>(null);
+  useEffect(() => {
+    if (userRole !== 'china' || !chinaCtx?.chinaId) {
+      setChinaActiveOrders(null);
+      return;
+    }
+    const supabase = getSupabaseBrowserClient();
+    let isCancelled = false;
+    (async () => {
+      try {
+        const { count, error } = await supabase
+          .from('orders')
+          .select('id', { count: 'exact', head: true })
+          .eq('asignedEChina', chinaCtx.chinaId)
+          .lt('state', 13);
+        if (error) {
+          console.error('Sidebar China orders count error:', error);
+          if (!isCancelled) setChinaActiveOrders(null);
+          return;
+        }
+        if (!isCancelled) setChinaActiveOrders(typeof count === 'number' ? count : 0);
+      } catch (e) {
+        console.error('Sidebar China orders count exception:', e);
+        if (!isCancelled) setChinaActiveOrders(null);
+      }
+    })();
+    return () => { isCancelled = true; };
+  }, [userRole, chinaCtx?.chinaId]);
+
+  // Merge dynamic badges into client menu
+  const menuItemsWithCounts = useMemo(() => {
+    if (userRole === 'client') {
+      return menuItems.map((item) => {
+        if (item.id === 'orders') {
+          const badgeVal = typeof clientActiveOrders === 'number' && clientActiveOrders > 0 ? clientActiveOrders : null;
+          return { ...item, badge: badgeVal };
+        }
+        if (item.id === 'payments') {
+          const badgeVal = typeof clientPendingPayments === 'number' && clientPendingPayments > 0 ? clientPendingPayments : null;
+          return { ...item, badge: badgeVal };
+        }
+        return item;
+      });
+    }
+    if (userRole === 'venezuela') {
+      return menuItems.map((item) => {
+        if (item.id === 'orders') {
+          const badgeVal = typeof vzlaActiveOrders === 'number' && vzlaActiveOrders > 0 ? vzlaActiveOrders : null;
+          return { ...item, badge: badgeVal };
+        }
+        if (item.id === 'support') {
+          const badgeVal = typeof vzlaActiveSupports === 'number' && vzlaActiveSupports > 0 ? vzlaActiveSupports : null;
+          return { ...item, badge: badgeVal };
+        }
+        if (item.id === 'payments-validation') {
+          const badgeVal = typeof vzlaPendingPayments === 'number' && vzlaPendingPayments > 0 ? vzlaPendingPayments : null;
+          return { ...item, badge: badgeVal };
+        }
+        return item;
+      });
+    }
+    if (userRole === 'china') {
+      return menuItems.map((item) => {
+        if (item.id === 'orders') {
+          const badgeVal = typeof chinaActiveOrders === 'number' && chinaActiveOrders > 0 ? chinaActiveOrders : null;
+          return { ...item, badge: badgeVal };
+        }
+        return item;
+      });
+    }
+    return menuItems;
+  }, [menuItems, userRole, clientActiveOrders, clientPendingPayments, vzlaActiveOrders, vzlaActiveSupports, vzlaPendingPayments, chinaActiveOrders]);
 
   // Memoizar los cálculos responsivos con optimización
   const responsiveConfig = useMemo(() => {
@@ -476,19 +725,19 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         `}>
           <div className="flex items-center justify-between whitespace-nowrap">
             <span className={`font-medium ${responsiveConfig.textSize}`}>{t('sidebar.' + item.id) ?? item.id}</span>
-            {item.badge && (
+            {typeof item.badge === 'number' && item.badge > 0 ? (
               <Badge className={`bg-red-500 text-white ${responsiveConfig.badgeSize} animate-pulse`}>
                 {item.badge}
               </Badge>
-            )}
+            ) : null}
           </div>
         </div>
         
-                    {!responsiveConfig.isMobile && !responsiveConfig.isTablet && !isExpanded && item.badge && (
+                    {!responsiveConfig.isMobile && !responsiveConfig.isTablet && !isExpanded && typeof item.badge === 'number' && item.badge > 0 ? (
           <div className={`absolute top-1 right-1 ${screenWidth < 1366 ? 'w-4 h-4' : 'w-5 h-5'} bg-red-500 rounded-full flex items-center justify-center animate-pulse`}>
             <span className={`${responsiveConfig.badgeSize} text-white font-bold`}>{item.badge}</span>
           </div>
-        )}
+        ) : null}
       </Link>
     </div>
   );
@@ -541,7 +790,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
         {/* Navigation */}
         <nav className={`flex-1 ${responsiveConfig.padding} space-y-2 overflow-y-auto sidebar-scrollbar`}>
-          {menuItems.map(renderMenuItem)}
+          {menuItemsWithCounts.map(renderMenuItem)}
         </nav>
 
         {/* Bottom Section */}
