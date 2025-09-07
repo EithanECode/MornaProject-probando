@@ -2388,6 +2388,74 @@
       "containerDeleteIdInvalidDesc": "无效集装箱 ID。"
     }
   }
+  },
+  "notFound": {
+    "title": "哎呀！页面未找到",
+    "description": "你要找的页面不存在或已被移动。别担心，我们会帮你找到需要的内容。",
+    "goBack": "返回上一页",
+    "goHome": "回到首页",
+    "refresh": "重新加载页面",
+    "needHelp": "需要帮助？",
+    "contactSupport": "联系支持",
+    "searchSite": "站内搜索"
+  },
+  "errors": {
+    "boundary": {
+      "generic": "错误",
+      "networkTitle": "连接错误",
+      "networkMessage": "似乎你的网络连接有问题。请检查后再试。",
+      "serverTitle": "服务器错误",
+      "serverMessage": "我们正遇到技术问题。团队已在处理中。",
+      "clientTitle": "客户端错误",
+      "clientMessage": "浏览器中出现问题。尝试刷新页面或清除缓存。",
+      "unexpectedTitle": "意外错误",
+      "unexpectedMessage": "发生了意外情况。别担心，我们的团队已收到通知。",
+      "devDetails": "错误详情（仅开发）",
+      "tryAgain": "重试",
+      "report": "报告错误",
+      "statusDetected": "错误已检测",
+      "statusNotified": "团队已通知"
+    },
+    "global": {
+      "critical": "严重错误",
+      "mainTitle": "出现严重问题！",
+      "mainMessage": "我们检测到应用中的严重问题。技术团队已收到通知并正在处理。",
+      "devDetails": "严重错误详情（仅开发）",
+      "recover": "尝试恢复",
+      "reloadApp": "重新加载应用",
+      "urgentHelp": "需要紧急帮助？",
+      "urgentText": "如果问题持续，请立即联系技术支持。",
+      "contactSupport": "联系支持",
+      "whatsapp": "紧急 WhatsApp",
+      "statusCritical": "严重错误",
+      "statusNotified": "团队已通知",
+      "statusWorking": "正在解决",
+      "errorId": "错误 ID",
+      "timestamp": "时间戳"
+    },
+    "unauthorized": {
+      "code": "403",
+      "title": "访问被拒绝",
+      "message": "你没有权限访问此页面。请检查你的凭证或联系管理员。",
+      "login": "登录",
+      "requestAccess": "请求访问",
+      "needHelp": "需要帮助？",
+      "helpText": "如果你认为应该有权限，请联系支持团队。",
+      "securityTips": "安全提示",
+      "tips": {
+        "checkAccount": "确认你使用的是正确的账号",
+        "ensurePermissions": "确保你拥有必要的权限",
+        "contactAdmin": "如需访问，请联系管理员"
+      },
+      "statusAccessDenied": "访问被拒绝",
+      "statusVerification": "需要验证"
+    },
+    "actions": {
+      "goBack": "返回上一页",
+      "goHome": "回到首页",
+      "reload": "重新加载页面",
+      "contactSupport": "联系支持"
+    }
   }
 }
 

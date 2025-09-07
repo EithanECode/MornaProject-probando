@@ -130,6 +130,74 @@
     "dashboardChina": "Panel de China",
     "dashboardVzla": "Panel de Venezuela"
   },
+  "notFound": {
+    "title": "¡Oops! Página no encontrada",
+    "description": "La página que buscas no existe o ha sido movida. No te preocupes, te ayudamos a encontrar lo que necesitas.",
+    "goBack": "Volver Atrás",
+    "goHome": "Ir al Inicio",
+    "refresh": "Recargar Página",
+    "needHelp": "¿Necesitas ayuda?",
+    "contactSupport": "Contactar Soporte",
+    "searchSite": "Buscar en el Sitio"
+  },
+  "errors": {
+    "boundary": {
+      "generic": "Error",
+      "networkTitle": "Error de Conexión",
+      "networkMessage": "Parece que hay un problema con tu conexión a internet. Verifícala e intenta nuevamente.",
+      "serverTitle": "Error del Servidor",
+      "serverMessage": "Estamos experimentando problemas técnicos. Nuestro equipo ya está trabajando para solucionarlo.",
+      "clientTitle": "Error del Cliente",
+      "clientMessage": "Algo salió mal en tu navegador. Intenta recargar la página o limpiar el caché.",
+      "unexpectedTitle": "Error Inesperado",
+      "unexpectedMessage": "Algo inesperado ha ocurrido. No te preocupes, nuestro equipo ha sido notificado.",
+      "devDetails": "Detalles del Error (Solo Desarrollo)",
+      "tryAgain": "Intentar Nuevamente",
+      "report": "Reportar Error",
+      "statusDetected": "Error Detectado",
+      "statusNotified": "Equipo Notificado"
+    },
+    "global": {
+      "critical": "Error Crítico",
+      "mainTitle": "¡Algo salió muy mal!",
+      "mainMessage": "Hemos detectado un error crítico en la aplicación. Nuestro equipo técnico ha sido notificado y está trabajando para solucionarlo.",
+      "devDetails": "Detalles del Error Crítico (Solo Desarrollo)",
+      "recover": "Intentar Recuperar",
+      "reloadApp": "Recargar Aplicación",
+      "urgentHelp": "¿Necesitas ayuda urgente?",
+      "urgentText": "Si el problema persiste, contacta inmediatamente a nuestro equipo de soporte técnico.",
+      "contactSupport": "Contactar Soporte",
+      "whatsapp": "WhatsApp Urgente",
+      "statusCritical": "Error Crítico",
+      "statusNotified": "Equipo Notificado",
+      "statusWorking": "Trabajando en Solución",
+      "errorId": "ID de Error",
+      "timestamp": "Marca de tiempo"
+    },
+    "unauthorized": {
+      "code": "403",
+      "title": "Acceso Denegado",
+      "message": "No tienes permisos para acceder a esta página. Verifica tus credenciales o contacta al administrador.",
+      "login": "Iniciar Sesión",
+      "requestAccess": "Solicitar Acceso",
+      "needHelp": "¿Necesitas ayuda?",
+      "helpText": "Si crees que deberías tener acceso a esta página, contacta a nuestro equipo de soporte.",
+      "securityTips": "Consejos de Seguridad",
+      "tips": {
+        "checkAccount": "Verifica que estés usando la cuenta correcta",
+        "ensurePermissions": "Asegúrate de tener los permisos necesarios",
+        "contactAdmin": "Contacta al administrador si necesitas acceso"
+      },
+      "statusAccessDenied": "Acceso Denegado",
+      "statusVerification": "Verificación Requerida"
+    },
+    "actions": {
+      "goBack": "Volver Atrás",
+      "goHome": "Ir al Inicio",
+      "reload": "Recargar Página",
+      "contactSupport": "Contactar Soporte"
+    }
+  },
   "client": {
     "dashboard": {
       "title": "Panel de Control del Cliente",

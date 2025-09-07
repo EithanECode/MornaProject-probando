@@ -14,11 +14,15 @@ import {
   Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export default function NotFound() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const { t } = useTranslation();
+  const { language, setLanguage } = useLanguage();
 
   useEffect(() => {
     setMounted(true);
@@ -97,11 +101,10 @@ export default function NotFound() {
           {/* Main Message */}
           <div className="mb-8 space-y-4">
             <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              ¡Oops! Página no encontrada
+              {t('notFound.title')}
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-md mx-auto">
-              La página que buscas no existe o ha sido movida. 
-              No te preocupes, te ayudamos a encontrar lo que necesitas.
+              {t('notFound.description')}
             </p>
           </div>
 
@@ -113,7 +116,7 @@ export default function NotFound() {
                 className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
               >
                 <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-                Volver Atrás
+                {t('notFound.goBack')}
               </Button>
               
               <Button
@@ -121,7 +124,7 @@ export default function NotFound() {
                 className="group bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
               >
                 <Home className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                Ir al Inicio
+                {t('notFound.goHome')}
               </Button>
             </div>
 
@@ -131,7 +134,7 @@ export default function NotFound() {
               className="group border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 px-6 py-2 rounded-lg transition-all duration-300"
             >
               <RefreshCw className="w-4 h-4 mr-2 group-hover:rotate-180 transition-transform duration-500" />
-              Recargar Página
+              {t('notFound.refresh')}
             </Button>
           </div>
 
@@ -140,7 +143,7 @@ export default function NotFound() {
             <div className="flex items-center justify-center mb-4">
               <Zap className="w-6 h-6 text-yellow-500 mr-2" />
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                ¿Necesitas ayuda?
+                {t('notFound.needHelp')}
               </h3>
             </div>
             
@@ -151,7 +154,7 @@ export default function NotFound() {
                   className="group text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <MessageCircle className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Contactar Soporte
+                  {t('notFound.contactSupport')}
                 </Button>
               </Link>
               
@@ -160,7 +163,7 @@ export default function NotFound() {
                 className="group text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
               >
                 <Search className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                Buscar en el Sitio
+                {t('notFound.searchSite')}
               </Button>
             </div>
           </div>
@@ -171,6 +174,20 @@ export default function NotFound() {
             <div className="w-2 h-2 bg-purple-500 rounded-full animate-ping delay-300"></div>
             <div className="w-2 h-2 bg-indigo-500 rounded-full animate-ping delay-600"></div>
           </div>
+        </div>
+
+        {/* Language Switcher (bottom-right) */}
+        <div className="fixed bottom-4 right-4 z-50 flex gap-2 bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-xl p-2 shadow-lg">
+          {(['es','en','zh'] as const).map(l => (
+            <button
+              key={l}
+              onClick={() => setLanguage(l)}
+              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${language === l ? 'bg-blue-600 text-white dark:bg-blue-500' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'}`}
+              aria-pressed={language === l}
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
         </div>
       </div>
 

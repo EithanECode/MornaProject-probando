@@ -12,6 +12,7 @@ import {
   Wifi
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface GlobalErrorProps {
   error: Error & { digest?: string };
@@ -21,6 +22,7 @@ interface GlobalErrorProps {
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
   const [mounted, setMounted] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setMounted(true);
@@ -86,7 +88,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                   </div>
                 </div>
                 <div className="text-5xl font-bold bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 bg-clip-text text-transparent animate-pulse">
-                  Error Crítico
+                  {t('errors.global.critical')}
                 </div>
                 {/* Animated Emoji */}
                 <div className="mt-4">
@@ -99,11 +101,10 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               {/* Main Message */}
               <div className="mb-8 space-y-4">
                 <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
-                  ¡Algo salió muy mal!
+                  {t('errors.global.mainTitle')}
                 </h1>
                 <p className="text-lg text-slate-600 dark:text-slate-300 max-w-md mx-auto">
-                  Hemos detectado un error crítico en la aplicación. 
-                  Nuestro equipo técnico ha sido notificado y está trabajando para solucionarlo.
+                  {t('errors.global.mainMessage')}
                 </p>
               </div>
 
@@ -112,10 +113,10 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                 <div className="mb-8 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
                   <details className="text-left">
                     <summary className="cursor-pointer text-sm font-medium text-red-800 dark:text-red-200 mb-2">
-                      Detalles del Error Crítico (Solo Desarrollo)
+                      {t('errors.global.devDetails')}
                     </summary>
                     <div className="text-xs text-red-700 dark:text-red-300 font-mono bg-red-100 dark:bg-red-900/30 p-3 rounded">
-                      <div><strong>Mensaje:</strong> {error.message}</div>
+                      <div><strong>Message:</strong> {error.message}</div>
                       {error.digest && <div><strong>Digest:</strong> {error.digest}</div>}
                       <div><strong>Stack:</strong></div>
                       <pre className="whitespace-pre-wrap text-xs">{error.stack}</pre>
@@ -132,7 +133,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                     className="group bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
                   >
                     <RefreshCw className="w-5 h-5 mr-2 group-hover:rotate-180 transition-transform duration-500" />
-                    Intentar Recuperar
+                    {t('errors.global.recover')}
                   </Button>
                   
                   <Button
@@ -140,7 +141,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                     className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
                   >
                     <Wifi className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                    Recargar Aplicación
+                    {t('errors.global.reloadApp')}
                   </Button>
                 </div>
               </div>
@@ -150,13 +151,13 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                 <div className="flex items-center justify-center mb-4">
                   <Shield className="w-6 h-6 text-blue-500 mr-2" />
                   <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                    ¿Necesitas ayuda urgente?
+                    {t('errors.global.urgentHelp')}
                   </h3>
                 </div>
                 
                 <div className="space-y-4">
                   <p className="text-sm text-slate-600 dark:text-slate-300">
-                    Si el problema persiste, contacta inmediatamente a nuestro equipo de soporte técnico.
+                    {t('errors.global.urgentText')}
                   </p>
                   
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -166,7 +167,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                       onClick={() => window.open('mailto:soporte@morna.com?subject=Error Crítico - Urgente', '_blank')}
                     >
                       <MessageCircle className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                      Contactar Soporte
+                      {t('errors.global.contactSupport')}
                     </Button>
                     
                     <Button
@@ -175,7 +176,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                       onClick={() => window.open('https://wa.me/584121234567?text=Error crítico en la aplicación - Necesito ayuda urgente', '_blank')}
                     >
                       <Zap className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                      WhatsApp Urgente
+                      {t('errors.global.whatsapp')}
                     </Button>
                   </div>
                 </div>
@@ -185,21 +186,21 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               <div className="mt-8 flex justify-center space-x-6 opacity-50">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-slate-600 dark:text-slate-400">Error Crítico</span>
+                  <span className="text-xs text-slate-600 dark:text-slate-400">{t('errors.global.statusCritical')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse delay-300"></div>
-                  <span className="text-xs text-slate-600 dark:text-slate-400">Equipo Notificado</span>
+                  <span className="text-xs text-slate-600 dark:text-slate-400">{t('errors.global.statusNotified')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse delay-600"></div>
-                  <span className="text-xs text-slate-600 dark:text-slate-400">Trabajando en Solución</span>
+                  <span className="text-xs text-slate-600 dark:text-slate-400">{t('errors.global.statusWorking')}</span>
                 </div>
               </div>
 
               {/* Footer */}
               <div className="mt-12 text-xs text-slate-500 dark:text-slate-400">
-                <p>Error ID: {error.digest || 'N/A'} | Timestamp: {new Date().toISOString()}</p>
+                <p>{t('errors.global.errorId')}: {error.digest || 'N/A'} | {t('errors.global.timestamp')}: {new Date().toISOString()}</p>
               </div>
             </div>
           </div>

@@ -2418,6 +2418,76 @@
   }
   }
 
+  ,"notFound": {
+    "title": "Oops! Page not found",
+    "description": "The page you're looking for doesn't exist or was moved. Don't worry, we'll help you find what you need.",
+    "goBack": "Go Back",
+    "goHome": "Go Home",
+    "refresh": "Refresh Page",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact Support",
+    "searchSite": "Search the Site"
+  }
+
+  ,"errors": {
+    "boundary": {
+      "generic": "Error",
+      "networkTitle": "Connection Error",
+      "networkMessage": "It seems there's a problem with your internet connection. Check it and try again.",
+      "serverTitle": "Server Error",
+      "serverMessage": "We're experiencing technical issues. Our team is already working to fix it.",
+      "clientTitle": "Client Error",
+      "clientMessage": "Something went wrong in your browser. Try reloading the page or clearing the cache.",
+      "unexpectedTitle": "Unexpected Error",
+      "unexpectedMessage": "Something unexpected happened. Don't worry, our team has been notified.",
+      "devDetails": "Error Details (Development Only)",
+      "tryAgain": "Try Again",
+      "report": "Report Error",
+      "statusDetected": "Error Detected",
+      "statusNotified": "Team Notified"
+    },
+    "global": {
+      "critical": "Critical Error",
+      "mainTitle": "Something went very wrong!",
+      "mainMessage": "We've detected a critical issue in the application. Our technical team has been notified and is working to resolve it.",
+      "devDetails": "Critical Error Details (Development Only)",
+      "recover": "Attempt Recovery",
+      "reloadApp": "Reload Application",
+      "urgentHelp": "Need urgent help?",
+      "urgentText": "If the problem persists, contact our technical support team immediately.",
+      "contactSupport": "Contact Support",
+      "whatsapp": "Urgent WhatsApp",
+      "statusCritical": "Critical Error",
+      "statusNotified": "Team Notified",
+      "statusWorking": "Working on Solution",
+      "errorId": "Error ID",
+      "timestamp": "Timestamp"
+    },
+    "unauthorized": {
+      "code": "403",
+      "title": "Access Denied",
+      "message": "You don't have permission to access this page. Check your credentials or contact the administrator.",
+      "login": "Login",
+      "requestAccess": "Request Access",
+      "needHelp": "Need help?",
+      "helpText": "If you believe you should have access to this page, contact our support team.",
+      "securityTips": "Security Tips",
+      "tips": {
+        "checkAccount": "Verify you're using the correct account",
+        "ensurePermissions": "Make sure you have the required permissions",
+        "contactAdmin": "Contact the administrator if you need access"
+      },
+      "statusAccessDenied": "Access Denied",
+      "statusVerification": "Verification Required"
+    },
+    "actions": {
+      "goBack": "Go Back",
+      "goHome": "Go Home",
+      "reload": "Reload Page",
+      "contactSupport": "Contact Support"
+    }
+  }
+
 }
 
 

@@ -17,6 +17,7 @@ import {
   Server
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -28,6 +29,7 @@ export default function Error({ error, reset }: ErrorProps) {
   const [mounted, setMounted] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [errorType, setErrorType] = useState<'network' | 'server' | 'client' | 'unknown'>('unknown');
+  const { t } = useTranslation();
 
   useEffect(() => {
     setMounted(true);
@@ -61,29 +63,29 @@ export default function Error({ error, reset }: ErrorProps) {
       case 'network':
         return {
           icon: <Wifi className="w-8 h-8 text-orange-500 animate-pulse" />,
-          title: 'Error de Conexión',
-          message: 'Parece que hay un problema con tu conexión a internet. Verifica tu conexión e intenta nuevamente.',
+          title: t('errors.boundary.networkTitle'),
+          message: t('errors.boundary.networkMessage'),
           color: 'from-orange-500 to-red-500'
         };
       case 'server':
         return {
           icon: <Server className="w-8 h-8 text-red-500 animate-pulse" />,
-          title: 'Error del Servidor',
-          message: 'Estamos experimentando problemas técnicos. Nuestro equipo ya está trabajando para solucionarlo.',
+          title: t('errors.boundary.serverTitle'),
+          message: t('errors.boundary.serverMessage'),
           color: 'from-red-500 to-pink-500'
         };
       case 'client':
         return {
           icon: <Bug className="w-8 h-8 text-yellow-500 animate-pulse" />,
-          title: 'Error del Cliente',
-          message: 'Algo salió mal en tu navegador. Intenta recargar la página o limpiar el caché.',
+          title: t('errors.boundary.clientTitle'),
+          message: t('errors.boundary.clientMessage'),
           color: 'from-yellow-500 to-orange-500'
         };
       default:
         return {
           icon: <AlertTriangle className="w-8 h-8 text-purple-500 animate-pulse" />,
-          title: 'Error Inesperado',
-          message: 'Algo inesperado ha ocurrido. No te preocupes, nuestro equipo ha sido notificado.',
+          title: t('errors.boundary.unexpectedTitle'),
+          message: t('errors.boundary.unexpectedMessage'),
           color: 'from-purple-500 to-indigo-500'
         };
     }
@@ -135,7 +137,7 @@ export default function Error({ error, reset }: ErrorProps) {
               {errorInfo.icon}
             </div>
             <div className="text-6xl font-bold bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 bg-clip-text text-transparent animate-pulse">
-              Error
+              {t('errors.boundary.generic')}
             </div>
             {/* Animated Emoji */}
             <div className="mt-4">
@@ -160,10 +162,10 @@ export default function Error({ error, reset }: ErrorProps) {
             <div className="mb-8 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
               <details className="text-left">
                 <summary className="cursor-pointer text-sm font-medium text-red-800 dark:text-red-200 mb-2">
-                  Detalles del Error (Solo Desarrollo)
+                  {t('errors.boundary.devDetails')}
                 </summary>
                 <div className="text-xs text-red-700 dark:text-red-300 font-mono bg-red-100 dark:bg-red-900/30 p-3 rounded">
-                  <div><strong>Mensaje:</strong> {error.message}</div>
+                  <div><strong>Message:</strong> {error.message}</div>
                   {error.digest && <div><strong>Digest:</strong> {error.digest}</div>}
                   <div><strong>Stack:</strong></div>
                   <pre className="whitespace-pre-wrap text-xs">{error.stack}</pre>
@@ -180,7 +182,7 @@ export default function Error({ error, reset }: ErrorProps) {
                 className="group bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
               >
                 <RefreshCw className="w-5 h-5 mr-2 group-hover:rotate-180 transition-transform duration-500" />
-                Intentar Nuevamente
+                {t('errors.boundary.tryAgain')}
               </Button>
               
               <Button
@@ -188,7 +190,7 @@ export default function Error({ error, reset }: ErrorProps) {
                 className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
               >
                 <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-                Volver Atrás
+                {t('errors.actions.goBack')}
               </Button>
             </div>
 
@@ -198,7 +200,7 @@ export default function Error({ error, reset }: ErrorProps) {
               className="group border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 px-6 py-2 rounded-lg transition-all duration-300"
             >
               <Home className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-              Ir al Inicio
+              {t('errors.actions.goHome')}
             </Button>
           </div>
 
@@ -207,7 +209,7 @@ export default function Error({ error, reset }: ErrorProps) {
             <div className="flex items-center justify-center mb-4">
               <Shield className="w-6 h-6 text-blue-500 mr-2" />
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                ¿Necesitas ayuda?
+                {t('notFound.needHelp')}
               </h3>
             </div>
             
@@ -218,7 +220,7 @@ export default function Error({ error, reset }: ErrorProps) {
                   className="group text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <MessageCircle className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Contactar Soporte
+                  {t('errors.actions.contactSupport')}
                 </Button>
               </Link>
               
@@ -227,7 +229,7 @@ export default function Error({ error, reset }: ErrorProps) {
                 className="group text-slate-600 dark:text-slate-300 hover:text-green-600 dark:hover:text-green-400 transition-colors"
               >
                 <Zap className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                Reportar Error
+                {t('errors.boundary.report')}
               </Button>
             </div>
           </div>
@@ -236,11 +238,11 @@ export default function Error({ error, reset }: ErrorProps) {
           <div className="mt-8 flex justify-center space-x-6 opacity-50">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-              <span className="text-xs text-slate-600 dark:text-slate-400">Error Detectado</span>
+              <span className="text-xs text-slate-600 dark:text-slate-400">{t('errors.boundary.statusDetected')}</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse delay-300"></div>
-              <span className="text-xs text-slate-600 dark:text-slate-400">Equipo Notificado</span>
+              <span className="text-xs text-slate-600 dark:text-slate-400">{t('errors.boundary.statusNotified')}</span>
             </div>
           </div>
         </div>

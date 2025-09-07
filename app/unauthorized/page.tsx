@@ -16,11 +16,13 @@ import {
   Key
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function Unauthorized() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setMounted(true);
@@ -88,7 +90,7 @@ export default function Unauthorized() {
               </div>
             </div>
             <div className="text-6xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent animate-pulse">
-              403
+              {t('errors.unauthorized.code')}
             </div>
             {/* Animated Emoji */}
             <div className="mt-4">
@@ -101,11 +103,10 @@ export default function Unauthorized() {
           {/* Main Message */}
           <div className="mb-8 space-y-4">
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
-              Acceso Denegado
+              {t('errors.unauthorized.title')}
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-300 max-w-md mx-auto">
-              No tienes permisos para acceder a esta página. 
-              Verifica tus credenciales o contacta al administrador.
+              {t('errors.unauthorized.message')}
             </p>
           </div>
 
@@ -117,7 +118,7 @@ export default function Unauthorized() {
                 className="group bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
               >
                 <Key className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                Iniciar Sesión
+                {t('errors.unauthorized.login')}
               </Button>
               
               <Button
@@ -125,7 +126,7 @@ export default function Unauthorized() {
                 className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
               >
                 <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-                Volver Atrás
+                {t('errors.actions.goBack')}
               </Button>
             </div>
 
@@ -135,7 +136,7 @@ export default function Unauthorized() {
               className="group border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 px-6 py-2 rounded-lg transition-all duration-300"
             >
               <Home className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-              Ir al Inicio
+              {t('errors.actions.goHome')}
             </Button>
           </div>
 
@@ -144,13 +145,13 @@ export default function Unauthorized() {
             <div className="flex items-center justify-center mb-4">
               <Shield className="w-6 h-6 text-blue-500 mr-2" />
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                ¿Necesitas ayuda?
+                {t('errors.unauthorized.needHelp')}
               </h3>
             </div>
             
             <div className="space-y-4">
               <p className="text-sm text-slate-600 dark:text-slate-300">
-                Si crees que deberías tener acceso a esta página, contacta a nuestro equipo de soporte.
+                {t('errors.unauthorized.helpText')}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -160,7 +161,7 @@ export default function Unauthorized() {
                     className="group text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
                     <Zap className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                    Contactar Soporte
+                    {t('errors.actions.contactSupport')}
                   </Button>
                 </Link>
                 
@@ -169,7 +170,7 @@ export default function Unauthorized() {
                   className="group text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                 >
                   <User className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Solicitar Acceso
+                  {t('errors.unauthorized.requestAccess')}
                 </Button>
               </div>
             </div>
@@ -178,12 +179,12 @@ export default function Unauthorized() {
           {/* Security Tips */}
           <div className="mt-8 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-purple-200/50 dark:border-purple-700/50">
             <h4 className="text-sm font-semibold text-purple-800 dark:text-purple-200 mb-2">
-              💡 Consejos de Seguridad
+              💡 {t('errors.unauthorized.securityTips')}
             </h4>
             <ul className="text-xs text-purple-700 dark:text-purple-300 space-y-1 text-left">
-              <li>• Verifica que estés usando la cuenta correcta</li>
-              <li>• Asegúrate de tener los permisos necesarios</li>
-              <li>• Contacta al administrador si necesitas acceso</li>
+              <li>• {t('errors.unauthorized.tips.checkAccount')}</li>
+              <li>• {t('errors.unauthorized.tips.ensurePermissions')}</li>
+              <li>• {t('errors.unauthorized.tips.contactAdmin')}</li>
             </ul>
           </div>
 
@@ -191,11 +192,11 @@ export default function Unauthorized() {
           <div className="mt-8 flex justify-center space-x-6 opacity-50">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-              <span className="text-xs text-slate-600 dark:text-slate-400">Acceso Denegado</span>
+              <span className="text-xs text-slate-600 dark:text-slate-400">{t('errors.unauthorized.statusAccessDenied')}</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse delay-300"></div>
-              <span className="text-xs text-slate-600 dark:text-slate-400">Verificación Requerida</span>
+              <span className="text-xs text-slate-600 dark:text-slate-400">{t('errors.unauthorized.statusVerification')}</span>
             </div>
           </div>
         </div>
