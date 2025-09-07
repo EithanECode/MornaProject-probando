@@ -107,6 +107,44 @@ interface NewOrderData {
   client_name?: string;
 }
 
+// ================== MAPEOS DE ESTADOS (1..13) ==================
+// Referencia cruzada con `app/cliente/mis-pedidos/page.tsx` donde:
+// 1 creado, 2 recibido, 3 cotizado, 4-7 procesando, 8-9 enviado, 10-12 pasos finales, 13 entregado.
+// En la vista admin usamos un subconjunto de estados UI:
+//   'esperando-pago' | 'pendiente-china' | 'pendiente-vzla' | 'en-transito' | 'entregado' | 'cancelado'
+// Objetivo: cubrir todos los estados 1..13 y evitar que caigan en default 'pendiente-china'.
+// Si en el futuro se requiere granularidad (aduana, listo-entrega, etc.) se pueden añadir claves nuevas.
+
+const NUMERIC_STATE_TO_UI: Record<number, Order['status']> = {
+  1: 'esperando-pago',      // Creado / esperando confirmación de pago
+  2: 'pendiente-china',     // Recibido, pendiente gestión China
+  3: 'pendiente-china',     // Cotizado (seguimos tratándolo como pendiente-china hasta asignación Vzla)
+  4: 'pendiente-vzla',      // Asignado / pendiente Venezuela
+  5: 'en-transito',         // Procesando / logística
+  6: 'en-transito',
+  7: 'en-transito',
+  8: 'en-transito',         // Enviado a Vzla
+  9: 'en-transito',         // Llegando a Vzla
+  10: 'en-transito',        // Aduana
+  11: 'en-transito',        // Recibido en almacén
+  12: 'en-transito',        // Listo para entrega
+  13: 'entregado',          // Entregado final
+};
+
+// Estado cancelado no está definido en la serie 1..13; mantenemos 9 (provisional) para compat si existía antes.
+// Si se define un número oficial para cancelado, actualizar aquí.
+const CANCELLED_NUMERIC_FALLBACK = 9; // TODO: reemplazar si existe estado numérico real de cancelación
+
+// Para operaciones de escritura (UI -> numérico) elegimos un número representativo.
+const UI_STATE_TO_NUMERIC: Record<Order['status'], number> = {
+  'esperando-pago': 1,
+  'pendiente-china': 2, // Usamos 2 (recibido) como punto representativo inicial
+  'pendiente-vzla': 4,
+  'en-transito': 5,     // Primer estado de tránsito
+  'entregado': 13,
+  'cancelado': CANCELLED_NUMERIC_FALLBACK,
+};
+
 // Memoizar las configuraciones para evitar recreaciones
 const STATUS_CONFIG = {
   // Dark theme – hover sólo al pasar por el badge (sin depender del hover de la fila)
@@ -380,23 +418,13 @@ export default function PedidosPage() {
   // Map DB orders to UI shape whenever adminOrders changes
   useEffect(() => {
     if (!adminOrders) return;
-    // Map numeric state to UI status labels
-    const statusMap: Record<number, Order['status']> = {
-      1: 'esperando-pago',
-      2: 'en-transito',
-      5: 'entregado',
-      3: 'pendiente-china',
-      4: 'pendiente-vzla',
-      6: 'en-transito',
-      7: 'en-transito',
-      8: 'entregado',
-    };
+    // Mapear estado numérico (1..13) a estado UI consolidado
     const now = new Date();
     const mapped: Order[] = adminOrders.map((o: AdminOrderListItem) => {
       const created = o.created_at ? new Date(o.created_at) : now;
       const daysElapsed = Math.max(0, Math.floor((now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24)));
       const assignedTo: Order['assignedTo'] = o.asignedEChina ? 'china' : 'vzla';
-      const status = statusMap[o.state] ?? 'pendiente-china';
+      const status = NUMERIC_STATE_TO_UI[o.state as number] ?? 'pendiente-china';
       return {
         id: String(o.id),
         client: o.clientName ?? 'Desconocido',
@@ -787,22 +815,13 @@ export default function PedidosPage() {
   const handleUpdateOrder = async () => {
     if (!editFormData) return;
     try {
-      // Mapear estado UI -> state numérico
-      const stateMap: Record<Order['status'], number> = {
-        'esperando-pago': 1,
-        'en-transito': 6, // provisional (también podría ser 2/7)
-        'entregado': 8,   // provisional (antes 5/8); ajustable
-        'pendiente-china': 3,
-        'pendiente-vzla': 4,
-        'cancelado': 9,   // provisional; ajustable
-      };
-
-      const mappedState = stateMap[editFormData.status];
+  // Mapear estado UI -> state numérico usando mapping central
+  const mappedState = UI_STATE_TO_NUMERIC[editFormData.status];
       const body: any = {
         description: editFormData.description,
       };
-      // Solo enviar state si está en el rango permitido provisional (1..8)
-      if (typeof mappedState === 'number' && mappedState >= 1 && mappedState <= 8) {
+  // Solo enviar state si está en el rango 1..13 (incluyendo fallback cancelado si aplica)
+  if (typeof mappedState === 'number' && mappedState >= 1 && mappedState <= 13) {
         body.state = mappedState;
       }
 

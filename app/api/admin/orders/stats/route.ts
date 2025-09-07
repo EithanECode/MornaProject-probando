@@ -2,24 +2,21 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 import { NextResponse } from 'next/server';
 import { getSupabaseServiceRoleClient } from '@/lib/supabase/server';
+import { PENDING_STATES, TRANSIT_STATES, DELIVERED_STATES } from '@/lib/constants/orderStates';
 
 export async function GET() {
   try {
     const supabase = getSupabaseServiceRoleClient();
 
     // Counts using head:true to avoid transferring rows
-    const [
-      totalActivosRes,
-      pendientesRes,
-      transitoRes,
-      entregadosRes,
-      ingresosRes,
-    ] = await Promise.all([
-      supabase.from('orders').select('id', { count: 'exact', head: true }).neq('state', 5),
-      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('state', 1),
-      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('state', 2),
-      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('state', 5),
-      supabase.from('orders').select('estimatedBudget').eq('state', 1), // sum client-side
+    // Construir filtros con in() para reducir llamadas múltiples si se quisiera;
+    // aquí mantenemos múltiples queries por simplicidad y head:true.
+    const [totalActivosRes, pendientesRes, transitoRes, entregadosRes, ingresosRes] = await Promise.all([
+      supabase.from('orders').select('id', { count: 'exact', head: true }).in('state', [...PENDING_STATES, ...TRANSIT_STATES, ...DELIVERED_STATES]),
+      supabase.from('orders').select('id', { count: 'exact', head: true }).in('state', PENDING_STATES as any),
+      supabase.from('orders').select('id', { count: 'exact', head: true }).in('state', TRANSIT_STATES as any),
+      supabase.from('orders').select('id', { count: 'exact', head: true }).in('state', DELIVERED_STATES as any),
+      supabase.from('orders').select('estimatedBudget').in('state', PENDING_STATES as any),
     ]);
 
     if (totalActivosRes.error) throw totalActivosRes.error;

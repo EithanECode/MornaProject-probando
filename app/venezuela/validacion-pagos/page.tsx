@@ -40,6 +40,7 @@ import {
 } from 'lucide-react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useVzlaContext } from '@/lib/VzlaContext';
+import { useRealtimeVzlaPayments } from '@/hooks/use-realtime-vzla-payments';
 import { useTranslation } from '@/hooks/useTranslation';
 
 // ================================
@@ -555,6 +556,9 @@ const PaymentValidationDashboard: React.FC = () => {
   const { vzlaId } = useVzlaContext();
   useEffect(() => { setMounted(true); }, []);
 
+  // Realtime: recargar cuando cambian pedidos pendientes relacionados
+  useRealtimeVzlaPayments(() => setRefreshIndex(i => i + 1), vzlaId);
+
   useEffect(() => {
     const load = async () => {
       if (!vzlaId) return;
@@ -580,7 +584,7 @@ const PaymentValidationDashboard: React.FC = () => {
           .from('orders')
           .select(selectCols)
           .eq('asigned', vzlaId)
-          .eq('state', 4)
+          .gte('state', 4)
           .order('created_at', { ascending: false });
 
   // Fallback 1: "asignnedEVzla" (solo si el error es de columna)
@@ -590,7 +594,7 @@ const PaymentValidationDashboard: React.FC = () => {
             .from('orders')
             .select(selectCols)
             .eq('asignnedEVzla', vzlaId)
-            .eq('state', 4)
+            .gte('state', 4)
             .order('created_at', { ascending: false });
           data = fb1.data as any[] | null;
           error = fb1.error as any;
@@ -603,7 +607,7 @@ const PaymentValidationDashboard: React.FC = () => {
             .from('orders')
             .select(selectCols)
             .eq('asignedEVzla', vzlaId)
-            .eq('state', 4)
+            .gte('state', 4)
             .order('created_at', { ascending: false });
           data = fb2.data as any[] | null;
           error = fb2.error as any;
@@ -622,18 +626,21 @@ const PaymentValidationDashboard: React.FC = () => {
           clientMap = new Map((clients || []).map((c: any) => [c.user_id, c.name || 'Cliente']));
         }
 
-  const mapped: Payment[] = (data as DbOrder[] | null)?.map((o) => ({
-          id: String(o.id),
-          usuario: clientMap.get(o.client_id) || 'Cliente',
-          fecha: o.created_at || new Date().toISOString(),
-          idProducto: o.productName ? `#${o.productName}` : `#ORD-${o.id}`,
-          monto: Number(o.totalQuote ?? o.estimatedBudget ?? 0),
-          referencia: `ORD-${o.id}`,
-          estado: 'pendiente',
-          metodo: 'Transferencia',
-          destino: 'Venezuela',
-          descripcion: o.description || 'Pedido en proceso de pago'
-        })) || [];
+  const mapped: Payment[] = (data as DbOrder[] | null)?.map((o) => {
+          const estado: Payment['estado'] = o.state === 4 ? 'pendiente' : 'completado';
+          return {
+            id: String(o.id),
+            usuario: clientMap.get(o.client_id) || 'Cliente',
+            fecha: o.created_at || new Date().toISOString(),
+            idProducto: o.productName ? `#${o.productName}` : `#ORD-${o.id}`,
+            monto: Number(o.totalQuote ?? o.estimatedBudget ?? 0),
+            referencia: `ORD-${o.id}`,
+            estado,
+            metodo: 'Transferencia',
+            destino: 'Venezuela',
+            descripcion: o.description || 'Pedido en proceso de pago'
+          };
+        }) || [];
 
   setPayments(mapped);
       } catch (e: any) {

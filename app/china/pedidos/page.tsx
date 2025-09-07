@@ -41,6 +41,11 @@ import {
 } from 'lucide-react';
 import { Boxes } from 'lucide-react';
 
+// NUEVO: importar contexto y hook realtime
+import { useChinaContext } from '@/lib/ChinaContext';
+import { useRealtimeChina } from '@/hooks/use-realtime-china';
+import { getSupabaseBrowserClient as _getClient } from '@/lib/supabase/client';
+
 // Tipos
 interface Pedido {
   id: number;
@@ -87,13 +92,21 @@ interface ContainerItem {
 
 export default function PedidosChina() {
   const { t } = useTranslation();
+  // NUEVO: obtener chinaId del contexto
+  const { chinaId } = useChinaContext();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(false);
   // Mapear state numérico a texto usado en China
   function mapStateToEstado(state: number): Pedido['estado'] {
-    if (state >= 5) return 'enviado';
+    // Rango solicitado para la vista China:
+    // 2: pendiente
+    // 3-4: procesando (3 se mostrará como cotizado donde aplique)
+    // 5-8: enviado
+    if (state >= 5 && state <= 8) return 'enviado';
     if (state === 4) return 'procesando';
     if (state === 3) return 'cotizado';
+    if (state === 2) return 'pendiente';
+    // Fallback: cualquier otro se considera pendiente aquí
     return 'pendiente';
   }
 
@@ -107,8 +120,8 @@ export default function PedidosChina() {
     if (s === 4) return { label: t('chinese.ordersPage.badges.processing'), className: `${base} bg-purple-100 text-purple-800 border-purple-200` };
     if (s === 5) return { label: t('chinese.ordersPage.badges.readyToPack'), className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
     if (s === 6) return { label: t('chinese.ordersPage.badges.inBox'), className: `${base} bg-indigo-100 text-indigo-800 border-indigo-200` };
-    if (s === 7) return { label: t('chinese.ordersPage.badges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
-    if (s >= 9) return { label: t('chinese.ordersPage.badges.shippedVzla'), className: `${base} bg-green-100 text-green-800 border-green-200` };
+  if (s === 7 || s === 8) return { label: t('chinese.ordersPage.badges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
+  if (s >= 9) return { label: t('chinese.ordersPage.badges.shippedVzla'), className: `${base} bg-green-100 text-green-800 border-green-200` };
     return { label: t('chinese.ordersPage.badges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
   }
 
@@ -161,6 +174,7 @@ export default function PedidosChina() {
           cliente: order.clientName || '',
           producto: order.productName || '',
           cantidad: order.quantity || 0,
+            // Ocultamos state 1 desde la perspectiva China (solo mostrar a partir de 2)
             estado: mapStateToEstado(order.state),
             cotizado: order.state === 3 || (!!order.totalQuote && Number(order.totalQuote) > 0),
             precio: order.totalQuote ? Number(order.totalQuote) / Math.max(1, Number(order.quantity || 1)) : null,
@@ -242,10 +256,98 @@ export default function PedidosChina() {
   const modalVerPedidosContRef = useRef<HTMLDivElement>(null);
   const [modalVerPedidosCont, setModalVerPedidosCont] = useState<{ open: boolean; containerId?: number | string }>({ open: false });
   const [isModalVerPedidosContClosing, setIsModalVerPedidosContClosing] = useState(false);
+  // Refs para condiciones en handlers realtime sin rehacer canales
+  const activeTabRef = useRef(activeTab);
+  const modalEmpaquetarRefState = useRef(modalEmpaquetar?.open);
+  const modalEmpaquetarCajaRefState = useRef(modalEmpaquetarCaja.open);
+  const modalVerPedidosRefState = useRef(modalVerPedidos.open);
+  const modalVerPedidosContRefState = useRef(modalVerPedidosCont.open);
+
+  useEffect(() => { activeTabRef.current = activeTab; }, [activeTab]);
+  useEffect(() => { modalEmpaquetarRefState.current = modalEmpaquetar?.open; }, [modalEmpaquetar?.open]);
+  useEffect(() => { modalEmpaquetarCajaRefState.current = modalEmpaquetarCaja.open; }, [modalEmpaquetarCaja.open]);
+  useEffect(() => { modalVerPedidosRefState.current = modalVerPedidos.open; }, [modalVerPedidos.open]);
+  useEffect(() => { modalVerPedidosContRefState.current = modalVerPedidosCont.open; }, [modalVerPedidosCont.open]);
 
   useEffect(() => {
   setMounted(true);
   fetchPedidos();
+  }, []);
+
+  // NUEVO: suscripción realtime (refetch cuando evento relevante)
+  useRealtimeChina(() => {
+    // Evitar refetch si todavía no hay chinaId
+    if (!chinaId) return;
+    fetchPedidos();
+  }, chinaId);
+
+  // Realtime para boxes y containers (suscripción única con debounce)
+  useEffect(() => {
+    const supabase = _getClient();
+
+    let boxesTimer: any = null;
+    let containersTimer: any = null;
+    const debounce = (which: 'boxes' | 'containers', fn: () => void) => {
+      if (which === 'boxes') {
+        if (boxesTimer) clearTimeout(boxesTimer);
+        boxesTimer = setTimeout(fn, 120);
+      } else {
+        if (containersTimer) clearTimeout(containersTimer);
+        containersTimer = setTimeout(fn, 150);
+      }
+    };
+
+    const boxesChannel = supabase
+      .channel('china-boxes-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'boxes' }, () => {
+        const tab = activeTabRef.current;
+        const needsBoxes = tab === 'cajas' || modalEmpaquetarRefState.current || modalEmpaquetarCajaRefState.current || modalVerPedidosRefState.current;
+        const needsContainers = tab === 'contenedores' || modalVerPedidosContRefState.current;
+        if (needsBoxes) debounce('boxes', fetchBoxes);
+        if (needsContainers) debounce('containers', fetchContainers);
+      })
+      .subscribe();
+
+    const containersChannel = supabase
+      .channel('china-containers-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'containers' }, () => {
+        const tab = activeTabRef.current;
+        const needsContainers = tab === 'contenedores' || modalEmpaquetarCajaRefState.current || modalVerPedidosContRefState.current;
+        const needsBoxes = tab === 'cajas' || modalVerPedidosRefState.current || modalEmpaquetarRefState.current;
+        if (needsContainers) debounce('containers', fetchContainers);
+        if (needsBoxes) debounce('boxes', fetchBoxes);
+      })
+      .subscribe();
+
+    // Orders (para actualizar conteos de pedidos en cajas y refrescar lista principal si procede)
+    const ordersChannel = supabase
+      .channel('china-orders-counts')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
+        const tab = activeTabRef.current;
+        // Si afecta a la lista principal de pedidos (cambios de estado/asignaciones)
+        if (tab === 'pedidos') {
+          debounce('boxes', fetchPedidos); // reutilizamos debounce
+        }
+        // Actualizar conteos por caja si tenemos cajas cargadas
+        // Se hace un fetchBoxes ligero sólo si estamos viendo cajas o modales que dependen
+        const needsBoxCounts = tab === 'cajas' || modalVerPedidosRefState.current || modalEmpaquetarRefState.current || modalEmpaquetarCajaRefState.current;
+        if (needsBoxCounts) {
+          debounce('boxes', fetchBoxes); // fetchBoxes recalcula conteos
+        }
+        // Si estamos viendo un contenedor y los pedidos cambian (p.ej asignaciones que mueven box state), podemos querer refrescar boxes por contenedor
+        if (modalVerPedidosContRefState.current) {
+          debounce('containers', fetchContainers);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      if (boxesTimer) clearTimeout(boxesTimer);
+      if (containersTimer) clearTimeout(containersTimer);
+  supabase.removeChannel(boxesChannel);
+  supabase.removeChannel(containersChannel);
+  supabase.removeChannel(ordersChannel);
+    };
   }, []);
 
   // Scroll lock cuando cualquier modal está abierto
@@ -624,7 +726,8 @@ export default function PedidosChina() {
         cliente: order.clientName || order.client || '—',
         producto: order.productName || order.product || '—',
         cantidad: Number(order.quantity || 0),
-        estado: mapStateToEstado(Number(order.state || 2)),
+  // Si viene null/undefined asumimos 2, y ocultamos state 1
+  estado: mapStateToEstado(Number(order.state || 2)),
         cotizado: Number(order.state) === 3 || (!!order.totalQuote && Number(order.totalQuote) > 0),
         precio: order.totalQuote ? Number(order.totalQuote) / Math.max(1, Number(order.quantity || 1)) : null,
         fecha: order.created_at || order.creation_date || new Date().toISOString(),
@@ -1119,12 +1222,7 @@ export default function PedidosChina() {
                     <Package className="h-5 w-5" />
                     {t('chinese.ordersPage.orders.listTitle')}
                   </CardTitle>
-                  <div className="flex items-center">
-                    <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={fetchPedidos} disabled={loading}>
-                      <RefreshCw className="h-4 w-4" />
-                      {loading ? t('chinese.ordersPage.orders.refreshing') : t('chinese.ordersPage.orders.refresh')}
-                    </Button>
-                  </div>
+                  {/* Botón de refrescar eliminado: ahora la lista se actualiza vía Realtime */}
                 </div>
               </CardHeader>
               <CardContent>
@@ -1721,7 +1819,7 @@ export default function PedidosChina() {
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold text-slate-900">#CONT-{id}</h3>
                             </div>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+                            <div className="flex items-center gap-4 text-xs text-slate-500">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
                                 {created ? new Date(created).toLocaleString('es-ES') : '—'}
@@ -1729,7 +1827,7 @@ export default function PedidosChina() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto sm:justify-end">
+                        <div className="flex items-center gap-3">
                           <Badge className={`${getContainerBadge(stateNum).className}`}>
                             {getContainerBadge(stateNum).label}
                           </Badge>
@@ -1821,7 +1919,7 @@ export default function PedidosChina() {
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
                             </div>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+                            <div className="flex items-center gap-4 text-xs text-slate-500">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
                                 {created ? new Date(created).toLocaleString('es-ES') : '—'}
@@ -1833,7 +1931,7 @@ export default function PedidosChina() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto sm:justify-end">
+                        <div className="flex flex-wrap items-center gap-3">
                           <Badge className={`${getBoxBadge(stateNum).className}`}>
                             {getBoxBadge(stateNum).label}
                           </Badge>
@@ -2038,7 +2136,7 @@ export default function PedidosChina() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto sm:justify-end">
+                      <div className="flex flex-wrap items-center gap-3">
                         <Badge className={`${getOrderBadge(pedido.numericState).className}`}>
                           {getOrderBadge(pedido.numericState).label}
                         </Badge>
