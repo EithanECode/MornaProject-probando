@@ -374,7 +374,7 @@ export default function ChinaDashboard() {
           {/* Dashboard Principal */}
           <div className="space-y-8">
             {/* Estadísticas Principales */}
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs md:text-sm font-medium text-blue-800">{t('chinese.pending')}</CardTitle>
@@ -419,22 +419,6 @@ export default function ChinaDashboard() {
                   <p className="text-xs text-purple-700">{t('chinese.inTransit')}</p>
                   <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
                     <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(pedidosEnviados / totalPedidos) * 100}%`}}></div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-orange-800">{t('chinese.quality')}</CardTitle>
-                  <div className="p-1 md:p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
-                    <Star className="h-3 w-3 md:h-4 md:w-4 text-white" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{(promedioReputacion*100)/5}%</div>
-                  <p className="text-xs text-orange-700">{t('chinese.qualityScore')}</p>
-                  <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
-                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(promedioReputacion*100)/5}%`}}></div>
                   </div>
                 </CardContent>
               </Card>

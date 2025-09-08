@@ -86,6 +86,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     showNewPassword: false,
     showConfirmPassword: false
   });
+  const [changingPassword, setChangingPassword] = useState(false);
 
   // Estados de seguridad mínimos (solo para mostrar info de cuenta)
   const [security, setSecurity] = useState({
@@ -138,12 +139,63 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     setPasswordData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSavePassword = () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast({ title: t('admin.configuration.messages.passwordMismatch'), description: '', variant: 'destructive' });
-      return;
+  const handleSavePassword = async () => {
+    try {
+      if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+        toast({ title: t('common.error'), description: t('common.fillRequiredFields'), variant: 'destructive' });
+        return;
+      }
+      if (passwordData.newPassword !== passwordData.confirmPassword) {
+        toast({ title: t('admin.configuration.messages.passwordMismatch'), description: '', variant: 'destructive' });
+        return;
+      }
+      if (passwordData.newPassword.length < 6) {
+        toast({ title: t('common.error'), description: 'La nueva contraseña debe tener al menos 6 caracteres.', variant: 'destructive' });
+        return;
+      }
+
+      setChangingPassword(true);
+      const supabase = getSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !user.email) {
+        toast({ title: t('common.error'), description: 'Usuario no autenticado.', variant: 'destructive' });
+        return;
+      }
+
+      // Reautenticar con la contraseña actual
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: passwordData.currentPassword,
+      });
+      if (signInError) {
+        toast({ title: t('common.error'), description: 'La contraseña actual es incorrecta.', variant: 'destructive' });
+        return;
+      }
+
+      // Actualizar contraseña
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: passwordData.newPassword,
+      });
+      if (updateError) {
+        toast({ title: t('common.error'), description: `No se pudo actualizar la contraseña: ${updateError.message}`, variant: 'destructive' });
+        return;
+      }
+
+      // Limpiar campos y notificar
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+        showCurrentPassword: false,
+        showNewPassword: false,
+        showConfirmPassword: false,
+      });
+      toast({ title: t('admin.configuration.messages.passwordUpdated'), description: t('admin.configuration.messages.passwordUpdatedDesc'), variant: 'default' });
+    } catch (e: any) {
+      toast({ title: t('common.error'), description: e?.message || 'Error al actualizar la contraseña.', variant: 'destructive' });
+    } finally {
+      setChangingPassword(false);
     }
-    toast({ title: t('admin.configuration.messages.passwordUpdated'), description: t('admin.configuration.messages.passwordUpdatedDesc'), variant: 'default' });
   };
 
   // Convertir imagen a JPEG
@@ -429,9 +481,9 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                         </div>
                       </div>
                       <div className="flex justify-end">
-                        <Button onClick={handleSavePassword}>
+                        <Button onClick={handleSavePassword} disabled={changingPassword}>
                           <Save className="w-4 h-4 mr-2" />
-                          {t('common.save')}
+                          {changingPassword ? t('common.loading') : t('common.save')}
                         </Button>
                       </div>
                     </CardContent>

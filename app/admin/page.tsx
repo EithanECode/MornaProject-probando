@@ -164,7 +164,7 @@ export default function AdminDashboard() {
           {/* Dashboard Principal */}
           <div className="space-y-8">
             {/* Estadísticas Principales */}
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs md:text-sm font-medium text-blue-800">{t('admin.dashboard.stats.totalUsers')}</CardTitle>
@@ -197,22 +197,6 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:shadow-lg transition-all duration-300 group">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-red-800">{t('admin.dashboard.stats.criticalAlerts')}</CardTitle>
-                  <div className="p-1.5 md:p-2 bg-red-500 rounded-lg group-hover:scale-110 transition-transform">
-                    <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 text-white" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-red-900">{stats.criticalAlerts}</div>
-                  <p className="text-xs text-red-700">{t('admin.dashboard.stats.requireAttention')}</p>
-                  <div className="mt-2 w-full bg-red-200 rounded-full h-2">
-                    <div className="bg-red-500 h-2 rounded-full" style={{width: `${(stats.criticalAlerts / 10) * 100}%`}}></div>
-                  </div>
-                </CardContent>
-              </Card>
-
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs md:text-sm font-medium text-purple-800">{t('admin.dashboard.stats.totalRevenue')}</CardTitle>
@@ -238,7 +222,7 @@ export default function AdminDashboard() {
                 <p className="text-xs md:text-sm text-slate-600">{t('admin.dashboard.quickActions.subtitle')}</p>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   <Link href="/admin/usuarios">
                     <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
                       <div className="p-2 md:p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
@@ -255,14 +239,6 @@ export default function AdminDashboard() {
                       <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.configuration')}</span>
                     </Button>
                   </Link>
-                  <Link href="/admin/alertas">
-                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group w-full">
-                      <div className="p-2 md:p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
-                        <AlertTriangle className="h-6 w-6 md:h-8 md:w-8 text-red-600" />
-                      </div>
-                      <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.alerts')}</span>
-                    </Button>
-                  </Link>
                   <Link href="/admin/reportes">
                     <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
                       <div className="p-2 md:p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
@@ -271,30 +247,6 @@ export default function AdminDashboard() {
                       <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.reports')}</span>
                     </Button>
                   </Link>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Actividad Reciente */}
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="text-lg md:text-xl font-semibold">{t('admin.dashboard.recentActivity.title')}</CardTitle>
-                <p className="text-xs md:text-sm text-slate-600">{t('admin.dashboard.recentActivity.subtitle')}</p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 md:space-y-4">
-                  {recentActivities.map((activity) => (
-                    <div key={activity.id} className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors">
-                      <div className={`p-2 md:p-3 rounded-full ${getActivityColor(activity.type)}`}>
-                        {getActivityIcon(activity.type)}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-xs md:text-sm">{activity.action}</p>
-                        <p className="text-xs text-slate-600">{activity.user}</p>
-                      </div>
-                      <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-full">{activity.time}</span>
-                    </div>
-                  ))}
                 </div>
               </CardContent>
             </Card>
