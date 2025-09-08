@@ -1280,6 +1280,21 @@ export default function PedidosPage() {
 
           {/* Contenido por pasos */}
           <div className={`space-y-6 ${isTransitioning ? (stepDirection === 'next' ? 'opacity-0 translate-x-1' : 'opacity-0 -translate-x-1') : 'opacity-100 translate-x-0'} transition-all`}>
+            {showSuccessAnimation && (
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in-up">
+                <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-12 text-center space-y-6 shadow-2xl border border-slate-200/50 max-w-md mx-4 transform animate-fade-in-up">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="bg-green-500 rounded-full w-20 h-20 flex items-center justify-center shadow-lg">
+                      <Check className="w-12 h-12 text-white" />
+                    </div>
+                    <h3 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                      {t('client.recentOrders.newOrder.success.title')}
+                    </h3>
+                    <p className="text-slate-600 text-lg">{t('client.recentOrders.newOrder.success.message')}</p>
+                  </div>
+                </div>
+              </div>
+            )}
             {/* {t('admin.orders.steps.step1')} */}
             {currentStep === 1 && (
               <div className="space-y-6">
