@@ -274,7 +274,8 @@
           "title": "Profile Picture",
           "altText": "Profile picture",
           "uploadButton": "Change photo",
-          "deleteButton": "Remove photo"
+          "deleteButton": "Remove photo",
+          "confirmDeleteTitle": "Remove profile photo?"
         },
         "accountInfo": {
           "title": "Account Information",
@@ -1410,6 +1411,7 @@
     "delete": "Delete",
     "confirm": "Confirm",
     "close": "Close",
+  "actionCannotBeUndone": "This action cannot be undone.",
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",

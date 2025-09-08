@@ -551,7 +551,8 @@
           "title": "Foto de Perfil",
           "altText": "Foto de perfil",
           "uploadButton": "Cambiar foto",
-          "deleteButton": "Eliminar foto"
+          "deleteButton": "Eliminar foto",
+          "confirmDeleteTitle": "¿Eliminar foto de perfil?"
         },
         "accountInfo": {
           "title": "Información de la Cuenta",
@@ -1029,6 +1030,7 @@
     "delete": "Eliminar",
     "confirm": "Confirmar",
     "close": "Cerrar",
+  "actionCannotBeUndone": "Esta acción no se puede deshacer.",
     "loading": "Cargando...",
     "error": "Error",
   "success": "Éxito",

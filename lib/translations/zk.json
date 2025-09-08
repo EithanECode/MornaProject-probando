@@ -274,7 +274,8 @@
           "title": "头像",
           "altText": "头像",
           "uploadButton": "更换照片",
-          "deleteButton": "移除照片"
+          "deleteButton": "移除照片",
+          "confirmDeleteTitle": "移除头像？"
         },
         "accountInfo": {
           "title": "账户信息",
@@ -1411,6 +1412,7 @@
     "delete": "删除",
     "confirm": "确认",
     "close": "关闭",
+  "actionCannotBeUndone": "此操作无法撤销。",
     "loading": "加载中...",
     "error": "错误",
     "success": "成功",

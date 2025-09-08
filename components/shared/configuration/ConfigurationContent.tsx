@@ -93,6 +93,9 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     ipUltimoAcceso: `192.168.1.${Math.floor(Math.random() * 255)}`
   });
 
+  // UI state
+  const [deletingPhoto, setDeletingPhoto] = useState(false);
+
   useEffect(() => {
     setMounted(true);
 
@@ -213,6 +216,8 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
   };
 
   const handleDeletePhoto = async () => {
+    if (deletingPhoto) return;
+    setDeletingPhoto(true);
     try {
       const supabase = getSupabaseBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
@@ -242,6 +247,8 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
       toast({ title: 'Foto eliminada', description: 'La foto de perfil ha sido eliminada.', variant: 'default' });
     } catch (err) {
       toast({ title: 'Error', description: 'No se pudo eliminar la foto.', variant: 'destructive' });
+    } finally {
+      setDeletingPhoto(false);
     }
   };
 
@@ -457,23 +464,29 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                           <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button variant="outline" className="inline-flex items-center gap-2 w-full justify-center">
+                              <Button
+                                variant="outline"
+                                className="inline-flex items-center gap-2 w-full justify-center"
+                                disabled={!formData.fotoPreview || deletingPhoto}
+                              >
                                 <Trash2 className="w-4 h-4" /> {t('admin.configuration.profile.profilePicture.deleteButton')}
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  {`${t('common.delete')} ${t('admin.configuration.profile.profilePicture.title').toLowerCase()}?`}
-                                </AlertDialogTitle>
+                                <AlertDialogTitle>{t('admin.configuration.profile.profilePicture.confirmDeleteTitle')}</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Esta acción no se puede deshacer.
+                                  {t('common.actionCannotBeUndone')}
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDeletePhoto} className="bg-red-600 hover:bg-red-700 text-white">
-                                  {t('common.delete')}
+                                <AlertDialogAction
+                                  onClick={handleDeletePhoto}
+                                  className="bg-red-600 hover:bg-red-700 text-white"
+                                  disabled={deletingPhoto}
+                                >
+                                  {deletingPhoto ? t('common.loading') : t('common.delete')}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
