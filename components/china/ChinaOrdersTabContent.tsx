@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import {
-  Search, Filter, RefreshCw, Boxes, Package, List, CheckCircle, Calendar, Eye, Calculator, Pencil, Tag, User, Plus, Truck, Trash2, AlertTriangle, DollarSign
+  Search, Filter, Boxes, Package, List, CheckCircle, Calendar, Eye, Calculator, Pencil, Tag, User, Plus, Truck, Trash2, AlertTriangle, DollarSign
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -433,8 +433,8 @@ export default function ChinaOrdersTabContent() {
       </div>
 
       {/* Sub-tabs */}
-      <div className="flex justify-start">
-        <div className="inline-flex rounded-lg border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/60 backdrop-blur px-1 py-1 shadow-sm">
+      <div className="w-full">
+        <div className="flex w-full gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/60 backdrop-blur px-1 py-1 shadow-sm">
           {(['pedidos','cajas','contenedores'] as const).map(tab => {
             const label = tab === 'pedidos'
               ? t('admin.orders.china.tabs.ordersList')
@@ -442,7 +442,15 @@ export default function ChinaOrdersTabContent() {
               ? t('admin.orders.china.boxes.title')
               : t('admin.orders.china.containers.title');
             return (
-              <Button key={tab} variant={activeSubTab===tab? 'default':'ghost'} size="sm" onClick={()=>setActiveSubTab(tab)} className={`rounded-md ${activeSubTab===tab? 'bg-slate-900 text-white dark:bg-slate-200 dark:text-slate-900':'text-slate-700 dark:text-slate-300'}`}>{label}</Button>
+              <Button
+                key={tab}
+                variant={activeSubTab===tab? 'default':'ghost'}
+                size="sm"
+                onClick={()=>setActiveSubTab(tab)}
+                className={`flex-1 min-w-0 justify-center truncate rounded-md ${activeSubTab===tab? 'bg-slate-900 text-white dark:bg-slate-200 dark:text-slate-900':'text-slate-700 dark:text-slate-300'}`}
+              >
+                {label}
+              </Button>
             );
           })}
         </div>
@@ -453,12 +461,12 @@ export default function ChinaOrdersTabContent() {
       {activeSubTab==='pedidos' && (
         <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
           <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <CardTitle className="text-lg font-semibold flex items-center gap-2"><Package className="h-5 w-5" />{t('admin.orders.china.orders.listTitle')}</CardTitle>
               <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
-                <Input value={filtroCliente} onChange={e=>{ setFiltroCliente(e.target.value); }} placeholder={t('admin.orders.china.filters.searchClientPlaceholder')} className="h-10 w-56 md:w-64 px-3" />
+                <Input value={filtroCliente} onChange={e=>{ setFiltroCliente(e.target.value); }} placeholder={t('admin.orders.china.filters.searchClientPlaceholder')} className="h-10 w-full sm:w-64 px-3" />
                 <Select value={filtroEstado} onValueChange={setFiltroEstado as any}>
-                  <SelectTrigger className="h-10 w-48 md:w-56 px-3 whitespace-nowrap truncate"><SelectValue placeholder={t('admin.orders.china.filters.status')} /></SelectTrigger>
+                  <SelectTrigger className="h-10 w-full sm:w-56 px-3 whitespace-nowrap truncate"><SelectValue placeholder={t('admin.orders.china.filters.status')} /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">{t('admin.orders.china.filters.all')}</SelectItem>
                     <SelectItem value="pendiente">{t('admin.orders.china.filters.pending')}</SelectItem>
@@ -467,7 +475,7 @@ export default function ChinaOrdersTabContent() {
                     <SelectItem value="enviado">{t('admin.orders.china.filters.shipped')}</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="outline" size="sm" onClick={fetchPedidos} disabled={loadingPedidos} className="h-10 flex items-center gap-1"><RefreshCw className="h-4 w-4" />{loadingPedidos ? t('admin.orders.china.orders.refreshing') : t('admin.orders.china.orders.refresh')}</Button>
+                {/* Removed refresh button per request */}
               </div>
             </div>
           </CardHeader>
@@ -475,20 +483,20 @@ export default function ChinaOrdersTabContent() {
             {loadingPedidos ? (<div className="py-12 text-center text-sm">{t('common.loading')}</div>) : pedidosFiltrados.length===0 ? (<div className="py-12 text-center text-sm">{t('admin.orders.china.orders.notFoundTitle')}</div>) : (
               <div className="space-y-3">
         {pedidosFiltrados.map(p=>{ const badge=getOrderBadge(p.numericState); return (
-                  <div key={p.id} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
-                    <div className="flex items-center gap-4">
+                  <div key={p.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
+                    <div className="min-w-0 flex items-center gap-4">
                       <div className="p-3 bg-blue-100 dark:bg-blue-800/40 rounded-lg"><Package className="h-5 w-5 text-blue-600 dark:text-blue-300" /></div>
                       <div className="space-y-1">
-                        <h3 className="font-semibold text-slate-900 dark:text-white">#ORD-{p.id}</h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">{p.producto}</p>
-                        <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                        <h3 className="font-semibold text-slate-900 dark:text-white truncate">#ORD-{p.id}</h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 truncate">{p.producto}</p>
+                        <div className="flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400">
                           <span className="flex items-center gap-1"><User className="h-3 w-3" />{p.cliente}</span>
                           <span className="flex items-center gap-1"><Tag className="h-3 w-3" />{t('admin.orders.china.orders.qtyLabel')} {p.cantidad}</span>
                           <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{p.fecha? new Date(p.fecha).toLocaleDateString('es-ES'):'—'}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
           <Badge className={badge.className}>{getOrderBadgeLabel(p.numericState)}</Badge>
                       {p.precio && (<div className="text-right"><p className="text-sm font-semibold text-green-600 dark:text-green-400">${p.precio.toLocaleString()}</p><p className="text-[10px] text-slate-500">Total ${(p.precio*p.cantidad).toLocaleString()}</p></div>)}
                       <div className="flex items-center gap-2">
@@ -518,11 +526,11 @@ export default function ChinaOrdersTabContent() {
       {activeSubTab==='cajas' && (
         <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <CardTitle className="text-lg font-semibold flex items-center gap-2"><Boxes className="h-5 w-5" />{t('admin.orders.china.boxes.title')}</CardTitle>
               <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
-        <Input value={filtroCaja} onChange={e=>setFiltroCaja(e.target.value)} placeholder={t('admin.orders.china.filters.searchBoxPlaceholder')} className="h-10 w-56 md:w-64 px-3" />
-        <Button size="sm" variant="outline" onClick={fetchBoxes} disabled={boxesLoading} className="h-10"><RefreshCw className="h-4 w-4" />{boxesLoading ? t('admin.orders.china.orders.refreshing') : t('admin.orders.china.orders.refresh')}</Button>
+        <Input value={filtroCaja} onChange={e=>setFiltroCaja(e.target.value)} placeholder={t('admin.orders.china.filters.searchBoxPlaceholder')} className="h-10 w-full sm:w-64 px-3" />
+        {/* Removed refresh button per request */}
         <Button size="sm" className="h-10 bg-orange-600 hover:bg-orange-700" onClick={()=>setModalCrearCaja({open:true})}><Plus className="h-4 w-4" />{t('admin.orders.china.boxes.create')}</Button>
               </div>
             </div>
@@ -531,18 +539,18 @@ export default function ChinaOrdersTabContent() {
       {boxes.length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.boxes.noneTitle')}</div>) : boxes.filter((b,idx)=>{ if(!filtroCaja) return true; const id=b.box_id ?? b.boxes_id ?? b.id ?? idx; return String(id).toLowerCase().includes(filtroCaja.toLowerCase()); }).length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.boxes.notFoundTitle')}</div>) : (
               <div className="space-y-3">
         {boxes.filter((b,idx)=>{ if(!filtroCaja) return true; const id=b.box_id ?? b.boxes_id ?? b.id ?? idx; return String(id).toLowerCase().includes(filtroCaja.toLowerCase()); }).map((box,idx)=>{ const id=box.box_id ?? box.boxes_id ?? box.id ?? idx; const created=box.creation_date ?? box.created_at ?? ''; const stateNum=(box.state??1) as number; const countKey = box.box_id ?? box.boxes_id ?? box.id ?? id; const badge=getBoxBadge(stateNum); return (
-                  <div key={id as any} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
-                    <div className="flex items-center gap-4">
+                  <div key={id as any} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
+                    <div className="min-w-0 flex items-center gap-4">
                       <div className="p-3 bg-indigo-100 dark:bg-indigo-800/40 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600 dark:text-indigo-300" /></div>
                       <div className="space-y-1">
-                        <h3 className="font-semibold text-slate-900 dark:text-white">#BOX-{id}</h3>
-                        <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                        <h3 className="font-semibold text-slate-900 dark:text-white truncate">#BOX-{id}</h3>
+                        <div className="flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400">
                           <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created? new Date(created).toLocaleString('es-ES'):'—'}</span>
                           <span className="flex items-center gap-1"><List className="h-3 w-3" />Pedidos: {orderCountsByBoxMain[countKey as any] ?? 0}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
           <Badge className={badge.className}>{getBoxBadgeLabel(stateNum)}</Badge>
                       {stateNum===1 && (<Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" onClick={()=>{ const currentBoxId=box.box_id ?? box.boxes_id ?? box.id; setModalEmpaquetarCaja({open:true, boxId: currentBoxId}); if(containers.length===0) fetchContainers(); }}>{t('admin.orders.china.boxes.pack')}</Button>)}
                       {stateNum===2 && (<Button variant="outline" size="sm" onClick={()=>{ const currentBoxId=box.box_id ?? box.boxes_id ?? box.id; if(currentBoxId!==undefined) handleUnpackBox(currentBoxId as any); }}>{t('admin.orders.china.boxes.unpack')}</Button>)}
@@ -563,11 +571,11 @@ export default function ChinaOrdersTabContent() {
       {activeSubTab==='contenedores' && (
         <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <CardTitle className="text-lg font-semibold flex items-center gap-2"><Boxes className="h-5 w-5" />{t('admin.orders.china.containers.title')}</CardTitle>
               <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
-        <Input value={filtroContenedor} onChange={e=>setFiltroContenedor(e.target.value)} placeholder={t('admin.orders.china.filters.searchContainerPlaceholder')} className="h-10 w-56 md:w-64 px-3" />
-        <Button size="sm" variant="outline" onClick={fetchContainers} disabled={containersLoading} className="h-10"><RefreshCw className="h-4 w-4" />{containersLoading ? t('admin.orders.china.orders.refreshing') : t('admin.orders.china.orders.refresh')}</Button>
+        <Input value={filtroContenedor} onChange={e=>setFiltroContenedor(e.target.value)} placeholder={t('admin.orders.china.filters.searchContainerPlaceholder')} className="h-10 w-full sm:w-64 px-3" />
+        {/* Removed refresh button per request */}
         <Button size="sm" className="h-10 bg-orange-600 hover:bg-orange-700" onClick={()=>setModalCrearContenedor({open:true})}><Plus className="h-4 w-4" />{t('admin.orders.china.containers.create')}</Button>
               </div>
             </div>
@@ -576,15 +584,15 @@ export default function ChinaOrdersTabContent() {
       {containers.length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.containers.noneTitle')}</div>) : containers.filter((c,idx)=>{ if(!filtroContenedor) return true; const id=c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }).length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.containers.notFoundTitle')}</div>) : (
               <div className="space-y-3">
         {containers.filter((c,idx)=>{ if(!filtroContenedor) return true; const id=c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }).map((container,idx)=>{ const id=container.container_id ?? container.containers_id ?? container.id ?? idx; const created=container.creation_date ?? container.created_at ?? ''; const stateNum=(container.state??1) as number; const badge=getContainerBadge(stateNum); return (
-                  <div key={id as any} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
-                    <div className="flex items-center gap-4">
+                  <div key={id as any} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
+                    <div className="min-w-0 flex items-center gap-4">
                       <div className="p-3 bg-indigo-100 dark:bg-indigo-800/40 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600 dark:text-indigo-300" /></div>
                       <div className="space-y-1">
-                        <h3 className="font-semibold text-slate-900 dark:text-white">#CONT-{id}</h3>
-                        <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400"><span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created? new Date(created).toLocaleString('es-ES'):'—'}</span></div>
+                        <h3 className="font-semibold text-slate-900 dark:text-white truncate">#CONT-{id}</h3>
+                        <div className="flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400"><span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created? new Date(created).toLocaleString('es-ES'):'—'}</span></div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
           <Badge className={badge.className}>{getContainerBadgeLabel(stateNum)}</Badge>
                       <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={stateNum!==2} onClick={()=>handleSendContainer(container)}><Truck className="h-4 w-4" />{t('admin.orders.china.containers.send')}</Button>
                       <Button variant="outline" size="sm" onClick={()=>{ const containerId = container.container_id ?? container.containers_id ?? container.id; setModalVerCajasCont({open:true, containerId}); if(containerId!==undefined) fetchBoxesByContainerId(containerId); }}>{t('admin.orders.china.containers.viewBoxes')}</Button>
