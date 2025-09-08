@@ -1300,7 +1300,7 @@ export default function PedidosChina() {
                             <p className="text-xs text-slate-500 leading-tight">Total: {(pedido.precio * pedido.cantidad).toLocaleString()}</p>
                           </div>
                         )}
-                        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                        <div className="flex w-full sm:w-auto flex-wrap items-center gap-2 justify-end sm:justify-end">
                           {pedido.estado === 'enviado' && (pedido.numericState ?? 0) < 6 && (
                             <Button
                               size="sm"
@@ -1442,7 +1442,7 @@ export default function PedidosChina() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 sm:justify-end">
+                        <div className="flex w-full sm:w-auto flex-wrap items-center gap-2 sm:gap-3 justify-end sm:justify-end">
                           <div className="sm:hidden">
                             <Badge className={`${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
                           </div>
@@ -1594,7 +1594,7 @@ export default function PedidosChina() {
                                 </div>
                               </div>
                             </div>
-                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 sm:justify-end">
+                            <div className="flex w-full sm:w-auto flex-wrap items-center gap-2 sm:gap-3 justify-end sm:justify-end">
                               <div className="sm:hidden">
                                 <Badge className={`${getContainerBadge(stateNum).className}`}>{getContainerBadge(stateNum).label}</Badge>
                               </div>
