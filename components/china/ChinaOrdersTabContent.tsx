@@ -126,6 +126,25 @@ export default function ChinaOrdersTabContent() {
   const modalEliminarContenedorRef = useRef<HTMLDivElement>(null);
   const modalVerCajasContRef = useRef<HTMLDivElement>(null);
 
+  // ================== PAGINACIÓN (8 por página) ==================
+  const ITEMS_PER_PAGE = 8;
+  const [pedidosPage, setPedidosPage] = useState(1);
+  const [boxesPage, setBoxesPage] = useState(1);
+  const [containersPage, setContainersPage] = useState(1);
+  const getPageSlice = (total: number, page: number) => {
+    const start = Math.max(0, (page - 1) * ITEMS_PER_PAGE);
+    const end = Math.min(total, start + ITEMS_PER_PAGE);
+    return { start, end };
+  };
+  const getVisiblePages = (totalPages: number, current: number) => {
+    if (totalPages <= 1) return [1];
+    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    let start = Math.max(1, current - 2);
+    let end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
   // Cerrar modales clic fuera
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -144,6 +163,10 @@ export default function ChinaOrdersTabContent() {
 
   useEffect(()=>{ setMounted(true); fetchPedidos(); },[]);
   useEffect(()=>{ if(activeSubTab==='cajas') fetchBoxes(); if(activeSubTab==='contenedores') fetchContainers(); },[activeSubTab]);
+  // Reset de página al cambiar filtros/datasets
+  useEffect(()=>{ setPedidosPage(1); }, [filtroCliente, filtroEstado, pedidos.length]);
+  useEffect(()=>{ setBoxesPage(1); }, [filtroCaja, boxes.length]);
+  useEffect(()=>{ setContainersPage(1); }, [filtroContenedor, containers.length]);
 
   async function fetchPedidos(){
     setLoadingPedidos(true);
@@ -482,7 +505,7 @@ export default function ChinaOrdersTabContent() {
           <CardContent>
             {loadingPedidos ? (<div className="py-12 text-center text-sm">{t('common.loading')}</div>) : pedidosFiltrados.length===0 ? (<div className="py-12 text-center text-sm">{t('admin.orders.china.orders.notFoundTitle')}</div>) : (
               <div className="space-y-3">
-        {pedidosFiltrados.map(p=>{ const badge=getOrderBadge(p.numericState); return (
+        {(() => { const total=pedidosFiltrados.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, pedidosPage); return pedidosFiltrados.slice(start,end).map(p=>{ const badge=getOrderBadge(p.numericState); return (
                   <div key={p.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
                     <div className="min-w-0 flex items-center gap-4">
                       <div className="p-3 bg-blue-100 dark:bg-blue-800/40 rounded-lg"><Package className="h-5 w-5 text-blue-600 dark:text-blue-300" /></div>
@@ -515,7 +538,19 @@ export default function ChinaOrdersTabContent() {
                       </div>
                     </div>
                   </div>
-                );})}
+                );}); })()}
+                {(() => { const total=pedidosFiltrados.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, pedidosPage); const pages=getVisiblePages(totalPages, pedidosPage); return (
+                  <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{t('admin.orders.pagination.showing', { defaultValue: 'Mostrando' })} {Math.min(total, start + 1)} {t('admin.orders.pagination.to', { defaultValue: 'a' })} {end} {t('admin.orders.pagination.of', { defaultValue: 'de' })} {total} {t('admin.orders.pagination.results', { defaultValue: 'resultados' })}</p>
+                    <div className="flex items-center gap-1 justify-end flex-wrap">
+                      <Button variant="outline" size="sm" disabled={pedidosPage<=1} onClick={()=>setPedidosPage(p=>Math.max(1,p-1))}>{t('admin.orders.pagination.prev', { defaultValue: 'Anterior' })}</Button>
+                      {pages[0] > 1 && (<><Button variant="outline" size="sm" onClick={()=>setPedidosPage(1)}>1</Button><span className="px-1 text-slate-400">…</span></>)}
+                      {pages.map(p => (<Button key={p} variant={p===pedidosPage? 'default':'outline'} size="sm" onClick={()=>setPedidosPage(p)}>{p}</Button>))}
+                      {pages[pages.length-1] < totalPages && (<><span className="px-1 text-slate-400">…</span><Button variant="outline" size="sm" onClick={()=>setPedidosPage(totalPages)}>{totalPages}</Button></>)}
+                      <Button variant="outline" size="sm" disabled={pedidosPage>=totalPages} onClick={()=>setPedidosPage(p=>Math.min(totalPages,p+1))}>{t('admin.orders.pagination.next', { defaultValue: 'Siguiente' })}</Button>
+                    </div>
+                  </div>
+                ); })()}
               </div>
             )}
           </CardContent>
@@ -538,7 +573,7 @@ export default function ChinaOrdersTabContent() {
           <CardContent>
       {boxes.length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.boxes.noneTitle')}</div>) : boxes.filter((b,idx)=>{ if(!filtroCaja) return true; const id=b.box_id ?? b.boxes_id ?? b.id ?? idx; return String(id).toLowerCase().includes(filtroCaja.toLowerCase()); }).length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.boxes.notFoundTitle')}</div>) : (
               <div className="space-y-3">
-        {boxes.filter((b,idx)=>{ if(!filtroCaja) return true; const id=b.box_id ?? b.boxes_id ?? b.id ?? idx; return String(id).toLowerCase().includes(filtroCaja.toLowerCase()); }).map((box,idx)=>{ const id=box.box_id ?? box.boxes_id ?? box.id ?? idx; const created=box.creation_date ?? box.created_at ?? ''; const stateNum=(box.state??1) as number; const countKey = box.box_id ?? box.boxes_id ?? box.id ?? id; const badge=getBoxBadge(stateNum); return (
+        {(() => { const filtered = boxes.filter((b,idx)=>{ if(!filtroCaja) return true; const id=b.box_id ?? b.boxes_id ?? b.id ?? idx; return String(id).toLowerCase().includes(filtroCaja.toLowerCase()); }); const total=filtered.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, boxesPage); return filtered.slice(start,end).map((box,idx)=>{ const id=box.box_id ?? box.boxes_id ?? box.id ?? idx; const created=box.creation_date ?? box.created_at ?? ''; const stateNum=(box.state??1) as number; const countKey = box.box_id ?? box.boxes_id ?? box.id ?? id; const badge=getBoxBadge(stateNum); return (
                   <div key={id as any} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
                     <div className="min-w-0 flex items-center gap-4">
                       <div className="p-3 bg-indigo-100 dark:bg-indigo-800/40 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600 dark:text-indigo-300" /></div>
@@ -559,10 +594,22 @@ export default function ChinaOrdersTabContent() {
                       <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50" disabled={(box.state??1)>=3} onClick={()=>{ if((box.state??1)>=3){ toast({ title: t('admin.orders.china.toasts.notAllowedTitle'), description: t('admin.orders.china.toasts.boxUnpackNotAllowedDesc') }); return;} setModalEliminarCaja({open:true, box}); }}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   </div>
-                ); })}
+                ); }); })()}
               </div>
             )}
             {boxesLoading && <p className="text-center text-sm mt-4">{t('admin.orders.china.boxes.loading')}</p>}
+            {(() => { const filtered = boxes.filter((b,idx)=>{ if(!filtroCaja) return true; const id=b.box_id ?? b.boxes_id ?? b.id ?? idx; return String(id).toLowerCase().includes(filtroCaja.toLowerCase()); }); const total=filtered.length; if(total===0) return null; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, boxesPage); const pages = getVisiblePages(totalPages, boxesPage); return (
+              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{t('admin.orders.pagination.showing', { defaultValue: 'Mostrando' })} {Math.min(total, start + 1)} {t('admin.orders.pagination.to', { defaultValue: 'a' })} {end} {t('admin.orders.pagination.of', { defaultValue: 'de' })} {total} {t('admin.orders.pagination.results', { defaultValue: 'resultados' })}</p>
+                <div className="flex items-center gap-1 justify-end flex-wrap">
+                  <Button variant="outline" size="sm" disabled={boxesPage<=1} onClick={()=>setBoxesPage(p=>Math.max(1,p-1))}>{t('admin.orders.pagination.prev', { defaultValue: 'Anterior' })}</Button>
+                  {pages[0] > 1 && (<><Button variant="outline" size="sm" onClick={()=>setBoxesPage(1)}>1</Button><span className="px-1 text-slate-400">…</span></>)}
+                  {pages.map(p => (<Button key={p} variant={p===boxesPage? 'default':'outline'} size="sm" onClick={()=>setBoxesPage(p)}>{p}</Button>))}
+                  {pages[pages.length-1] < totalPages && (<><span className="px-1 text-slate-400">…</span><Button variant="outline" size="sm" onClick={()=>setBoxesPage(totalPages)}>{totalPages}</Button></>)}
+                  <Button variant="outline" size="sm" disabled={boxesPage>=totalPages} onClick={()=>setBoxesPage(p=>Math.min(totalPages,p+1))}>{t('admin.orders.pagination.next', { defaultValue: 'Siguiente' })}</Button>
+                </div>
+              </div>
+            ); })()}
           </CardContent>
         </Card>
       )}
@@ -583,7 +630,7 @@ export default function ChinaOrdersTabContent() {
           <CardContent>
       {containers.length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.containers.noneTitle')}</div>) : containers.filter((c,idx)=>{ if(!filtroContenedor) return true; const id=c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }).length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.containers.notFoundTitle')}</div>) : (
               <div className="space-y-3">
-        {containers.filter((c,idx)=>{ if(!filtroContenedor) return true; const id=c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }).map((container,idx)=>{ const id=container.container_id ?? container.containers_id ?? container.id ?? idx; const created=container.creation_date ?? container.created_at ?? ''; const stateNum=(container.state??1) as number; const badge=getContainerBadge(stateNum); return (
+        {(() => { const filtered = containers.filter((c,idx)=>{ if(!filtroContenedor) return true; const id=c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }); const total=filtered.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, containersPage); return filtered.slice(start,end).map((container,idx)=>{ const id=container.container_id ?? container.containers_id ?? container.id ?? idx; const created=container.creation_date ?? container.created_at ?? ''; const stateNum=(container.state??1) as number; const badge=getContainerBadge(stateNum); return (
                   <div key={id as any} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
                     <div className="min-w-0 flex items-center gap-4">
                       <div className="p-3 bg-indigo-100 dark:bg-indigo-800/40 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600 dark:text-indigo-300" /></div>
@@ -599,10 +646,22 @@ export default function ChinaOrdersTabContent() {
                       <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50" disabled={(container.state??1)>=3} onClick={()=>{ if((container.state??1)>=3){ toast({ title: t('admin.orders.china.toasts.notAllowedTitle'), description: t('admin.orders.china.toasts.containerSendNotAllowedDesc') }); return;} setModalEliminarContenedor({open:true, container}); }}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   </div>
-                ); })}
+                ); }); })()}
               </div>
             )}
             {containersLoading && <p className="text-center text-sm mt-4">{t('admin.orders.china.containers.loading')}</p>}
+            {(() => { const filtered = containers.filter((c,idx)=>{ if(!filtroContenedor) return true; const id=c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }); const total=filtered.length; if(total===0) return null; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, containersPage); const pages = getVisiblePages(totalPages, containersPage); return (
+              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{t('admin.orders.pagination.showing', { defaultValue: 'Mostrando' })} {Math.min(total, start + 1)} {t('admin.orders.pagination.to', { defaultValue: 'a' })} {end} {t('admin.orders.pagination.of', { defaultValue: 'de' })} {total} {t('admin.orders.pagination.results', { defaultValue: 'resultados' })}</p>
+                <div className="flex items-center gap-1 justify-end flex-wrap">
+                  <Button variant="outline" size="sm" disabled={containersPage<=1} onClick={()=>setContainersPage(p=>Math.max(1,p-1))}>{t('admin.orders.pagination.prev', { defaultValue: 'Anterior' })}</Button>
+                  {pages[0] > 1 && (<><Button variant="outline" size="sm" onClick={()=>setContainersPage(1)}>1</Button><span className="px-1 text-slate-400">…</span></>)}
+                  {pages.map(p => (<Button key={p} variant={p===containersPage? 'default':'outline'} size="sm" onClick={()=>setContainersPage(p)}>{p}</Button>))}
+                  {pages[pages.length-1] < totalPages && (<><span className="px-1 text-slate-400">…</span><Button variant="outline" size="sm" onClick={()=>setContainersPage(totalPages)}>{totalPages}</Button></>)}
+                  <Button variant="outline" size="sm" disabled={containersPage>=totalPages} onClick={()=>setContainersPage(p=>Math.min(totalPages,p+1))}>{t('admin.orders.pagination.next', { defaultValue: 'Siguiente' })}</Button>
+                </div>
+              </div>
+            ); })()}
           </CardContent>
         </Card>
       )}
