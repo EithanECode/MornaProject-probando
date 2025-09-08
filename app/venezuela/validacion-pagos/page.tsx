@@ -552,12 +552,16 @@ const PaymentValidationDashboard: React.FC = () => {
     previousStatus: string;
   } | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [lastRealtimeUpdate, setLastRealtimeUpdate] = useState<number | null>(null);
   const supabase = useMemo(() => getSupabaseBrowserClient(), []);
   const { vzlaId } = useVzlaContext();
   useEffect(() => { setMounted(true); }, []);
 
   // Realtime: recargar cuando cambian pedidos pendientes relacionados
-  useRealtimeVzlaPayments(() => setRefreshIndex(i => i + 1), vzlaId);
+  useRealtimeVzlaPayments(() => {
+    setRefreshIndex(i => i + 1);
+    setLastRealtimeUpdate(Date.now());
+  }, vzlaId);
 
   useEffect(() => {
     const load = async () => {
@@ -981,14 +985,6 @@ const PaymentValidationDashboard: React.FC = () => {
                   <p className="text-sm break-all">{error}</p>
                 </div>
               </div>
-              <button
-                onClick={() => setRefreshIndex((i) => i + 1)}
-                disabled={loading}
-                className="inline-flex items-center gap-2 rounded-md bg-red-600 px-3 py-2 text-white hover:bg-red-700 disabled:opacity-60"
-              >
-                <RotateCcw size={16} />
-                {t('venezuela.pagos.error.retry')}
-              </button>
             </div>
           )}
 
@@ -996,6 +992,18 @@ const PaymentValidationDashboard: React.FC = () => {
           {/* TARJETAS DE ESTADÍSTICAS */}
           {/* ================================ */}
           <StatsCards stats={stats} />
+          {lastRealtimeUpdate && (
+            <div className="mb-4 text-xs text-gray-500 flex items-center gap-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>
+                {t('venezuela.pagos.realtime.lastUpdate', { time: new Date(lastRealtimeUpdate).toLocaleTimeString('es-ES') })}
+              </span>
+              <button
+                onClick={() => setRefreshIndex(i => i + 1)}
+                className="px-2 py-1 border rounded-md text-[10px] hover:bg-gray-100 transition-colors"
+              >{t('venezuela.pagos.realtime.refresh')}</button>
+            </div>
+          )}
 
           {/* ================================ */}
           {/* PESTAÑAS */}
@@ -1062,16 +1070,6 @@ const PaymentValidationDashboard: React.FC = () => {
                       <SelectItem value="rechazado">{t('venezuela.pagos.filters.rejected')}</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button
-                    variant="outline"
-                    className="h-10"
-                    disabled={loading}
-                    onClick={() => setRefreshIndex((i) => i + 1)}
-                  >
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    <span className="hidden sm:inline">{t('venezuela.pagos.actions.refresh')}</span>
-                    <span className="sm:hidden">{t('venezuela.pagos.actions.refreshShort')}</span>
-                  </Button>
                   <Button
                     className="h-10 bg-[#202841] text-white hover:bg-opacity-90"
                     onClick={exportarGeneral}
