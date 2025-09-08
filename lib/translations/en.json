@@ -1017,10 +1017,14 @@
         "createOrder": "Create Order"
       },
       "pagination": {
-        "previous": "Previous",
-        "next": "Next",
-        "results": "Showing {{from}} to {{to}} of {{total}} results",
-        "perPage": "per page"
+  "previous": "Previous",
+  "prev": "Previous",
+  "next": "Next",
+  "showing": "Showing",
+  "to": "to",
+  "of": "of",
+  "results": "results",
+  "perPage": "per page"
       },
       "time": {
         "days": "{{count}} days"
@@ -1048,6 +1052,7 @@
         "value": "Value",
         "information": "Information",
         "productUrl": "Product URL",
+        "shippingType": "Shipping Type",
         "fields": {
           "orderId": "Order ID",
           "clientId": "Client ID",
@@ -1075,7 +1080,8 @@
           "pending": "PENDING",
           "quoted": "QUOTED",
           "processing": "PROCESSING",
-          "shipped": "SHIPPED"
+          "shipped": "SHIPPED",
+          "totalQuoted": "TOTAL QUOTED"
         },
         "badges": {
           "unknown": "Unknown",
@@ -1085,7 +1091,7 @@
           "inBox": "In box",
           "inContainer": "In container",
           "shippedVzla": "Shipped to Venezuela",
-          "state": "State {{num}}"
+          "state": "Stat {{num}}"
         },
         "boxBadges": {
           "new": "New",
@@ -1610,7 +1616,7 @@
         "quantity": "Quantity:",
         "deliveryType": "Delivery Type:",
         "shippingType": "Shipping Type:",
-        "orders": "Orders:"
+        "ordersCount": "Orders:"
       },
       
       "deliveryTypes": {

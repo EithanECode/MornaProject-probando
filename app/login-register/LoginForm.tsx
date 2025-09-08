@@ -83,21 +83,34 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
       const supabase = getSupabaseBrowserClient();
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      // Crear/actualizar userlevel tras login
+      // Asegurar registro en userlevel sólo si NO existe; no sobrescribir roles existentes
       const userId = data?.user?.id;
       if (userId) {
         try {
-          const res = await fetch("/api/auth/after-signup", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId, userLevel: "Client" }),
-          });
-          if (!res.ok) {
-            const payload = await res.json().catch(() => ({}));
-            console.warn("after-signup error:", payload?.error);
+          // Verificar si ya existe un userlevel distinto
+          const { data: existingLevel, error: existingErr } = await supabase
+            .from("userlevel")
+            .select("user_level")
+            .eq("id", userId)
+            .maybeSingle();
+          if (existingErr) {
+            console.warn("Error consultando userlevel previo:", existingErr.message);
+          }
+          const alreadyHasLevel = !!(existingLevel?.user_level && existingLevel.user_level.trim() !== "");
+          if (!alreadyHasLevel) {
+            // Sólo crear si no existía; usar Client como valor por defecto inicial
+            const res = await fetch("/api/auth/after-signup", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId, userLevel: "Client" }),
+            });
+            if (!res.ok) {
+              const payload = await res.json().catch(() => ({}));
+              console.warn("after-signup error:", payload?.error);
+            }
           }
         } catch (e) {
-          console.warn("after-signup fetch failed", e);
+          console.warn("after-signup verificación falló", e);
         }
       }
       // Consultar nivel desde la tabla 'userlevel' usando la id del usuario autenticado

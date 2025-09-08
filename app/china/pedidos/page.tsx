@@ -1296,7 +1296,12 @@ export default function PedidosChina() {
                         <div className="space-y-1 w-full min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <h3 className="font-semibold text-slate-900 text-sm sm:text-base">#ORD-{pedido.id}</h3>
-                            <Badge className={`hidden sm:inline-block ${getOrderBadge(pedido.numericState).className}`}>{getOrderBadge(pedido.numericState).label}</Badge>
+                            {/* Badge estado principal: forzamos 'Pendiente' explícito para state 2 */}
+                            {pedido.numericState === 2 ? (
+                              <Badge className={`hidden sm:inline-block border bg-yellow-100 text-yellow-800 border-yellow-200`}>{t('ordersPage.filters.pending')}</Badge>
+                            ) : (
+                              <Badge className={`hidden sm:inline-block ${getOrderBadge(pedido.numericState).className}`}>{getOrderBadge(pedido.numericState).label}</Badge>
+                            )}
                           </div>
                           <p className="text-xs sm:text-sm text-slate-600 truncate max-w-full">{pedido.producto}</p>
                           <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] sm:text-xs text-slate-500">
@@ -1320,7 +1325,11 @@ export default function PedidosChina() {
                       {/* Columna derecha / acciones */}
                       <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
                         <div className="hidden sm:block">
-                          <Badge className={`${getOrderBadge(pedido.numericState).className}`}>{getOrderBadge(pedido.numericState).label}</Badge>
+                          {pedido.numericState === 2 ? (
+                            <Badge className={`border bg-yellow-100 text-yellow-800 border-yellow-200`}>{t('ordersPage.filters.pending')}</Badge>
+                          ) : (
+                            <Badge className={`${getOrderBadge(pedido.numericState).className}`}>{getOrderBadge(pedido.numericState).label}</Badge>
+                          )}
                         </div>
                         {pedido.precio && (
                           <div className="hidden sm:block text-right">

@@ -47,6 +47,7 @@ function mapStateToEstado(state: number): Pedido['estado'] {
 function getOrderBadge(stateNum?: number) {
   const s = Number(stateNum ?? 0); const base = 'border';
   if (s <= 0 || isNaN(s)) return { label: 'unknown', className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  if (s === 2) return { label: 'pending', className: `${base} bg-yellow-100 text-yellow-800 border-yellow-200` };
   if (s === 3) return { label: 'quoted', className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
   if (s === 4) return { label: 'processing', className: `${base} bg-purple-100 text-purple-800 border-purple-200` };
   if (s === 5) return { label: 'readyToPack', className: `${base} bg-amber-100 text-amber-800 border-amber-200` };

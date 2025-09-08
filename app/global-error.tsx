@@ -42,9 +42,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
   }
 
   return (
-    <html>
-      <body>
-        <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-red-900/30 dark:via-orange-900/20 dark:to-yellow-900/20 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-red-900/30 dark:via-orange-900/20 dark:to-yellow-900/20 relative overflow-hidden">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -top-40 -right-40 w-80 h-80 bg-red-400/10 rounded-full blur-3xl animate-pulse"></div>
@@ -219,8 +217,6 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               animation: float 3s ease-in-out infinite;
             }
           `}</style>
-        </div>
-      </body>
-    </html>
+  </div>
   );
 } 
