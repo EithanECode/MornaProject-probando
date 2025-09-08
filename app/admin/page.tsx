@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useAdminContext } from '@/lib/AdminContext';
 import { useAdminOrders } from '@/hooks/use-admin-orders';
 import { useAdminUsers } from '@/hooks/use-admin-users';
-import RealtimeTest from '@/components/RealtimeTest';
+// RealtimeTest eliminado (no utilizado)
 import { 
   Users, 
   Package, 
