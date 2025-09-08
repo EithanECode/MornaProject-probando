@@ -68,27 +68,3 @@ public/
 styles/
   auth/                     # Estilos específicos para auth
 ```
-
-## 🔑 Detalles clave
-- Configuración unificada: `components/shared/configuration/ConfigurationContent.tsx` maneja avatar (upload/delete con confirmación), idioma, tema y datos de perfil. Reutilizada en Admin/China/Venezuela/Cliente.
-- Flujo de nuevo pedido (Admin y Cliente) con animación de éxito al finalizar.
-- Paginación en listados (Admin/Venezuela/China/Cliente) y modal cuando falta PDF.
-- Endpoint post-registro: `app/api/auth/after-signup/route.ts` (migrado a ruta canónica). 
-
-## 🧹 Limpieza reciente (organización)
-- Eliminados mocks, rutas y componentes no utilizados (por ejemplo: `app/other/*`, `components/RealtimeTest.tsx`, API `order-pdf` obsoleta).
-- Unificación de configuración y correcciones de i18n.
-
-## 🔍 Consejos de desarrollo
-- Preferir `next/image` sobre `<img>` donde sea posible.
-- Mantener dependencias de React hooks actualizadas en efectos y callbacks.
-- Agregar pruebas ligeras para flujos críticos si se amplía el proyecto.
-
-## ❓ Troubleshooting
-- Si el avatar no se actualiza: verificar permisos de bucket en Supabase y claves de entorno.
-- Si falla el post-registro: revisar `SUPABASE_SERVICE_ROLE_KEY` y que la tabla `userlevel` exista.
-- Realtime: confirmar políticas RLS y suscripciones en canales.
-
-## 📜 Licencia
-Privado (uso interno del proyecto).
-
