@@ -1161,32 +1161,32 @@ export default function PedidosChina() {
 
           {/* Tabs: Lista de pedidos | Cajas | Contenedores */}
           <div className="flex justify-start">
-            <div className="w-full overflow-x-auto -mx-4 px-4 sm:px-0">
-              <div className="inline-flex min-w-max rounded-lg border border-slate-200 bg-white/70 backdrop-blur px-1 py-1 shadow-sm">
-              <Button
-                variant={activeTab === 'pedidos' ? 'default' : 'ghost'}
-                size="sm"
-                className={`rounded-md transition-colors ${activeTab === 'pedidos' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
-                onClick={() => setActiveTab('pedidos')}
-              >
-                {t('chinese.ordersPage.tabs.ordersList')}
-              </Button>
-              <Button
-                variant={activeTab === 'cajas' ? 'default' : 'ghost'}
-                size="sm"
-                className={`rounded-md transition-colors ${activeTab === 'cajas' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
-                onClick={() => setActiveTab('cajas')}
-              >
-                {t('chinese.ordersPage.tabs.boxes')}
-              </Button>
-              <Button
-                variant={activeTab === 'contenedores' ? 'default' : 'ghost'}
-                size="sm"
-                className={`rounded-md transition-colors ${activeTab === 'contenedores' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
-                onClick={() => setActiveTab('contenedores')}
-              >
-                {t('chinese.ordersPage.tabs.containers')}
-              </Button>
+            <div className="w-full">
+              <div className="flex w-full gap-1 rounded-lg border border-slate-200 bg-white/70 backdrop-blur px-1 py-1 shadow-sm">
+                <Button
+                  variant={activeTab === 'pedidos' ? 'default' : 'ghost'}
+                  size="sm"
+                  className={`flex-1 min-w-0 justify-center rounded-md transition-colors whitespace-nowrap truncate text-[11px] xs:text-xs sm:text-sm px-2 py-2 ${activeTab === 'pedidos' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
+                  onClick={() => setActiveTab('pedidos')}
+                >
+                  {t('chinese.ordersPage.tabs.ordersList')}
+                </Button>
+                <Button
+                  variant={activeTab === 'cajas' ? 'default' : 'ghost'}
+                  size="sm"
+                  className={`flex-1 min-w-0 justify-center rounded-md transition-colors whitespace-nowrap truncate text-[11px] xs:text-xs sm:text-sm px-2 py-2 ${activeTab === 'cajas' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
+                  onClick={() => setActiveTab('cajas')}
+                >
+                  {t('chinese.ordersPage.tabs.boxes')}
+                </Button>
+                <Button
+                  variant={activeTab === 'contenedores' ? 'default' : 'ghost'}
+                  size="sm"
+                  className={`flex-1 min-w-0 justify-center rounded-md transition-colors whitespace-nowrap truncate text-[11px] xs:text-xs sm:text-sm px-2 py-2 ${activeTab === 'contenedores' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
+                  onClick={() => setActiveTab('contenedores')}
+                >
+                  {t('chinese.ordersPage.tabs.containers')}
+                </Button>
               </div>
             </div>
           </div>
