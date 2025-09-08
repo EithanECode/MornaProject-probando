@@ -50,6 +50,28 @@ export default function VenezuelaPedidosPage() {
     }, 200);
   };
 
+  // Paginación (8 por página)
+  const ITEMS_PER_PAGE = 8;
+  const [ordersPage, setOrdersPage] = useState(1);
+  const [boxesPage, setBoxesPage] = useState(1);
+  const [containersPage, setContainersPage] = useState(1);
+  const getPageSlice = (total: number, page: number) => {
+    const start = Math.max(0, (page - 1) * ITEMS_PER_PAGE);
+    const end = Math.min(total, start + ITEMS_PER_PAGE);
+    return { start, end };
+  };
+  const getVisiblePages = (totalPages: number, current: number) => {
+    if (totalPages <= 1) return [1];
+    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    let start = Math.max(1, current - 2);
+    let end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
+  // Reset pages on filters/data change
+  useEffect(() => { setOrdersPage(1); }, [searchQuery, statusFilter, orders.length]);
+
   // Tabs: pedidos | cajas | contenedores
   const [activeTab, setActiveTab] = useState<'pedidos' | 'cajas' | 'contenedores'>('pedidos');
 
@@ -73,6 +95,10 @@ export default function VenezuelaPedidosPage() {
   const [boxesByContainerLoading, setBoxesByContainerLoading] = useState(false);
   const [orderCountsByBox, setOrderCountsByBox] = useState<Record<string | number, number>>({});
   const [modalVerCajas, setModalVerCajas] = useState<{ open: boolean; containerId?: number | string }>({ open: false });
+
+  // Reset boxes/containers pagination when filters or data length change
+  useEffect(() => { setBoxesPage(1); }, [filtroCaja, boxes.length]);
+  useEffect(() => { setContainersPage(1); }, [filtroContenedor, containers.length]);
 
   // Función para obtener pedidos (puede ser llamada desde useEffect y desde el botón)
   const fetchOrders = async () => {
@@ -513,7 +539,7 @@ export default function VenezuelaPedidosPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {sortedOrders.map((order) => {
+                    {(() => { const total = sortedOrders.length; const { start, end } = getPageSlice(total, ordersPage); return sortedOrders.slice(start, end).map((order) => {
                       const stateNum = Number(order.state);
                       return (
                         <div
@@ -678,9 +704,21 @@ export default function VenezuelaPedidosPage() {
                           </div>
                         </div>
                       );
-                    })}
+                    }); })()}
                   </div>
                 )}
+                {(() => { const total = sortedOrders.length; if (total===0) return null; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, ordersPage); const pages=getVisiblePages(totalPages, ordersPage); return (
+                  <div className="mt-4 pt-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <p className="text-xs sm:text-sm text-slate-600">{t('admin.orders.pagination.showing', { defaultValue: 'Mostrando' })} {Math.min(total, start + 1)} {t('admin.orders.pagination.to', { defaultValue: 'a' })} {end} {t('admin.orders.pagination.of', { defaultValue: 'de' })} {total} {t('admin.orders.pagination.results', { defaultValue: 'resultados' })}</p>
+                    <div className="flex items-center gap-1 justify-end flex-wrap">
+                      <Button variant="outline" size="sm" disabled={ordersPage<=1} onClick={()=>setOrdersPage(p=>Math.max(1,p-1))}>{t('admin.orders.pagination.prev', { defaultValue: 'Anterior' })}</Button>
+                      {pages[0] > 1 && (<><Button variant="outline" size="sm" onClick={()=>setOrdersPage(1)}>1</Button><span className="px-1 text-slate-400">…</span></>)}
+                      {pages.map(p => (<Button key={p} variant={p===ordersPage? 'default':'outline'} size="sm" onClick={()=>setOrdersPage(p)}>{p}</Button>))}
+                      {pages[pages.length-1] < totalPages && (<><span className="px-1 text-slate-400">…</span><Button variant="outline" size="sm" onClick={()=>setOrdersPage(totalPages)}>{totalPages}</Button></>)}
+                      <Button variant="outline" size="sm" disabled={ordersPage>=totalPages} onClick={()=>setOrdersPage(p=>Math.min(totalPages,p+1))}>{t('admin.orders.pagination.next', { defaultValue: 'Siguiente' })}</Button>
+                    </div>
+                  </div>
+                ); })()}
               </CardContent>
             </Card>
           )}
@@ -723,11 +761,15 @@ export default function VenezuelaPedidosPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {boxes.filter((b, idx) => {
-                      if (!filtroCaja) return true;
-                      const id = b.box_id ?? b.boxes_id ?? b.id ?? idx;
-                      return String(id).toLowerCase().includes(filtroCaja.toLowerCase());
-                    }).map((box, idx) => {
+                    {(() => {
+                      const filtered = boxes.filter((b, idx) => {
+                        if (!filtroCaja) return true;
+                        const id = b.box_id ?? b.boxes_id ?? b.id ?? idx;
+                        return String(id).toLowerCase().includes(filtroCaja.toLowerCase());
+                      });
+                      const total = filtered.length;
+                      const { start, end } = getPageSlice(total, boxesPage);
+                      return filtered.slice(start, end).map((box, idx) => {
                       const id = box.box_id ?? box.boxes_id ?? box.id ?? idx;
                       const created = box.creation_date ?? box.created_at ?? '';
                       const stateNum = (box.state ?? 1) as number;
@@ -801,9 +843,33 @@ export default function VenezuelaPedidosPage() {
                           </div>
                         </div>
                       );
-                    })}
+                    }); })()}
                   </div>
                 )}
+                {(() => {
+                  const filtered = boxes.filter((b, idx) => {
+                    if (!filtroCaja) return true;
+                    const id = b.box_id ?? b.boxes_id ?? b.id ?? idx;
+                    return String(id).toLowerCase().includes(filtroCaja.toLowerCase());
+                  });
+                  const total = filtered.length;
+                  if (total === 0) return null;
+                  const totalPages = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE));
+                  const { start, end } = getPageSlice(total, boxesPage);
+                  const pages = getVisiblePages(totalPages, boxesPage);
+                  return (
+                    <div className="mt-4 pt-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <p className="text-xs sm:text-sm text-slate-600">{t('admin.orders.pagination.showing', { defaultValue: 'Mostrando' })} {Math.min(total, start + 1)} {t('admin.orders.pagination.to', { defaultValue: 'a' })} {end} {t('admin.orders.pagination.of', { defaultValue: 'de' })} {total} {t('admin.orders.pagination.results', { defaultValue: 'resultados' })}</p>
+                      <div className="flex items-center gap-1 justify-end flex-wrap">
+                        <Button variant="outline" size="sm" disabled={boxesPage<=1} onClick={()=>setBoxesPage(p=>Math.max(1,p-1))}>{t('admin.orders.pagination.prev', { defaultValue: 'Anterior' })}</Button>
+                        {pages[0] > 1 && (<><Button variant="outline" size="sm" onClick={()=>setBoxesPage(1)}>1</Button><span className="px-1 text-slate-400">…</span></>)}
+                        {pages.map(p => (<Button key={p} variant={p===boxesPage? 'default':'outline'} size="sm" onClick={()=>setBoxesPage(p)}>{p}</Button>))}
+                        {pages[pages.length-1] < totalPages && (<><span className="px-1 text-slate-400">…</span><Button variant="outline" size="sm" onClick={()=>setBoxesPage(totalPages)}>{totalPages}</Button></>)}
+                        <Button variant="outline" size="sm" disabled={boxesPage>=totalPages} onClick={()=>setBoxesPage(p=>Math.min(totalPages,p+1))}>{t('admin.orders.pagination.next', { defaultValue: 'Siguiente' })}</Button>
+                      </div>
+                    </div>
+                  );
+                })()}
                 {boxesLoading && (
                   <p className="text-center text-sm text-slate-500 mt-4">{t('venezuela.pedidos.loadingBoxes')}</p>
                 )}
@@ -849,11 +915,15 @@ export default function VenezuelaPedidosPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {containers.filter((c, idx) => {
-                      if (!filtroContenedor) return true;
-                      const id = c.container_id ?? c.containers_id ?? c.id ?? idx;
-                      return String(id).toLowerCase().includes(filtroContenedor.toLowerCase());
-                    }).map((container, idx) => {
+                    {(() => {
+                      const filtered = containers.filter((c, idx) => {
+                        if (!filtroContenedor) return true;
+                        const id = c.container_id ?? c.containers_id ?? c.id ?? idx;
+                        return String(id).toLowerCase().includes(filtroContenedor.toLowerCase());
+                      });
+                      const total = filtered.length;
+                      const { start, end } = getPageSlice(total, containersPage);
+                      return filtered.slice(start, end).map((container, idx) => {
                       const id = container.container_id ?? container.containers_id ?? container.id ?? idx;
                       const created = container.creation_date ?? container.created_at ?? '';
                       const stateNum = (container.state ?? 1) as number;
@@ -933,9 +1003,33 @@ export default function VenezuelaPedidosPage() {
                           </div>
                         </div>
                       );
-                    })}
+                    }); })()}
                   </div>
                 )}
+                {(() => {
+                  const filtered = containers.filter((c, idx) => {
+                    if (!filtroContenedor) return true;
+                    const id = c.container_id ?? c.containers_id ?? c.id ?? idx;
+                    return String(id).toLowerCase().includes(filtroContenedor.toLowerCase());
+                  });
+                  const total = filtered.length;
+                  if (total === 0) return null;
+                  const totalPages = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE));
+                  const { start, end } = getPageSlice(total, containersPage);
+                  const pages = getVisiblePages(totalPages, containersPage);
+                  return (
+                    <div className="mt-4 pt-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <p className="text-xs sm:text-sm text-slate-600">{t('admin.orders.pagination.showing', { defaultValue: 'Mostrando' })} {Math.min(total, start + 1)} {t('admin.orders.pagination.to', { defaultValue: 'a' })} {end} {t('admin.orders.pagination.of', { defaultValue: 'de' })} {total} {t('admin.orders.pagination.results', { defaultValue: 'resultados' })}</p>
+                      <div className="flex items-center gap-1 justify-end flex-wrap">
+                        <Button variant="outline" size="sm" disabled={containersPage<=1} onClick={()=>setContainersPage(p=>Math.max(1,p-1))}>{t('admin.orders.pagination.prev', { defaultValue: 'Anterior' })}</Button>
+                        {pages[0] > 1 && (<><Button variant="outline" size="sm" onClick={()=>setContainersPage(1)}>1</Button><span className="px-1 text-slate-400">…</span></>)}
+                        {pages.map(p => (<Button key={p} variant={p===containersPage? 'default':'outline'} size="sm" onClick={()=>setContainersPage(p)}>{p}</Button>))}
+                        {pages[pages.length-1] < totalPages && (<><span className="px-1 text-slate-400">…</span><Button variant="outline" size="sm" onClick={()=>setContainersPage(totalPages)}>{totalPages}</Button></>)}
+                        <Button variant="outline" size="sm" disabled={containersPage>=totalPages} onClick={()=>setContainersPage(p=>Math.min(totalPages,p+1))}>{t('admin.orders.pagination.next', { defaultValue: 'Siguiente' })}</Button>
+                      </div>
+                    </div>
+                  );
+                })()}
                 {containersLoading && (
                   <p className="text-center text-sm text-slate-500 mt-4">{t('venezuela.pedidos.loadingContainers')}</p>
                 )}
