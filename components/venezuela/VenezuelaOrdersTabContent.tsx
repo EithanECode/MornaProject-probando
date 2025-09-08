@@ -292,104 +292,96 @@ export default function VenezuelaOrdersTabContent() {
                       <SelectItem value="processing">{t('venezuela.pedidos.statusExtended.processing')}</SelectItem>
                     </SelectContent>
                   </Select>
-                  {/* Removed refresh button per request */}
                 </div>
               </div>
             </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="p-6 text-center text-sm text-slate-600 dark:text-slate-300">{t('venezuela.pedidos.loadingOrders')}</div>
+              ) : error ? (
+                <div className="p-6 text-center text-sm text-red-600">{error}</div>
+              ) : filteredOrders.length === 0 ? (
+                <div className="p-10 text-center">
+                  <Package className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{t('venezuela.pedidos.emptyOrdersTitle')}</h3>
+                  <p className="text-slate-600 dark:text-slate-400">{t('venezuela.pedidos.emptyOrdersDesc')}</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {sortedOrders.map(order => {
+                    const stateNum = Number(order.state);
+                    return (
+                      <div
+                        key={order.id}
+                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300 dark:from-slate-800 dark:to-slate-700 dark:border-slate-600"
+                      >
+                        <div className="min-w-0 flex items-center gap-4">
+                          <div className="p-3 bg-blue-100 rounded-lg dark:bg-blue-800/40"><Package className="h-5 w-5 text-blue-600 dark:text-blue-300" /></div>
+                          <div className="min-w-0 space-y-1">
+                            <h3 className="font-semibold text-slate-900 dark:text-white truncate">#ORD-{String(order.id)} • {order.clientName}</h3>
+                            <div className="flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400">
+                              <span className="truncate">{t('admin.orders.form.quantity')}: {order.quantity}</span>
+                              <span className="truncate">{t('admin.orders.form.deliveryType')}: {order.deliveryType}</span>
+                              <span className="truncate">{t('admin.orders.pdf.shippingType')}: {order.shippingType}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+                          {stateNum === 13 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('admin.orders.status.entregado')}</Badge>)}
+                          {stateNum === 12 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">READY</Badge>)}
+                          {stateNum === 11 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">RECEIVED</Badge>)}
+                          {stateNum === 10 && (<Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 hover:ring-1 hover:ring-indigo-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-indigo-700/50">CUSTOMS</Badge>)}
+                          {stateNum === 9 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">ARRIVED</Badge>)}
+                          {stateNum === 8 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">IN TRANSIT</Badge>)}
+                          {stateNum === 1 && (<Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-yellow-700/50">{t('venezuela.pedidos.statusExtended.pending')}</Badge>)}
+                          {stateNum === 2 && (<Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50">{t('venezuela.pedidos.statusExtended.reviewing')}</Badge>)}
+                          {stateNum === 3 && (<Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-50 hover:border-purple-300 hover:ring-1 hover:ring-purple-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-purple-700/50">{t('venezuela.pedidos.statusExtended.quoted')}</Badge>)}
+                          {stateNum === 4 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">{t('venezuela.pedidos.statusExtended.processing')}</Badge>)}
+                          {(stateNum >= 5 && stateNum <= 7) && (<Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50">IN PROCESS</Badge>)}
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center gap-1"
+                            onClick={() => {
+                              if (order.pdfRoutes) {
+                                const win = window.open(order.pdfRoutes, '_blank');
+                                if (!win) alert('No se pudo abrir el PDF');
+                              } else {
+                                alert('No hay PDF disponible');
+                              }
+                            }}
+                          >
+                            <Eye className="h-4 w-4" /> {t('admin.orders.actions.view')}
+                          </Button>
+                          <Button
+                            size="sm"
+                            disabled={loading || ![1,8,11,12].includes(stateNum)}
+                            onClick={async () => {
+                              const advance = async (url: string, body: any) => {
+                                const res = await fetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                                if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'Error'); }
+                                await fetchOrders();
+                              };
+                              try {
+                                if (stateNum === 1) return advance('/venezuela/pedidos/api/send-to-china', { orderId: order.id });
+                                if (stateNum === 8) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 9 });
+                                if (stateNum === 9) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 10 });
+                                if (stateNum === 11) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 12 });
+                                if (stateNum === 12) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 13 });
+                              } catch (e:any) { alert(e.message || 'Error'); }
+                            }}
+                          >
+                            {stateNum >= 13 ? (<><CheckCircle className="w-4 h-4 mr-2" />{t('admin.orders.status.entregado')}</>) : stateNum === 12 ? (<><CheckCircle className="w-4 h-4 mr-2" />{t('admin.orders.status.entregado')}</>) : stateNum === 11 ? (<><Package className="w-4 h-4 mr-2" />RECEIVED</>) : stateNum === 9 ? (<><Package className="w-4 h-4 mr-2" />RECEIVED</>) : stateNum === 8 ? (<><Package className="w-4 h-4 mr-2" />IN TRANSIT</>) : stateNum === 10 ? (<><Clock className="w-4 h-4 mr-2" />CUSTOMS</>) : (stateNum >= 2 && stateNum <= 7) ? (<><Clock className="w-4 h-4 mr-2" />WAITING</>) : (<><Send className="w-4 h-4 mr-2" />{t('venezuela.pedidos.actions.send')}</>)}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
           </Card>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
-          {loading ? (
-            <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
-              <CardContent className="p-12 text-center">{t('venezuela.pedidos.loadingOrders')}</CardContent>
-            </Card>
-          ) : error ? (
-            <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
-              <CardContent className="p-12 text-center text-red-600">{error}</CardContent>
-            </Card>
-          ) : filteredOrders.length === 0 ? (
-            <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
-              <CardContent className="p-12 text-center">
-                <Package className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{t('venezuela.pedidos.emptyOrdersTitle')}</h3>
-                <p className="text-slate-600 dark:text-slate-400">{t('venezuela.pedidos.emptyOrdersDesc')}</p>
-              </CardContent>
-            </Card>
-          ) : (
-            sortedOrders.map(order => {
-              const stateNum = Number(order.state);
-              return (
-                <Card key={order.id} className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-lg dark:text-white">{order.productName}</CardTitle>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">{order.id} - {order.clientName}</p>
-                      </div>
-                      <div className="flex gap-2 flex-wrap justify-end">
-                        {stateNum === 13 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('admin.orders.status.entregado')}</Badge>)}
-                        {stateNum === 12 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">READY</Badge>)}
-                        {stateNum === 11 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">RECEIVED</Badge>)}
-                        {stateNum === 10 && (<Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 hover:ring-1 hover:ring-indigo-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-indigo-700/50">CUSTOMS</Badge>)}
-                        {stateNum === 9 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">ARRIVED</Badge>)}
-                        {stateNum === 8 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">IN TRANSIT</Badge>)}
-                        {stateNum === 1 && (<Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-yellow-700/50">{t('venezuela.pedidos.statusExtended.pending')}</Badge>)}
-                        {stateNum === 2 && (<Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50">{t('venezuela.pedidos.statusExtended.reviewing')}</Badge>)}
-                        {stateNum === 3 && (<Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-50 hover:border-purple-300 hover:ring-1 hover:ring-purple-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-purple-700/50">{t('venezuela.pedidos.statusExtended.quoted')}</Badge>)}
-                        {stateNum === 4 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">{t('venezuela.pedidos.statusExtended.processing')}</Badge>)}
-                        {(stateNum >= 5 && stateNum <= 7) && (<Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50">IN PROCESS</Badge>)}
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center justify-between"><span>{t('admin.orders.form.quantity')}:</span><span className="font-medium">{order.quantity}</span></div>
-                      <div className="flex items-center justify-between"><span>{t('admin.orders.form.deliveryType')}:</span><span className="font-medium">{order.deliveryType}</span></div>
-                      <div className="flex items-center justify-between"><span>{t('admin.orders.pdf.shippingType')}:</span><span className="font-medium">{order.shippingType}</span></div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        className="bg-blue-600 gap-x-1 text-white hover:bg-blue-700 hover:text-white card-animate-liftbounce flex-1"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (order.pdfRoutes) {
-                            const win = window.open(order.pdfRoutes, '_blank');
-                            if (!win) alert('No se pudo abrir el PDF');
-                          } else {
-                            alert('No hay PDF disponible');
-                          }
-                        }}
-                      >
-                        <Eye className="w-4 h-4" /> {t('admin.orders.actions.view')}
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="flex-1"
-                        disabled={loading || ![1,8,11,12].includes(stateNum)}
-                        onClick={async () => {
-                          const advance = async (url: string, body: any) => {
-                            const res = await fetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                            if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'Error'); }
-                            await fetchOrders();
-                          };
-                          try {
-                            if (stateNum === 1) return advance('/venezuela/pedidos/api/send-to-china', { orderId: order.id });
-                            if (stateNum === 8) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 9 });
-                            if (stateNum === 9) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 10 });
-                            if (stateNum === 11) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 12 });
-                            if (stateNum === 12) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 13 });
-                          } catch (e:any) { alert(e.message || 'Error'); }
-                        }}
-                      >
-                        {stateNum >= 13 ? (<><CheckCircle className="w-4 h-4 mr-2" />{t('admin.orders.status.entregado')}</>) : stateNum === 12 ? (<><CheckCircle className="w-4 h-4 mr-2" />{t('admin.orders.status.entregado')}</>) : stateNum === 11 ? (<><Package className="w-4 h-4 mr-2" />RECEIVED</>) : stateNum === 9 ? (<><Package className="w-4 h-4 mr-2" />RECEIVED</>) : stateNum === 8 ? (<><Package className="w-4 h-4 mr-2" />IN TRANSIT</>) : stateNum === 10 ? (<><Clock className="w-4 h-4 mr-2" />CUSTOMS</>) : (stateNum >= 2 && stateNum <= 7) ? (<><Clock className="w-4 h-4 mr-2" />WAITING</>) : (<><Send className="w-4 h-4 mr-2" />{t('venezuela.pedidos.actions.send')}</>)}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })
-          )}
-        </div>
         </div>
       )}
 
