@@ -41,6 +41,14 @@ export default function VenezuelaPedidosPage() {
   const [error, setError] = useState<string | null>(null);
   // Modal genérico de aviso (para "Sin PDF")
   const [modalAviso, setModalAviso] = useState<{ open: boolean; title?: string; description?: string }>({ open: false });
+  const [isClosingModalAviso, setIsClosingModalAviso] = useState(false);
+  const closeModalAviso = () => {
+    setIsClosingModalAviso(true);
+    setTimeout(() => {
+      setModalAviso({ open: false });
+      setIsClosingModalAviso(false);
+    }, 200);
+  };
 
   // Tabs: pedidos | cajas | contenedores
   const [activeTab, setActiveTab] = useState<'pedidos' | 'cajas' | 'contenedores'>('pedidos');
@@ -359,8 +367,11 @@ export default function VenezuelaPedidosPage() {
               <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 dark:from-green-900/20 dark:to-emerald-900/20 dark:border-green-700">
             {/* Modal Aviso (reutilizable) */}
             {modalAviso.open && (
-              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-                <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-md mx-4 w-full">
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={closeModalAviso}>
+                <div
+                  className={`bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-md mx-4 w-full transition-all ${isClosingModalAviso ? 'scale-95 opacity-0' : 'scale-100 opacity-100'} duration-200`}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-yellow-100 dark:bg-yellow-800/40 rounded-md mt-0.5"><AlertTriangle className="h-5 w-5 text-yellow-700 dark:text-yellow-300" /></div>
                     <div className="min-w-0">
@@ -371,7 +382,7 @@ export default function VenezuelaPedidosPage() {
                     </div>
                   </div>
                   <div className="mt-5 flex justify-end gap-2">
-                    <Button variant="default" size="sm" onClick={() => setModalAviso({ open: false })}>
+                    <Button variant="default" size="sm" onClick={closeModalAviso}>
                       OK
                     </Button>
                   </div>
