@@ -1128,28 +1128,63 @@ export default function PedidosChina() {
         />
         
   <div className="p-4 md:p-5 lg:p-6 space-y-6 max-w-7xl mx-auto w-full">
-          {/* Header de la página */}
-          <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-xl p-4 md:p-6 text-white">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
-              <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
-                <div className="text-center">
-                  <p className="text-xl md:text-2xl font-bold">{stats.pendientes}</p>
-                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.ordersPage.stats.pending')}</p>
+          {/* Estadísticas en tarjetas (como Venezuela) */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200 dark:from-yellow-900/20 dark:to-orange-900/20 dark:border-yellow-700">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm md:text-base font-medium text-yellow-700 dark:text-yellow-300">{t('chinese.ordersPage.stats.pending')}</p>
+                    <p className="text-2xl md:text-3xl font-bold text-yellow-800 dark:text-yellow-200">{stats.pendientes}</p>
+                  </div>
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-yellow-100 dark:bg-yellow-800/30 rounded-lg flex items-center justify-center">
+                    <Clock className="w-5 h-5 md:w-6 md:h-6 text-yellow-600 dark:text-yellow-400" />
+                  </div>
                 </div>
-                <div className="text-center">
-                  <p className="text-xl md:text-2xl font-bold">{stats.cotizados}</p>
-                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.ordersPage.stats.quoted')}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border-purple-200 dark:from-purple-900/20 dark:to-violet-900/20 dark:border-purple-700">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm md:text-base font-medium text-purple-700 dark:text-purple-300">{t('chinese.ordersPage.stats.quoted')}</p>
+                    <p className="text-2xl md:text-3xl font-bold text-purple-800 dark:text-purple-200">{stats.cotizados}</p>
+                  </div>
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 dark:bg-purple-800/30 rounded-lg flex items-center justify-center">
+                    <Package className="w-5 h-5 md:w-6 md:h-6 text-purple-600 dark:text-purple-400" />
+                  </div>
                 </div>
-                <div className="text-center">
-                  <p className="text-xl md:text-2xl font-bold">{stats.procesando}</p>
-                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.ordersPage.stats.processing')}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 dark:from-blue-900/20 dark:to-indigo-900/20 dark:border-blue-700">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm md:text-base font-medium text-blue-700 dark:text-blue-300">{t('chinese.ordersPage.stats.processing')}</p>
+                    <p className="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200">{stats.procesando}</p>
+                  </div>
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-800/30 rounded-lg flex items-center justify-center">
+                    <Truck className="w-5 h-5 md:w-6 md:h-6 text-blue-600 dark:text-blue-400" />
+                  </div>
                 </div>
-                <div className="text-center">
-                  <p className="text-xl md:text-2xl font-bold">{stats.enviados}</p>
-                  <p className="text-xs md:text-sm text-orange-100">{t('chinese.ordersPage.stats.shipped')}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 dark:from-green-900/20 dark:to-emerald-900/20 dark:border-green-700">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm md:text-base font-medium text-green-700 dark:text-green-300">{t('chinese.ordersPage.stats.shipped')}</p>
+                    <p className="text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200">{stats.enviados}</p>
+                  </div>
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-800/30 rounded-lg flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-600 dark:text-green-400" />
+                  </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
 
 
