@@ -47,7 +47,9 @@ export default function AdminDashboard() {
 
     // Datos de pedidos desde la tabla orders
   const { data: adminOrdersData, error: adminOrdersError, refetch: refetchOrders } = useAdminOrders();
-    const totalPedidos = adminOrdersData?.totalPedidos ?? 0;
+    const totalPedidos =
+      (adminOrdersData?.pedidosPendientes ?? 0) +
+      (adminOrdersData?.pedidosTransito ?? 0);
     const totalIngresos = adminOrdersData?.totalIngresos ?? 0;
 
     // Datos de usuarios desde la tabla userlevel

@@ -345,6 +345,66 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   const chinaCtx = useSafeChinaContext();
   const adminCtx = useSafeAdminContext();
 
+  // === Dynamic badge states (declare early to be used by realtime effects) ===
+  const [clientActiveOrders, setClientActiveOrders] = useState<number | null>(null);
+  const [clientPendingPayments, setClientPendingPayments] = useState<number | null>(null);
+  const [vzlaActiveOrders, setVzlaActiveOrders] = useState<number | null>(null);
+  const [vzlaActiveSupports, setVzlaActiveSupports] = useState<number | null>(null);
+  const [vzlaPendingPayments, setVzlaPendingPayments] = useState<number | null>(null);
+  const [chinaActiveOrders, setChinaActiveOrders] = useState<number | null>(null);
+
+  // Helper: refetch China active orders
+  const refetchChinaActiveOrders = useCallback(async () => {
+    if (userRole !== 'china' || !chinaCtx?.chinaId) return;
+    const supabase = getSupabaseBrowserClient();
+    const { count, error } = await supabase
+      .from('orders')
+      .select('id', { count: 'exact', head: true })
+      .eq('asignedEChina', chinaCtx.chinaId)
+      .lt('state', 13);
+    if (!error && typeof count === 'number') {
+      setChinaActiveOrders(count);
+    }
+  }, [userRole, chinaCtx?.chinaId]);
+
+  // Helpers: refetch Venezuela counters robustly across possible assignment columns
+  const refetchVzlaActiveOrders = useCallback(async () => {
+    if (userRole !== 'venezuela' || !vzlaCtx?.vzlaId) return;
+    const supabase = getSupabaseBrowserClient();
+    const assignmentColumns = ['asignedEVzla', 'asignnedEVzla', 'asigned'];
+    for (const col of assignmentColumns) {
+      const { count, error } = await supabase
+        .from('orders')
+        .select('id', { count: 'exact', head: true })
+        .eq(col, vzlaCtx.vzlaId)
+        .lt('state', 13);
+      if (!error && typeof count === 'number') {
+        setVzlaActiveOrders(count);
+        return;
+      }
+    }
+    // If all variants fail, default to 0
+    setVzlaActiveOrders(0);
+  }, [userRole, vzlaCtx?.vzlaId]);
+
+  const refetchVzlaPendingPayments = useCallback(async () => {
+    if (userRole !== 'venezuela' || !vzlaCtx?.vzlaId) return;
+    const supabase = getSupabaseBrowserClient();
+    const assignmentColumns = ['asignedEVzla', 'asignnedEVzla', 'asigned'];
+    for (const col of assignmentColumns) {
+      const { count, error } = await supabase
+        .from('orders')
+        .select('id', { count: 'exact', head: true })
+        .eq(col, vzlaCtx.vzlaId)
+        .eq('state', 4);
+      if (!error && typeof count === 'number') {
+        setVzlaPendingPayments(count);
+        return;
+      }
+    }
+    setVzlaPendingPayments(0);
+  }, [userRole, vzlaCtx?.vzlaId]);
+
     // Get dynamic user info from context if available
   let userInfo: { name: string; email: string; flag?: string; userImage?: string } = getUserInfoByRole(userRole);
   
@@ -451,23 +511,19 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   useRealtimeChina(
     () => {
       // Orders update callback for China
-      if (userRole === 'china' && chinaCtx?.chinaId) {
-        const fetchChinaOrders = async () => {
-          const supabase = getSupabaseBrowserClient();
-          const { count, error } = await supabase
-            .from('orders')
-            .select('id', { count: 'exact', head: true })
-            .eq('asignedEChina', chinaCtx.chinaId)
-            .lt('state', 13);
-          if (!error && typeof count === 'number') {
-            setChinaActiveOrders(count);
-          }
-        };
-        fetchChinaOrders();
-      }
+      refetchChinaActiveOrders();
     },
     chinaCtx?.chinaId
   );
+
+  // Polling fallback for China active orders
+  useEffect(() => {
+    if (userRole !== 'china' || !chinaCtx?.chinaId) return;
+    const id = window.setInterval(() => {
+      refetchChinaActiveOrders();
+    }, 10000); // 10s
+    return () => window.clearInterval(id);
+  }, [userRole, chinaCtx?.chinaId, refetchChinaActiveOrders]);
 
   // China profile realtime
   useEffect(() => {
@@ -513,27 +569,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   // Venezuela realtime
   useRealtimeVzla(
     () => {
-      if (userRole === 'venezuela' && vzlaCtx?.vzlaId) {
-        const fetchVzlaOrders = async () => {
-          const supabase = getSupabaseBrowserClient();
-          // Intentar múltiples columnas de asignación
-          const assignmentColumns = ['asignedEVzla', 'asignnedEVzla', 'asigned'];
-          let ordersCount: number | null = null;
-          for (const col of assignmentColumns) {
-            const { count, error } = await supabase
-              .from('orders')
-              .select('id', { count: 'exact', head: true })
-              .eq(col, vzlaCtx.vzlaId)
-              .lt('state', 13);
-            if (!error && typeof count === 'number') {
-              ordersCount = count;
-              break;
-            }
-          }
-          if (ordersCount !== null) setVzlaActiveOrders(ordersCount);
-        };
-        fetchVzlaOrders();
-      }
+      refetchVzlaActiveOrders();
     },
     vzlaCtx?.vzlaId
   );
@@ -541,29 +577,20 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   // Venezuela payments realtime
   useRealtimeVzlaPayments(
     () => {
-      if (userRole === 'venezuela' && vzlaCtx?.vzlaId) {
-        const fetchVzlaPendingPayments = async () => {
-          const supabase = getSupabaseBrowserClient();
-          const assignmentColumns = ['asignedEVzla', 'asignnedEVzla', 'asigned'];
-          let pendingCount: number | null = null;
-          for (const col of assignmentColumns) {
-            const { count, error } = await supabase
-              .from('orders')
-              .select('id', { count: 'exact', head: true })
-              .eq(col, vzlaCtx.vzlaId)
-              .eq('state', 4);
-            if (!error && typeof count === 'number') {
-              pendingCount = count;
-              break;
-            }
-          }
-          if (pendingCount !== null) setVzlaPendingPayments(pendingCount);
-        };
-        fetchVzlaPendingPayments();
-      }
+      refetchVzlaPendingPayments();
     },
     vzlaCtx?.vzlaId
   );
+
+  // Polling fallback for Venezuela counters
+  useEffect(() => {
+    if (userRole !== 'venezuela' || !vzlaCtx?.vzlaId) return;
+    const id = window.setInterval(() => {
+      refetchVzlaActiveOrders();
+      refetchVzlaPendingPayments();
+    }, 10000); // 10s
+    return () => window.clearInterval(id);
+  }, [userRole, vzlaCtx?.vzlaId, refetchVzlaActiveOrders, refetchVzlaPendingPayments]);
 
   // Venezuela profile realtime
   useEffect(() => {
@@ -677,21 +704,17 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           event: '*',
           schema: 'public',
           table: 'orders',
-          filter: `client_id=eq.${clientCtx.clientId}`,
         },
         () => {
-          // Refetch client active orders
-          const fetchClientOrders = async () => {
+          const refetch = async () => {
             const { count, error } = await supabase
               .from('orders')
               .select('id', { count: 'exact', head: true })
               .eq('client_id', clientCtx.clientId)
               .lt('state', 13);
-            if (!error && typeof count === 'number') {
-              setClientActiveOrders(count);
-            }
+            if (!error && typeof count === 'number') setClientActiveOrders(count);
           };
-          fetchClientOrders();
+          refetch();
         }
       )
       .subscribe();
@@ -741,8 +764,19 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     };
     fetchInitial();
 
+    // Polling de respaldo por si algún evento no llega
+    const intervalId = window.setInterval(async () => {
+      const { count, error } = await supabase
+        .from('orders')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientCtx.clientId)
+        .lt('state', 13);
+      if (!error && typeof count === 'number') setClientActiveOrders(count);
+    }, 8000);
+
     return () => {
       supabase.removeChannel(ordersChannel);
+      window.clearInterval(intervalId);
       supabase.removeChannel(profileChannel);
     };
   }, [userRole, clientCtx?.clientId]);
@@ -815,14 +849,6 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   const [imageError, setImageError] = useState(false);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
-    // === Dynamic badge states ===
-  const [clientActiveOrders, setClientActiveOrders] = useState<number | null>(null);
-  const [clientPendingPayments, setClientPendingPayments] = useState<number | null>(null);
-  const [vzlaActiveOrders, setVzlaActiveOrders] = useState<number | null>(null);
-  const [vzlaActiveSupports, setVzlaActiveSupports] = useState<number | null>(null);
-  const [vzlaPendingPayments, setVzlaPendingPayments] = useState<number | null>(null);
-  const [chinaActiveOrders, setChinaActiveOrders] = useState<number | null>(null);
-
   // === Initial data loading ===
   useEffect(() => {
     const loadInitialData = async () => {
@@ -858,43 +884,8 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       // Load Venezuela data
       if (userRole === 'venezuela' && vzlaCtx?.vzlaId) {
         try {
-          // Active orders
-          const { count: ordersCount, error: ordersError } = await supabase
-            .from('orders')
-            .select('id', { count: 'exact', head: true })
-            .eq('asignedEVzla', vzlaCtx.vzlaId)
-            .lt('state', 13);
-          if (!ordersError && typeof ordersCount === 'number') {
-            setVzlaActiveOrders(ordersCount);
-          }
-
-          // Pending payments - intentar con diferentes columnas
-          let paymentsCount = 0;
-          try {
-            // Intentar primero con asignedEVzla
-            let { count, error } = await supabase
-              .from('orders')
-              .select('id', { count: 'exact', head: true })
-              .eq('asignedEVzla', vzlaCtx.vzlaId)
-              .eq('state', 4);
-
-            if (error) {
-              // Si falla, intentar con consulta básica y filtrar después
-              console.warn('⚠️ Sidebar: asignedEVzla column not found, using basic query');
-              const { count: basicCount, error: basicError } = await supabase
-                .from('orders')
-                .select('id', { count: 'exact', head: true })
-                .eq('state', 4);
-              if (!basicError && typeof basicCount === 'number') {
-                paymentsCount = basicCount; // Usar count básico por ahora
-              }
-            } else if (typeof count === 'number') {
-              paymentsCount = count;
-            }
-          } catch (err) {
-            console.warn('⚠️ Sidebar: Error fetching payments count:', err);
-          }
-          setVzlaPendingPayments(paymentsCount);
+          await refetchVzlaActiveOrders();
+          await refetchVzlaPendingPayments();
 
           // Active supports - manejar tabla inexistente
           try {
@@ -921,15 +912,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       // Load China data
       if (userRole === 'china' && chinaCtx?.chinaId) {
         try {
-          // Active orders
-          const { count: ordersCount, error: ordersError } = await supabase
-            .from('orders')
-            .select('id', { count: 'exact', head: true })
-            .eq('asignedEChina', chinaCtx.chinaId)
-            .lt('state', 13);
-          if (!ordersError && typeof ordersCount === 'number') {
-            setChinaActiveOrders(ordersCount);
-          }
+          await refetchChinaActiveOrders();
         } catch (error) {
           console.error('Error loading initial China data:', error);
         }

@@ -236,50 +236,6 @@ export default function PagosPage() {
 
   // Cargar órdenes del cliente con state 3, 4 y 5 y mapear a pagos
   useEffect(() => {
-    const load = async () => {
-      if (!clientId) return;
-      setLoading(true);
-      setError(null);
-      try {
-        const { data, error } = await supabase
-          .from('orders')
-          .select('id, productName, description, estimatedBudget, totalQuote, state, created_at')
-          .eq('client_id', clientId)
-          .in('state', [3, 4, 5])
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-
-        const mapped: Payment[] = (data as DbOrder[] | null)?.map((row) => {
-          const amountNum = (row.totalQuote ?? row.estimatedBudget ?? 0) as number;
-          
-          // Mapear estado según los requerimientos
-          let status: Payment['status'] = 'pending';
-          if (row.state === 3) status = 'pending';      // Pendientes
-          else if (row.state === 4) status = 'processing'; // Procesando
-          else if (row.state === 5) status = 'paid';       // Pagado
-          
-          return {
-            id: `PAY-${row.id}`,
-            orderId: String(row.id),
-            product: row.productName || 'Pedido',
-            amount: Number(amountNum || 0),
-            currency: 'USD',
-            status: status,
-            // Método desconocido al no tener campo específico; default transferencia
-            paymentMethod: 'transfer',
-            dueDate: row.created_at || new Date().toISOString(),
-            createdAt: row.created_at || new Date().toISOString(),
-            description: row.description || `Orden ${row.id}`,
-          };
-        }) || [];
-
-        setPayments(mapped);
-      } catch (e: any) {
-        setError(e?.message || 'Error cargando pagos');
-      } finally {
-        setLoading(false);
-      }
-    };
     loadPayments();
   }, [clientId, supabase]);
 
@@ -329,7 +285,7 @@ export default function PagosPage() {
     }
   };
 
-  // Agregar realtime para pagos del cliente
+  // Agregar realtime para pagos del cliente (recargar ante cualquier cambio relevante)
   useEffect(() => {
     if (!clientId) return;
 
@@ -343,21 +299,21 @@ export default function PagosPage() {
           table: 'orders',
           filter: `client_id=eq.${clientId}`,
         },
-        (payload) => {
-          console.log('Realtime: Client payments changed', payload);
-          // Solo recargar si el estado cambió a uno de los que nos interesan (3, 4, 5)
-          const newState = (payload.new as any)?.state;
-          if (newState && [3, 4, 5].includes(newState)) {
-            loadPayments();
-          } else if (payload.eventType === 'DELETE') {
-            loadPayments();
-          }
+        () => {
+          // Cualquier cambio en órdenes del cliente puede afectar la sección de pagos
+          loadPayments();
         }
       )
       .subscribe();
 
+    // Polling de respaldo por si algún evento se pierde
+    const intervalId = window.setInterval(() => {
+      loadPayments();
+    }, 10000);
+
     return () => {
       supabase.removeChannel(paymentsChannel);
+      window.clearInterval(intervalId);
     };
   }, [clientId, supabase]);
 

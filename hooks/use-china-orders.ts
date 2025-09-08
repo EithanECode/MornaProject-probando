@@ -9,6 +9,7 @@ export interface ChinaOrder {
   estimatedBudget: number;
   productName: string;
   client_id: string;
+  created_at?: string;
 }
 
 export function useChinaOrders(refreshTrigger?: number) {
@@ -23,8 +24,9 @@ export function useChinaOrders(refreshTrigger?: number) {
       if (!chinaId) return [];
       const { data, error } = await supabase
         .from('orders')
-        .select('id, state, reputation, estimatedBudget, productName, client_id')
-        .eq('asignedEChina', chinaId);
+        .select('id, state, reputation, estimatedBudget, productName, client_id, created_at')
+        .eq('asignedEChina', chinaId)
+        .order('created_at', { ascending: true });
       if (error) throw error;
       return data || [];
     },

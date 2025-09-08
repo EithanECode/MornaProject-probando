@@ -95,7 +95,7 @@ export default function ChinaDashboard() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   
   // Pedidos asignados al empleado China autenticado
-  const { data: chinaOrders, loading: ordersLoading, error: ordersError } = useChinaOrders(refreshTrigger);
+  const { data: chinaOrders, loading: ordersLoading, error: ordersError, refetch: refetchChinaOrders } = useChinaOrders(refreshTrigger);
   // Obtener información de los clientes
   const { data: clientsInfo } = useClientsInfo();
   // Nombres de los clientes de los 3 pedidos más recientes
@@ -111,9 +111,9 @@ export default function ChinaDashboard() {
 
   // Función para actualizar pedidos en realtime
   const handleOrdersUpdate = useCallback(() => {
-    console.log('Realtime China: Triggering orders update, refreshTrigger:', refreshTrigger + 1);
-    setRefreshTrigger(prev => prev + 1);
-  }, [refreshTrigger]);
+    console.log('Realtime China: Triggering orders update via refetch');
+    refetchChinaOrders();
+  }, [refetchChinaOrders]);
 
   // Usar realtime para China
   useRealtimeChina(handleOrdersUpdate, chinaId);
@@ -122,6 +122,31 @@ export default function ChinaDashboard() {
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
   
+  // Fallback: refresco periódico ligero para robustez (10s)
+  useEffect(() => {
+    if (!chinaId) return;
+    const id = setInterval(() => {
+      refetchChinaOrders();
+    }, 10000);
+    return () => clearInterval(id);
+  }, [chinaId, refetchChinaOrders]);
+  
+  // Badges estandarizados para pedidos según estado numérico
+  function getOrderBadge(stateNum?: number) {
+    const s = Number(stateNum ?? 0);
+    const base = 'border';
+  if (s <= 0 || isNaN(s)) return { label: t('admin.orders.china.badges.unknown'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  if (s === 1) return { label: t('admin.orders.china.filters.pending'), className: `${base} bg-yellow-100 text-yellow-800 border-yellow-200` };
+  if (s === 2) return { label: t('admin.orders.china.filters.pending'), className: `${base} bg-yellow-100 text-yellow-800 border-yellow-200` };
+    if (s === 3) return { label: t('admin.orders.china.badges.quoted'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+    if (s === 4) return { label: t('admin.orders.china.badges.processing'), className: `${base} bg-purple-100 text-purple-800 border-purple-200` };
+    if (s === 5) return { label: t('admin.orders.china.badges.readyToPack'), className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
+    if (s === 6) return { label: t('admin.orders.china.badges.inBox'), className: `${base} bg-indigo-100 text-indigo-800 border-indigo-200` };
+    if (s === 7 || s === 8) return { label: t('admin.orders.china.badges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
+    if (s >= 9) return { label: t('admin.orders.china.badges.shippedVzla'), className: `${base} bg-green-100 text-green-800 border-green-200` };
+    return { label: t('admin.orders.china.badges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  }
+
   // Variables de pedidos
   const totalPedidos = chinaOrders?.length ?? 0;
   // Ajuste: para el panel China ignoramos state === 1 (creación) y comenzamos a contar desde 2
@@ -319,7 +344,7 @@ export default function ChinaDashboard() {
         sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       }`}>
         <Header 
-          notifications={stats.pendingOrders + stats.processingOrders}
+          notifications={(pedidosPendientes || 0) + (pedidosEnProceso || 0)}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('chinese.title')}
           subtitle={t('chinese.subtitle')}
@@ -476,8 +501,8 @@ export default function ChinaDashboard() {
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                            <Badge className={`border`}>
-                              {t('chinese.status')}: {order.state}
+                            <Badge className={getOrderBadge(order.state).className}>
+                              {getOrderBadge(order.state).label}
                             </Badge>
                           </div>
                         </div>

@@ -32,6 +32,7 @@ export default function VenezuelaPedidosPage() {
     state: number;
     clientName: string;
     client_id?: string;
+  asignedEVzla?: string;
     description?: string;
     pdfRoutes?: string;
   };
@@ -74,7 +75,12 @@ export default function VenezuelaPedidosPage() {
       const res = await fetch(`/venezuela/pedidos/api/orders?asignedEVzla=${encodeURIComponent(String(empleadoId))}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(t('venezuela.pedidos.errors.fetchOrders'));
       const data = await res.json();
-      setOrders(data);
+      // Defensa extra: si por alguna razón el endpoint no filtró correctamente,
+      // aplicamos filtro en cliente para mostrar solo pedidos asignados al empleado.
+      const onlyAssigned = Array.isArray(data)
+        ? data.filter((o: any) => String(o?.asignedEVzla ?? '') === String(empleadoId))
+        : [];
+      setOrders(onlyAssigned);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -123,6 +129,19 @@ export default function VenezuelaPedidosPage() {
   }, []);
 
   useRealtimeVzla(handleRealtimeOrdersUpdate, empleadoId);
+
+  // Realtime for client profile changes (to reflect clientName updates in list)
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    const channel = supabase
+      .channel(`vzla-orders-clients-${empleadoId || 'all'}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => {
+        fetchOrders();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empleadoId]);
 
   // Realtime para cajas y contenedores: activo siempre que exista empleadoId
   const handleRealtimeBoxesUpdate = useCallback(() => {

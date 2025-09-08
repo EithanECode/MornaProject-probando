@@ -132,7 +132,16 @@ export default function VenezuelaDashboard() {
   useRealtimeVzla(handleRealtimeUpdate, vzlaId);
   const vzlaOrders = Array.isArray(vzlaOrdersRaw) ? vzlaOrdersRaw : [];
 
-  const totalPedidos = vzlaOrders.filter((order: any) => order.asignedEVzla === vzlaId).length;
+  // Polling de respaldo: refetch periódico por tolerancia a eventos perdidos
+  useEffect(() => {
+    if (!vzlaId) return;
+    const id = window.setInterval(() => {
+      refetchVzlaOrders();
+    }, 10000);
+    return () => window.clearInterval(id);
+  }, [vzlaId, refetchVzlaOrders]);
+
+  const totalPedidos = vzlaOrders.length;
   // Estados: 1-4 Pendientes, 5-13 Seguimiento Activo
   const pedidosPendientes = vzlaOrders.filter((order: any) => order.state >= 1 && order.state <= 4).length;
   const pedidosTracking = vzlaOrders.filter((order: any) => order.state >= 5 && order.state <= 13).length;
@@ -151,7 +160,7 @@ export default function VenezuelaDashboard() {
     pendingOrders: pedidosPendientes,
     activeChats: CHAT_SUPPORT.filter(c => c.status === 'active').length,
     trackingUpdates: pedidosTracking,
-    deliveredOrders: vzlaOrders.filter((order: any) => order.state === 8).length,
+  deliveredOrders: vzlaOrders.filter((order: any) => order.state === 13).length,
     averageRating: promedioReputacion,
     responseTime: '12 min',
     satisfactionRate: '94%'

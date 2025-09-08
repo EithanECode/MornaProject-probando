@@ -182,6 +182,40 @@ export default function DashboardPage() {
     setMounted(true);
   }, []);
 
+  // Mapea el estado numérico a un estado textual (coincide con Mis Pedidos)
+  const mapStateToStatus = (state?: number | null): 'pending' | 'quoted' | 'processing' | 'shipped' | 'delivered' | 'cancelled' => {
+    if (!state) return 'pending';
+    if (state === 3) return 'quoted';
+    if (state >= 4 && state <= 7) return 'processing';
+    if (state === 8 || state === 9) return 'shipped';
+    if (state === 10 || state === 11 || state === 12) return 'processing';
+    if (state >= 13) return 'delivered';
+    if (state === 2) return 'pending';
+    return 'pending';
+  };
+
+  // Estilos para el badge según el estado textual (coincide con Mis Pedidos)
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm transition-colors hover:from-yellow-50 hover:to-yellow-100 hover:ring-1 hover:ring-yellow-200 dark:hover:ring-yellow-500/20 hover:brightness-110 dark:hover:brightness-110';
+      case 'quoted':
+        return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm transition-colors hover:from-green-50 hover:to-green-100 hover:ring-1 hover:ring-green-200 dark:hover:ring-green-500/20 hover:brightness-110 dark:hover:brightness-110';
+      case 'processing':
+        return 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm transition-colors hover:from-blue-50 hover:to-blue-100 hover:ring-1 hover:ring-blue-200 dark:hover:ring-blue-500/20 hover:brightness-110 dark:hover:brightness-110';
+      case 'shipped':
+        return 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border-purple-300 shadow-sm transition-colors hover:from-purple-50 hover:to-purple-100 hover:ring-1 hover:ring-purple-200 dark:hover:ring-purple-500/20 hover:brightness-110 dark:hover:brightness-110';
+      case 'delivered':
+        return 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-sm transition-colors hover:from-emerald-50 hover:to-emerald-100 hover:ring-1 hover:ring-emerald-200 dark:hover:ring-emerald-500/20 hover:brightness-110 dark:hover:brightness-110';
+      case 'cancelled':
+        return 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm transition-colors hover:from-red-50 hover:to-red-100 hover:ring-1 hover:ring-red-200 dark:hover:ring-red-500/20 hover:brightness-110 dark:hover:brightness-110';
+      default:
+        return 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-sm transition-colors hover:from-slate-50 hover:to-slate-100 hover:ring-1 hover:ring-slate-200 dark:hover:ring-slate-500/20 hover:brightness-110 dark:hover:brightness-110';
+    }
+  };
+
+  const getStatusText = (status: string) => t(`client.recentOrders.statuses.${status}`) || status;
+
   const handleMobileMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -376,8 +410,8 @@ export default function DashboardPage() {
                               <p className="font-semibold text-lg md:text-xl text-slate-800">{order.productName}</p>
                             </div>
                           </div>
-                          <Badge className={`font-medium border text-xs md:text-sm`}>
-                            {t('client.recentOrders.status')} {order.state}
+                          <Badge className={`${getStatusColor(mapStateToStatus(order.state))} font-medium border text-xs md:text-sm`}>
+                            {getStatusText(mapStateToStatus(order.state))}
                           </Badge>
                         </div>
                         <div className="mb-4">

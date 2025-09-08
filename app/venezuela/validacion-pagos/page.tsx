@@ -563,6 +563,29 @@ const PaymentValidationDashboard: React.FC = () => {
     setLastRealtimeUpdate(Date.now());
   }, vzlaId);
 
+  // Realtime for clients: refresh when client names or data change
+  useEffect(() => {
+    const channel = supabase
+      .channel(`vzla-payments-clients-${vzlaId || 'all'}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => {
+        setRefreshIndex(i => i + 1);
+        setLastRealtimeUpdate(Date.now());
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [supabase, vzlaId]);
+
+  // Polling fallback: refetch periodically in case a realtime event is missed
+  useEffect(() => {
+    if (!vzlaId) return;
+    const intervalMs = 10000; // 10s
+    const id = setInterval(() => {
+      setRefreshIndex(i => i + 1);
+      setLastRealtimeUpdate(Date.now());
+    }, intervalMs);
+    return () => clearInterval(id);
+  }, [vzlaId]);
+
   useEffect(() => {
     const load = async () => {
       if (!vzlaId) return;

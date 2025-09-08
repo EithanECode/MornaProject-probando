@@ -49,6 +49,7 @@ import { getSupabaseBrowserClient as _getClient } from '@/lib/supabase/client';
 // Tipos
 interface Pedido {
   id: number;
+  clientId?: string;
   cliente: string;
   producto: string;
   cantidad: number;
@@ -171,6 +172,7 @@ export default function PedidosChina() {
           // Antes filtraba state>=4 lo que ocultaba pedidos tempranos. Se elimina para mostrar todos los asignados.
           .map((order: any) => ({
           id: order.id,
+          clientId: order.client_id,
           cliente: order.clientName || '',
           producto: order.productName || '',
           cantidad: order.quantity || 0,
@@ -347,6 +349,30 @@ export default function PedidosChina() {
   supabase.removeChannel(boxesChannel);
   supabase.removeChannel(containersChannel);
   supabase.removeChannel(ordersChannel);
+    };
+  }, []);
+
+  // Realtime para nombres/atributos de clientes: refetch cuando cambien
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    let timer: any = null;
+    const debounce = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        fetchPedidos();
+      }, 120);
+    };
+    const channel = supabase
+      .channel('china-clients-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => {
+        // Si hay pedidos visibles, un cambio en clientes puede afectar nombres mostrados
+        debounce();
+      })
+      .subscribe();
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      supabase.removeChannel(channel);
     };
   }, []);
 
