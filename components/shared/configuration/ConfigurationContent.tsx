@@ -431,12 +431,12 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="flex flex-col items-center gap-3">
-                        <div className="w-24 h-24 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center">
+                        <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center">
                           {formData.fotoPreview ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={formData.fotoPreview} alt="avatar" className="w-full h-full object-cover" />
                           ) : (
-                            <User className="w-10 h-10 text-slate-500" />
+                            <User className="w-14 h-14 md:w-16 md:h-16 text-slate-500" />
                           )}
                         </div>
                         <div className="space-y-2 w-full">
