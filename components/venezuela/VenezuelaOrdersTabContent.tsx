@@ -60,6 +60,8 @@ export default function VenezuelaOrdersTabContent() {
   const [boxesByContainerLoading, setBoxesByContainerLoading] = useState(false);
   const [orderCountsByBox, setOrderCountsByBox] = useState<Record<string | number, number>>({});
   const [modalVerCajas, setModalVerCajas] = useState<{ open: boolean; containerId?: number | string }>({ open: false });
+  // Modal genérico para avisos (usar para "Sin PDF")
+  const [modalAviso, setModalAviso] = useState<{ open: boolean; title?: string; description?: string }>({ open: false });
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -346,9 +348,9 @@ export default function VenezuelaOrdersTabContent() {
                             onClick={() => {
                               if (order.pdfRoutes) {
                                 const win = window.open(order.pdfRoutes, '_blank');
-                                if (!win) alert('No se pudo abrir el PDF');
+                                if (!win) setModalAviso({ open: true, title: t('venezuela.pedidos.pdf.openError') || 'No se pudo abrir el PDF', description: t('venezuela.pedidos.pdf.notAvailableOrder') || 'Intenta nuevamente o verifica más tarde.' });
                               } else {
-                                alert('No hay PDF disponible');
+                                setModalAviso({ open: true, title: 'Sin PDF', description: t('venezuela.pedidos.pdf.notAvailable') || 'No hay PDF disponible para este pedido.' });
                               }
                             }}
                           >
@@ -509,14 +511,28 @@ export default function VenezuelaOrdersTabContent() {
               <div className="space-y-3">
                 {ordersByBox.map((o) => (
                   <div key={o.id} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-blue-100 dark:bg-blue-800/40 rounded-lg"><Package className="h-5 w-5 text-blue-600 dark:text-blue-300" /></div>
+                      <div className="flex items-center gap-3">
+                        <div className="p-3 bg-blue-100 dark:bg-blue-800/40 rounded-lg"><Package className="h-5 w-5 text-blue-600 dark:text-blue-300" /></div>
                       <div className="space-y-1">
                         <h3 className="font-semibold text-slate-900 dark:text-white">#ORD-{o.id}</h3>
                         <p className="text-sm text-slate-600 dark:text-slate-400">{o.productName}</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => { if (o.pdfRoutes) { const win = window.open(o.pdfRoutes, '_blank'); if (!win) alert('No se pudo abrir el PDF'); } else { alert('No hay PDF disponible'); } }} className="flex items-center gap-1"><Eye className="h-4 w-4" /> {t('admin.orders.actions.view')}</Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (o.pdfRoutes) {
+                          const win = window.open(o.pdfRoutes, '_blank');
+                          if (!win) setModalAviso({ open: true, title: t('venezuela.pedidos.pdf.openError') || 'No se pudo abrir el PDF', description: t('venezuela.pedidos.pdf.notAvailableOrder') || 'Intenta nuevamente o verifica más tarde.' });
+                        } else {
+                          setModalAviso({ open: true, title: 'Sin PDF', description: t('venezuela.pedidos.pdf.notAvailable') || 'No hay PDF disponible para este pedido.' });
+                        }
+                      }}
+                      className="flex items-center gap-1"
+                    >
+                      <Eye className="h-4 w-4" /> {t('admin.orders.actions.view')}
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -569,6 +585,28 @@ export default function VenezuelaOrdersTabContent() {
                 })}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal Aviso (reutilizable, usado para "Sin PDF") */}
+      {modalAviso.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-md mx-4 w-full">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-yellow-100 dark:bg-yellow-800/40 rounded-md mt-0.5"><AlertTriangle className="h-5 w-5 text-yellow-700 dark:text-yellow-300" /></div>
+              <div className="min-w-0">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{modalAviso.title || 'Aviso'}</h3>
+                {modalAviso.description && (
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{modalAviso.description}</p>
+                )}
+              </div>
+            </div>
+            <div className="mt-5 flex justify-end gap-2">
+              <Button variant="default" size="sm" onClick={() => setModalAviso({ open: false })}>
+                OK
+              </Button>
+            </div>
           </div>
         </div>
       )}
