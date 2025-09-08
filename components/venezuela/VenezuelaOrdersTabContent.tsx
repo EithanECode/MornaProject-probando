@@ -9,7 +9,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useTheme } from 'next-themes';
 import {
-  Search, Filter, Clock, AlertTriangle, Package, Send, RefreshCw, Eye, CheckCircle, Boxes, Calendar, List
+  Search, Filter, Clock, AlertTriangle, Package, Send, Eye, CheckCircle, Boxes, Calendar, List
 } from 'lucide-react';
 
 // Nota: Este componente es una versión reducida de la página original de Venezuela
@@ -251,14 +251,14 @@ export default function VenezuelaOrdersTabContent() {
       </div>
 
       {/* Sub-tabs internos */}
-      <div className="flex justify-start">
-        <div className="inline-flex rounded-lg border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/60 backdrop-blur px-1 py-1 shadow-sm">
+      <div className="w-full">
+        <div className="flex w-full gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/60 backdrop-blur px-1 py-1 shadow-sm">
           {(['pedidos','cajas','contenedores'] as const).map(tab => (
             <Button
               key={tab}
               variant={activeSubTab === tab ? 'default' : 'ghost'}
               size="sm"
-              className={`rounded-md transition-colors ${activeSubTab === tab ? 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700/60'}`}
+              className={`flex-1 min-w-0 justify-center truncate rounded-md transition-colors ${activeSubTab === tab ? 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700/60'}`}
               onClick={() => setActiveSubTab(tab)}
             >
               {tab === 'pedidos' && t('venezuela.pedidos.tabs.ordersList')}
@@ -276,12 +276,12 @@ export default function VenezuelaOrdersTabContent() {
         <div className="space-y-4">
           <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
             <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <CardTitle className="text-lg font-semibold">{t('venezuela.pedidos.tabs.ordersList')}</CardTitle>
                 <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
-                  <Input placeholder={t('venezuela.pedidos.searchPlaceholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="h-10 w-56 md:w-64 px-3" />
+                  <Input placeholder={t('venezuela.pedidos.searchPlaceholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="h-10 w-full sm:w-64 px-3" />
                   <Select value={statusFilter} onValueChange={setStatusFilter as any}>
-                    <SelectTrigger className="h-10 w-48 md:w-56 px-3 whitespace-nowrap truncate">
+                    <SelectTrigger className="h-10 w-full sm:w-56 px-3 whitespace-nowrap truncate">
                       <SelectValue placeholder={t('chinese.ordersPage.filters.status')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -292,9 +292,7 @@ export default function VenezuelaOrdersTabContent() {
                       <SelectItem value="processing">{t('venezuela.pedidos.statusExtended.processing')}</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button variant="outline" className="h-10 flex items-center gap-2" onClick={fetchOrders} disabled={loading}>
-                    <RefreshCw className="w-4 h-4" /> {loading ? '...' : t('venezuela.pedidos.refresh')}
-                  </Button>
+                  {/* Removed refresh button per request */}
                 </div>
               </div>
             </CardHeader>
@@ -398,15 +396,12 @@ export default function VenezuelaOrdersTabContent() {
       {activeSubTab === 'cajas' && (
         <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 <Boxes className="h-5 w-5" /> {t('venezuela.pedidos.tabs.boxes')}
               </CardTitle>
               <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
-                <Input value={filtroCaja} onChange={(e)=>setFiltroCaja(e.target.value)} placeholder={t('chinese.ordersPage.filters.searchBoxPlaceholder')} className="h-10 w-56 md:w-64 px-3" />
-                <Button variant="outline" size="sm" onClick={fetchBoxes} disabled={boxesLoading} className="h-10 flex items-center gap-1">
-                  <RefreshCw className="h-4 w-4" /> {boxesLoading ? '...' : t('venezuela.pedidos.refresh')}
-                </Button>
+                <Input value={filtroCaja} onChange={(e)=>setFiltroCaja(e.target.value)} placeholder={t('chinese.ordersPage.filters.searchBoxPlaceholder')} className="h-10 w-full sm:w-64 px-3" />
               </div>
             </div>
           </CardHeader>
@@ -423,18 +418,18 @@ export default function VenezuelaOrdersTabContent() {
                   const stateNum = (box.state ?? 1) as number;
                   const countKey = box.box_id ?? box.boxes_id ?? box.id ?? id;
                   return (
-                    <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300">
-                      <div className="flex items-center gap-4">
+                    <div key={`${id}`} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300">
+                      <div className="min-w-0 flex items-center gap-4">
                         <div className="p-3 bg-indigo-100 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600" /></div>
                         <div className="space-y-1">
-                          <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
-                          <div className="flex items-center gap-4 text-xs text-slate-500">
+                          <h3 className="font-semibold text-slate-900 truncate">#BOX-{id}</h3>
+                          <div className="flex flex-wrap gap-4 text-xs text-slate-500">
                             <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created ? new Date(created).toLocaleString('es-ES') : '—'}</span>
                             <span className="flex items-center gap-1"><List className="h-3 w-3" />{t('venezuela.pedidos.labels.ordersCount')} {orderCountsByBoxMain[countKey as any] ?? 0}</span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
                         <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum === 1 ? t('venezuela.pedidos.boxesStatus.new') : stateNum === 2 ? t('venezuela.pedidos.boxesStatus.packed') : stateNum === 5 ? 'Container received' : stateNum === 6 ? 'Received' : `State ${stateNum}`}</Badge>
                         {stateNum === 5 && (
                           <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-box', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'Error'); } await Promise.all([fetchBoxes(), fetchOrders()]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />RECEIVED</Button>
@@ -454,13 +449,12 @@ export default function VenezuelaOrdersTabContent() {
       {activeSubTab === 'contenedores' && (
         <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 <Boxes className="h-5 w-5" /> {t('venezuela.pedidos.tabs.containers')}
               </CardTitle>
               <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
-                <Input value={filtroContenedor} onChange={(e)=>setFiltroContenedor(e.target.value)} placeholder={t('chinese.ordersPage.filters.searchContainerPlaceholder')} className="h-10 w-56 md:w-64 px-3" />
-                <Button variant="outline" size="sm" onClick={fetchContainers} disabled={containersLoading} className="h-10 flex items-center gap-1"><RefreshCw className="h-4 w-4" /> {containersLoading ? '...' : 'Actualizar'}</Button>
+                <Input value={filtroContenedor} onChange={(e)=>setFiltroContenedor(e.target.value)} placeholder={t('chinese.ordersPage.filters.searchContainerPlaceholder')} className="h-10 w-full sm:w-64 px-3" />
               </div>
             </div>
           </CardHeader>
@@ -471,22 +465,22 @@ export default function VenezuelaOrdersTabContent() {
               <div className="text-center py-10 text-sm text-slate-500">{t('venezuela.pedidos.emptyContainersDesc')}</div>
             ) : (
               <div className="space-y-3">
-                {containers.filter((c, idx) => { if (!filtroContenedor) return true; const id = c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }).map((container, idx) => {
+        {containers.filter((c, idx) => { if (!filtroContenedor) return true; const id = c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }).map((container, idx) => {
                   const id = container.container_id ?? container.containers_id ?? container.id ?? idx;
                   const created = container.creation_date ?? container.created_at ?? '';
                   const stateNum = (container.state ?? 1) as number;
                   return (
-                    <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300">
-                      <div className="flex items-center gap-4">
+          <div key={`${id}`} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300">
+            <div className="min-w-0 flex items-center gap-4">
                         <div className="p-3 bg-indigo-100 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600" /></div>
                         <div className="space-y-1">
-                          <h3 className="font-semibold text-slate-900">#CONT-{id}</h3>
-                          <div className="flex items-center gap-4 text-xs text-slate-500">
+              <h3 className="font-semibold text-slate-900 truncate">#CONT-{id}</h3>
+              <div className="flex flex-wrap gap-4 text-xs text-slate-500">
                             <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created ? new Date(created).toLocaleString('es-ES') : '—'}</span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
                         <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 4 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum === 1 ? t('venezuela.pedidos.containersStatus.new') : stateNum === 4 ? 'Received' : `State ${stateNum}`}</Badge>
                         {stateNum === 3 && (
                           <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-container', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ containerId: container.container_id ?? container.containers_id ?? container.id ?? id, nextState: 4 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'No se pudo actualizar el contenedor'); } await Promise.all([fetchContainers(), fetchBoxes(), fetchOrders()]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />Recibido</Button>
