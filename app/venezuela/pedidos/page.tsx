@@ -39,6 +39,8 @@ export default function VenezuelaPedidosPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Modal genérico de aviso (para "Sin PDF")
+  const [modalAviso, setModalAviso] = useState<{ open: boolean; title?: string; description?: string }>({ open: false });
 
   // Tabs: pedidos | cajas | contenedores
   const [activeTab, setActiveTab] = useState<'pedidos' | 'cajas' | 'contenedores'>('pedidos');
@@ -355,6 +357,28 @@ export default function VenezuelaPedidosPage() {
               </Card>
 
               <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 dark:from-green-900/20 dark:to-emerald-900/20 dark:border-green-700">
+            {/* Modal Aviso (reutilizable) */}
+            {modalAviso.open && (
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-md mx-4 w-full">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-yellow-100 dark:bg-yellow-800/40 rounded-md mt-0.5"><AlertTriangle className="h-5 w-5 text-yellow-700 dark:text-yellow-300" /></div>
+                    <div className="min-w-0">
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{modalAviso.title || 'Aviso'}</h3>
+                      {modalAviso.description && (
+                        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{modalAviso.description}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mt-5 flex justify-end gap-2">
+                    <Button variant="default" size="sm" onClick={() => setModalAviso({ open: false })}>
+                      OK
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
                 <CardContent className="p-4 md:p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -517,10 +541,10 @@ export default function VenezuelaPedidosPage() {
                                 if (order.pdfRoutes) {
                                   const win = window.open(order.pdfRoutes, '_blank');
                                   if (!win) {
-                                    alert(t('venezuela.pedidos.pdf.openError'));
+                                    setModalAviso({ open: true, title: t('venezuela.pedidos.pdf.openError') || 'No se pudo abrir el PDF', description: t('venezuela.pedidos.pdf.notAvailableOrder') || 'Intenta nuevamente o verifica más tarde.' });
                                   }
                                 } else {
-                                  alert(t('venezuela.pedidos.pdf.notAvailableOrder'));
+                                  setModalAviso({ open: true, title: 'Sin PDF', description: 'No hay PDF disponible para este pedido.' });
                                 }
                               }}
                             >
