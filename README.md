@@ -1,295 +1,94 @@
-# Pita Express - Admin Panel
+# MornaProject (Panel de Gestión y Cliente)
 
-Sistema de administración para Pita Express, una empresa de logística internacional especializada en envíos entre China y Venezuela.
+Aplicación Next.js (App Router) para gestionar pedidos y operaciones entre China y Venezuela con áreas para Administrador, Venezuela, China y Cliente. Incluye autenticación, configuración unificada, seguimiento, reportes y flujos de pedido con animaciones.
 
-## 🏗️ Estructura del Proyecto
+## 🚀 Características principales
+- Autenticación y post-registro con inicialización de rol (`/api/auth/after-signup`).
+- Paneles por rol: Admin, Venezuela, China y Cliente.
+- Pedidos: creación, listado con paginación, búsqueda y acciones (incluye modales y animaciones de éxito).
+- Reportes y validación de pagos (Venezuela).
+- Tracking para clientes.
+- Configuración unificada y compartida (tema, idioma, perfil y avatar con Supabase Storage), con confirmación al eliminar foto.
+- i18n básico (ES/EN/ZH) con selector de idioma y banderas.
+- Realtime (Supabase) para actualizaciones en tiempo real en áreas clave.
 
-### 📁 Organización de Carpetas
+## 🧱 Tecnologías
+- Next.js 13 App Router, React 18, TypeScript
+- Tailwind CSS + shadcn/ui (Radix) + lucide-react
+- Supabase (auth, Realtime, Storage)
+- Lottie para animaciones
 
-```
-project/
-├── app/                                # App Router de Next.js
-│   ├── layout.tsx                      # Layout raíz
-│   ├── globals.css                     # Estilos globales
-│   ├── page.tsx                        # Redirección a la sección de login (ruta /)
-│   ├── login-register/                 # Flujo de autenticación (UI)
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
-│   │   ├── AuthPage.tsx
-│   │   ├── LoginForm.tsx
-│   │   ├── RegisterForm.tsx
-│   │   └── PasswordReset/
-│   │       ├── PasswordReset.tsx
-│   │       └── FormPanel.tsx
-│   ├── dashboard/                      # Página de dashboard (ruta /dashboard)
-│   │   └── page.tsx
-│   ├── pedidos/                        # Página de pedidos (ruta /pedidos)
-│   │   └── page.tsx
-│   ├── tracking/                       # Placeholder de tracking (ruta /tracking)
-│   │   └── page.tsx
-│   ├── alertas/                        # Placeholder de alertas (ruta /alertas)
-│   │   └── page.tsx
-│   ├── validacion-pagos/               # Placeholder de validación de pagos (ruta /validacion-pagos)
-│   │   └── page.tsx
-│   ├── reportes/                       # Placeholder de reportes (ruta /reportes)
-│   │   └── page.tsx
-│   ├── usuarios/                       # Placeholder de usuarios (ruta /usuarios)
-│   │   └── page.tsx
-│   ├── configuracion/                  # Placeholder de configuración (ruta /configuracion)
-│   └── styles/
-│       └── auth/
-│           ├── AuthPage.css
-│           └── PasswordReset.css
-├── components/                         # Componentes React
-│   ├── auth/
-│   │   └── AnimatedPanel.tsx
-│   ├── layout/
-│   │   ├── Header.tsx
-│   │   └── Sidebar.tsx
-│   ├── dashboard/
-│   │   ├── StatsCards.tsx
-│   │   ├── WorkflowSection.tsx
-│   │   ├── RecentOrders.tsx
-│   │   └── QuickActions.tsx
-│   ├── orders/                         # (vacío)
-│   └── ui/                             # Componentes shadcn/ui + comunes
-│       ├── common/
-│       │   ├── PitaLogo.tsx
-│       │   └── VenezuelaFlag.tsx
-│       └── ...                         # botones, cards, select, etc.
-├── lib/                                # Utilidades y configuraciones
-│   ├── constants/
-│   │   ├── auth.ts
-│   │   ├── dashboard.ts
-│   │   └── navigation.ts
-│   ├── types/
-│   │   ├── dashboard.ts
-│   │   └── navigation.ts
-│   ├── hooks/                          # (vacío)
-│   ├── services/                       # (vacío)
-│   ├── validations/                    # (vacío)
-│   └── utils.ts
-├── hooks/
-│   └── use-toast.ts
-├── public/                             # Archivos estáticos
-│   ├── animations/
-│   │   ├── login.json
-│   │   ├── Register.json
-│   │   └── Success.json
-│   ├── images/
-│   │   ├── background.jpg
-│   │   ├── escudo.gif
-│   │   └── logos/
-│   │       ├── pita_logo.png
-│   │       ├── pita_logo.svg
-│   │       └── PitaSinFondo.svg
-│   └── videos/
-│       └── wait.mp4
-├── UsuarioP-front/                     # App React separada (cliente)
-├── tailwind.config.ts
-├── tsconfig.json
-├── next.config.js
-├── package.json
-└── README.md
-```
+## � Requisitos previos
+- Node.js 18+ (recomendado 20+)
+- Variables de entorno de Supabase configuradas (ver sección .env)
 
-## 🚀 Tecnologías Utilizadas
-
-- **Node.js 20.19.4** - Runtime de JavaScript
-- **Next.js 14** - Framework de React con App Router
-- **TypeScript** - Tipado estático
-- **Tailwind CSS** - Framework de CSS utilitario
-- **shadcn/ui** - Componentes de UI
-- **Lucide React** - Iconos
-- **React Hooks** - Gestión de estado
-
-## 🎯 Características Implementadas
-
-### 📊 Dashboard
-- **Estadísticas básicas** - Total de pedidos, pendientes, completados y en tránsito
-- **Flujo de trabajo visual** - Seguimiento del proceso de pedidos con 8 pasos
-- **Pedidos recientes** - Lista de pedidos con progreso y ETA
-- **Acciones rápidas** - Botones para crear nuevos pedidos (China/Vzla)
-
-### 🧭 Navegación
-- **Sidebar funcional** - Navegación principal con expansión/contracción automática
-- **Dashboard en ruta raíz** - Acceso directo a `/` para el dashboard
-- **Página de pedidos** - Gestión completa de pedidos con filtros y paginación
-- **Transiciones básicas** - Animaciones simples entre páginas
-
-### 🎨 Diseño
-- **Gradientes modernos** - Diseño visual atractivo con efectos glassmorphism
-- **Animaciones básicas** - Transiciones y efectos visuales optimizados
-- **Tema consistente** - Paleta de colores unificada (azul, naranja, verde, gris)
-- **Iconografía** - Iconos Lucide React con colores específicos por estado
-
-## 🔧 Configuración del Proyecto
-
-### Instalación
+## ⚙️ Configuración y ejecución
+1) Instalar dependencias
 ```bash
 npm install
 ```
-
-### Desarrollo
+2) Variables de entorno (.env.local)
+```env
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=... # solo en entorno servidor
+```
+3) Desarrollo
 ```bash
 npm run dev
 ```
-
-### Construcción
+4) Producción
 ```bash
 npm run build
+npm start
 ```
 
-## 📋 Mejores Prácticas Implementadas
+## � Estructura de carpetas (resumen)
+```
+app/
+  layout.tsx, page.tsx, error.tsx, not-found.tsx, global-error.tsx
+  login-register/           # Login, registro, reset de contraseña
+  admin/                    # Área Admin (pedidos, usuarios, alertas, etc.)
+  china/                    # Área China
+  venezuela/                # Área Venezuela (reportes, validación de pagos, etc.)
+  cliente/                  # Área Cliente (dashboard, mis-pedidos, pagos, tracking)
+  api/                      # Rutas API internas (auth/after-signup, admin/orders, etc.)
+components/
+  ui/                       # shadcn/ui y utilitarios de UI
+  layout/                   # Header, Sidebar, theme provider
+  alertas/, tracking/, dashboard/, venezuela/, china/, auth/
+  shared/configuration/     # Configuración unificada por rol
+hooks/                      # Hooks de datos y realtime (admin/china/venezuela/cliente)
+lib/
+  supabase/                 # Clientes Supabase (browser/server)
+  translations/             # i18n (es.json, en.json, zk.json)
+  constants/, types/, utils.ts, contexts (Admin/China/Client/Vzla)
+public/
+  images/, animations/, videos/
+styles/
+  auth/                     # Estilos específicos para auth
+```
 
-### 🏗️ Arquitectura
-- **Separación de responsabilidades** - Componentes modulares y reutilizables
-- **Tipos TypeScript** - Definición clara de interfaces y tipos
-- **Constantes centralizadas** - Datos y configuraciones organizadas en `/lib/constants`
-- **Dashboard integrado** - Página principal con sidebar incluido
-- **Rutas simplificadas** - Dashboard directamente en `/`
-- **Componentes shadcn/ui** - Biblioteca completa de componentes UI
+## 🔑 Detalles clave
+- Configuración unificada: `components/shared/configuration/ConfigurationContent.tsx` maneja avatar (upload/delete con confirmación), idioma, tema y datos de perfil. Reutilizada en Admin/China/Venezuela/Cliente.
+- Flujo de nuevo pedido (Admin y Cliente) con animación de éxito al finalizar.
+- Paginación en listados (Admin/Venezuela/China/Cliente) y modal cuando falta PDF.
+- Endpoint post-registro: `app/api/auth/after-signup/route.ts` (migrado a ruta canónica). 
 
-### 🎯 Componentes
-- **Componentes específicos** - Cada funcionalidad tiene su componente
-- **Props tipadas** - Interfaces claras para props
-- **Reutilización** - Componentes modulares y flexibles
-- **Composición** - Uso de composición sobre herencia
+## 🧹 Limpieza reciente (organización)
+- Eliminados mocks, rutas y componentes no utilizados (por ejemplo: `app/other/*`, `components/RealtimeTest.tsx`, API `order-pdf` obsoleta).
+- Unificación de configuración y correcciones de i18n.
 
-### 🎨 Estilos
-- **Tailwind CSS** - Utilidades CSS consistentes y responsive
-- **Animaciones optimizadas** - Transiciones de 200ms con ease-out
-- **Accesibilidad básica** - Consideraciones básicas de UX/UI
-- **Glassmorphism** - Efectos de transparencia y blur
+## 🔍 Consejos de desarrollo
+- Preferir `next/image` sobre `<img>` donde sea posible.
+- Mantener dependencias de React hooks actualizadas en efectos y callbacks.
+- Agregar pruebas ligeras para flujos críticos si se amplía el proyecto.
 
-## 🚀 Próximas Mejoras
+## ❓ Troubleshooting
+- Si el avatar no se actualiza: verificar permisos de bucket en Supabase y claves de entorno.
+- Si falla el post-registro: revisar `SUPABASE_SERVICE_ROLE_KEY` y que la tabla `userlevel` exista.
+- Realtime: confirmar políticas RLS y suscripciones en canales.
 
-- [ ] Implementar diseño responsive completo
-- [ ] Agregar páginas faltantes (tracking, chat, reportes, clientes, documentos, configuración)
-- [ ] Agregar autenticación
-- [ ] Implementar base de datos
-- [ ] Sistema de notificaciones en tiempo real
-- [ ] Reportes avanzados
-- [ ] Entre otros
-
-## 👥 Asignación de Tareas Frontend
-
-### **María — Dashboard y Pedidos**
-- **Dashboard**
-  - Hacer que los botones de **"Acciones Rápidas"** funcionen:
-    - **"Nuevo Pedido (China)"**: Al hacer clic, debe abrir la interfaz de creación de pedido al detal.
-    - **"Nuevo Pedido (Vzla)"**: Al hacer clic, debe abrir la interfaz de creación de pedido al por mayor.
-    - **"Avanzar Todos los Pedidos"**: Este botón debe ejecutar la lógica para mover todos los pedidos activos a la siguiente etapa del flujo.
-- **Pedidos**
-  - Hacer que la **tabla sea interactiva y funcional**:
-    - Al hacer clic en **"Ver"**: Navegar a la página de detalles de ese pedido.
-    - Botón **"Exportar"**: Debe implementar la funcionalidad para descargar la lista de pedidos.
-
-### **Marí V — Tracking y Alertas**
-- **Tracking**
-  - **Propósito**: Una herramienta para verificar el seguimiento logístico en detalle.
-  - **Tareas de Front-end**:
-    - Crear una **página/panel** con **búsqueda por código** de tracking.
-    - Diseñar una interfaz con **historial detallado** (fechas, ubicaciones y eventos clave).
-- **Alertas**
-  - **Propósito**: Notificar al Master sobre problemas que requieren atención inmediata.
-  - **Tareas de Front-end**:
-    - Panel/lista de **alertas críticas** (p. ej., pedidos no respondidos a tiempo).
-    - **Contador** de alertas pendientes en el ítem del sidebar.
-
-### **Stefano — Validación de Pagos y Reportes**
-- **Validación de Pagos**
-  - **Propósito**: Supervisar y auditar el proceso de pagos.
-  - **Tareas de Front-end**:
-    - Interfaz de **pagos pendientes** con acciones **Aprobar/Rechazar**.
-    - **Vista de auditoría** para pagos registrados hacia China.
-- **Reportes**
-  - **Propósito**: Generar reportes para el análisis de la operación.
-  - **Tareas de Front-end**:
-    - Interfaz para seleccionar reportes (**por mes**, **por empleado**, **por estado de pedidos**).
-    - Vista de resultados con **gráficos/tablas**.
-
-### **Luis — Usuarios y Configuración**
-- **Usuarios**
-  - **Propósito**: Gestionar a los empleados y sus accesos.
-  - **Tareas de Front-end**:
-    - **Tabla** de empleados.
-    - **Formulario** para crear/editar/suspender y asignar **roles/niveles de acceso**.
-- **Configuración**
-  - **Propósito**: Centro para definir reglas y parámetros del negocio.
-  - **Tareas de Front-end**:
-    - Formularios para **parámetros clave** (costos de envío, porcentajes de ganancia, valor del dólar, descuentos por USD).
-    - Botón **modo oscuro** (deshabilitado por ahora; no implementar funcionalidad todavía).
-
-### **Daniela**
-- **Rol**: Próximamente se le asignarán tareas.
-
-### **Alexander**
-- Me encargaré de **unir todas las páginas**, **adaptarlas** y solucionar los problemas del **sidebar** y de la **navegación** entre ellas.
-
-## 👥 Asignación de Tareas Backend
-
-### **Luis — Dashboard**
-
-- **Dashboard**
-  - **Propósito**: Supervisar indicadores clave de la operación y ofrecer accesos rápidos a funcionalidades frecuentes.
- ---
-
-### **Oscar — Pedidos del Cliente**
-
-- **Pedidos del Cliente**
-  - **Propósito**: Permitir al cliente crear sus pedidos.
-  - **Futuro**:
-    - Permitir al cliente pueda supervisar, filtrar y gestionar sus propios pedidos
-
----
-
-### **Jade — Gestión de Pedidos**
-
-- **Gestión de Pedidos**
-  - **Propósito**: Controlar el flujo completo de los pedidos desde la creación hasta la entrega.
-
----
-
-### **Andrea — Alertas y Sidebar**
-
-- **Alertas**
-  - **Propósito**: Informar sobre situaciones críticas que requieren atención inmediata.
-  - **Tareas de Front-end**:
-    - Panel de alertas urgentes (errores de sistemas, pedidos demorados).
-    - Contador de alertas pendientes con resaltado visual.
-    - Modal o pop-up para detalles y acciones correctivas.
-
-- **Sidebar**
-  - **Propósito**: Navegación principal y acceso rápido a secciones de la aplicación.
-
----
-
-### **Sebastian — Reportes (solo del Admin)**
-
-- **Reportes**
-  - **Propósito**: Generar, visualizar y exportar análisis de datos empresariales, accesible únicamente para el rol administrador.
-
----
-
-### **Tomas — Creación de Usuarios y Manejo de Tablas SQL**
-
-- **Creación de Usuarios**  
-  - **Propósito**: Gestionar la incorporación y permisos de nuevos usuarios.  
-
-- **Manejo de Tablas SQL**  
-  - **Propósito**: Administrar la estructura de la base de datos y ejecutar scripts de migración.  
-
----
-
-> [!IMPORTANT]
-> RECUERDEN PASAR ANTES DE PEDIRLE ALGO A LA IA EL ARCHIVO `contexto.txt` (está en la raíz del proyecto).
-
-> PARA EJECUTAR EL PROGRAMA SE UTILIZA NPM RUN DEV
-
-> [!NOTE]
-> Activos estáticos: todas las imágenes, animaciones y videos deben colocarse en `public/` (por ejemplo, `public/images`, `public/animations`, `public/videos`).
-
-> [!TIP]
-> Si necesitan ayuda en algo, no duden en avisarme, ¡Ustedes pueden! ;D
+## 📜 Licencia
+Privado (uso interno del proyecto).
 
