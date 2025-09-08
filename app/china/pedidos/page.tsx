@@ -1161,7 +1161,8 @@ export default function PedidosChina() {
 
           {/* Tabs: Lista de pedidos | Cajas | Contenedores */}
           <div className="flex justify-start">
-            <div className="inline-flex rounded-lg border border-slate-200 bg-white/70 backdrop-blur px-1 py-1 shadow-sm">
+            <div className="w-full overflow-x-auto -mx-4 px-4 sm:px-0">
+              <div className="inline-flex min-w-max rounded-lg border border-slate-200 bg-white/70 backdrop-blur px-1 py-1 shadow-sm">
               <Button
                 variant={activeTab === 'pedidos' ? 'default' : 'ghost'}
                 size="sm"
@@ -1186,27 +1187,28 @@ export default function PedidosChina() {
               >
                 {t('chinese.ordersPage.tabs.containers')}
               </Button>
+              </div>
             </div>
           </div>
 
           {/* Barra compacta y alineada a la derecha */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
             <CardHeader className="py-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle className="text-lg font-semibold">
                   {activeTab === 'pedidos' ? t('chinese.ordersPage.tabs.ordersList') : activeTab === 'cajas' ? t('chinese.ordersPage.tabs.boxes') : t('chinese.ordersPage.tabs.containers')}
                 </CardTitle>
-                <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
+                <div className="w-full sm:w-auto grid grid-cols-1 sm:flex sm:items-center sm:justify-end gap-2 md:gap-3">
                   {activeTab === 'pedidos' && (
                     <>
                       <Input
                         placeholder={t('chinese.ordersPage.filters.searchClientPlaceholder')}
                         value={filtroCliente}
                         onChange={(e) => setFiltroCliente(e.target.value)}
-                        className="h-10 w-56 md:w-64 px-3"
+                        className="h-10 w-full sm:w-64 px-3"
                       />
                       <Select value={filtroEstado} onValueChange={setFiltroEstado}>
-                        <SelectTrigger className="h-10 w-48 md:w-56 px-3 whitespace-nowrap truncate">
+                        <SelectTrigger className="h-10 w-full sm:w-56 px-3 whitespace-nowrap truncate">
                           <SelectValue placeholder="Estado" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1224,7 +1226,7 @@ export default function PedidosChina() {
                       placeholder={t('chinese.ordersPage.filters.searchBoxPlaceholder')}
                       value={filtroCaja}
                       onChange={(e) => setFiltroCaja(e.target.value)}
-                      className="h-10 w-56 md:w-64 px-3"
+                      className="h-10 w-full sm:w-64 px-3"
                     />
                   )}
                   {activeTab === 'contenedores' && (
@@ -1232,7 +1234,7 @@ export default function PedidosChina() {
                       placeholder={t('chinese.ordersPage.filters.searchContainerPlaceholder')}
                       value={filtroContenedor}
                       onChange={(e) => setFiltroContenedor(e.target.value)}
-                      className="h-10 w-56 md:w-64 px-3"
+                      className="h-10 w-full sm:w-64 px-3"
                     />
                   )}
                 </div>
