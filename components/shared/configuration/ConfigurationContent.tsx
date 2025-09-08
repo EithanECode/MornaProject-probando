@@ -29,6 +29,17 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/lib/LanguageContext';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useTranslation } from '@/hooks/useTranslation';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export type ConfigurationRole = 'admin' | 'china' | 'venezuela' | 'client';
 
@@ -444,9 +455,29 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                             <Upload className="w-4 h-4" /> {t('admin.configuration.profile.profilePicture.uploadButton')}
                           </label>
                           <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
-                          <Button variant="outline" className="inline-flex items-center gap-2 w-full justify-center" onClick={handleDeletePhoto}>
-                            <Trash2 className="w-4 h-4" /> {t('admin.configuration.profile.profilePicture.deleteButton')}
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="outline" className="inline-flex items-center gap-2 w-full justify-center">
+                                <Trash2 className="w-4 h-4" /> {t('admin.configuration.profile.profilePicture.deleteButton')}
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  {`${t('common.delete')} ${t('admin.configuration.profile.profilePicture.title').toLowerCase()}?`}
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Esta acción no se puede deshacer.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDeletePhoto} className="bg-red-600 hover:bg-red-700 text-white">
+                                  {t('common.delete')}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </div>
                     </CardContent>
