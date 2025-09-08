@@ -464,7 +464,7 @@ export default function VenezuelaPedidosPage() {
 
           {/* Contenido por pestaña */}
           {activeTab === 'pedidos' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-5 lg:gap-6 overflow-x-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-5 lg:gap-6">
               {loading ? (
                 <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
                   <CardContent className="p-12 text-center">{t('venezuela.pedidos.loadingOrders')}</CardContent>
@@ -699,9 +699,9 @@ export default function VenezuelaPedidosPage() {
           )}
 
           {activeTab === 'cajas' && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow overflow-x-auto">
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <CardTitle className="text-xl font-semibold flex items-center gap-2">
                     <Boxes className="h-5 w-5" />
                     {t('venezuela.pedidos.tabs.boxes')}
@@ -711,7 +711,7 @@ export default function VenezuelaPedidosPage() {
                       placeholder={t('venezuela.pedidos.filters.searchBoxPlaceholder')}
                       value={filtroCaja}
                       onChange={(e) => setFiltroCaja(e.target.value)}
-                      className="h-10 w-56 md:w-64 px-3"
+                      className="h-10 w-full sm:w-64 px-3"
                     />
                     {/* Botón de refrescar eliminado: realtime activo */}
                   </div>
@@ -746,21 +746,21 @@ export default function VenezuelaPedidosPage() {
                       const stateNum = (box.state ?? 1) as number;
                       const countKey = box.box_id ?? box.boxes_id ?? box.id ?? id;
                       return (
-                        <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300">
-                          <div className="flex items-center gap-4">
+        <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300 min-w-0 overflow-hidden flex-wrap gap-3 md:flex-nowrap">
+          <div className="flex items-center gap-4 min-w-0">
                             <div className="p-3 bg-indigo-100 rounded-lg">
                               <Boxes className="h-5 w-5 text-indigo-600" />
                             </div>
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
-                                <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
+            <h3 className="font-semibold text-slate-900 truncate">#BOX-{id}</h3>
                               </div>
                               <div className="flex items-center gap-4 text-xs text-slate-500">
                                 <span className="flex items-center gap-1"><List className="h-3 w-3" />{t('venezuela.pedidos.labels.orders')} {orderCountsByBoxMain[countKey as any] ?? 0}</span>
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end shrink-0">
                             <Badge className={`border ${
                               stateNum === 1
                                 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50 transition-colors'
@@ -825,9 +825,9 @@ export default function VenezuelaPedidosPage() {
           )}
 
           {activeTab === 'contenedores' && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow overflow-x-auto">
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <CardTitle className="text-xl font-semibold flex items-center gap-2">
                     <Boxes className="h-5 w-5" />
                     {t('venezuela.pedidos.tabs.containers')}
@@ -837,7 +837,7 @@ export default function VenezuelaPedidosPage() {
                       placeholder={t('venezuela.pedidos.filters.searchContainerPlaceholder')}
                       value={filtroContenedor}
                       onChange={(e) => setFiltroContenedor(e.target.value)}
-                      className="h-10 w-56 md:w-64 px-3"
+                      className="h-10 w-full sm:w-64 px-3"
                     />
                     {/* Botón de refrescar eliminado: realtime activo */}
                   </div>
@@ -871,7 +871,7 @@ export default function VenezuelaPedidosPage() {
                       const created = container.creation_date ?? container.created_at ?? '';
                       const stateNum = (container.state ?? 1) as number;
                       return (
-                        <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300">
+                        <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300 min-w-0">
                           <div className="flex items-center gap-4">
                             <div className="p-3 bg-indigo-100 rounded-lg">
                               <Boxes className="h-5 w-5 text-indigo-600" />
@@ -1031,21 +1031,21 @@ export default function VenezuelaPedidosPage() {
                       const created = box.creation_date ?? box.created_at ?? '';
                       const stateNum = (box.state ?? 1) as number;
                       return (
-                        <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
-                          <div className="flex items-center gap-4">
+        <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 min-w-0 overflow-hidden flex-wrap gap-3 md:flex-nowrap">
+          <div className="flex items-center gap-4 min-w-0">
                             <div className="p-3 bg-indigo-100 rounded-lg">
                               <Boxes className="h-5 w-5 text-indigo-600" />
                             </div>
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
-                                <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
+            <h3 className="font-semibold text-slate-900 truncate">#BOX-{id}</h3>
                               </div>
                               <div className="flex items-center gap-4 text-xs text-slate-500">
                                 <span className="flex items-center gap-1"><List className="h-3 w-3" />{t('venezuela.pedidos.labels.orders')} {orderCountsByBox[id as any] ?? 0}</span>
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end shrink-0">
                             <Badge className={`border ${
                               stateNum === 1
                                 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50 transition-colors'
