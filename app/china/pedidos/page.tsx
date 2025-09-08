@@ -1124,16 +1124,13 @@ export default function PedidosChina() {
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('chinese.ordersPage.title')}
           subtitle={t('chinese.ordersPage.subtitle')}
+          showTitleOnMobile
         />
         
   <div className="p-4 md:p-5 lg:p-6 space-y-6 max-w-7xl mx-auto w-full">
           {/* Header de la página */}
           <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-xl p-4 md:p-6 text-white">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
-              <div>
-                <h1 className="text-xl md:text-2xl font-bold">{t('chinese.ordersPage.pageTitle')}</h1>
-                <p className="text-orange-100 mt-1 text-sm md:text-base">{t('chinese.ordersPage.subtitle')}</p>
-              </div>
               <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
                 <div className="text-center">
                   <p className="text-xl md:text-2xl font-bold">{stats.pendientes}</p>

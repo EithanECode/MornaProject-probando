@@ -329,15 +329,12 @@ export default function VenezuelaPedidosPage() {
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('venezuela.pedidos.title')}
           subtitle={t('venezuela.pedidos.subtitle')}
+          showTitleOnMobile
         />
         
   <div className="p-4 md:p-5 lg:p-6 space-y-6">
-          {/* Header de la página */}
+          {/* Header de la página (título duplicado removido; lo muestra el Header de arriba) */}
           <div className="space-y-4">
-            <div>
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">{t('venezuela.pedidos.title')}</h1>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-300">{t('venezuela.pedidos.subtitle')}</p>
-            </div>
             
             {/* Tarjetas de estadísticas */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -406,12 +403,12 @@ export default function VenezuelaPedidosPage() {
               </Card>
             </div>
             {/* Tabs: Pedidos | Cajas | Contenedores (debajo de estadísticas) */}
-            <div className="flex justify-start pt-2">
-              <div className="inline-flex rounded-lg border border-slate-200 bg-white/70 backdrop-blur px-1 py-1 shadow-sm">
+            <div className="pt-2">
+              <div className="flex w-full rounded-lg border border-slate-200 bg-white/70 backdrop-blur px-1 py-1 shadow-sm gap-1">
                 <Button
                   variant={activeTab === 'pedidos' ? 'default' : 'ghost'}
                   size="sm"
-                  className={`rounded-md transition-colors ${activeTab === 'pedidos' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
+                  className={`flex-1 min-w-0 justify-center whitespace-nowrap truncate rounded-md transition-colors ${activeTab === 'pedidos' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                   onClick={() => setActiveTab('pedidos')}
                 >
                   {t('venezuela.pedidos.tabs.ordersList')}
@@ -419,7 +416,7 @@ export default function VenezuelaPedidosPage() {
                 <Button
                   variant={activeTab === 'cajas' ? 'default' : 'ghost'}
                   size="sm"
-                  className={`rounded-md transition-colors ${activeTab === 'cajas' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
+                  className={`flex-1 min-w-0 justify-center whitespace-nowrap truncate rounded-md transition-colors ${activeTab === 'cajas' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                   onClick={() => setActiveTab('cajas')}
                 >
                   {t('venezuela.pedidos.tabs.boxes')}
@@ -427,7 +424,7 @@ export default function VenezuelaPedidosPage() {
                 <Button
                   variant={activeTab === 'contenedores' ? 'default' : 'ghost'}
                   size="sm"
-                  className={`rounded-md transition-colors ${activeTab === 'contenedores' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
+                  className={`flex-1 min-w-0 justify-center whitespace-nowrap truncate rounded-md transition-colors ${activeTab === 'contenedores' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
                   onClick={() => setActiveTab('contenedores')}
                 >
                   {t('venezuela.pedidos.tabs.containers')}
@@ -438,17 +435,16 @@ export default function VenezuelaPedidosPage() {
           {activeTab === 'pedidos' && (
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
               <CardHeader className="py-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-semibold">{t('venezuela.pedidos.tabs.ordersList')}</CardTitle>
+                <div className="flex items-center justify-end">
                   <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
                     <Input
                       placeholder={t('venezuela.pedidos.searchPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="h-10 w-56 md:w-64 px-3"
+                      className="h-10 w-full sm:w-64 px-3"
                     />
                     <Select value={statusFilter} onValueChange={setStatusFilter as any}>
-                      <SelectTrigger className="h-10 w-48 md:w-56 px-3 whitespace-nowrap truncate">
+                      <SelectTrigger className="h-10 w-full sm:w-56 px-3 whitespace-nowrap truncate">
                         <SelectValue placeholder={t('venezuela.pedidos.filters.status')} />
                       </SelectTrigger>
                       <SelectContent>
@@ -459,7 +455,6 @@ export default function VenezuelaPedidosPage() {
                         <SelectItem value="processing">{t('venezuela.pedidos.filters.processing')}</SelectItem>
                       </SelectContent>
                     </Select>
-                    {/* Botón de refrescar eliminado: realtime activo */}
                   </div>
                 </div>
               </CardHeader>
@@ -469,7 +464,7 @@ export default function VenezuelaPedidosPage() {
 
           {/* Contenido por pestaña */}
           {activeTab === 'pedidos' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-5 lg:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-5 lg:gap-6 overflow-x-auto">
               {loading ? (
                 <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
                   <CardContent className="p-12 text-center">{t('venezuela.pedidos.loadingOrders')}</CardContent>
@@ -558,7 +553,7 @@ export default function VenezuelaPedidosPage() {
                             </span>
                           </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 w-full sm:w-auto justify-end">
                           <Button
                             className="bg-blue-600 text-white hover:bg-blue-700 hover:text-white card-animate-liftbounce"
                             variant="outline"
@@ -704,7 +699,7 @@ export default function VenezuelaPedidosPage() {
           )}
 
           {activeTab === 'cajas' && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow overflow-x-auto">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xl font-semibold flex items-center gap-2">
@@ -765,7 +760,7 @@ export default function VenezuelaPedidosPage() {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                             <Badge className={`border ${
                               stateNum === 1
                                 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50 transition-colors'
@@ -830,7 +825,7 @@ export default function VenezuelaPedidosPage() {
           )}
 
           {activeTab === 'contenedores' && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow overflow-x-auto">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xl font-semibold flex items-center gap-2">
@@ -889,7 +884,7 @@ export default function VenezuelaPedidosPage() {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                             <Badge className={`border ${
                               stateNum === 1
                                 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50 transition-colors'

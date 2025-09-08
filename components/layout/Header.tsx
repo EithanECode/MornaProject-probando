@@ -10,13 +10,17 @@ interface HeaderProps {
   onMenuToggle?: () => void;
   title?: string;
   subtitle?: string;
+  hideTitle?: boolean;
+  showTitleOnMobile?: boolean;
 }
 
 export default function Header({ 
   notifications, 
   onMenuToggle, 
   title = "Dashboard", 
-  subtitle = "Resumen de la operación" 
+  subtitle = "Resumen de la operación",
+  hideTitle = false,
+  showTitleOnMobile = false,
 }: HeaderProps) {
   const { t } = useTranslation();
   const handleMenuToggle = () => {
@@ -40,10 +44,12 @@ export default function Header({
             </Button>
             
             {/* Title Section */}
-            <div className="hidden sm:block">
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{title}</h1>
-              <p className="text-xs sm:text-sm text-slate-600">{subtitle}</p>
-            </div>
+            {!hideTitle && (
+              <div className={showTitleOnMobile ? "block" : "hidden sm:block"}>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{title}</h1>
+                <p className="text-xs sm:text-sm text-slate-600">{subtitle}</p>
+              </div>
+            )}
           </div>
           
           {/* Right Section */}
