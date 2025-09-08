@@ -331,6 +331,20 @@ const useOrdersFilter = (orders: Order[]) => {
 
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
+  const visiblePages = useMemo<(number | 'ellipsis-left' | 'ellipsis-right')[]>(() => {
+    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    const pages: (number | 'ellipsis-left' | 'ellipsis-right')[] = [1];
+    // Left ellipsis
+    if (currentPage > 3) pages.push('ellipsis-left');
+    // Middle window around current
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+    for (let p = start; p <= end; p++) pages.push(p);
+    // Right ellipsis
+    if (currentPage < totalPages - 2) pages.push('ellipsis-right');
+    pages.push(totalPages);
+    return pages;
+  }, [currentPage, totalPages]);
   const paginatedOrders = useMemo(() => {
     return filteredOrders.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredOrders, startIndex, itemsPerPage]);
@@ -353,6 +367,7 @@ const useOrdersFilter = (orders: Order[]) => {
     paginatedOrders,
     totalPages,
     startIndex,
+  visiblePages,
     stats
   };
 };
@@ -450,6 +465,7 @@ export default function PedidosPage() {
     paginatedOrders,
     totalPages,
     startIndex,
+  visiblePages,
     stats
   } = useOrdersFilter(orders);
 
@@ -881,13 +897,13 @@ export default function PedidosPage() {
 
   // Memoizar las tarjetas de estadísticas
   const statsCards = useMemo(() => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
       <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 dark:from-blue-900/20 dark:to-indigo-900/20 dark:border-blue-700 shadow-lg hover:shadow-xl transition-all duration-300">
         <CardContent className="p-4 md:p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-blue-700 dark:text-blue-300 text-sm md:text-base font-medium">{t('admin.orders.stats.totalOrders')}</p>
-              <p className={`text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200 transition-all duration-1000 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+              <p className="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200">
                 {totalPedidos}
               </p>
             </div>
@@ -903,7 +919,7 @@ export default function PedidosPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-yellow-700 dark:text-yellow-300 text-sm md:text-base font-medium">{t('admin.orders.stats.pending')}</p>
-              <p className={`text-2xl md:text-3xl font-bold text-yellow-800 dark:text-yellow-200 transition-all duration-1000 delay-200 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+              <p className="text-2xl md:text-3xl font-bold text-yellow-800 dark:text-yellow-200">
                 {pedidosPendientes}
               </p>
             </div>
@@ -919,7 +935,7 @@ export default function PedidosPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-purple-700 dark:text-purple-300 text-sm md:text-base font-medium">{t('admin.orders.stats.inTransit')}</p>
-              <p className={`text-2xl md:text-3xl font-bold text-purple-800 dark:text-purple-200 transition-all duration-1000 delay-400 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+              <p className="text-2xl md:text-3xl font-bold text-purple-800 dark:text-purple-200">
                 {pedidosTransito}
               </p>
             </div>
@@ -935,7 +951,7 @@ export default function PedidosPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-700 dark:text-green-300 text-sm md:text-base font-medium">{t('admin.orders.stats.delivered')}</p>
-              <p className={`text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200 transition-all duration-1000 delay-600 ${animateStats ? 'scale-100' : 'scale-0'}`}>
+              <p className="text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200">
                 {pedidosEntregados}
               </p>
             </div>
@@ -1033,18 +1049,19 @@ export default function PedidosPage() {
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('admin.orders.title')}
           subtitle={t('admin.orders.subtitle')}
+          showTitleOnMobile
         />
 
         <div className={mounted && theme === 'dark' ? 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6 bg-slate-900' : 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6'}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="mb-8 flex flex-nowrap overflow-x-auto md:flex-wrap md:overflow-x-visible gap-3 rounded-2xl p-2 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
-              <TabsTrigger value="admin" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+            <TabsList className="mb-8 flex w-full gap-1 rounded-2xl p-2 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+              <TabsTrigger value="admin" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
                 <Settings className="w-4 h-4" /> {t('sidebar.management')}
               </TabsTrigger>
-              <TabsTrigger value="venezuela" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+              <TabsTrigger value="venezuela" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
                 <MapPin className="w-4 h-4" /> {t('admin.orders.vzlaTabLabel')}
               </TabsTrigger>
-              <TabsTrigger value="china" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+              <TabsTrigger value="china" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
                 <Plane className="w-4 h-4" /> {t('admin.orders.chinaTabLabel')}
               </TabsTrigger>
               {/* Pestaña Cliente eliminada */}
@@ -1063,15 +1080,15 @@ export default function PedidosPage() {
 {t('admin.orders.listDescription', { count: totalPedidos })}
                       </CardDescription>
                     </div>
-                      <div className="w-full lg:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
+            <div className="w-full lg:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
                         <Input
                           placeholder={t('admin.orders.search')}
                           value={searchTerm}
                           onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                          className={`${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400' : 'bg-white/50 border-slate-200'} h-10 w-56 md:w-64 px-3`}
+              className={`${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400' : 'bg-white/50 border-slate-200'} h-10 w-full sm:w-64 px-3`}
                         />
                         <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}>
-                          <SelectTrigger className={`h-10 w-48 md:w-56 px-3 whitespace-nowrap truncate ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white/50 border-slate-200'}`}>
+              <SelectTrigger className={`h-10 w-full sm:w-56 px-3 whitespace-nowrap truncate ${mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white/50 border-slate-200'}`}>
                             <SelectValue placeholder={t('admin.orders.filters.status')} />
                           </SelectTrigger>
                           <SelectContent>
@@ -1163,12 +1180,12 @@ export default function PedidosPage() {
                 <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t ${mounted && theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}>
                   <div className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                     {t('admin.orders.pagination.results', {
-                      from: startIndex + 1,
-                      to: Math.min(startIndex + 8, filteredOrders.length),
+                      from: filteredOrders.length === 0 ? 0 : startIndex + 1,
+                      to: startIndex + paginatedOrders.length,
                       total: filteredOrders.length
                     })}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
                     <Button
                       variant="outline"
                       size="sm"
@@ -1179,20 +1196,33 @@ export default function PedidosPage() {
                       <ChevronLeft className="w-4 h-4 mr-1" />
                       {t('admin.orders.pagination.previous')}
                     </Button>
-                    <div className="flex items-center space-x-1">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setCurrentPage(page)}
-                          className={currentPage === page 
-                            ? "bg-blue-600 text-white" 
-                            : mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800 hover:border-blue-800' : 'bg-white/50 border-slate-200 hover:bg-blue-50 hover:border-blue-300'}
-                        >
-                          {page}
-                        </Button>
-                      ))}
+                    {/* Compact indicator on mobile */}
+                    <div className={`flex items-center gap-2 sm:hidden ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
+                      <span className="text-xs">{currentPage} / {totalPages}</span>
+                    </div>
+                    {/* Full pagination with ellipses on sm+ */}
+                    <div className="hidden sm:flex items-center space-x-1">
+                      {visiblePages.map((p, idx) => {
+                        if (p === 'ellipsis-left' || p === 'ellipsis-right') {
+                          return (
+                            <span key={`${p}-${idx}`} className={`${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'} px-2`}>…</span>
+                          );
+                        }
+                        const page = p as number;
+                        return (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setCurrentPage(page)}
+                            className={currentPage === page
+                              ? 'bg-blue-600 text-white'
+                              : mounted && theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800 hover:border-blue-800' : 'bg-white/50 border-slate-200 hover:bg-blue-50 hover:border-blue-300'}
+                          >
+                            {page}
+                          </Button>
+                        );
+                      })}
                     </div>
                     <Button
                       variant="outline"
