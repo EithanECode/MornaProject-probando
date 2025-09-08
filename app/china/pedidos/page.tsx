@@ -1196,7 +1196,12 @@ export default function PedidosChina() {
             <CardHeader className="py-3">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle className="text-lg font-semibold">
-                  {activeTab === 'pedidos' ? t('chinese.ordersPage.tabs.ordersList') : activeTab === 'cajas' ? t('chinese.ordersPage.tabs.boxes') : t('chinese.ordersPage.tabs.containers')}
+                  <span className="flex items-center gap-2">
+                    {activeTab === 'pedidos' && <Package className="h-4 w-4" />}
+                    {activeTab === 'cajas' && <Boxes className="h-4 w-4" />}
+                    {activeTab === 'contenedores' && <Boxes className="h-4 w-4" />}
+                    <span>{activeTab === 'pedidos' ? t('chinese.ordersPage.tabs.ordersList') : activeTab === 'cajas' ? t('chinese.ordersPage.tabs.boxes') : t('chinese.ordersPage.tabs.containers')}</span>
+                  </span>
                 </CardTitle>
                 <div className="w-full sm:w-auto grid grid-cols-1 sm:flex sm:items-center sm:justify-end gap-2 md:gap-3">
                   {activeTab === 'pedidos' && (
@@ -1244,15 +1249,6 @@ export default function PedidosChina() {
 
           {activeTab === 'pedidos' && (
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                    <Package className="h-5 w-5" />
-                    {t('chinese.ordersPage.orders.listTitle')}
-                  </CardTitle>
-                  {/* Botón de refrescar eliminado: ahora la lista se actualiza vía Realtime */}
-                </div>
-              </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {pedidosFiltrados.map((pedido) => (
