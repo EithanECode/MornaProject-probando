@@ -560,169 +560,179 @@ export default function PedidosPage() {
     const nombrePDF = `${newOrderData.productName}_${fechaPedidoLegible}_${numeroPedido}_${newOrderData.client_id}_${newOrderData.deliveryVenezuela}.pdf`;
 
     (async () => {
-      const { jsPDF } = await import('jspdf');
-      const autoTable = (await import('jspdf-autotable')).default;
-      const doc = new jsPDF();
+      try {
+        const { jsPDF } = await import('jspdf');
+        const autoTable = (await import('jspdf-autotable')).default;
+        const doc = new jsPDF();
 
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = (doc.internal as any).pageSize.height;
-      const margin = 15;
-      const colors = {
-        primary: [22, 120, 187] as [number, number, number],
-        secondary: [44, 62, 80] as [number, number, number],
-        light: [245, 248, 255] as [number, number, number],
-        border: [180, 200, 220] as [number, number, number],
-        text: [33, 37, 41] as [number, number, number]
-      };
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = (doc.internal as any).pageSize.height;
+        const margin = 15;
+        const colors = {
+          primary: [22, 120, 187] as [number, number, number],
+          secondary: [44, 62, 80] as [number, number, number],
+          light: [245, 248, 255] as [number, number, number],
+          border: [180, 200, 220] as [number, number, number],
+          text: [33, 37, 41] as [number, number, number]
+        };
 
-      const pedidoTable: [string, string][] = [
-        [t('admin.orders.pdf.fields.orderId'), `${numeroPedido}`],
-        [t('admin.orders.pdf.fields.clientId'), `${newOrderData.client_id}`],
-        [t('admin.orders.pdf.fields.userName'), `${newOrderData.client_name || t('admin.orders.common.unknown')}`],
-        [t('admin.orders.pdf.fields.date'), `${fechaPedidoLegible}`],
-        [t('admin.orders.pdf.fields.shippingType'), `${newOrderData.deliveryType}`],
-        [t('admin.orders.pdf.fields.deliveryVzla'), `${newOrderData.deliveryVenezuela}`],
-        [t('admin.orders.pdf.fields.product'), `${newOrderData.productName}`],
-        [t('admin.orders.pdf.fields.quantity'), `${newOrderData.quantity}`],
-        [t('admin.orders.pdf.fields.estimatedBudget'), `$${newOrderData.estimatedBudget}`],
-        [t('admin.orders.pdf.fields.description'), newOrderData.description || t('admin.orders.common.unknown')],
-        [t('admin.orders.pdf.fields.specifications'), newOrderData.specifications || t('admin.orders.common.unknown')],
-      ];
-      if (newOrderData.requestType === 'link') {
-        pedidoTable.push([t('admin.orders.pdf.fields.url'), newOrderData.productUrl || t('admin.orders.common.unknown')]);
-      }
+        const pedidoTable: [string, string][] = [
+          [t('admin.orders.pdf.fields.orderId'), `${numeroPedido}`],
+          [t('admin.orders.pdf.fields.clientId'), `${newOrderData.client_id}`],
+          [t('admin.orders.pdf.fields.userName'), `${newOrderData.client_name || t('admin.orders.common.unknown')}`],
+          [t('admin.orders.pdf.fields.date'), `${fechaPedidoLegible}`],
+          [t('admin.orders.pdf.fields.shippingType'), `${newOrderData.deliveryType}`],
+          [t('admin.orders.pdf.fields.deliveryVzla'), `${newOrderData.deliveryVenezuela}`],
+          [t('admin.orders.pdf.fields.product'), `${newOrderData.productName}`],
+          [t('admin.orders.pdf.fields.quantity'), `${newOrderData.quantity}`],
+          [t('admin.orders.pdf.fields.estimatedBudget'), `$${newOrderData.estimatedBudget}`],
+          [t('admin.orders.pdf.fields.description'), newOrderData.description || t('admin.orders.common.unknown')],
+          [t('admin.orders.pdf.fields.specifications'), newOrderData.specifications || t('admin.orders.common.unknown')],
+        ];
+        if (newOrderData.requestType === 'link') {
+          pedidoTable.push([t('admin.orders.pdf.fields.url'), newOrderData.productUrl || t('admin.orders.common.unknown')]);
+        }
 
-      // Header
-      doc.setFillColor(...colors.primary);
-      doc.rect(0, 0, pageWidth, 35, 'F');
-      doc.setFontSize(24);
-      doc.setTextColor(255, 255, 255);
+        // Header
+        doc.setFillColor(...colors.primary);
+        doc.rect(0, 0, pageWidth, 35, 'F');
+        doc.setFontSize(24);
+        doc.setTextColor(255, 255, 255);
   doc.text(t('admin.orders.pdf.summaryTitle'), pageWidth / 2, 22, { align: 'center' });
-      doc.setFontSize(10);
+        doc.setFontSize(10);
   doc.text(`${t('admin.orders.pdf.order')}: #${numeroPedido}`, pageWidth - margin, 15, { align: 'right' });
   doc.text(`${t('admin.orders.pdf.date')}: ${fechaPedidoLegible}`, pageWidth - margin, 21, { align: 'right' });
 
-      let currentY = 50;
+        let currentY = 50;
 
-      if (newOrderData.requestType === 'photo' && newOrderData.productImage) {
-        const imgWidth = 80;
-        const imgHeight = 80;
-        const imgX = margin;
-        doc.setFillColor(240, 240, 240);
-        doc.roundedRect(imgX - 2, currentY - 2, imgWidth + 4, imgHeight + 4, 3, 3, 'F');
-        const imgData = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (e) => resolve(e.target?.result as string);
-          reader.readAsDataURL(newOrderData.productImage as Blob);
-        });
-        doc.addImage(imgData, 'JPEG', imgX, currentY, imgWidth, imgHeight);
-        const tableStartX = imgX + imgWidth + 15;
-        const tableWidth = pageWidth - tableStartX - margin;
-        autoTable(doc, {
-          head: [[t('admin.orders.pdf.field'), t('admin.orders.pdf.value')]],
-          body: pedidoTable,
-          startY: currentY,
-          margin: { left: tableStartX, right: margin },
-          tableWidth: tableWidth,
-          theme: 'grid',
-        });
-      } else {
-        // Tabla completa
-        autoTable(doc, {
-          head: [[t('admin.orders.pdf.field'), t('admin.orders.pdf.information')]],
-          body: pedidoTable,
-          startY: currentY,
-          margin: { left: margin, right: margin },
-          theme: 'striped',
-        });
-        // URL destacada
-        if (newOrderData.productUrl) {
-          const finalY = (doc as any).lastAutoTable?.finalY + 12;
-          doc.setFontSize(10);
-          doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-          doc.text(`${t('admin.orders.pdf.productUrl')}:`, margin, finalY + 6);
-          doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-          const urlText = (doc as any).splitTextToSize(newOrderData.productUrl, pageWidth - (margin * 2));
-          doc.text(urlText, margin, finalY + 14);
-        }
-      }
-
-      // Footer
-      const footerY = (doc.internal as any).pageSize.height - 25;
-      doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
-      doc.setLineWidth(0.5);
-      doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
-      doc.setFontSize(8);
-      doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-  doc.text(`${t('admin.orders.pdf.generatedAt')}: ${new Date().toLocaleString()}`, margin, footerY + 13);
-
-      // Subir PDF a Supabase Storage
-      const pdfBlob = doc.output('blob');
-      let folder: string = String(newOrderData.deliveryType);
-      if (folder === 'doorToDoor') folder = 'door-to-door';
-      const nombrePDFCorr = nombrePDF;
-      supabase.storage
-        .from('orders')
-        .upload(`${folder}/${nombrePDFCorr}`, pdfBlob, {
-          cacheControl: '3600',
-          upsert: true,
-          contentType: 'application/pdf',
-        })
-        .then(async (result: any) => {
-          const { error } = result;
-          if (error) {
-            alert(`Error al subir el PDF al bucket: ${error.message || JSON.stringify(error)}`);
-            console.error('Supabase Storage upload error:', error);
-          } else {
-            const pdfUrl = `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${folder}/${nombrePDFCorr}`;
-
-            const pedidoInsert = {
-              client_id: newOrderData.client_id || '',
-              productName: newOrderData.productName,
-              description: newOrderData.description,
-              quantity: newOrderData.quantity,
-              estimatedBudget: Number(newOrderData.estimatedBudget),
-              deliveryType: newOrderData.deliveryVenezuela,
-              shippingType: newOrderData.deliveryType,
-              imgs: pdfUrl ? [pdfUrl] : [],
-              links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
-              pdfRoutes: pdfUrl,
-              state: 1,
-              order_origin: 'vzla',
-              elapsed_time: null,
-              asignedEVzla: null,
-            } as Record<string, any>;
-
-            const { error: dbInsertError } = await supabase
-              .from('orders')
-              .insert([pedidoInsert]);
-            if (dbInsertError) {
-              alert(t('admin.orders.messages.createError'));
-            } else {
-              setShowSuccessAnimation(true);
-              setTimeout(() => {
-                setIsNewOrderModalOpen(false);
-                setCurrentStep(1);
-                setNewOrderData({
-                  productName: '',
-                  description: '',
-                  quantity: 1,
-                  specifications: '',
-                  requestType: 'link',
-                  deliveryType: 'doorToDoor',
-                  deliveryVenezuela: '',
-                  estimatedBudget: '',
-                  client_id: '',
-                  client_name: ''
-                });
-                setShowSuccessAnimation(false);
-              }, 1200);
-              // Refrescar listados y stats
-              refetchOrders();
-              refetchStats();
-            }
+        if (newOrderData.requestType === 'photo' && newOrderData.productImage) {
+          const imgWidth = 80;
+          const imgHeight = 80;
+          const imgX = margin;
+          doc.setFillColor(240, 240, 240);
+          doc.roundedRect(imgX - 2, currentY - 2, imgWidth + 4, imgHeight + 4, 3, 3, 'F');
+          const imgData = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.readAsDataURL(newOrderData.productImage as Blob);
+          });
+          doc.addImage(imgData, 'JPEG', imgX, currentY, imgWidth, imgHeight);
+          const tableStartX = imgX + imgWidth + 15;
+          const tableWidth = pageWidth - tableStartX - margin;
+          autoTable(doc, {
+            head: [[t('admin.orders.pdf.field'), t('admin.orders.pdf.value')]],
+            body: pedidoTable,
+            startY: currentY,
+            margin: { left: tableStartX, right: margin },
+            tableWidth: tableWidth,
+            theme: 'grid',
+          });
+        } else {
+          // Tabla completa
+          autoTable(doc, {
+            head: [[t('admin.orders.pdf.field'), t('admin.orders.pdf.information')]],
+            body: pedidoTable,
+            startY: currentY,
+            margin: { left: margin, right: margin },
+            theme: 'striped',
+          });
+          // URL destacada
+          if (newOrderData.productUrl) {
+            const finalY = (doc as any).lastAutoTable?.finalY + 12;
+            doc.setFontSize(10);
+            doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+            doc.text(`${t('admin.orders.pdf.productUrl')}:`, margin, finalY + 6);
+            doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+            const urlText = (doc as any).splitTextToSize(newOrderData.productUrl, pageWidth - (margin * 2));
+            doc.text(urlText, margin, finalY + 14);
           }
+        }
+
+        // Footer
+        const footerY = (doc.internal as any).pageSize.height - 25;
+        doc.setDrawColor(180, 200, 220);
+        doc.setLineWidth(0.5);
+        doc.line(15, footerY - 5, doc.internal.pageSize.getWidth() - 15, footerY - 5);
+        doc.setFontSize(8);
+        doc.setTextColor(44, 62, 80);
+        doc.text(`${t('admin.orders.pdf.generatedAt')}: ${new Date().toLocaleString()}`, 15, footerY + 13);
+
+        // Subir PDF a Supabase Storage
+        const pdfBlob = doc.output('blob');
+        let folder: string = String(newOrderData.deliveryType);
+        if (folder === 'doorToDoor') folder = 'door-to-door';
+        const nombrePDFCorr = nombrePDF;
+        const uploadRes = await supabase.storage
+          .from('orders')
+          .upload(`${folder}/${nombrePDFCorr}`, pdfBlob, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: 'application/pdf',
+          });
+        if (uploadRes.error) {
+          console.error('Supabase Storage upload error:', uploadRes.error);
+          alert(`Error al subir el PDF: ${uploadRes.error.message}`);
+          return;
+        }
+        const pdfUrl = `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${folder}/${nombrePDFCorr}`;
+
+        // Ahora crear el pedido vía API (service role) para evitar problemas RLS
+        const payload = {
+          client_id: newOrderData.client_id || '',
+          productName: newOrderData.productName,
+          description: newOrderData.description,
+          quantity: newOrderData.quantity,
+          estimatedBudget: Number(newOrderData.estimatedBudget),
+          deliveryType: newOrderData.deliveryVenezuela,
+          shippingType: newOrderData.deliveryType,
+          imgs: pdfUrl ? [pdfUrl] : [],
+          links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
+          pdfRoutes: pdfUrl,
+          state: 1,
+          order_origin: 'vzla'
+        };
+
+        const apiRes = await fetch('/api/admin/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
+        if (!apiRes.ok) {
+          let errMsg = `${apiRes.status}`;
+          try {
+            const j = await apiRes.json();
+            if (j?.error) errMsg += ` - ${j.error}`;
+            if (j?.details) errMsg += ` | ${Array.isArray(j.details) ? j.details.join(', ') : j.details}`;
+          } catch {}
+          console.error('Error creando pedido vía API:', errMsg, payload);
+          alert(t('admin.orders.messages.createError') + `\n${errMsg}`);
+          return;
+        }
+
+        setShowSuccessAnimation(true);
+        setTimeout(() => {
+          setIsNewOrderModalOpen(false);
+          setCurrentStep(1);
+          setNewOrderData({
+            productName: '',
+            description: '',
+            quantity: 1,
+            specifications: '',
+            requestType: 'link',
+            deliveryType: 'doorToDoor',
+            deliveryVenezuela: '',
+            estimatedBudget: '',
+            client_id: '',
+            client_name: ''
+          });
+          setShowSuccessAnimation(false);
+        }, 1200);
+        refetchOrders();
+        refetchStats();
+      } catch (e:any) {
+        console.error('Excepción creando pedido:', e);
+        alert(t('admin.orders.messages.createError'));
+      }
     })();
   };
 

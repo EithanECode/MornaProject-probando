@@ -893,8 +893,8 @@ export default function MisPedidosPage() {
             const pdfUrl = `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${folder}/${nombrePDFCorr}`;
             console.log('pdfUrl:', pdfUrl);
 
-            // Insertar pedido en la tabla 'orders'
-            const pedidoInsert = {
+            // Preparar payload para creación vía API (service role) evitando problemas RLS / constraints
+            const payload = {
               client_id: clientId || '',
               productName: newOrderData.productName,
               description: newOrderData.description,
@@ -906,38 +906,47 @@ export default function MisPedidosPage() {
               links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
               pdfRoutes: pdfUrl,
               state: 1,
-              order_origin: 'vzla',
-              elapsed_time: null,
-              asignedEVzla: null,
+              order_origin: 'vzla'
             };
-            console.log('Insertando pedido en la tabla orders:', pedidoInsert);
-            const { error: dbInsertError } = await supabase
-              .from('orders')
-              .insert([
-                pedidoInsert
-              ]);
-            if (dbInsertError) {
-              alert('Error al guardar el pedido en la base de datos.');
-            } else {
-              setShowSuccessAnimation(true);
-              setTimeout(() => {
-                setIsNewOrderModalOpen(false);
-                setCurrentStep(1);
-                setNewOrderData({
-                  productName: '',
-                  description: '',
-                  quantity: 1,
-                  specifications: '',
-                  requestType: 'link',
-                  deliveryType: 'doorToDoor',
-                  deliveryVenezuela: '',
-                  estimatedBudget: '',
-                  client_id: ''
-                });
-              }, 1500);
-              // Refrescar desde BD para mostrar el pedido real sin duplicados
-              fetchOrders();
+            console.log('Creando pedido vía API /api/admin/orders:', payload);
+            const apiRes = await fetch('/api/admin/orders', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (!apiRes.ok) {
+              let errMsg = `Status ${apiRes.status}`;
+              try {
+                const j = await apiRes.json();
+                if (j?.error) errMsg += ` - ${j.error}`;
+                if (j?.details) errMsg += ` | ${Array.isArray(j.details) ? j.details.join(', ') : j.details}`;
+              } catch { /* ignore */ }
+              console.error('Error creando pedido (cliente) vía API:', errMsg, payload);
+              alert('Error al guardar el pedido en la base de datos.\n' + errMsg);
+              return;
             }
+            const json = await apiRes.json().catch(() => null);
+            if (json?.warning === 'links_removed_due_to_constraint') {
+              console.warn('El link fue removido por constraint en la BD.');
+            }
+            setShowSuccessAnimation(true);
+            setTimeout(() => {
+              setIsNewOrderModalOpen(false);
+              setCurrentStep(1);
+              setNewOrderData({
+                productName: '',
+                description: '',
+                quantity: 1,
+                specifications: '',
+                requestType: 'link',
+                deliveryType: 'doorToDoor',
+                deliveryVenezuela: '',
+                estimatedBudget: '',
+                client_id: ''
+              });
+            }, 1500);
+            // Refrescar desde BD para mostrar el pedido real
+            fetchOrders();
           }
         });
     })();
