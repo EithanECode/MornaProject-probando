@@ -1367,6 +1367,7 @@
       },
       "table": {
         "id": "ID",
+  "date": "Fecha",
         "client": "Cliente",
         "description": "Descripción",
         "status": "Estado",

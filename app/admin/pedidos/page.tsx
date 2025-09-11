@@ -90,6 +90,7 @@ interface Order {
   description: string;
   priority: 'alta' | 'media' | 'baja';
   documents?: { type: 'link' | 'image'; url: string; label: string }[];
+  createdAt?: string;
 }
 
 interface NewOrderData {
@@ -448,6 +449,7 @@ export default function PedidosPage() {
         daysElapsed,
         description: o.description || o.productName || '',
         priority: 'media',
+  createdAt: o.created_at || undefined,
       };
     });
     setOrders(mapped);
@@ -1013,23 +1015,38 @@ export default function PedidosPage() {
       const status = statusConfig[order.status];
       const assigned = assignedConfig[order.assignedTo];
       const StatusIcon = status.icon;
+      const formatOrderId = (raw: string) => {
+        const base = String(raw ?? '');
+        const tail = base.replace(/[^0-9]/g, '').slice(-3) || base.slice(-3);
+        const code = (tail || '001').toString().padStart(3, '0');
+        return `#PED-${code}`;
+      };
+      const formatDate = (iso?: string) => {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return '—';
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        return `${dd}/${mm}/${yyyy}`;
+      };
       return (
         <tr 
           key={order.id}
           className={`border-b border-slate-100 hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-all duration-200 cursor-pointer group text-slate-900 dark:text-white`}
         >
           <td className="py-4 px-6">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 min-w-[11rem]">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
                 <Package className="w-4 h-4" />
               </div>
-              <span className="font-medium">{order.id}</span>
+              <span className="font-medium whitespace-nowrap">{formatOrderId(order.id)}</span>
             </div>
           </td>
           <td className="py-4 px-6">
-            <div>
-              <p className="font-medium">{order.client}</p>
-              <p className="text-sm">{order.description}</p>
+            <div className="max-w-[22rem]">
+              <p className="font-medium truncate">{order.client}</p>
+              <p className="text-sm line-clamp-1">{order.description}</p>
             </div>
           </td>
           <td className="py-4 px-6">
@@ -1042,6 +1059,12 @@ export default function PedidosPage() {
             <Badge className={`${assigned.color} border text-slate-900 dark:text-white`}>
               {t(`admin.orders.assigned.${order.assignedTo}`)}
             </Badge>
+          </td>
+          <td className="py-4 px-6">
+            <div className="flex items-center space-x-2">
+              <Calendar className="w-4 h-4" />
+              <span>{formatDate(order.createdAt)}</span>
+            </div>
           </td>
           <td className="py-4 px-6">
             <div className="flex items-center space-x-2">
@@ -1160,12 +1183,22 @@ export default function PedidosPage() {
               {/* Vista Desktop - Tabla */}
               <div className="hidden lg:block overflow-x-auto">
                 <table className={mounted && theme === 'dark' ? 'w-full bg-slate-800' : 'w-full'}>
+                  <colgroup>
+                    <col className="w-44" />
+                    <col className="w-[22rem]" />
+                    <col className="w-40" />
+                    <col className="w-40" />
+                    <col className="w-28" />
+                    <col className="w-24" />
+                    <col className="w-28" />
+                  </colgroup>
                   <thead>
                     <tr className={mounted && theme === 'dark' ? 'border-b border-slate-700' : 'border-b border-slate-200'}>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.id')}</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.client')}</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.status')}</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.assignedTo')}</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.date')}</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.time')}</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.actions')}</th>
                     </tr>
@@ -1182,6 +1215,21 @@ export default function PedidosPage() {
                   const status = statusConfig[order.status];
                   const assigned = assignedConfig[order.assignedTo];
                   const StatusIcon = status.icon;
+                  const formatOrderId = (raw: string) => {
+                    const base = String(raw ?? '');
+                    const tail = base.replace(/[^0-9]/g, '').slice(-3) || base.slice(-3);
+                    const code = (tail || '001').toString().padStart(3, '0');
+                    return `#PED-${code}`;
+                  };
+                  const formatDate = (iso?: string) => {
+                    if (!iso) return '—';
+                    const d = new Date(iso);
+                    if (isNaN(d.getTime())) return '—';
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const yyyy = d.getFullYear();
+                    return `${dd}/${mm}/${yyyy}`;
+                  };
                   
                   return (
                                          <div
@@ -1195,7 +1243,11 @@ export default function PedidosPage() {
                              <Package className="w-5 h-5 md:w-6 md:h-6 text-white" />
                            </div>
                            <div className="min-w-0 flex-1">
-                             <div className="font-semibold text-slate-900 group-hover:text-blue-900 transition-colors text-sm md:text-base dark:text-white">{order.id}</div>
+                            <div className="font-semibold text-slate-900 group-hover:text-blue-900 transition-colors text-sm md:text-base dark:text-white">{formatOrderId(order.id)}</div>
+                            <div className="mt-1 flex items-center gap-1 text-[11px] md:text-xs text-slate-500 dark:text-slate-400">
+                              <Calendar className="w-3 h-3" />
+                              <span>{formatDate(order.createdAt)}</span>
+                            </div>
                              <div className="text-xs md:text-sm text-slate-600 dark:text-slate-300 mt-1">{order.client}</div>
                              <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{order.description}</div>
                            </div>

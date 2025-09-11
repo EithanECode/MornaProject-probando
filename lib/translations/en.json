@@ -895,6 +895,7 @@
       "title": "Order Management",
       "subtitle": "Manage and track all orders",
   "chinaTabLabel": "China",
+  "vzlaTabLabel": "Venezuela",
       "listTitle": "Order List",
       "listDescription": "{{count}} orders found",
       "search": "Search orders...",
@@ -912,6 +913,7 @@
       },
       "table": {
         "id": "ID",
+  "date": "Date",
         "client": "Client",
         "description": "Description",
         "status": "Status",
