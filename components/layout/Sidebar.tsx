@@ -225,6 +225,14 @@ const getAdminMenuItems = (t: (key: string) => string) => [
     path: '/admin/pedidos'
   },
   {
+    id: 'payments-validation',
+    label: t && typeof t === 'function' ? t('sidebar.payments-validation') : 'Validación de pagos',
+    icon: BadgeDollarSign,
+    badge: null,
+    color: 'text-emerald-500',
+    path: '/admin/validacion-pagos'
+  },
+  {
     id: 'gestion',
     label: t && typeof t === 'function' ? t('sidebar.management') : 'Gestión',
     icon: Settings,
