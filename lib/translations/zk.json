@@ -1193,6 +1193,17 @@
             "noneSubtitle": "在集装箱标签中创建一个集装箱以打包。",
             "select": "选择"
           },
+          "sendContainer": {
+            "title": "发送集装箱 #CONT-{{id}}",
+            "subtitle": "添加该集装箱的运输信息",
+            "trackingLabel": "追踪编号",
+            "trackingPlaceholder": "输入追踪编号",
+            "courierLabel": "快递公司",
+            "courierPlaceholder": "输入快递公司",
+            "etaLabel": "预计到达日期",
+            "cancel": "取消",
+            "confirm": "发送"
+          },
           "createContainer": {
             "title": "创建集装箱",
             "question": "你想创建一个新的集装箱吗？",
@@ -1659,14 +1670,14 @@
         "state": "状态{{num}}"
       },
       "actions": {
-  "viewOrders": "查看订单",
-  "viewBoxes": "查看箱子",
-  "viewContainers": "查看集装箱",
-  "sendToChina": "发送到中国",
-  "markAsReceived": "标记为已接收",
-  "exportPdf": "导出为 PDF",
-  "exportPdfShort": "PDF",
-  "send": "发送"
+        "viewOrders": "查看订单",
+        "viewBoxes": "查看箱子",
+        "viewContainers": "查看集装箱",
+        "sendToChina": "发送到中国",
+        "markAsReceived": "标记为已接收",
+        "exportPdf": "导出为 PDF",
+        "exportPdfShort": "PDF",
+        "send": "发送"
       }
     },
     "soporte": {
@@ -2284,6 +2295,7 @@
       "sentToastDesc": "集装箱 #CONT-{{id}} 已标记为已发货。",
       "sendErrorTitle": "无法发送",
       "sendErrorDesc": "稍后再试。"
+      
     },
     "modals": {
       "quote": {
@@ -2315,6 +2327,18 @@
         "containerNameLabel": "集装箱名称",
         "containerNamePlaceholder": "输入集装箱名称"
       },
+      "sendContainer": {
+            "title": "发送集装箱 #CONT-{{id}}",
+            "subtitle": "添加该集装箱的运输信息",
+            "trackingNumber": "追踪编号",
+            "trackingNumberPlaceholder": "输入追踪编号",
+            "courierCompany": "快递公司",
+            "courierCompanyPlaceholder": "输入快递公司",
+            "etaDate": "预计到达日期",
+            "cancel": "取消",
+            "confirm": "发送",
+            "sending": "发送中..."
+          },
       "containerBoxes": {
         "title": "集装箱 #CONT-{{id}} 的箱子",
         "loading": "加载箱子...",
@@ -2410,7 +2434,8 @@
       "orderPdfMissingDesc": "此订单无可用 PDF。",
       "boxDeleteIdInvalidTitle": "无法删除",
       "boxDeleteIdInvalidDesc": "无效箱子 ID。",
-      "containerDeleteIdInvalidDesc": "无效集装箱 ID。"
+  "containerDeleteIdInvalidDesc": "无效集装箱 ID。",
+  "containerSentTitle": "集装箱已发货"
     }
   }
   },

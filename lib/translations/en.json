@@ -1193,6 +1193,17 @@
             "noneSubtitle": "Create a container from the Containers tab to pack.",
             "select": "Select"
           },
+          "sendContainer": {
+            "title": "Send container #CONT-{{id}}",
+            "subtitle": "Add the container's shipping information",
+            "trackingLabel": "Tracking number",
+            "trackingPlaceholder": "Enter the tracking number",
+            "courierLabel": "Courier company",
+            "courierPlaceholder": "Enter the courier company",
+            "etaLabel": "Estimated arrival date",
+            "cancel": "Cancel",
+            "confirm": "Send"
+          },
           "createContainer": {
             "title": "Create container",
             "question": "Do you want to create a new container?",
@@ -2335,6 +2346,18 @@
         "containerNameLabel": "Container Name",
         "containerNamePlaceholder": "Enter container name"
       },
+      "sendContainer": {
+            "title": "Send container #CONT-{{id}}",
+            "subtitle": "Add the container's shipping information",
+            "trackingNumber": "Tracking number",
+            "trackingNumberPlaceholder": "Enter the tracking number",
+            "courierCompany": "Courier company",
+            "courierCompanyPlaceholder": "Enter the courier company",
+            "etaDate": "Estimated arrival date",
+            "cancel": "Cancel",
+            "confirm": "Send",
+            "sending": "Sending..."
+          },
       "containerBoxes": {
         "title": "Boxes of container #CONT-{{id}}",
         "loading": "Loading boxes...",
@@ -2430,7 +2453,8 @@
       "orderPdfMissingDesc": "No PDF available for this order.",
       "boxDeleteIdInvalidTitle": "Couldn't delete",
       "boxDeleteIdInvalidDesc": "Invalid box ID.",
-      "containerDeleteIdInvalidDesc": "Invalid container ID."
+      "containerDeleteIdInvalidDesc": "Invalid container ID.",
+      "containerSentTitle": "Container sent"
     }
   }
   }

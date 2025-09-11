@@ -127,6 +127,15 @@ export default function ChinaOrdersTabContent() {
   const modalCrearContenedorRef = useRef<HTMLDivElement>(null);
   const modalEliminarContenedorRef = useRef<HTMLDivElement>(null);
   const modalVerCajasContRef = useRef<HTMLDivElement>(null);
+  // Nuevo: Modal para enviar contenedor con datos (tracking, empresa, fecha estimada)
+  const modalEnviarContenedorRef = useRef<HTMLDivElement>(null);
+  const [modalEnviarContenedor, setModalEnviarContenedor] = useState<{open:boolean; container?: ContainerItem}>({ open:false });
+  const [isClosingModalEnviarContenedor, setIsClosingModalEnviarContenedor] = useState(false);
+  const [sendTrackingNumber, setSendTrackingNumber] = useState('');
+  const [sendCourierCompany, setSendCourierCompany] = useState('');
+  const [sendEtaDate, setSendEtaDate] = useState('');
+  const [sendingContainer, setSendingContainer] = useState(false);
+  const [containerSendInfo, setContainerSendInfo] = useState<Record<string|number, { trackingNumber: string; courierCompany: string; etaDate: string }>>({});
 
   // ================== PAGINACIÓN (8 por página) ==================
   const ITEMS_PER_PAGE = 8;
@@ -158,10 +167,11 @@ export default function ChinaOrdersTabContent() {
       if (modalCrearContenedor.open && modalCrearContenedorRef.current && !modalCrearContenedorRef.current.contains(e.target as Node)) closeModalCrearContenedor();
       if (modalEliminarContenedor.open && modalEliminarContenedorRef.current && !modalEliminarContenedorRef.current.contains(e.target as Node)) closeModalEliminarContenedor();
       if (modalVerCajasCont.open && modalVerCajasContRef.current && !modalVerCajasContRef.current.contains(e.target as Node)) setModalVerCajasCont({open:false});
+      if (modalEnviarContenedor.open && modalEnviarContenedorRef.current && !modalEnviarContenedorRef.current.contains(e.target as Node)) closeModalEnviarContenedor();
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [modalCotizar.open, modalEmpaquetarPedido.open, modalCrearCaja.open, modalEliminarCaja.open, modalEmpaquetarCaja.open, modalCrearContenedor.open, modalEliminarContenedor.open, modalVerCajasCont.open]);
+  }, [modalCotizar.open, modalEmpaquetarPedido.open, modalCrearCaja.open, modalEliminarCaja.open, modalEmpaquetarCaja.open, modalCrearContenedor.open, modalEliminarContenedor.open, modalVerCajasCont.open, modalEnviarContenedor.open]);
 
   useEffect(()=>{ setMounted(true); fetchPedidos(); },[]);
   // Resolve current user id for realtime subscriptions
@@ -440,17 +450,46 @@ export default function ChinaOrdersTabContent() {
       fetchPedidos();
     } catch(e:any){ console.error(e); toast({ title:'Error desempaquetando caja'});} }
 
-  async function handleSendContainer(container:ContainerItem){
+  async function handleSendContainer(container:ContainerItem, details?: { trackingNumber: string; courierCompany: string; etaDate: string }){
     const stateNum = (container.state??1) as number; if(stateNum!==2) return; const containerId = container.container_id ?? container.containers_id ?? container.id; if(!containerId) return;
     try{ const supabase = getSupabaseBrowserClient();
-      const { error: contErr } = await supabase.from('containers').update({ state:3 }).eq('container_id', containerId); if(contErr) throw contErr;
+      const baseDetails: any = details ? {
+        tracking_number: details.trackingNumber,
+        tracking_company: details.courierCompany,
+      } : {};
+      // Try with column name 'arrive-data' first (as specified)
+      let contErr: any = null;
+      if (details) {
+        const payload1: any = { ...baseDetails, ['arrive-data']: details.etaDate, state: 3 };
+        const res1 = await supabase.from('containers').update(payload1).eq('container_id', containerId);
+        contErr = res1.error;
+        // If undefined column error for arrive-data, retry with arrive_date
+        if (contErr && (contErr.code === '42703' || /arrive-data/.test(contErr.message || '') || /column .* does not exist/i.test(contErr.message || ''))) {
+          const payload2: any = { ...baseDetails, arrive_date: details.etaDate, state: 3 };
+          const res2 = await supabase.from('containers').update(payload2).eq('container_id', containerId);
+          contErr = res2.error;
+        }
+        // If still error (likely RLS on tracking fields), try to at least set state=3
+        if (contErr) {
+          const resState = await supabase.from('containers').update({ state: 3 }).eq('container_id', containerId);
+          if (resState.error) throw resState.error;
+          // Notify about partial success and continue with cascades
+          toast({ title: 'Contenedor enviado', description: 'El estado cambió, pero no se guardaron los datos de tracking. Revisa las políticas/columnas.' });
+          contErr = null;
+        }
+      } else {
+        // No details provided: only update state
+        const { error } = await supabase.from('containers').update({ state: 3 }).eq('container_id', containerId);
+        contErr = error;
+      }
+      if (contErr) throw contErr;
       const { data: boxRows } = await supabase.from('boxes').select('box_id').eq('container_id', containerId);
       const boxIds = (boxRows||[]).map(r=>r.box_id).filter((v:any)=>v!=null);
       if(boxIds.length>0){ await supabase.from('boxes').update({ state:4 }).in('box_id', boxIds as any); await supabase.from('orders').update({ state:9 }).in('box_id', boxIds as any); }
       toast({ title:'Contenedor enviado'});
       setContainers(prev=>prev.map(c=>{ const cid=c.container_id ?? c.containers_id ?? c.id; if(String(cid)===String(containerId)) return { ...c, state:3 }; return c;}));
       setBoxes(prev=>prev.map(b=>{ if(String((b as any).container_id)===String(containerId)) return { ...b, state:4 }; return b;}));
-    } catch(e:any){ console.error(e); toast({ title:'No se pudo enviar contenedor'});} }
+    } catch(e:any){ console.error(e); toast({ title:'No se pudo enviar contenedor', description: e?.message || 'Error desconocido' }); } }
 
   // ================== COTIZAR ==================
   async function cotizarPedido(pedido:Pedido, precioUnit:number){
@@ -464,6 +503,7 @@ export default function ChinaOrdersTabContent() {
   function closeModalEmpaquetarCaja(){ setIsClosingModalEmpaquetarCaja(true); setTimeout(()=>{ setModalEmpaquetarCaja({open:false}); setIsClosingModalEmpaquetarCaja(false); },200);} 
   function closeModalCrearContenedor(){ setIsClosingModalCrearContenedor(true); setTimeout(()=>{ setModalCrearContenedor({open:false}); setIsClosingModalCrearContenedor(false); setNewContainerName(''); },200);} 
   function closeModalEliminarContenedor(){ setIsClosingModalEliminarContenedor(true); setTimeout(()=>{ setModalEliminarContenedor({open:false}); setIsClosingModalEliminarContenedor(false); },200);} 
+  function closeModalEnviarContenedor(){ setIsClosingModalEnviarContenedor(true); setTimeout(()=>{ setModalEnviarContenedor({open:false}); setIsClosingModalEnviarContenedor(false); setSendTrackingNumber(''); setSendCourierCompany(''); setSendEtaDate(''); },200);} 
 
   // (Antiguas funciones básicas reemplazadas por versiones extendidas arriba)
 
@@ -787,7 +827,28 @@ export default function ChinaOrdersTabContent() {
                     </div>
                     <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
           <Badge className={badge.className}>{getContainerBadgeLabel(stateNum)}</Badge>
-                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={stateNum!==2} onClick={()=>handleSendContainer(container)}><Truck className="h-4 w-4" />{t('admin.orders.china.containers.send')}</Button>
+                      <Button
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        disabled={stateNum!==2}
+                        onClick={()=>{
+                          // Abrir modal de envío y precargar info si existe
+                          const id = container.container_id ?? container.containers_id ?? container.id;
+                          if (id !== undefined && (containerSendInfo as any)[id]) {
+                            const saved = (containerSendInfo as any)[id];
+                            setSendTrackingNumber(saved.trackingNumber);
+                            setSendCourierCompany(saved.courierCompany);
+                            setSendEtaDate(saved.etaDate);
+                          } else {
+                            setSendTrackingNumber('');
+                            setSendCourierCompany('');
+                            setSendEtaDate('');
+                          }
+                          setModalEnviarContenedor({ open: true, container });
+                        }}
+                      >
+                        <Truck className="h-4 w-4" />{t('admin.orders.china.containers.send')}
+                      </Button>
                       <Button variant="outline" size="sm" onClick={()=>{ const containerId = container.container_id ?? container.containers_id ?? container.id; setModalVerCajasCont({open:true, containerId}); if(containerId!==undefined) fetchBoxesByContainerId(containerId); }}>{t('admin.orders.china.containers.viewBoxes')}</Button>
                       <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50" disabled={(container.state??1)>=3} onClick={()=>{ if((container.state??1)>=3){ toast({ title: t('admin.orders.china.toasts.notAllowedTitle'), description: t('admin.orders.china.toasts.containerSendNotAllowedDesc') }); return;} setModalEliminarContenedor({open:true, container}); }}><Trash2 className="h-4 w-4" /></Button>
                     </div>
@@ -956,6 +1017,89 @@ export default function ChinaOrdersTabContent() {
             <div className="flex items-center justify-between mb-4"><h3 className="text-lg font-bold">{t('admin.orders.china.modals.deleteContainer.title')}</h3><Button variant="ghost" size="sm" onClick={closeModalEliminarContenedor} className="h-8 w-8 p-0">✕</Button></div>
             <p className="text-sm mb-6">{t('admin.orders.china.modals.deleteContainer.question', { id: String(modalEliminarContenedor.container?.container_id ?? modalEliminarContenedor.container?.containers_id ?? modalEliminarContenedor.container?.id ?? '') })}</p>
             <div className="flex justify-end gap-2"><Button variant="outline" onClick={closeModalEliminarContenedor} disabled={deletingContainer}>{t('admin.orders.china.modals.deleteContainer.cancel')}</Button><Button className="bg-red-600 hover:bg-red-700" disabled={deletingContainer} onClick={handleDeleteContenedor}>{deletingContainer? t('admin.orders.china.modals.deleteContainer.deleting') : t('admin.orders.china.modals.deleteContainer.delete')}</Button></div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Enviar Contenedor - Capturar datos antes de enviar */}
+      {modalEnviarContenedor.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div
+            ref={modalEnviarContenedorRef}
+            className={`bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-lg mx-4 w-full transition-all ${isClosingModalEnviarContenedor? 'scale-95 opacity-0':'scale-100 opacity-100'} duration-200`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                {t('admin.orders.china.modals.sendContainer.title', { defaultValue: 'Enviar contenedor' })}
+              </h3>
+              <Button variant="ghost" size="sm" onClick={closeModalEnviarContenedor} className="h-8 w-8 p-0">✕</Button>
+            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
+              {t('admin.orders.china.modals.sendContainer.subtitle', { defaultValue: 'Agrega la información de envío. No se enviará a la base de datos todavía.' })}
+            </p>
+            <form
+              onSubmit={async (e)=>{
+                e.preventDefault();
+                if (sendingContainer) return;
+                const containerId = modalEnviarContenedor.container?.container_id ?? modalEnviarContenedor.container?.containers_id ?? modalEnviarContenedor.container?.id;
+                if (!sendTrackingNumber.trim() || !sendCourierCompany.trim() || !sendEtaDate) {
+                  // Validación mínima
+                  try { (window as any).toast?.({ title: 'Datos incompletos', description: 'Completa todos los campos.'}); } catch {}
+                  return;
+                }
+                if (containerId === undefined || !modalEnviarContenedor.container) {
+                  closeModalEnviarContenedor();
+                  return;
+                }
+                // Guardar datos localmente (persistencia pendiente) y ejecutar envío real (state 2 -> 3)
+                setSendingContainer(true);
+                try {
+                  await handleSendContainer(modalEnviarContenedor.container, {
+                    trackingNumber: sendTrackingNumber.trim(),
+                    courierCompany: sendCourierCompany.trim(),
+                    etaDate: sendEtaDate
+                  });
+                  // Save locally after success
+                  setContainerSendInfo(prev => ({
+                    ...prev,
+                    [containerId as any]: { trackingNumber: sendTrackingNumber.trim(), courierCompany: sendCourierCompany.trim(), etaDate: sendEtaDate }
+                  }));
+                  closeModalEnviarContenedor();
+                } finally {
+                  setSendingContainer(false);
+                }
+              }}
+              className="space-y-4"
+            >
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="trackingInput">
+                  {t('admin.orders.china.modals.sendContainer.trackingLabel', { defaultValue: 'Número de seguimiento' })}
+                </label>
+                <Input id="trackingInput" value={sendTrackingNumber} onChange={e=>setSendTrackingNumber(e.target.value)} placeholder={t('admin.orders.china.modals.sendContainer.trackingPlaceholder', { defaultValue: 'Ej: TRK-123456' })} required />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="courierInput">
+                  {t('admin.orders.china.modals.sendContainer.courierLabel', { defaultValue: 'Empresa de encomienda' })}
+                </label>
+                <Input id="courierInput" value={sendCourierCompany} onChange={e=>setSendCourierCompany(e.target.value)} placeholder={t('admin.orders.china.modals.sendContainer.courierPlaceholder', { defaultValue: 'Ej: DHL / UPS / FedEx' })} required />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="etaInput">
+                  {t('admin.orders.china.modals.sendContainer.etaLabel', { defaultValue: 'Fecha de entrega estimada' })}
+                </label>
+                <input id="etaInput" type="date" value={sendEtaDate} onChange={e=>setSendEtaDate(e.target.value)} required className="w-full px-3 py-2 rounded-md border border-slate-300 bg-white dark:bg-slate-800" />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={closeModalEnviarContenedor}>{t('admin.orders.china.modals.sendContainer.cancel', { defaultValue: 'Cancelar' })}</Button>
+                <Button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={sendingContainer || !sendTrackingNumber.trim() || !sendCourierCompany.trim() || !sendEtaDate}
+                >
+                  {sendingContainer ? t('common.sending', { defaultValue: 'Enviando…' }) : t('admin.orders.china.modals.sendContainer.confirm', { defaultValue: 'Confirmar' })}
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       )}
