@@ -90,6 +90,7 @@ interface Order {
   description: string;
   priority: 'alta' | 'media' | 'baja';
   documents?: { type: 'link' | 'image'; url: string; label: string }[];
+  createdAt?: string;
 }
 
 interface NewOrderData {
@@ -448,6 +449,7 @@ export default function PedidosPage() {
         daysElapsed,
         description: o.description || o.productName || '',
         priority: 'media',
+  createdAt: o.created_at || undefined,
       };
     });
     setOrders(mapped);
@@ -511,6 +513,26 @@ export default function PedidosPage() {
   const isValidQuantity = (value: any) => /^[0-9]+$/.test(String(value)) && Number(value) > 0;
   const isValidBudget = (value: any) => /^[0-9]+(\.[0-9]{1,2})?$/.test(String(value)) && Number(value) > 0;
   const isValidUrl = (value: string) => { try { new URL(value); return true; } catch { return false; } };
+
+  // Sanitizar segmentos de ruta/nombre para Storage (evita espacios, tildes, barras y caracteres no seguros)
+  const sanitizePathSegment = (input: string) => {
+    return (input || '')
+      // eliminar tildes/acentos
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      // reemplazar barras por guion para evitar subcarpetas accidentales
+      .replace(/[\/\\]/g, '-')
+      // reemplazar espacios por guion bajo
+      .replace(/\s+/g, '_')
+      // permitir solo ASCII seguro
+      .replace(/[^a-zA-Z0-9._-]/g, '')
+      // colapsar repeticiones
+      .replace(/_+/g, '_')
+      .replace(/-+/g, '-')
+      // recortar extremos
+      .replace(/^[_-]+|[_-]+$/g, '')
+      // limitar longitud
+      .slice(0, 120);
+  };
   const canProceedToNext = () => {
     switch (currentStep) {
       case 1:
@@ -557,7 +579,16 @@ export default function PedidosPage() {
     const yyyy = fechaObj.getFullYear();
     const fechaPedidoLegible = `${dd}-${mm}-${yyyy}`;
     const numeroPedido = Date.now();
-    const nombrePDF = `${newOrderData.productName}_${fechaPedidoLegible}_${numeroPedido}_${newOrderData.client_id}_${newOrderData.deliveryVenezuela}.pdf`;
+  // Construir nombre de archivo seguro para Storage
+  const safeProduct = sanitizePathSegment(newOrderData.productName);
+  const safeClient = sanitizePathSegment(newOrderData.client_id);
+  const safeDeliveryVzla = sanitizePathSegment(newOrderData.deliveryVenezuela);
+  const safeBase = sanitizePathSegment(`${safeProduct}_${fechaPedidoLegible}_${numeroPedido}_${safeClient}_${safeDeliveryVzla}`);
+  const nombrePDF = `${safeBase}.pdf`;
+
+  // Opcional: si luego se usa una carpeta (p. ej. deliveryType), sanitizarla también
+  // const safeFolder = sanitizePathSegment(newOrderData.deliveryType || 'misc');
+  // const storagePath = `${safeFolder}/${nombrePDF}`; // usar storagePath en el upload
 
     (async () => {
       try {
@@ -661,10 +692,11 @@ export default function PedidosPage() {
         const pdfBlob = doc.output('blob');
         let folder: string = String(newOrderData.deliveryType);
         if (folder === 'doorToDoor') folder = 'door-to-door';
+        const safeFolder = sanitizePathSegment(folder || 'misc');
         const nombrePDFCorr = nombrePDF;
         const uploadRes = await supabase.storage
           .from('orders')
-          .upload(`${folder}/${nombrePDFCorr}`, pdfBlob, {
+          .upload(`${safeFolder}/${nombrePDFCorr}`, pdfBlob, {
             cacheControl: '3600',
             upsert: true,
             contentType: 'application/pdf',
@@ -674,7 +706,10 @@ export default function PedidosPage() {
           alert(`Error al subir el PDF: ${uploadRes.error.message}`);
           return;
         }
-        const pdfUrl = `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${folder}/${nombrePDFCorr}`;
+        const { data: publicUrlData } = supabase.storage
+          .from('orders')
+          .getPublicUrl(`${safeFolder}/${nombrePDFCorr}`);
+        const pdfUrl = publicUrlData?.publicUrl || '';
 
         // Ahora crear el pedido vía API (service role) para evitar problemas RLS
         const payload = {
@@ -980,23 +1015,38 @@ export default function PedidosPage() {
       const status = statusConfig[order.status];
       const assigned = assignedConfig[order.assignedTo];
       const StatusIcon = status.icon;
+      const formatOrderId = (raw: string) => {
+        const base = String(raw ?? '');
+        const tail = base.replace(/[^0-9]/g, '').slice(-3) || base.slice(-3);
+        const code = (tail || '001').toString().padStart(3, '0');
+        return `#PED-${code}`;
+      };
+      const formatDate = (iso?: string) => {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return '—';
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        return `${dd}/${mm}/${yyyy}`;
+      };
       return (
         <tr 
           key={order.id}
           className={`border-b border-slate-100 hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-all duration-200 cursor-pointer group text-slate-900 dark:text-white`}
         >
           <td className="py-4 px-6">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 min-w-[11rem]">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
                 <Package className="w-4 h-4" />
               </div>
-              <span className="font-medium">{order.id}</span>
+              <span className="font-medium whitespace-nowrap">{formatOrderId(order.id)}</span>
             </div>
           </td>
           <td className="py-4 px-6">
-            <div>
-              <p className="font-medium">{order.client}</p>
-              <p className="text-sm">{order.description}</p>
+            <div className="max-w-[22rem]">
+              <p className="font-medium truncate">{order.client}</p>
+              <p className="text-sm line-clamp-1">{order.description}</p>
             </div>
           </td>
           <td className="py-4 px-6">
@@ -1009,6 +1059,12 @@ export default function PedidosPage() {
             <Badge className={`${assigned.color} border text-slate-900 dark:text-white`}>
               {t(`admin.orders.assigned.${order.assignedTo}`)}
             </Badge>
+          </td>
+          <td className="py-4 px-6">
+            <div className="flex items-center space-x-2">
+              <Calendar className="w-4 h-4" />
+              <span>{formatDate(order.createdAt)}</span>
+            </div>
           </td>
           <td className="py-4 px-6">
             <div className="flex items-center space-x-2">
@@ -1033,6 +1089,14 @@ export default function PedidosPage() {
       );
     })
   ), [paginatedOrders, statusConfig, assignedConfig, t]);
+
+  // Sliding tab indicator helpers
+  const activeTabIndex = activeTab === 'admin' ? 0 : activeTab === 'venezuela' ? 1 : 2;
+  const indicatorGradient = activeTab === 'admin'
+    ? 'from-blue-600 to-indigo-600'
+    : activeTab === 'venezuela'
+      ? 'from-amber-500 to-orange-600'
+      : 'from-red-600 to-pink-600';
 
   return (
     <div
@@ -1064,20 +1128,28 @@ export default function PedidosPage() {
 
         <div className={mounted && theme === 'dark' ? 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6 bg-slate-900' : 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6'}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="mb-8 flex w-full gap-1 rounded-2xl p-2 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
-              <TabsTrigger value="admin" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+            <TabsList className="relative overflow-hidden mb-8 flex w-full gap-1 rounded-2xl p-1 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+              {/* Sliding indicator */}
+              <div
+                className={`pointer-events-none absolute inset-y-1 left-1 w-1/3 rounded-xl bg-gradient-to-r ${indicatorGradient} shadow-lg transition-transform duration-300 ease-out z-0`}
+                style={{ transform: `translateX(${activeTabIndex * 100}%)` }}
+              />
+              <TabsTrigger value="admin" className="relative z-10 flex-1 min-w-0 justify-center whitespace-nowrap truncate transition-all text-sm md:text-base px-3 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:text-slate-700 dark:data-[state=inactive]:text-slate-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=active]:bg-transparent data-[state=active]:animate-in data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 data-[state=active]:fade-in-50">
                 <Settings className="w-4 h-4" /> {t('sidebar.management')}
               </TabsTrigger>
-              <TabsTrigger value="venezuela" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+              <TabsTrigger value="venezuela" className="relative z-10 flex-1 min-w-0 justify-center whitespace-nowrap truncate transition-all text-sm md:text-base px-3 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:text-slate-700 dark:data-[state=inactive]:text-slate-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=active]:bg-transparent data-[state=active]:animate-in data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 data-[state=active]:fade-in-50">
                 <MapPin className="w-4 h-4" /> {t('admin.orders.vzlaTabLabel')}
               </TabsTrigger>
-              <TabsTrigger value="china" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+              <TabsTrigger value="china" className="relative z-10 flex-1 min-w-0 justify-center whitespace-nowrap truncate transition-all text-sm md:text-base px-3 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:text-slate-700 dark:data-[state=inactive]:text-slate-300 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=active]:bg-transparent data-[state=active]:animate-in data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 data-[state=active]:fade-in-50">
                 <Plane className="w-4 h-4" /> {t('admin.orders.chinaTabLabel')}
               </TabsTrigger>
               {/* Pestaña Cliente eliminada */}
             </TabsList>
 
-            <TabsContent value="admin" className="space-y-6">
+            <TabsContent
+              value="admin"
+              className="space-y-6 data-[state=active]:animate-in data-[state=active]:fade-in-50 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-200 motion-reduce:transition-none motion-reduce:animate-none"
+            >
               {/* Stats Cards */}
               {statsCards}
               {/* Table Card existente */}
@@ -1127,12 +1199,22 @@ export default function PedidosPage() {
               {/* Vista Desktop - Tabla */}
               <div className="hidden lg:block overflow-x-auto">
                 <table className={mounted && theme === 'dark' ? 'w-full bg-slate-800' : 'w-full'}>
+                  <colgroup>
+                    <col className="w-44" />
+                    <col className="w-[22rem]" />
+                    <col className="w-40" />
+                    <col className="w-40" />
+                    <col className="w-28" />
+                    <col className="w-24" />
+                    <col className="w-28" />
+                  </colgroup>
                   <thead>
                     <tr className={mounted && theme === 'dark' ? 'border-b border-slate-700' : 'border-b border-slate-200'}>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.id')}</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.client')}</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.status')}</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.assignedTo')}</th>
+                      <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.date')}</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.time')}</th>
                       <th className={mounted && theme === 'dark' ? 'text-left py-4 px-6 font-semibold text-white' : 'text-left py-4 px-6 font-semibold text-slate-900'}>{t('admin.orders.table.actions')}</th>
                     </tr>
@@ -1149,6 +1231,21 @@ export default function PedidosPage() {
                   const status = statusConfig[order.status];
                   const assigned = assignedConfig[order.assignedTo];
                   const StatusIcon = status.icon;
+                  const formatOrderId = (raw: string) => {
+                    const base = String(raw ?? '');
+                    const tail = base.replace(/[^0-9]/g, '').slice(-3) || base.slice(-3);
+                    const code = (tail || '001').toString().padStart(3, '0');
+                    return `#PED-${code}`;
+                  };
+                  const formatDate = (iso?: string) => {
+                    if (!iso) return '—';
+                    const d = new Date(iso);
+                    if (isNaN(d.getTime())) return '—';
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const yyyy = d.getFullYear();
+                    return `${dd}/${mm}/${yyyy}`;
+                  };
                   
                   return (
                                          <div
@@ -1162,7 +1259,11 @@ export default function PedidosPage() {
                              <Package className="w-5 h-5 md:w-6 md:h-6 text-white" />
                            </div>
                            <div className="min-w-0 flex-1">
-                             <div className="font-semibold text-slate-900 group-hover:text-blue-900 transition-colors text-sm md:text-base dark:text-white">{order.id}</div>
+                            <div className="font-semibold text-slate-900 group-hover:text-blue-900 transition-colors text-sm md:text-base dark:text-white">{formatOrderId(order.id)}</div>
+                            <div className="mt-1 flex items-center gap-1 text-[11px] md:text-xs text-slate-500 dark:text-slate-400">
+                              <Calendar className="w-3 h-3" />
+                              <span>{formatDate(order.createdAt)}</span>
+                            </div>
                              <div className="text-xs md:text-sm text-slate-600 dark:text-slate-300 mt-1">{order.client}</div>
                              <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{order.description}</div>
                            </div>
@@ -1251,10 +1352,16 @@ export default function PedidosPage() {
           </Card>
             </TabsContent>
 
-            <TabsContent value="venezuela" className="space-y-6">
+            <TabsContent
+              value="venezuela"
+              className="space-y-6 min-h-[60vh] data-[state=active]:animate-in data-[state=active]:fade-in-50 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-200 motion-reduce:transition-none motion-reduce:animate-none"
+            >
               <VenezuelaOrdersTabContent />
             </TabsContent>
-            <TabsContent value="china" className="space-y-6">
+            <TabsContent
+              value="china"
+              className="space-y-6 min-h-[60vh] data-[state=active]:animate-in data-[state=active]:fade-in-50 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-200 motion-reduce:transition-none motion-reduce:animate-none"
+            >
               <ChinaOrdersTabContent />
             </TabsContent>
             {/* TabsContent cliente eliminado */}

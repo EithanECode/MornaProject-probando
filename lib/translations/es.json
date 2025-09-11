@@ -517,7 +517,7 @@
       },
       "trackingModal": {
         "trackingNumber": "Número de Seguimiento",
-        "carrier": "Transportista",
+  "carrier": "Empresa de encomienda",
         "estimatedDelivery": "Entrega estimada",
         "currentStatus": "Estado actual",
         "historyTitle": "Historial de seguimiento",
@@ -1016,7 +1016,7 @@
     },
     "trackingModal": {
       "trackingNumber": "Número de Seguimiento",
-      "carrier": "Transportista",
+  "carrier": "Empresa de encomienda",
       "estimatedDelivery": "Entrega estimada",
       "currentStatus": "Estado actual",
       "historyTitle": "Historial de seguimiento",
@@ -1374,6 +1374,7 @@
       },
       "table": {
         "id": "ID",
+  "date": "Fecha",
         "client": "Cliente",
         "description": "Descripción",
         "status": "Estado",
@@ -1661,7 +1662,9 @@
             "question": "¿Quieres crear un nuevo contenedor?",
             "creating": "Creando...",
             "accept": "Aceptar",
-            "cancel": "Cancelar"
+            "cancel": "Cancelar",
+            "nameLabel": "Nombre del Contenedor",
+            "namePlaceholder": "Ingrese el nombre del contenedor"
           },
           "containerBoxes": {
             "title": "Cajas del contenedor #CONT-{{id}}",
@@ -1683,7 +1686,9 @@
             "question": "¿Quieres crear una nueva caja?",
             "creating": "Creando...",
             "accept": "Aceptar",
-            "cancel": "Cancelar"
+            "cancel": "Cancelar",
+            "nameLabel": "Nombre de la Caja",
+            "namePlaceholder": "Ingrese el nombre de la caja"
           },
           "boxOrders": {
             "title": "Pedidos de la caja #BOX-{{id}}",
@@ -2029,7 +2034,8 @@
         "sendToChina": "Enviar a China",
         "markAsReceived": "Marcar como Recibido",
         "exportPdf": "Exportar a PDF",
-        "exportPdfShort": "PDF"
+        "exportPdfShort": "PDF",
+        "send": "Enviar"
       }
     },
     "soporte": {
@@ -2673,7 +2679,9 @@
           "question": "¿Quieres crear un nuevo contenedor?",
           "creating": "Creando...",
           "accept": "Aceptar",
-          "cancel": "Cancelar"
+          "cancel": "Cancelar",
+          "containerNameLabel": "Nombre del contenedor",
+          "containerNamePlaceholder": "Ingresa el nombre del contenedor"
         },
         "containerBoxes": {
           "title": "Cajas del contenedor #CONT-{{id}}",
@@ -2695,7 +2703,9 @@
           "question": "¿Quieres crear una nueva caja?",
           "creating": "Creando...",
           "accept": "Aceptar",
-          "cancel": "Cancelar"
+          "cancel": "Cancelar",
+          "boxNameLabel": "Nombre de la caja",
+          "boxNamePlaceholder": "Ingresa el nombre de la caja"
         },
         "boxOrders": {
           "title": "Pedidos de la caja #BOX-{{id}}",

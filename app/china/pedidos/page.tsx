@@ -238,6 +238,10 @@ export default function PedidosChina() {
   const modalVerPedidosRef = useRef<HTMLDivElement>(null);
   const [modalVerPedidos, setModalVerPedidos] = useState<{ open: boolean; boxId?: number | string }>({ open: false });
   const [isModalVerPedidosClosing, setIsModalVerPedidosClosing] = useState(false);
+  // Campo temporal para el nombre de la caja (solo UI por ahora)
+  const [newBoxName, setNewBoxName] = useState('');
+  // Campo para el nombre del contenedor (requerido)
+  const [newContainerName, setNewContainerName] = useState('');
   // Modal Empaquetar
   const modalEmpaquetarRef = useRef<HTMLDivElement>(null);
   const [modalEmpaquetar, setModalEmpaquetar] = useState<{ open: boolean; pedidoId?: number }>() as any;
@@ -264,12 +268,17 @@ export default function PedidosChina() {
   const modalEmpaquetarCajaRefState = useRef(modalEmpaquetarCaja.open);
   const modalVerPedidosRefState = useRef(modalVerPedidos.open);
   const modalVerPedidosContRefState = useRef(modalVerPedidosCont.open);
+  // Refs para IDs actuales usados por modales abiertos (para refrescar en realtime)
+  const modalVerPedidosBoxIdRef = useRef<number | string | undefined>(undefined);
+  const modalVerPedidosContIdRef = useRef<number | string | undefined>(undefined);
 
   useEffect(() => { activeTabRef.current = activeTab; }, [activeTab]);
   useEffect(() => { modalEmpaquetarRefState.current = modalEmpaquetar?.open; }, [modalEmpaquetar?.open]);
   useEffect(() => { modalEmpaquetarCajaRefState.current = modalEmpaquetarCaja.open; }, [modalEmpaquetarCaja.open]);
   useEffect(() => { modalVerPedidosRefState.current = modalVerPedidos.open; }, [modalVerPedidos.open]);
   useEffect(() => { modalVerPedidosContRefState.current = modalVerPedidosCont.open; }, [modalVerPedidosCont.open]);
+  useEffect(() => { modalVerPedidosBoxIdRef.current = modalVerPedidos.boxId; }, [modalVerPedidos.boxId]);
+  useEffect(() => { modalVerPedidosContIdRef.current = modalVerPedidosCont.containerId; }, [modalVerPedidosCont.containerId]);
 
   useEffect(() => {
   setMounted(true);
@@ -307,6 +316,13 @@ export default function PedidosChina() {
         const needsContainers = tab === 'contenedores' || modalVerPedidosContRefState.current;
         if (needsBoxes) debounce('boxes', fetchBoxes);
         if (needsContainers) debounce('containers', fetchContainers);
+        // Si hay modales dependientes abiertos, refrescarlos también
+        if (modalVerPedidosRefState.current && modalVerPedidosBoxIdRef.current !== undefined) {
+          debounce('boxes', () => fetchOrdersByBoxId(modalVerPedidosBoxIdRef.current as any));
+        }
+        if (modalVerPedidosContRefState.current && modalVerPedidosContIdRef.current !== undefined) {
+          debounce('containers', () => fetchBoxesByContainerId(modalVerPedidosContIdRef.current as any));
+        }
       })
       .subscribe();
 
@@ -318,6 +334,13 @@ export default function PedidosChina() {
         const needsBoxes = tab === 'cajas' || modalVerPedidosRefState.current || modalEmpaquetarRefState.current;
         if (needsContainers) debounce('containers', fetchContainers);
         if (needsBoxes) debounce('boxes', fetchBoxes);
+        // Actualizar vistas de detalle si están abiertas
+        if (modalVerPedidosRefState.current && modalVerPedidosBoxIdRef.current !== undefined) {
+          debounce('boxes', () => fetchOrdersByBoxId(modalVerPedidosBoxIdRef.current as any));
+        }
+        if (modalVerPedidosContRefState.current && modalVerPedidosContIdRef.current !== undefined) {
+          debounce('containers', () => fetchBoxesByContainerId(modalVerPedidosContIdRef.current as any));
+        }
       })
       .subscribe();
 
@@ -326,10 +349,8 @@ export default function PedidosChina() {
       .channel('china-orders-counts')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
         const tab = activeTabRef.current;
-        // Si afecta a la lista principal de pedidos (cambios de estado/asignaciones)
-        if (tab === 'pedidos') {
-          debounce('boxes', fetchPedidos); // reutilizamos debounce
-        }
+        // Siempre refrescar pedidos para que las estadísticas y listados estén al día en tiempo real
+        debounce('boxes', fetchPedidos);
         // Actualizar conteos por caja si tenemos cajas cargadas
         // Se hace un fetchBoxes ligero sólo si estamos viendo cajas o modales que dependen
         const needsBoxCounts = tab === 'cajas' || modalVerPedidosRefState.current || modalEmpaquetarRefState.current || modalEmpaquetarCajaRefState.current;
@@ -339,6 +360,13 @@ export default function PedidosChina() {
         // Si estamos viendo un contenedor y los pedidos cambian (p.ej asignaciones que mueven box state), podemos querer refrescar boxes por contenedor
         if (modalVerPedidosContRefState.current) {
           debounce('containers', fetchContainers);
+        }
+        // Refrescar contenido de modales abiertos
+        if (modalVerPedidosRefState.current && modalVerPedidosBoxIdRef.current !== undefined) {
+          debounce('boxes', () => fetchOrdersByBoxId(modalVerPedidosBoxIdRef.current as any));
+        }
+        if (modalVerPedidosContRefState.current && modalVerPedidosContIdRef.current !== undefined) {
+          debounce('containers', () => fetchBoxesByContainerId(modalVerPedidosContIdRef.current as any));
         }
       })
       .subscribe();
@@ -559,12 +587,21 @@ export default function PedidosChina() {
   // Crear registro en Supabase: tabla boxes
   const handleConfirmCrearCaja = async () => {
     try {
+      // Requerir nombre de la caja
+      if (!newBoxName.trim()) {
+        toast({
+          title: t('chinese.ordersPage.toasts.notAllowedTitle', { defaultValue: 'No permitido' }),
+          description: t('chinese.ordersPage.modals.createBox.boxNameRequired', { defaultValue: 'El nombre de la caja es obligatorio.' }),
+        });
+        return;
+      }
       setCreatingBox(true);
       const supabase = getSupabaseBrowserClient();
       const creation_date = new Date().toISOString();
       const { data, error } = await supabase
         .from('boxes')
-        .insert([{ state: 1, creation_date }])
+        // Guardar también el nombre de la caja (obligatorio)
+        .insert([{ state: 1, creation_date, name: newBoxName.trim() }])
         .select();
       if (error) {
         console.error('Error al crear caja:', error);
@@ -643,9 +680,17 @@ export default function PedidosChina() {
       setCreatingContainer(true);
       const supabase = getSupabaseBrowserClient();
       const creation_date = new Date().toISOString();
+      // Validación: requerir nombre
+      if (!newContainerName.trim()) {
+        toast({
+          title: t('chinese.ordersPage.toasts.notAllowedTitle', { defaultValue: 'No permitido' }),
+          description: t('chinese.ordersPage.modals.createContainer.containerNameRequired', { defaultValue: 'El nombre del contenedor es obligatorio.' }),
+        });
+        return;
+      }
       const { error } = await supabase
         .from('containers')
-        .insert([{ state: 1, creation_date }]);
+        .insert([{ state: 1, creation_date, name: newContainerName.trim() }]);
       if (error) {
         console.error('Error al crear contenedor:', error);
   toast({ title: t('chinese.ordersPage.toasts.createContainerErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainSeconds') });
@@ -783,6 +828,28 @@ export default function PedidosChina() {
       const contStateNum = (container.state ?? 1) as number;
       if (contStateNum >= 3) {
         toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.assignToShippedContainerDesc') });
+        return;
+      }
+      // Regla: No permitir empaquetar una caja vacía
+      try {
+        const { data: anyOrder, error: countErr } = await supabase
+          .from('orders')
+          .select('id')
+          .eq('box_id', boxId)
+          .limit(1);
+        if (countErr) {
+          console.error('Error verificando pedidos de la caja:', countErr);
+        }
+        if (!anyOrder || anyOrder.length === 0) {
+          toast({
+            title: t('chinese.ordersPage.toasts.notAllowedTitle', { defaultValue: 'No permitido' }),
+            description: t('chinese.ordersPage.toasts.packEmptyBoxNotAllowed', { defaultValue: 'No puedes empaquetar una caja vacía. Agrega pedidos primero.' }),
+          });
+          return;
+        }
+      } catch (e) {
+        console.error('Fallo verificando si la caja está vacía:', e);
+        toast({ title: t('chinese.ordersPage.toasts.unexpectedErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
         return;
       }
       // 1) Actualizar la caja: asignar contenedor y cambiar state=2 (empaquetada)
@@ -1467,6 +1534,9 @@ export default function PedidosChina() {
                           <div className="space-y-1 w-full min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
                               <h3 className="font-semibold text-slate-900 text-sm sm:text-base">#BOX-{id}</h3>
+                              {box?.name && (
+                                <span className="text-xs sm:text-sm text-slate-600 truncate max-w-full">{String((box as any).name)}</span>
+                              )}
                               <Badge className={`hidden sm:inline-block ${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
                             </div>
                             <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] sm:text-xs text-slate-500">
@@ -1483,10 +1553,11 @@ export default function PedidosChina() {
                           <div className="sm:hidden">
                             <Badge className={`${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
                           </div>
-                          {stateNum === 1 && (
+              {stateNum === 1 && (
                             <Button
                               size="sm"
-                              className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700"
+                className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={(orderCountsByBoxMain[boxKey as any] ?? 0) <= 0}
                               onClick={() => {
                                 const currentBoxId = box.box_id ?? box.boxes_id ?? box.id;
                                 setModalEmpaquetarCaja({ open: true, boxId: currentBoxId });
@@ -1622,6 +1693,9 @@ export default function PedidosChina() {
                               <div className="space-y-1 w-full min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
                                   <h3 className="font-semibold text-slate-900 text-sm sm:text-base">#CONT-{id}</h3>
+                                  {container?.name && (
+                                    <span className="text-xs sm:text-sm text-slate-600 truncate max-w-full">{String((container as any).name)}</span>
+                                  )}
                                   <Badge className={`hidden sm:inline-block ${getContainerBadge(stateNum).className}`}>{getContainerBadge(stateNum).label}</Badge>
                                 </div>
                                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] sm:text-xs text-slate-500">
@@ -1883,6 +1957,9 @@ export default function PedidosChina() {
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold text-slate-900">#CONT-{id}</h3>
+                              {container?.name && (
+                                <span className="text-xs text-slate-600 truncate max-w-full">{String((container as any).name)}</span>
+                              )}
                             </div>
                             <div className="flex items-center gap-4 text-xs text-slate-500">
                               <span className="flex items-center gap-1">
@@ -1898,7 +1975,8 @@ export default function PedidosChina() {
                           </Badge>
                           <Button
                             size="sm"
-                            className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700"
+                            className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={stateNum >= 3}
                             onClick={() => modalEmpaquetarCaja.boxId && handleSelectContenedorForCaja(modalEmpaquetarCaja.boxId, container)}
                           >
                             {t('chinese.ordersPage.modals.selectContainerForBox.select')}
@@ -1934,10 +2012,23 @@ export default function PedidosChina() {
                   <span className="text-2xl">×</span>
                 </Button>
               </div>
-              <p className="text-slate-600 mb-6">{t('chinese.ordersPage.modals.createContainer.question')}</p>
+              <p className="text-slate-600 mb-4">{t('chinese.ordersPage.modals.createContainer.question')}</p>
+              {/* Nombre del contenedor (requerido) */}
+              <div className="mb-6">
+                <label htmlFor="newContainerName" className="block text-sm font-medium text-slate-700 mb-1">
+                  {t('chinese.ordersPage.modals.createContainer.containerNameLabel', { defaultValue: 'Nombre del contenedor' })}
+                </label>
+                <Input
+                  id="newContainerName"
+                  placeholder={t('chinese.ordersPage.modals.createContainer.containerNamePlaceholder', { defaultValue: 'Ej. CONT-Agosto-01' })}
+                  value={newContainerName}
+                  onChange={(e) => setNewContainerName(e.target.value)}
+                  required
+                />
+              </div>
               <div className="flex justify-end gap-3">
                 <Button variant="outline" onClick={closeModalCrearContenedor} disabled={creatingContainer}>{t('chinese.ordersPage.modals.createContainer.cancel')}</Button>
-                <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleConfirmCrearContenedor} disabled={creatingContainer}>
+                <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleConfirmCrearContenedor} disabled={creatingContainer || !newContainerName.trim()}>
                   {creatingContainer ? t('chinese.ordersPage.modals.createContainer.creating') : t('chinese.ordersPage.modals.createContainer.accept')}
                 </Button>
               </div>
@@ -1983,6 +2074,12 @@ export default function PedidosChina() {
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
+                              {box?.name && (
+                                <span className="text-xs text-slate-600 truncate max-w-full">{String((box as any).name)}</span>
+                              )}
+                              {box?.name && (
+                                <span className="text-xs text-slate-600 truncate max-w-full">{String((box as any).name)}</span>
+                              )}
                             </div>
                             <div className="flex items-center gap-4 text-xs text-slate-500">
                               <span className="flex items-center gap-1">
@@ -2138,10 +2235,23 @@ export default function PedidosChina() {
                   <span className="text-2xl">×</span>
                 </Button>
               </div>
-              <p className="text-slate-600 mb-6">{t('chinese.ordersPage.modals.createBox.question')}</p>
+              <p className="text-slate-600 mb-4">{t('chinese.ordersPage.modals.createBox.question')}</p>
+              {/* Nombre de la caja (requerido) */}
+              <div className="mb-6">
+                <label htmlFor="newBoxName" className="block text-sm font-medium text-slate-700 mb-1">
+                  {t('chinese.ordersPage.modals.createBox.boxNameLabel', { defaultValue: 'Nombre de la caja' })}
+                </label>
+                <Input
+                  id="newBoxName"
+                  placeholder={t('chinese.ordersPage.modals.createBox.boxNamePlaceholder', { defaultValue: 'Ej. Electrónica lote A' })}
+                  value={newBoxName}
+                  onChange={(e) => setNewBoxName(e.target.value)}
+                  required
+                />
+              </div>
               <div className="flex justify-end gap-3">
                 <Button variant="outline" onClick={closeModalCrearCaja} disabled={creatingBox}>{t('chinese.ordersPage.modals.createBox.cancel')}</Button>
-                <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleConfirmCrearCaja} disabled={creatingBox}>
+                <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleConfirmCrearCaja} disabled={creatingBox || !newBoxName.trim()}>
                   {creatingBox ? t('chinese.ordersPage.modals.createBox.creating') : t('chinese.ordersPage.modals.createBox.accept')}
                 </Button>
               </div>
@@ -2277,13 +2387,14 @@ export default function PedidosChina() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
                           <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
                             {stateNum === 1 ? t('chinese.ordersPage.boxBadges.new') : stateNum === 2 ? t('chinese.ordersPage.boxBadges.packed') : t('chinese.ordersPage.boxBadges.state', { num: stateNum })}
                           </Badge>
                           <Button
                             size="sm"
-                            className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700"
+              className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={stateNum >= 3}
                             onClick={() => modalEmpaquetar?.pedidoId && handleSelectCajaForPedido(modalEmpaquetar.pedidoId, box)}
                           >
                             {t('chinese.ordersPage.modals.selectBoxForOrder.select')}

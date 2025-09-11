@@ -553,7 +553,7 @@
       },
       "trackingModal": {
         "trackingNumber": "Tracking number",
-        "carrier": "Carrier",
+  "carrier": "Courier company",
         "estimatedDelivery": "Estimated delivery",
         "currentStatus": "Current status",
         "historyTitle": "Tracking history",
@@ -903,6 +903,7 @@
       "title": "Order Management",
       "subtitle": "Manage and track all orders",
   "chinaTabLabel": "China",
+  "vzlaTabLabel": "Venezuela",
       "listTitle": "Order List",
       "listDescription": "{{count}} orders found",
       "search": "Search orders...",
@@ -920,6 +921,7 @@
       },
       "table": {
         "id": "ID",
+  "date": "Date",
         "client": "Client",
         "description": "Description",
         "status": "Status",
@@ -1206,7 +1208,9 @@
             "question": "Do you want to create a new container?",
             "creating": "Creating...",
             "accept": "Accept",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "nameLabel": "Container Name",
+            "namePlaceholder": "Enter container name"
           },
           "containerBoxes": {
             "title": "Boxes of container #CONT-{{id}}",
@@ -1228,7 +1232,9 @@
             "question": "Do you want to create a new box?",
             "creating": "Creating...",
             "accept": "Accept",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "nameLabel": "Box name",
+            "namePlaceholder": "Add a name"
           },
           "boxOrders": {
             "title": "Orders of box #BOX-{{id}}",
@@ -1689,7 +1695,8 @@
         "sendToChina": "Send to China",
         "markAsReceived": "Mark as Received",
         "exportPdf": "Export to PDF",
-        "exportPdfShort": "PDF"
+        "exportPdfShort": "PDF",
+        "send": "Send"
       }
     },
     "soporte": {
@@ -2334,7 +2341,9 @@
         "question": "Do you want to create a new container?",
         "creating": "Creating...",
         "accept": "Accept",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "containerNameLabel": "Container Name",
+        "containerNamePlaceholder": "Enter container name"
       },
       "containerBoxes": {
         "title": "Boxes of container #CONT-{{id}}",
@@ -2356,7 +2365,9 @@
         "question": "Do you want to create a new box?",
         "creating": "Creating...",
         "accept": "Accept",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "boxNameLabel": "Box Name",
+        "boxNamePlaceholder": "Enter box name"
       },
       "boxOrders": {
         "title": "Orders of box #BOX-{{id}}",

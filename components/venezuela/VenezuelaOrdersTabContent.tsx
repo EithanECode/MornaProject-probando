@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,7 @@ interface Order {
   description?: string;
   pdfRoutes?: string;
   box_id?: string | number | null;
+  asignedEVzla?: string | null;
 }
 
 interface BoxItem { boxes_id?: number | string; id?: number | string; box_id?: number | string; container_id?: number | string | null; state?: number; creation_date?: string; created_at?: string }
@@ -62,6 +63,13 @@ export default function VenezuelaOrdersTabContent() {
   const [modalVerCajas, setModalVerCajas] = useState<{ open: boolean; containerId?: number | string }>({ open: false });
   // Modal genérico para avisos (usar para "Sin PDF")
   const [modalAviso, setModalAviso] = useState<{ open: boolean; title?: string; description?: string }>({ open: false });
+  // Realtime hooks
+  const [vzlaId, setVzlaId] = useState<string | undefined>(undefined);
+  const activeSubTabRef = useRef(activeSubTab);
+  const modalVerPedidosRefState = useRef(modalVerPedidos.open);
+  const modalVerCajasRefState = useRef(modalVerCajas.open);
+  const modalVerPedidosBoxIdRef = useRef<number | string | undefined>(undefined);
+  const modalVerCajasContainerIdRef = useRef<number | string | undefined>(undefined);
 
   // Paginación (8 por página) para los tres sub-tabs
   const ITEMS_PER_PAGE = 8;
@@ -85,14 +93,13 @@ export default function VenezuelaOrdersTabContent() {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const supabase = getSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      const empleadoId = user?.id;
-      if (!empleadoId) throw new Error('No se pudo obtener el usuario logueado');
-      const res = await fetch(`/venezuela/pedidos/api/orders?asignedEVzla=${encodeURIComponent(String(empleadoId))}`, { cache: 'no-store' });
+      // Traer TODOS los pedidos asignados a algún empleado de Venezuela (sin filtrar por el usuario logueado)
+      const res = await fetch(`/venezuela/pedidos/api/orders`, { cache: 'no-store' });
       if (!res.ok) throw new Error('Error al obtener pedidos');
       const data = await res.json();
-      setOrders(data);
+      // Filtrar para mantener sólo los que tienen un empleado de Venezuela asignado
+      const assigned = Array.isArray(data) ? data.filter((o:any) => !!o.asignedEVzla) : [];
+      setOrders(assigned);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -229,6 +236,90 @@ export default function VenezuelaOrdersTabContent() {
   useEffect(() => { setOrdersPage(1); }, [searchQuery, statusFilter, orders.length]);
   useEffect(() => { setBoxesPage(1); }, [filtroCaja, boxes.length]);
   useEffect(() => { setContainersPage(1); }, [filtroContenedor, containers.length]);
+  useEffect(() => { activeSubTabRef.current = activeSubTab; }, [activeSubTab]);
+  useEffect(() => { modalVerPedidosRefState.current = modalVerPedidos.open; }, [modalVerPedidos.open]);
+  useEffect(() => { modalVerCajasRefState.current = modalVerCajas.open; }, [modalVerCajas.open]);
+  useEffect(() => { modalVerPedidosBoxIdRef.current = modalVerPedidos.boxId; }, [modalVerPedidos.boxId]);
+  useEffect(() => { modalVerCajasContainerIdRef.current = modalVerCajas.containerId; }, [modalVerCajas.containerId]);
+
+  // Load current user id for realtime
+  useEffect(() => {
+    (async () => {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        setVzlaId(user?.id);
+      } catch {}
+    })();
+  }, []);
+
+  // Orders realtime (assigned to this Vzla user)
+  // Lazy import to avoid circulars; use dynamic require pattern
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+    (async () => {
+      const { useRealtimeVzla } = await import('@/hooks/use-realtime-vzla');
+      // custom mini wrapper to attach and detach inside this component
+      const onUpdate = () => { fetchOrders(); };
+      // useRealtimeVzla is a hook; we can't call it conditionally here. Instead, replicate minimal logic inline below.
+    })();
+    return () => { if (unsubscribe) unsubscribe(); };
+  }, [vzlaId]);
+
+  // Inline realtime subscriptions for orders/boxes/containers and open modals
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    let boxesTimer: any = null; let containersTimer: any = null;
+    const debounce = (which: 'boxes' | 'containers', fn: () => void) => {
+      if (which === 'boxes') { if (boxesTimer) clearTimeout(boxesTimer); boxesTimer = setTimeout(fn, 120); }
+      else { if (containersTimer) clearTimeout(containersTimer); containersTimer = setTimeout(fn, 150); }
+    };
+
+    const ordersChannel = supabase
+      .channel('vzla-tab-orders')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+        // Always refresh orders list/stats
+        fetchOrders();
+        const tab = activeSubTabRef.current;
+        const needsBoxCounts = tab === 'cajas' || modalVerPedidosRefState.current || modalVerCajasRefState.current;
+        if (needsBoxCounts) debounce('boxes', fetchBoxes);
+        if (modalVerPedidosRefState.current && modalVerPedidosBoxIdRef.current !== undefined) debounce('boxes', () => fetchOrdersByBoxId(modalVerPedidosBoxIdRef.current as any));
+        if (modalVerCajasRefState.current && modalVerCajasContainerIdRef.current !== undefined) debounce('containers', () => fetchBoxesByContainerId(modalVerCajasContainerIdRef.current as any));
+      })
+      .subscribe();
+
+    const boxesChannel = supabase
+      .channel('vzla-tab-boxes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'boxes' }, () => {
+        const tab = activeSubTabRef.current;
+        const needsBoxes = tab === 'cajas' || modalVerPedidosRefState.current;
+        const needsContainers = tab === 'contenedores' || modalVerCajasRefState.current;
+        if (needsBoxes) debounce('boxes', fetchBoxes);
+        if (needsContainers) debounce('containers', fetchContainers);
+        if (modalVerPedidosRefState.current && modalVerPedidosBoxIdRef.current !== undefined) debounce('boxes', () => fetchOrdersByBoxId(modalVerPedidosBoxIdRef.current as any));
+      })
+      .subscribe();
+
+    const containersChannel = supabase
+      .channel('vzla-tab-containers')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'containers' }, () => {
+        const tab = activeSubTabRef.current;
+        const needsContainers = tab === 'contenedores' || modalVerCajasRefState.current;
+        const needsBoxes = tab === 'cajas' || modalVerPedidosRefState.current;
+        if (needsContainers) debounce('containers', fetchContainers);
+        if (needsBoxes) debounce('boxes', fetchBoxes);
+        if (modalVerCajasRefState.current && modalVerCajasContainerIdRef.current !== undefined) debounce('containers', () => fetchBoxesByContainerId(modalVerCajasContainerIdRef.current as any));
+      })
+      .subscribe();
+
+    return () => {
+      if (boxesTimer) clearTimeout(boxesTimer);
+      if (containersTimer) clearTimeout(containersTimer);
+      supabase.removeChannel(ordersChannel);
+      supabase.removeChannel(boxesChannel);
+      supabase.removeChannel(containersChannel);
+    };
+  }, []);
   
   // Evita hidratar contenido antes de montar (mantén todos los hooks por encima)
   if (!mounted) return null;
