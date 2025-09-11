@@ -429,7 +429,7 @@
         "quoted": "Quoted",
         "processing": "Processing",
         "shipped": "Shipped",
-        "delivered": "Delivered",
+  "delivered": "Delivered",
   "cancelled": "Cancelled",
   "paymentValidated": "Payment validated",
   "packagingBox": "Packaging (box)",
@@ -437,8 +437,7 @@
   "sentFromChina": "Sent from China",
   "inCustoms": "In customs",
   "arriving": "Arriving",
-  "inStore": "Product in store",
-  "delivered": "Delivered"
+  "inStore": "Product in store"
       },
       "actions": {
         "view": "View details",
@@ -471,7 +470,8 @@
         "productDescription": "Product Description",
         "productDescriptionPlaceholder": "Describe in detail the product you want to import...",
         "quantity": "Quantity",
-        "invalidQuantity": "Quantity must be greater than zero.",
+  "invalidQuantity": "Quantity must be greater than zero.",
+  "quantityRangeHint": "Valid quantity: {{min}}–{{max}}.",
         "specifications": "Technical Specifications",
         "specificationsPlaceholder": "Color, size, model, specific features, etc.",
         "requestType": "Request Type",
@@ -501,7 +501,8 @@
         "express": "Express delivery",
         "estimatedBudget": "Estimated Budget (USD)",
         "estimatedBudgetPlaceholder": "E.g.: 500",
-        "invalidBudget": "Estimated budget must be a valid amount.",
+  "invalidBudget": "Estimated budget must be a valid amount.",
+  "max7DigitsHint": "(max 7 digits)",
         "summaryTitle": "Order Summary",
         "almostReady": "Almost ready!",
         "reviewMessage": "Your request will be reviewed by our team and you will receive a quote within the next 24 hours.",
@@ -973,6 +974,7 @@
         "productDescription": "Product Description",
         "productDescriptionPlaceholder": "Describe the product...",
         "quantity": "Quantity",
+  "quantityRangeHint": "Valid quantity: {{min}}–{{max}}.",
   "invalidQuantity": "Quantity must be greater than zero.",
         "requestType": "Request Type",
         "productLink": "Product Link",
@@ -994,6 +996,7 @@
   "estimatedBudget": "Estimated budget",
   "estimatedBudgetPlaceholder": "E.g.: 500",
   "invalidBudget": "Estimated budget must be a valid amount.",
+  "max7DigitsHint": "(max 7 digits)",
         "estimatedBudgetUsd": "Estimated Budget (USD)",
         "selectClient": "Select a client",
         "selectDelivery": "Select how you want to receive your order",
@@ -1040,7 +1043,8 @@
         "days": "{{count}} days"
       },
       "alerts": {
-        "onlyImages": "Only JPG, JPEG, PNG or WEBP images are allowed."
+  "onlyImages": "Only JPG, JPEG, PNG or WEBP images are allowed.",
+  "imageTooLarge": "The image must not exceed {{maxMB}} MB."
       },
       "messages": {
   "createError": "Could not create the order.",

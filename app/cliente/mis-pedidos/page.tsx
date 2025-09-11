@@ -958,11 +958,11 @@ export default function MisPedidosPage() {
       const file = e.target.files[0];
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
+        alert(t('admin.orders.alerts.onlyImages'));
         return;
       }
       if (file.size > MAX_IMAGE_BYTES) {
-        alert('La imagen no debe pesar más de 50 MB.');
+        alert(t('admin.orders.alerts.imageTooLarge', { maxMB: 50 }));
         return;
       }
       setNewOrderData({ ...newOrderData, productImage: file });
@@ -990,11 +990,11 @@ export default function MisPedidosPage() {
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
       
       if (!validTypes.includes(file.type)) {
-        alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
+        alert(t('admin.orders.alerts.onlyImages'));
         return;
       }
       if (file.size > MAX_IMAGE_BYTES) {
-        alert('La imagen no debe pesar más de 50 MB.');
+        alert(t('admin.orders.alerts.imageTooLarge', { maxMB: 50 }));
         return;
       }
       
@@ -1618,10 +1618,7 @@ export default function MisPedidosPage() {
                           className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                         />
                         {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
-                          <p className="text-xs text-red-500">{t('client.recentOrders.newOrder.invalidBudget')} (máx 7 cifras)</p>
-                        )}
-                        {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
-                          <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidBudget')}</p>
+                          <p className="text-xs text-red-500">{t('client.recentOrders.newOrder.invalidBudget')} {t('client.recentOrders.newOrder.max7DigitsHint')}</p>
                         )}
                       </div>
                     </div>

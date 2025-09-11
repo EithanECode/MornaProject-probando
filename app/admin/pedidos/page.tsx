@@ -493,7 +493,7 @@ export default function PedidosPage() {
         return;
       }
       if (file.size > MAX_IMAGE_BYTES) {
-        alert('La imagen no debe pesar más de 50 MB.');
+        alert(t('admin.orders.alerts.imageTooLarge', { maxMB: 50 }));
         return;
       }
       setNewOrderData((prev) => ({ ...prev, productImage: file }));
@@ -510,7 +510,7 @@ export default function PedidosPage() {
         return;
       }
       if (file.size > MAX_IMAGE_BYTES) {
-        alert('La imagen no debe pesar más de 50 MB.');
+        alert(t('admin.orders.alerts.imageTooLarge', { maxMB: 50 }));
         return;
       }
       setNewOrderData((prev) => ({ ...prev, productImage: file }));
@@ -1506,7 +1506,7 @@ export default function PedidosPage() {
                     }}
                   />
                   {(!isValidQuantity(newOrderData.quantity) || newOrderData.quantity <= 0) && (
-                    <p className="text-xs text-red-500">Cantidad válida: {QTY_MIN}–{QTY_MAX}.</p>
+                    <p className="text-xs text-red-500">{t('admin.orders.form.quantityRangeHint', { min: QTY_MIN, max: QTY_MAX })}</p>
                   )}
                 </div>
 
@@ -1634,7 +1634,7 @@ export default function PedidosPage() {
                     setNewOrderData({ ...newOrderData, estimatedBudget: val });
                   }} placeholder={t('admin.orders.form.estimatedBudgetPlaceholder')} />
                   {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
-                    <p className="text-xs text-red-500">{t('admin.orders.form.invalidBudget')} (máx 7 cifras)</p>
+                    <p className="text-xs text-red-500">{t('admin.orders.form.invalidBudget')} {t('admin.orders.form.max7DigitsHint')}</p>
                   )}
                 </div>
               </div>

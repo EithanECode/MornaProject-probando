@@ -18,6 +18,7 @@
       "invalidEmail": "邮箱无效",
       "invalidEmailAlt": "邮箱格式不正确",
       "nameInvalid": "姓名至少 3 个字母且仅包含有效字符。",
+  "quantityRangeHint": "有效数量：{{min}}–{{max}}。",
       "passwordsNoMatch": "密码不匹配。",
       "passwordLevelLow": "弱",
       "passwordLevelMedium": "一般",
@@ -36,9 +37,10 @@
     },
     "register": {
       "title": "注册",
-      "helloFriend": "你好，朋友！",
+  "estimatedBudget": "预估预算",
       "helloMessage": "输入你的个人信息，开始与我们一起的旅程。",
       "success": "注册成功！请查看邮箱确认你的账号。",
+  "max7DigitsHint": "（最多 7 位整数）",
       "errorFallback": "注册错误"
     },
     "panels": {
@@ -469,7 +471,8 @@
         "productDescription": "产品描述",
         "productDescriptionPlaceholder": "详细描述你想进口的产品...",
         "quantity": "数量",
-        "invalidQuantity": "数量必须大于零。",
+  "invalidQuantity": "数量必须大于零。",
+  "quantityRangeHint": "有效数量：{{min}}–{{max}}。",
         "specifications": "技术规格",
         "specificationsPlaceholder": "颜色、尺寸、型号、特性等",
         "requestType": "请求类型",
@@ -499,7 +502,8 @@
         "express": "特快交付",
         "estimatedBudget": "预估预算 (USD)",
         "estimatedBudgetPlaceholder": "例如：500",
-        "invalidBudget": "预估预算必须为有效金额。",
+  "invalidBudget": "预估预算必须为有效金额。",
+  "max7DigitsHint": "（最多 7 位整数）",
         "summaryTitle": "订单摘要",
         "almostReady": "快完成了！",
         "reviewMessage": "你的请求将由我们的团队审核，你将在接下来的 24 小时内收到报价。",
@@ -1038,7 +1042,8 @@
         "days": "{{count}} 天"
       },
       "alerts": {
-        "onlyImages": "仅允许 JPG, JPEG, PNG 或 WEBP 图片。"
+  "onlyImages": "仅允许 JPG, JPEG, PNG 或 WEBP 图片。",
+  "imageTooLarge": "图片大小不得超过 {{maxMB}} MB。"
       },
       "messages": {
         "createError": "无法创建订单。",
