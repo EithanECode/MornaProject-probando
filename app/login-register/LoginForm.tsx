@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { MAX_EMAIL, MAX_PASSWORD } from '@/lib/constants/validation';
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import Lottie from "react-lottie";
 import { Eye, EyeOff } from "lucide-react";
@@ -184,7 +185,8 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
         id="login-email"
         placeholder={t('auth.common.emailPlaceholder')}
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        maxLength={MAX_EMAIL}
+        onChange={(e) => setEmail(e.target.value.slice(0, MAX_EMAIL))}
         required
       />
       {emailError && (
@@ -198,7 +200,8 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
           id="login-password"
       placeholder={t('auth.common.passwordPlaceholder')}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          maxLength={MAX_PASSWORD}
+          onChange={(e) => setPassword(e.target.value.slice(0, MAX_PASSWORD))}
           required
         />
         <span className="password-toggle-icon" onClick={toggleShowPassword}>
@@ -216,7 +219,7 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
       {errorMsg && (
         <p className="text-red-500 text-sm mt-2" role="alert">{errorMsg}</p>
       )}
-      <button type="submit" disabled={loading}>
+  <button type="submit" disabled={loading || !email || !password}>
         {loading ? t('auth.common.loadingLogin') : t('auth.common.login')}
       </button>
     </form>

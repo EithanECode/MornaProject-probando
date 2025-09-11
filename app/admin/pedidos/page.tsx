@@ -4,6 +4,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { MAX_NAME, MAX_DESCRIPTION, MAX_MONEY_INT_DIGITS, isValidMoney } from '@/lib/constants/validation';
 import { useTheme } from 'next-themes';
 import { default as dynamicImport } from 'next/dynamic';
 import Sidebar from '@/components/layout/Sidebar';
@@ -521,11 +522,10 @@ export default function PedidosPage() {
   const isValidQuantity = (value: any) => /^[0-9]+$/.test(String(value)) && Number(value) >= QTY_MIN && Number(value) <= QTY_MAX;
   const BUDGET_MAX = 9_999_999;
   const isValidBudget = (value: any) => {
-    const str = String(value);
-    if (!/^[0-9]+(\.[0-9]{1,2})?$/.test(str)) return false;
-    const [intPart] = str.split('.');
-    if (intPart.length > 7) return false;
-    const num = Number(str);
+    if (!isValidMoney(value)) return false;
+    const intDigits = String(value).split('.')[0].length;
+    if (intDigits > MAX_MONEY_INT_DIGITS) return false;
+    const num = Number(value);
     return num > 0 && num <= BUDGET_MAX;
   };
   const isValidUrl = (value: string) => { try { new URL(value); return true; } catch { return false; } };
@@ -1109,8 +1109,8 @@ export default function PedidosPage() {
   ), [paginatedOrders, statusConfig, assignedConfig, t]);
 
   // ====== Validaciones recomendadas (admin crear pedido) ======
-  const NAME_MAX = 50;
-  const DESCRIPTION_MAX = 200;
+  const NAME_MAX = MAX_NAME;
+  const DESCRIPTION_MAX = MAX_DESCRIPTION;
   const QTY_MIN = 1;
   const QTY_MAX = 9999;
   const MAX_IMAGE_BYTES = 50 * 1024 * 1024; // 50 MB

@@ -1914,8 +1914,9 @@ export default function PedidosChina() {
                   <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.sendContainer.trackingNumber')}</label>
                   <Input
                     value={sendTrackingNumber}
-                    onChange={(e) => setSendTrackingNumber(e.target.value)}
+                    onChange={(e) => setSendTrackingNumber(e.target.value.slice(0,50))}
                     placeholder={t('chinese.ordersPage.modals.sendContainer.trackingNumberPlaceholder')}
+                    maxLength={50}
                     required
                   />
                 </div>
@@ -1923,8 +1924,9 @@ export default function PedidosChina() {
                   <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.sendContainer.courierCompany')}</label>
                   <Input
                     value={sendCourierCompany}
-                    onChange={(e) => setSendCourierCompany(e.target.value)}
+                    onChange={(e) => setSendCourierCompany(e.target.value.slice(0,50))}
                     placeholder={t('chinese.ordersPage.modals.sendContainer.courierCompanyPlaceholder')}
+                    maxLength={50}
                     required
                   />
                 </div>
