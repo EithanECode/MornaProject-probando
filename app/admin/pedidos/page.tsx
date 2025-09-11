@@ -1121,19 +1121,22 @@ export default function PedidosPage() {
         <div className={mounted && theme === 'dark' ? 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6 bg-slate-900' : 'p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6'}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="mb-8 flex w-full gap-1 rounded-2xl p-2 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
-              <TabsTrigger value="admin" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+              <TabsTrigger value="admin" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60 data-[state=active]:animate-in data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 data-[state=active]:fade-in-50">
                 <Settings className="w-4 h-4" /> {t('sidebar.management')}
               </TabsTrigger>
-              <TabsTrigger value="venezuela" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+              <TabsTrigger value="venezuela" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60 data-[state=active]:animate-in data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 data-[state=active]:fade-in-50">
                 <MapPin className="w-4 h-4" /> {t('admin.orders.vzlaTabLabel')}
               </TabsTrigger>
-              <TabsTrigger value="china" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60">
+              <TabsTrigger value="china" className="flex-1 min-w-0 justify-center whitespace-nowrap truncate data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all text-sm md:text-base px-4 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent data-[state=inactive]:bg-white/60 dark:data-[state=inactive]:bg-slate-900/40 data-[state=inactive]:hover:bg-white data-[state=inactive]:dark:hover:bg-slate-700/60 data-[state=active]:animate-in data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 data-[state=active]:fade-in-50">
                 <Plane className="w-4 h-4" /> {t('admin.orders.chinaTabLabel')}
               </TabsTrigger>
               {/* Pestaña Cliente eliminada */}
             </TabsList>
 
-            <TabsContent value="admin" className="space-y-6">
+            <TabsContent
+              value="admin"
+              className="space-y-6 data-[state=active]:animate-in data-[state=active]:fade-in-50 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-200 motion-reduce:transition-none motion-reduce:animate-none"
+            >
               {/* Stats Cards */}
               {statsCards}
               {/* Table Card existente */}
@@ -1336,10 +1339,16 @@ export default function PedidosPage() {
           </Card>
             </TabsContent>
 
-            <TabsContent value="venezuela" className="space-y-6">
+            <TabsContent
+              value="venezuela"
+              className="space-y-6 data-[state=active]:animate-in data-[state=active]:fade-in-50 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-200 motion-reduce:transition-none motion-reduce:animate-none"
+            >
               <VenezuelaOrdersTabContent />
             </TabsContent>
-            <TabsContent value="china" className="space-y-6">
+            <TabsContent
+              value="china"
+              className="space-y-6 data-[state=active]:animate-in data-[state=active]:fade-in-50 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-200 motion-reduce:transition-none motion-reduce:animate-none"
+            >
               <ChinaOrdersTabContent />
             </TabsContent>
             {/* TabsContent cliente eliminado */}
