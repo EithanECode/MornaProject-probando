@@ -201,8 +201,8 @@ body, html, * {
 
 /* Prevent layout shift when vertical scrollbar appears/disappears */
 html {
-  /* Reserve gutter space so content width stays stable as pages become scrollable */
-  scrollbar-gutter: stable both-edges;
+  /* Reserve gutter space so content width stays stable as pages become scrollable (right side only) */
+  scrollbar-gutter: stable;
 }
 
 @layer base {
