@@ -1055,7 +1055,11 @@ export default function MisPedidosPage() {
       const file = e.target.files[0];
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
+        alert(t('admin.orders.alerts.onlyImages'));
+        return;
+      }
+      if (file.size > MAX_IMAGE_BYTES) {
+        alert(t('admin.orders.alerts.imageTooLarge', { maxMB: 50 }));
         return;
       }
       setNewOrderData({ ...newOrderData, productImage: file });
@@ -1083,7 +1087,11 @@ export default function MisPedidosPage() {
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
       
       if (!validTypes.includes(file.type)) {
-        alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
+        alert(t('admin.orders.alerts.onlyImages'));
+        return;
+      }
+      if (file.size > MAX_IMAGE_BYTES) {
+        alert(t('admin.orders.alerts.imageTooLarge', { maxMB: 50 }));
         return;
       }
       
@@ -1091,12 +1099,25 @@ export default function MisPedidosPage() {
     }
   };
 
+  // Límites y rangos de validación (paridad con Admin)
+  const NAME_MAX = 50;
+  const DESCRIPTION_MAX = 200;
+  const QTY_MIN = 1;
+  const QTY_MAX = 9999;
+  const MAX_IMAGE_BYTES = 50 * 1024 * 1024; // 50 MB
+  const BUDGET_MAX = 9_999_999;
+
   // Validaciones de campos
   const isValidQuantity = (value: any) => {
-    return /^[0-9]+$/.test(String(value)) && Number(value) > 0;
+    return /^[0-9]+$/.test(String(value)) && Number(value) >= QTY_MIN && Number(value) <= QTY_MAX;
   };
   const isValidBudget = (value: any) => {
-    return /^[0-9]+(\.[0-9]{1,2})?$/.test(String(value)) && Number(value) > 0;
+    const str = String(value);
+    if (!/^[0-9]+(\.[0-9]{1,2})?$/.test(str)) return false;
+    const [intPart] = str.split('.');
+    if (intPart.length > 7) return false;
+    const num = Number(str);
+    return num > 0 && num <= BUDGET_MAX;
   };
   const isValidUrl = (value: string) => {
     try {
@@ -1109,7 +1130,9 @@ export default function MisPedidosPage() {
   const canProceedToNext = () => {
     switch (currentStep) {
       case 1:
-        if (!newOrderData.productName || !newOrderData.description) return false;
+  if (!newOrderData.productName || !newOrderData.description) return false;
+  if (newOrderData.productName.length > NAME_MAX) return false;
+  if (newOrderData.description.length > DESCRIPTION_MAX) return false;
         if (!isValidQuantity(newOrderData.quantity)) return false;
         if (newOrderData.requestType === 'link') {
           if (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) return false;
@@ -1312,10 +1335,12 @@ export default function MisPedidosPage() {
                           <Input
                             id="productName"
                             value={newOrderData.productName}
-                            onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })}
+                            onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value.slice(0, NAME_MAX) })}
                             placeholder={t('client.recentOrders.newOrder.productNamePlaceholder')}
+                            maxLength={NAME_MAX}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
+                          <p className="text-xs text-slate-500 mt-1">{newOrderData.productName.length}/{NAME_MAX}</p>
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
@@ -1329,11 +1354,13 @@ export default function MisPedidosPage() {
                           <Textarea
                             id="description"
                             value={newOrderData.description}
-                            onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value })}
+                            onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value.slice(0, DESCRIPTION_MAX) })}
                             placeholder={t('client.recentOrders.newOrder.productDescriptionPlaceholder')}
                             rows={4}
+                            maxLength={DESCRIPTION_MAX}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
+                          <p className="text-xs text-slate-500 mt-1">{newOrderData.description.length}/{DESCRIPTION_MAX}</p>
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
@@ -1347,20 +1374,22 @@ export default function MisPedidosPage() {
                           <Input
                             id="quantity"
                             type="number"
-                            min="1"
+                            min={QTY_MIN}
+                            max={QTY_MAX}
                             value={newOrderData.quantity === 0 ? '' : newOrderData.quantity}
                             onChange={(e) => {
                               const val = e.target.value;
                               if (val === '') {
                                 setNewOrderData({ ...newOrderData, quantity: 0 });
                               } else if (/^[0-9]+$/.test(val)) {
-                                setNewOrderData({ ...newOrderData, quantity: parseInt(val) });
+                                const next = Math.min(QTY_MAX, Math.max(QTY_MIN, parseInt(val)));
+                                setNewOrderData({ ...newOrderData, quantity: next });
                               }
                             }}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
-                          {newOrderData.quantity <= 0 && (
-                            <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidQuantity')}</p>
+                          {(!isValidQuantity(newOrderData.quantity) || newOrderData.quantity <= 0) && (
+                            <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidQuantity')} ({QTY_MIN}–{QTY_MAX})</p>
                           )}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
@@ -1471,98 +1500,42 @@ export default function MisPedidosPage() {
                               <Image className="w-4 h-4 mr-2 text-blue-600" />
                               {t('client.recentOrders.newOrder.productImage')}
                             </Label>
-                            
                             {newOrderData.productImage ? (
-                              // Vista de imagen subida
-                              <div className="relative group">
-                                <div className="border-2 border-slate-200 rounded-xl overflow-hidden bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg">
-                                  <div className="relative">
-                                    <img
-                                      src={URL.createObjectURL(newOrderData.productImage)}
-                                      alt="Producto"
-                                      className="w-full h-48 object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                                      <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => document.getElementById('imageUpload')?.click()}
-                                          className="bg-white/90 hover:bg-white text-slate-700 border-0 shadow-lg"
-                                        >
-                                          <Upload className="w-4 h-4 mr-1" />
-                                          {t('client.recentOrders.newOrder.change')}
-                                        </Button>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => setNewOrderData({ ...newOrderData, productImage: undefined })}
-                                          className="bg-white/90 hover:bg-white text-red-600 border-0 shadow-lg hover:text-red-700"
-                                        >
-                                          <X className="w-4 h-4 mr-1" />
-                                          {t('client.recentOrders.newOrder.delete')}
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="p-4">
-                                    <p className="text-sm font-medium text-slate-800 truncate">
-                                      {newOrderData.productImage.name}
-                                    </p>
-                                    <p className="text-xs text-slate-500">
-                                      {(newOrderData.productImage.size / 1024 / 1024).toFixed(2)} MB
-                                    </p>
+                              <div className="relative">
+                                <div className="border-2 border-slate-200 rounded-xl overflow-hidden bg-white">
+                                  <img
+                                    src={URL.createObjectURL(newOrderData.productImage)}
+                                    alt={t('client.recentOrders.newOrder.productImage')}
+                                    className="w-full h-48 object-cover"
+                                  />
+                                  <div className="p-3 flex gap-2">
+                                    <Button variant="outline" size="sm" onClick={() => document.getElementById('imageUpload')?.click()}>
+                                      <Upload className="w-4 h-4 mr-1" />{t('client.recentOrders.newOrder.change')}
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setNewOrderData({ ...newOrderData, productImage: undefined })}
+                                      className="text-red-600"
+                                    >
+                                      <X className="w-4 h-4 mr-1" />{t('client.recentOrders.newOrder.delete')}
+                                    </Button>
                                   </div>
                                 </div>
-                                <input
-                                  id="imageUpload"
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handleImageUpload}
-                                  className="hidden"
-                                />
+                                <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                               </div>
                             ) : (
-                              // Vista de drag & drop
-                              <div 
-                                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 bg-white/80 backdrop-blur-sm group cursor-pointer ${
-                                  isDragOver 
-                                    ? 'border-blue-500 bg-blue-50 shadow-lg' 
-                                    : 'border-slate-300 hover:border-blue-400 hover:shadow-lg'
-                                }`}
-                                onMouseEnter={() => setIsFolderHovered(true)}
-                                onMouseLeave={() => setIsFolderHovered(false)}
+                              <div
+                                className={`border-2 border-dashed rounded-xl p-8 text-center bg-white ${isDragOver ? 'border-blue-500 bg-blue-50' : 'border-slate-300'}`}
                                 onDragOver={handleDragOver}
                                 onDragLeave={handleDragLeave}
                                 onDrop={handleDrop}
                               >
-                                <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                                  <Player
-                                    key={isFolderHovered ? 'folder-active' : 'folder-inactive'}
-                                    src={folderLottie}
-                                    className="w-6 h-6"
-                                    loop={false}
-                                    autoplay={isFolderHovered}
-                                  />
-                                </div>
-                                <p className="text-sm text-slate-600 mb-4 font-medium">
-                                  {t('client.recentOrders.newOrder.dragDrop')}
-                                </p>
-                                <Button
-                                  variant="outline"
-                                  onClick={() => document.getElementById('imageUpload')?.click()}
-                                  className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
-                                >
-                                  <Upload className="w-4 h-4 mr-2" />
-                                  {t('client.recentOrders.newOrder.selectImage')}
+                                <p className="text-sm text-slate-600 mb-4">{t('client.recentOrders.newOrder.dragDrop')}</p>
+                                <Button variant="outline" onClick={() => document.getElementById('imageUpload')?.click()}>
+                                  <Upload className="w-4 h-4 mr-2" />{t('client.recentOrders.newOrder.selectImage')}
                                 </Button>
-                                <input
-                                  id="imageUpload"
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handleImageUpload}
-                                  className="hidden"
-                                />
+                                <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                               </div>
                             )}
                           </div>
@@ -1670,20 +1643,23 @@ export default function MisPedidosPage() {
                         <Label htmlFor="estimatedBudget">{t('client.recentOrders.newOrder.estimatedBudget')}</Label>
                         <Input
                           id="estimatedBudget"
-                          type="number"
-                          min="0"
+                          type="text"
+                          inputMode="decimal"
                           value={newOrderData.estimatedBudget}
                           onChange={(e) => {
-                            const val = e.target.value;
-                            if (/^[0-9]*\.?[0-9]{0,2}$/.test(val)) {
-                              setNewOrderData({ ...newOrderData, estimatedBudget: val });
-                            }
+                            let val = e.target.value.replace(/,/g, '');
+                            if (!/^\d*(?:\.\d{0,2})?$/.test(val)) return;
+                            const [intPart = ''] = val.split('.');
+                            if (intPart.length > 7) return;
+                            const num = Number(val || '0');
+                            if (num > BUDGET_MAX) return;
+                            setNewOrderData({ ...newOrderData, estimatedBudget: val });
                           }}
                           placeholder={t('client.recentOrders.newOrder.estimatedBudgetPlaceholder')}
                           className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                         />
                         {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
-                          <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidBudget')}</p>
+                          <p className="text-xs text-red-500">{t('client.recentOrders.newOrder.invalidBudget')} {t('client.recentOrders.newOrder.max7DigitsHint')}</p>
                         )}
                       </div>
                     </div>
