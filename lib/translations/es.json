@@ -1657,6 +1657,18 @@
             "noneSubtitle": "Crea un contenedor desde la pestaña Contenedores para empaquetar.",
             "select": "Seleccionar"
           },
+          "sendContainer": {
+            "title": "Enviar contenedor #CONT-{{id}}",
+            "subtitle": "Agrega la información de envío del contenedor",
+            "trackingLabel": "Número de seguimiento",
+            "trackingPlaceholder": "Ingrese el número de seguimiento",
+            "courierLabel": "Empresa de encomienda",
+            "courierPlaceholder": "Ingrese la empresa de encomienda",
+            "etaLabel": "Fecha estimada de llegada",
+            "cancel": "Cancelar",
+            "confirm": "Enviar"
+
+          },
           "createContainer": {
             "title": "Crear contenedor",
             "question": "¿Quieres crear un nuevo contenedor?",
@@ -2683,6 +2695,18 @@
           "containerNameLabel": "Nombre del contenedor",
           "containerNamePlaceholder": "Ingresa el nombre del contenedor"
         },
+        "sendContainer": {
+            "title": "Enviar contenedor #CONT-{{id}}",
+            "subtitle": "Agrega la información de envío del contenedor",
+            "trackingNumber": "Número de seguimiento",
+            "trackingNumberPlaceholder": "Ingrese el número de seguimiento",
+            "courierCompany": "Empresa de encomienda",
+            "courierCompanyPlaceholder": "Ingrese la empresa de encomienda",
+            "etaDate": "Fecha estimada de llegada",
+            "cancel": "Cancelar",
+            "confirm": "Enviar",
+            "sending": "Enviando..."
+          },
         "containerBoxes": {
           "title": "Cajas del contenedor #CONT-{{id}}",
           "loading": "Cargando cajas...",
@@ -2778,7 +2802,8 @@
         "orderPdfMissingDesc": "No hay PDF disponible para este pedido.",
         "boxDeleteIdInvalidTitle": "No se pudo eliminar",
         "boxDeleteIdInvalidDesc": "ID de caja inválido.",
-        "containerDeleteIdInvalidDesc": "ID de contenedor inválido."
+        "containerDeleteIdInvalidDesc": "ID de contenedor inválido.",
+        "containerSentTitle": "Contenedor enviado"
       }
     }
   }
