@@ -551,7 +551,7 @@
       },
       "trackingModal": {
         "trackingNumber": "追踪号",
-  "carrier": "快递公司",
+        "carrier": "快递公司",
         "estimatedDelivery": "预计交付",
         "currentStatus": "当前状态",
         "historyTitle": "追踪历史",
@@ -559,7 +559,7 @@
           "created": "订单已创建",
           "processing": "处理中",
           "shipped": "已发货",
-          "in_transit": "运输中",
+          "in-transit": "运输中",
           "customs": "海关处理中",
           "delivered": "已交付"
         }
@@ -1204,6 +1204,8 @@
           "sendContainer": {
             "title": "发送集装箱 #CONT-{{id}}",
             "subtitle": "添加该集装箱的运输信息",
+            "trackingLinkLabel": "追踪链接",
+            "trackingLinkPlaceholder": "输入跟踪链接",
             "trackingLabel": "追踪编号",
             "trackingPlaceholder": "输入追踪编号",
             "courierLabel": "快递公司",
@@ -2338,6 +2340,8 @@
       "sendContainer": {
             "title": "发送集装箱 #CONT-{{id}}",
             "subtitle": "添加该集装箱的运输信息",
+            "trackingLink": "追踪链接",
+            "trackingLinkPlaceholder": "输入追踪链接",
             "trackingNumber": "追踪编号",
             "trackingNumberPlaceholder": "输入追踪编号",
             "courierCompany": "快递公司",

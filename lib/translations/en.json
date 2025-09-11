@@ -553,7 +553,7 @@
       },
       "trackingModal": {
         "trackingNumber": "Tracking number",
-  "carrier": "Courier company",
+        "carrier": "Courier company",
         "estimatedDelivery": "Estimated delivery",
         "currentStatus": "Current status",
         "historyTitle": "Tracking history",
@@ -561,7 +561,7 @@
           "created": "Order created",
           "processing": "Processing",
           "shipped": "Shipped",
-          "in_transit": "In transit",
+          "in-transit": "In transit",
           "customs": "In customs",
           "delivered": "Delivered"
         }
@@ -1206,6 +1206,8 @@
           "sendContainer": {
             "title": "Send container #CONT-{{id}}",
             "subtitle": "Add the container's shipping information",
+            "trackingLinkLabel": "Tracking link",
+            "trackingLinkPlaceholder": "Enter the tracking link",
             "trackingLabel": "Tracking number",
             "trackingPlaceholder": "Enter the tracking number",
             "courierLabel": "Courier company",
@@ -2359,6 +2361,8 @@
       "sendContainer": {
             "title": "Send container #CONT-{{id}}",
             "subtitle": "Add the container's shipping information",
+            "trackingLink": "Tracking link",
+            "trackingLinkPlaceholder": "Enter the tracking link",
             "trackingNumber": "Tracking number",
             "trackingNumberPlaceholder": "Enter the tracking number",
             "courierCompany": "Courier company",

@@ -55,6 +55,7 @@ import {
   X,
   Filter
   ,Download
+  ,QrCode
 } from 'lucide-react';
 
 // Rutas de animaciones Lottie (desde /public)
@@ -86,6 +87,11 @@ interface Order {
     url: string;
     label: string;
   }>;
+  // Campos de tracking del contenedor relacionado (si aplica)
+  tracking_number?: string | null;
+  tracking_company?: string | null;
+  arrive_date?: string | null;
+  tracking_link?: string | null; // NUEVO: link de tracking del contenedor
 }
 
 interface NewOrderData {
@@ -215,6 +221,11 @@ export default function MisPedidosPage() {
 
   // Estados de la página
   const [orders, setOrders] = useState<Order[]>([]);
+  // Variables solicitadas: mapas por id de pedido -> dato de contenedor
+  const [tracking_number, setTrackingNumberMap] = useState<Record<string, string | null>>({});
+  const [tracking_company, setTrackingCompanyMap] = useState<Record<string, string | null>>({});
+  const [arrive_date, setArriveDateMap] = useState<Record<string, string | null>>({});
+  const [tracking_link, setTrackingLinkMap] = useState<Record<string, string | null>>({}); // NUEVO mapa para link de tracking
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -222,6 +233,7 @@ export default function MisPedidosPage() {
   // Estado del modal de seguimiento
   const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
   const [selectedTrackingOrder, setSelectedTrackingOrder] = useState<TrackingOrder | null>(null);
+  const [isTrackingQRModalOpen, setIsTrackingQRModalOpen] = useState(false); // modal separado para QR del tracking link
 
   // Estados del modal de nuevo pedido
   const [isNewOrderModalOpen, setIsNewOrderModalOpen] = useState(false);
@@ -316,15 +328,89 @@ export default function MisPedidosPage() {
     try {
       const { data, error } = await supabase
         .from('orders')
-  .select('id, productName, description, estimatedBudget, totalQuote, state, created_at, pdfRoutes, quantity')
+  .select('id, productName, description, estimatedBudget, totalQuote, state, created_at, pdfRoutes, quantity, box_id')
         .eq('client_id', clientId)
         .order('created_at', { ascending: false });
       if (error) {
         console.error('Error cargando pedidos:', error);
         return;
       }
+      // Obtener mapas de tracking desde API (service role) para evitar problemas de RLS
+      let tnMap: Record<string, string | null> = {};
+      let tcMap: Record<string, string | null> = {};
+      let adMap: Record<string, string | null> = {};
+      let tlMap: Record<string, string | null> = {}; // tracking_link
+      try {
+        const res = await fetch(`/cliente/mis-pedidos/api/tracking?client_id=${encodeURIComponent(clientId)}`, { cache: 'no-store' });
+        if (res.ok) {
+          const json = await res.json();
+          tnMap = json?.tnMap || {};
+          tcMap = json?.tcMap || {};
+          adMap = json?.adMap || {};
+          tlMap = json?.tlMap || {};
+        } else {
+          console.warn('API tracking no OK:', res.status);
+        }
+      } catch (e) {
+        console.warn('Fallo llamando API tracking:', e);
+      }
+
+      // Fallback: si la API no devolvió nada útil, intentar desde el cliente (puede fallar por RLS)
+    const needsFallback = Object.keys(tnMap).length === 0 && Object.keys(tcMap).length === 0 && Object.keys(adMap).length === 0 && Object.keys(tlMap).length === 0;
+      if (needsFallback && (data || []).length > 0) {
+        try {
+          const boxIds = (data || [])
+            .map((row: any) => row.box_id)
+            .filter((v: any) => v !== null && v !== undefined);
+
+          let boxToContainer: Record<string | number, string | number | null> = {};
+          if (boxIds.length > 0) {
+            const { data: boxesRows } = await supabase
+              .from('boxes')
+              .select('box_id, container_id')
+              .in('box_id', boxIds as any);
+            (boxesRows || []).forEach((b: any) => {
+              if (b?.box_id !== undefined) boxToContainer[b.box_id] = b?.container_id ?? null;
+            });
+          }
+
+          const containerIds = Object.values(boxToContainer).filter((v) => v !== null && v !== undefined);
+          type ContainerTrack = { tracking_number?: string | null; tracking_company?: string | null; arrive_date?: string | null; ['arrive-data']?: string | null; tracking_link?: string | null };
+          const containerInfo: Record<string | number, ContainerTrack> = {};
+          if (containerIds.length > 0) {
+            const { data: containersRows } = await supabase
+              .from('containers')
+              .select('container_id, tracking_number, tracking_company, arrive_date, tracking_link')
+              .in('container_id', containerIds as any);
+            (containersRows || []).forEach((c: any) => {
+              const aid = c?.container_id;
+              if (aid !== undefined) containerInfo[aid] = c as ContainerTrack;
+            });
+          }
+
+          (data || []).forEach((row: any) => {
+            const containerId = row.box_id != null ? (boxToContainer[row.box_id] ?? null) : null;
+            const cInfo = containerId != null ? containerInfo[containerId] : undefined;
+            const arrive = cInfo?.arrive_date ?? (cInfo as any)?.['arrive-data'] ?? null;
+            const oid = String(row.id);
+            tnMap[oid] = cInfo?.tracking_number ?? null;
+            tcMap[oid] = cInfo?.tracking_company ?? null;
+            adMap[oid] = arrive;
+            tlMap[oid] = cInfo?.tracking_link ?? null;
+          });
+        } catch (fallbackErr) {
+          console.warn('Fallback tracking join falló:', fallbackErr);
+        }
+      }
+
       const mapped: Order[] = (data || []).map((row: any) => {
-        const amountNumber = (row.totalQuote ?? row.estimatedBudget ?? 0) as number;
+  const amountNumber = (row.totalQuote ?? row.estimatedBudget ?? 0) as number;
+        const oid = String(row.id);
+  const tn = tnMap[oid] ?? null;
+  const tc = tcMap[oid] ?? null;
+  const ad = adMap[oid] ?? null;
+        const tl = tlMap[oid] ?? null;
+
         return {
           id: String(row.id),
           product: row.productName || 'Pedido',
@@ -339,10 +425,19 @@ export default function MisPedidosPage() {
           estimatedBudget: typeof row.estimatedBudget === 'number' ? row.estimatedBudget : (row.estimatedBudget ? Number(row.estimatedBudget) : null),
           totalQuote: typeof row.totalQuote === 'number' ? row.totalQuote : (row.totalQuote ? Number(row.totalQuote) : null),
           stateNum: typeof row.state === 'number' ? row.state : (row.state ? Number(row.state) : undefined),
-          documents: row.pdfRoutes ? [{ type: 'link' as const, url: row.pdfRoutes, label: 'Resumen PDF' }] : []
+          documents: row.pdfRoutes ? [{ type: 'link' as const, url: row.pdfRoutes, label: 'Resumen PDF' }] : [],
+          tracking_number: tn,
+          tracking_company: tc,
+          arrive_date: ad,
+      tracking_link: tl,
         };
       });
       setOrders(mapped);
+      // Exponer variables solicitadas
+      setTrackingNumberMap(tnMap);
+      setTrackingCompanyMap(tcMap);
+      setArriveDateMap(adMap);
+    setTrackingLinkMap(tlMap);
     } catch (e) {
       console.error('Excepción cargando pedidos:', e);
     }
@@ -440,7 +535,7 @@ export default function MisPedidosPage() {
       { id: '1', key: 'created' },
       { id: '2', key: 'processing' },
       { id: '3', key: 'shipped' },
-  { id: '4', key: 'in_transit' },
+      { id: '4', key: 'in-transit' },
       { id: '5', key: 'customs' },
       { id: '6', key: 'delivered' },
     ];
@@ -486,30 +581,32 @@ export default function MisPedidosPage() {
   const closeTrackingModal = () => {
     setIsTrackingModalOpen(false);
     setTimeout(() => setSelectedTrackingOrder(null), 300);
-  };
-
-  // Funciones helper
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm transition-colors hover:from-yellow-50 hover:to-yellow-100 hover:ring-1 hover:ring-yellow-200 dark:hover:ring-yellow-500/20 hover:brightness-110 dark:hover:brightness-110';
-      case 'quoted': return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm transition-colors hover:from-green-50 hover:to-green-100 hover:ring-1 hover:ring-green-200 dark:hover:ring-green-500/20 hover:brightness-110 dark:hover:brightness-110';
-      case 'processing': return 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm transition-colors hover:from-blue-50 hover:to-blue-100 hover:ring-1 hover:ring-blue-200 dark:hover:ring-blue-500/20 hover:brightness-110 dark:hover:brightness-110';
-      case 'shipped': return 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border-purple-300 shadow-sm transition-colors hover:from-purple-50 hover:to-purple-100 hover:ring-1 hover:ring-purple-200 dark:hover:ring-purple-500/20 hover:brightness-110 dark:hover:brightness-110';
-      case 'delivered': return 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-sm transition-colors hover:from-emerald-50 hover:to-emerald-100 hover:ring-1 hover:ring-emerald-200 dark:hover:ring-emerald-500/20 hover:brightness-110 dark:hover:brightness-110';
-      case 'cancelled': return 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm transition-colors hover:from-red-50 hover:to-red-100 hover:ring-1 hover:ring-red-200 dark:hover:ring-red-500/20 hover:brightness-110 dark:hover:brightness-110';
-      default: return 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-sm transition-colors hover:from-slate-50 hover:to-slate-100 hover:ring-1 hover:ring-slate-200 dark:hover:ring-slate-500/20 hover:brightness-110 dark:hover:brightness-110';
-    }
+  setIsTrackingQRModalOpen(false);
   };
 
   const getStatusText = (status: string) => {
     return t(`client.recentOrders.statuses.${status}`) || status;
   };
 
+
   const getProgressColor = (progress: number) => {
     if (progress >= 80) return 'bg-gradient-to-r from-green-500 to-emerald-500';
     if (progress >= 50) return 'bg-gradient-to-r from-blue-500 to-indigo-500';
     if (progress >= 25) return 'bg-gradient-to-r from-yellow-500 to-orange-500';
     return 'bg-gradient-to-r from-slate-400 to-slate-500';
+  };
+
+  // Color de badge basado en status (se usa en lista y modal detalles)
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm';
+      case 'quoted': return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm';
+      case 'processing': return 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm';
+      case 'shipped': return 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border-purple-300 shadow-sm';
+      case 'delivered': return 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-sm';
+      case 'cancelled': return 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm';
+      default: return 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-sm';
+    }
   };
 
   // Métodos de pago disponibles
@@ -2121,19 +2218,20 @@ export default function MisPedidosPage() {
                   </Button>
                 </div>
 
-                {/* Información del tracking */}
+                {/* Información del tracking del contenedor */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="space-y-2">
                     <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.trackingNumber')}</p>
-                    <p className="font-mono font-medium">{selectedTrackingOrder.trackingNumber}</p>
+                    <p className="font-mono font-medium">{tracking_number[String(selectedTrackingOrder.id)] || '—'}</p>
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.carrier')}</p>
-                    <p className="font-medium">{selectedTrackingOrder.carrier}</p>
+                    <p className="font-medium">{tracking_company[String(selectedTrackingOrder.id)] || '—'
+}</p>
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.estimatedDelivery')}</p>
-                    <p className="font-medium">{selectedTrackingOrder.estimatedDelivery}</p>
+                    <p className="font-medium">{arrive_date[String(selectedTrackingOrder.id)] || '—'}</p>
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.currentStatus')}</p>
@@ -2174,6 +2272,47 @@ export default function MisPedidosPage() {
                     ))}
                   </div>
                 </div>
+
+                {/* Tracking Link (al final del modal) */}
+                {(() => {
+                  const link = tracking_link[String(selectedTrackingOrder.id)];
+                  if (!link) return null;
+                  let valid = true;
+                  try { new URL(link); } catch { valid = false; }
+                  return (
+                    <div className="mt-8 pt-4 border-t">
+                      <div className="flex items-start gap-4 flex-col sm:flex-row sm:items-center">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold mb-1">Link de Tracking</h3>
+                          {valid ? (
+                            <a
+                              href={link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline break-all text-sm"
+                            >
+                              {link}
+                            </a>
+                          ) : (
+                            <p className="text-slate-500 break-all text-sm">{link}</p>
+                          )}
+                        </div>
+                        {valid && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsTrackingQRModalOpen(true)}
+                            className="flex items-center gap-2 border-blue-300 text-blue-600 hover:bg-blue-50"
+                          >
+                            <QrCode className="w-4 h-4" />
+                            QR
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
@@ -2362,6 +2501,57 @@ export default function MisPedidosPage() {
           </DialogContent>
         </Dialog>
       </main>
+      {/* Modal QR Tracking Link (reinsertado) */}
+      {isTrackingQRModalOpen && selectedTrackingOrder && (
+        <div
+          className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in-up"
+          onClick={() => setIsTrackingQRModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 md:p-8 shadow-2xl border border-slate-200 w-[90%] max-w-sm relative animate-fade-in-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-2 right-2 text-slate-500 hover:text-slate-700 text-sm"
+              onClick={() => setIsTrackingQRModalOpen(false)}
+              aria-label="Cerrar"
+            >
+              ✕
+            </button>
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <QrCode className="w-5 h-5 text-blue-600" /> Código QR Tracking
+            </h3>
+            {(() => {
+              const link = tracking_link[String(selectedTrackingOrder.id)];
+              if (!link) return <p className="text-sm text-slate-500">No disponible.</p>;
+              try { new URL(link); } catch { return <p className="text-sm text-slate-500 break-all">{link}</p>; }
+              const QR = require('react-qr-code').default;
+              return (
+                <div className="flex flex-col items-center gap-4">
+                  <div className="p-4 bg-white border rounded-xl shadow-md">
+                    <QR value={link} size={260} />
+                  </div>
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline break-all text-xs text-center"
+                  >
+                    {link}
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => { navigator.clipboard?.writeText(link).catch(()=>{}); }}
+                    className="text-xs px-3 py-1 rounded-md border border-slate-300 hover:bg-slate-50 text-slate-600"
+                  >
+                    Copiar enlace
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
       
       <style jsx>{`
         @keyframes slideInFromRight {

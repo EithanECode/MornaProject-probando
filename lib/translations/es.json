@@ -517,7 +517,7 @@
       },
       "trackingModal": {
         "trackingNumber": "Número de Seguimiento",
-  "carrier": "Empresa de encomienda",
+        "carrier": "Empresa de encomienda",
         "estimatedDelivery": "Entrega estimada",
         "currentStatus": "Estado actual",
         "historyTitle": "Historial de seguimiento",
@@ -525,7 +525,7 @@
           "created": "Pedido creado",
           "processing": "En procesamiento",
           "shipped": "Enviado",
-          "in_transit": "En tránsito",
+          "in-transit": "En tránsito",
           "customs": "En aduana",
           "delivered": "Entregado"
         }
@@ -1660,6 +1660,8 @@
           "sendContainer": {
             "title": "Enviar contenedor #CONT-{{id}}",
             "subtitle": "Agrega la información de envío del contenedor",
+            "trackingLinkLabel": "Link de seguimiento",
+            "trackingLinkPlaceholder": "Ingrese el link de seguimiento",
             "trackingLabel": "Número de seguimiento",
             "trackingPlaceholder": "Ingrese el número de seguimiento",
             "courierLabel": "Empresa de encomienda",
@@ -2698,6 +2700,8 @@
         "sendContainer": {
             "title": "Enviar contenedor #CONT-{{id}}",
             "subtitle": "Agrega la información de envío del contenedor",
+            "trackingLink": "Link de seguimiento",
+            "trackingLinkPlaceholder": "Ingrese el link de seguimiento",
             "trackingNumber": "Número de seguimiento",
             "trackingNumberPlaceholder": "Ingrese el número de seguimiento",
             "courierCompany": "Empresa de encomienda",
