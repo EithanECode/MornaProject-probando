@@ -961,6 +961,10 @@ export default function MisPedidosPage() {
         alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
         return;
       }
+      if (file.size > MAX_IMAGE_BYTES) {
+        alert('La imagen no debe pesar más de 50 MB.');
+        return;
+      }
       setNewOrderData({ ...newOrderData, productImage: file });
     }
   };
@@ -989,14 +993,25 @@ export default function MisPedidosPage() {
         alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
         return;
       }
+      if (file.size > MAX_IMAGE_BYTES) {
+        alert('La imagen no debe pesar más de 50 MB.');
+        return;
+      }
       
       setNewOrderData({ ...newOrderData, productImage: file });
     }
   };
 
+  // Límites y rangos de validación (paridad con Admin)
+  const NAME_MAX = 50;
+  const DESCRIPTION_MAX = 200;
+  const QTY_MIN = 1;
+  const QTY_MAX = 9999;
+  const MAX_IMAGE_BYTES = 50 * 1024 * 1024; // 50 MB
+
   // Validaciones de campos
   const isValidQuantity = (value: any) => {
-    return /^[0-9]+$/.test(String(value)) && Number(value) > 0;
+    return /^[0-9]+$/.test(String(value)) && Number(value) >= QTY_MIN && Number(value) <= QTY_MAX;
   };
   const isValidBudget = (value: any) => {
     return /^[0-9]+(\.[0-9]{1,2})?$/.test(String(value)) && Number(value) > 0;
@@ -1012,7 +1027,9 @@ export default function MisPedidosPage() {
   const canProceedToNext = () => {
     switch (currentStep) {
       case 1:
-        if (!newOrderData.productName || !newOrderData.description) return false;
+  if (!newOrderData.productName || !newOrderData.description) return false;
+  if (newOrderData.productName.length > NAME_MAX) return false;
+  if (newOrderData.description.length > DESCRIPTION_MAX) return false;
         if (!isValidQuantity(newOrderData.quantity)) return false;
         if (newOrderData.requestType === 'link') {
           if (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) return false;
@@ -1215,10 +1232,12 @@ export default function MisPedidosPage() {
                           <Input
                             id="productName"
                             value={newOrderData.productName}
-                            onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })}
+                            onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value.slice(0, NAME_MAX) })}
                             placeholder={t('client.recentOrders.newOrder.productNamePlaceholder')}
+                            maxLength={NAME_MAX}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
+                          <p className="text-xs text-slate-500 mt-1">{newOrderData.productName.length}/{NAME_MAX}</p>
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
@@ -1232,11 +1251,13 @@ export default function MisPedidosPage() {
                           <Textarea
                             id="description"
                             value={newOrderData.description}
-                            onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value })}
+                            onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value.slice(0, DESCRIPTION_MAX) })}
                             placeholder={t('client.recentOrders.newOrder.productDescriptionPlaceholder')}
                             rows={4}
+                            maxLength={DESCRIPTION_MAX}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
+                          <p className="text-xs text-slate-500 mt-1">{newOrderData.description.length}/{DESCRIPTION_MAX}</p>
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
@@ -1250,20 +1271,22 @@ export default function MisPedidosPage() {
                           <Input
                             id="quantity"
                             type="number"
-                            min="1"
+                            min={QTY_MIN}
+                            max={QTY_MAX}
                             value={newOrderData.quantity === 0 ? '' : newOrderData.quantity}
                             onChange={(e) => {
                               const val = e.target.value;
                               if (val === '') {
                                 setNewOrderData({ ...newOrderData, quantity: 0 });
                               } else if (/^[0-9]+$/.test(val)) {
-                                setNewOrderData({ ...newOrderData, quantity: parseInt(val) });
+                                const next = Math.min(QTY_MAX, Math.max(QTY_MIN, parseInt(val)));
+                                setNewOrderData({ ...newOrderData, quantity: next });
                               }
                             }}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
-                          {newOrderData.quantity <= 0 && (
-                            <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidQuantity')}</p>
+                          {(!isValidQuantity(newOrderData.quantity) || newOrderData.quantity <= 0) && (
+                            <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidQuantity')} ({QTY_MIN}–{QTY_MAX})</p>
                           )}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>

@@ -492,6 +492,10 @@ export default function PedidosPage() {
         alert(t('admin.orders.alerts.onlyImages'));
         return;
       }
+      if (file.size > MAX_IMAGE_BYTES) {
+        alert('La imagen no debe pesar más de 50 MB.');
+        return;
+      }
       setNewOrderData((prev) => ({ ...prev, productImage: file }));
     }
   };
@@ -505,12 +509,16 @@ export default function PedidosPage() {
         alert(t('admin.orders.alerts.onlyImages'));
         return;
       }
+      if (file.size > MAX_IMAGE_BYTES) {
+        alert('La imagen no debe pesar más de 50 MB.');
+        return;
+      }
       setNewOrderData((prev) => ({ ...prev, productImage: file }));
     }
   };
 
   // Validaciones
-  const isValidQuantity = (value: any) => /^[0-9]+$/.test(String(value)) && Number(value) > 0;
+  const isValidQuantity = (value: any) => /^[0-9]+$/.test(String(value)) && Number(value) >= QTY_MIN && Number(value) <= QTY_MAX;
   const isValidBudget = (value: any) => /^[0-9]+(\.[0-9]{1,2})?$/.test(String(value)) && Number(value) > 0;
   const isValidUrl = (value: string) => { try { new URL(value); return true; } catch { return false; } };
 
@@ -537,7 +545,9 @@ export default function PedidosPage() {
     switch (currentStep) {
       case 1:
         if (!newOrderData.client_id) return false;
-        if (!newOrderData.productName || !newOrderData.description) return false;
+  if (!newOrderData.productName || !newOrderData.description) return false;
+  if (newOrderData.productName.length > NAME_MAX) return false;
+  if (newOrderData.description.length > DESCRIPTION_MAX) return false;
         if (!isValidQuantity(newOrderData.quantity)) return false;
         if (newOrderData.requestType === 'link') {
           if (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) return false;
@@ -1033,7 +1043,7 @@ export default function PedidosPage() {
       return (
         <tr 
           key={order.id}
-          className={`border-b border-slate-100 hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-all duration-200 cursor-pointer group text-slate-900 dark:text-white`}
+          className={`border-b border-slate-100 hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-all duration-200 group text-slate-900 dark:text-white`}
         >
           <td className="py-4 px-6">
             <div className="flex items-center space-x-3 min-w-[11rem]">
@@ -1089,6 +1099,13 @@ export default function PedidosPage() {
       );
     })
   ), [paginatedOrders, statusConfig, assignedConfig, t]);
+
+  // ====== Validaciones recomendadas (admin crear pedido) ======
+  const NAME_MAX = 50;
+  const DESCRIPTION_MAX = 200;
+  const QTY_MIN = 1;
+  const QTY_MAX = 9999;
+  const MAX_IMAGE_BYTES = 50 * 1024 * 1024; // 50 MB
 
   // Sliding tab indicator helpers
   const activeTabIndex = activeTab === 'admin' ? 0 : activeTab === 'venezuela' ? 1 : 2;
@@ -1437,7 +1454,13 @@ export default function PedidosPage() {
                     <Package className="w-4 h-4 mr-2 text-blue-600" />
 {t('admin.orders.form.productNameLabel')}
                   </Label>
-                  <Input value={newOrderData.productName} onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })} placeholder={t('admin.orders.form.productNamePlaceholder')} />
+                  <Input 
+                    value={newOrderData.productName}
+                    onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value.slice(0, NAME_MAX) })}
+                    placeholder={t('admin.orders.form.productNamePlaceholder')}
+                    maxLength={NAME_MAX}
+                  />
+                  <p className="text-xs text-slate-500 mt-1">{newOrderData.productName.length}/{NAME_MAX}</p>
                 </div>
 
                 <div className="space-y-3">
@@ -1445,7 +1468,14 @@ export default function PedidosPage() {
                     <FileText className="w-4 h-4 mr-2 text-blue-600" />
 {t('admin.orders.form.productDescription')}
                   </Label>
-                  <Textarea value={newOrderData.description} onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value })} rows={4} placeholder={t('admin.orders.form.productDescriptionPlaceholder')} />
+                  <Textarea 
+                    value={newOrderData.description}
+                    onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value.slice(0, DESCRIPTION_MAX) })}
+                    rows={4}
+                    placeholder={t('admin.orders.form.productDescriptionPlaceholder')}
+                    maxLength={DESCRIPTION_MAX}
+                  />
+                  <p className="text-xs text-slate-500 mt-1">{newOrderData.description.length}/{DESCRIPTION_MAX}</p>
                 </div>
 
                 <div className="space-y-3">
@@ -1453,10 +1483,23 @@ export default function PedidosPage() {
                     <Hash className="w-4 h-4 mr-2 text-blue-600" />
 {t('admin.orders.form.quantity')}
                   </Label>
-                  <Input type="number" min="1" value={newOrderData.quantity === 0 ? '' : newOrderData.quantity} onChange={(e) => {
-                    const val = e.target.value; if (val === '') setNewOrderData({ ...newOrderData, quantity: 0 }); else if (/^[0-9]+$/.test(val)) setNewOrderData({ ...newOrderData, quantity: parseInt(val) });
-                  }} />
-                  {newOrderData.quantity <= 0 && (<p className="text-xs text-red-500">La cantidad debe ser mayor que cero.</p>)}
+                  <Input 
+                    type="number" 
+                    min={QTY_MIN} 
+                    max={QTY_MAX}
+                    value={newOrderData.quantity === 0 ? '' : newOrderData.quantity}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '') { setNewOrderData({ ...newOrderData, quantity: 0 }); return; }
+                      if (/^[0-9]+$/.test(val)) {
+                        const next = Math.min(QTY_MAX, Math.max(QTY_MIN, parseInt(val)));
+                        setNewOrderData({ ...newOrderData, quantity: next });
+                      }
+                    }}
+                  />
+                  {(!isValidQuantity(newOrderData.quantity) || newOrderData.quantity <= 0) && (
+                    <p className="text-xs text-red-500">Cantidad válida: {QTY_MIN}–{QTY_MAX}.</p>
+                  )}
                 </div>
 
                 {/* Tipo de Solicitud */}
