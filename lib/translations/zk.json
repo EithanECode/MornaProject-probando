@@ -544,7 +544,7 @@
       },
       "trackingModal": {
         "trackingNumber": "追踪号",
-        "carrier": "承运商",
+  "carrier": "快递公司",
         "estimatedDelivery": "预计交付",
         "currentStatus": "当前状态",
         "historyTitle": "追踪历史",

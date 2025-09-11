@@ -510,7 +510,7 @@
       },
       "trackingModal": {
         "trackingNumber": "Número de Seguimiento",
-        "carrier": "Transportista",
+  "carrier": "Empresa de encomienda",
         "estimatedDelivery": "Entrega estimada",
         "currentStatus": "Estado actual",
         "historyTitle": "Historial de seguimiento",
@@ -1009,7 +1009,7 @@
     },
     "trackingModal": {
       "trackingNumber": "Número de Seguimiento",
-      "carrier": "Transportista",
+  "carrier": "Empresa de encomienda",
       "estimatedDelivery": "Entrega estimada",
       "currentStatus": "Estado actual",
       "historyTitle": "Historial de seguimiento",
