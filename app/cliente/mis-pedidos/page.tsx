@@ -1008,13 +1008,19 @@ export default function MisPedidosPage() {
   const QTY_MIN = 1;
   const QTY_MAX = 9999;
   const MAX_IMAGE_BYTES = 50 * 1024 * 1024; // 50 MB
+  const BUDGET_MAX = 9_999_999;
 
   // Validaciones de campos
   const isValidQuantity = (value: any) => {
     return /^[0-9]+$/.test(String(value)) && Number(value) >= QTY_MIN && Number(value) <= QTY_MAX;
   };
   const isValidBudget = (value: any) => {
-    return /^[0-9]+(\.[0-9]{1,2})?$/.test(String(value)) && Number(value) > 0;
+    const str = String(value);
+    if (!/^[0-9]+(\.[0-9]{1,2})?$/.test(str)) return false;
+    const [intPart] = str.split('.');
+    if (intPart.length > 7) return false;
+    const num = Number(str);
+    return num > 0 && num <= BUDGET_MAX;
   };
   const isValidUrl = (value: string) => {
     try {
@@ -1596,18 +1602,24 @@ export default function MisPedidosPage() {
                         <Label htmlFor="estimatedBudget">{t('client.recentOrders.newOrder.estimatedBudget')}</Label>
                         <Input
                           id="estimatedBudget"
-                          type="number"
-                          min="0"
+                          type="text"
+                          inputMode="decimal"
                           value={newOrderData.estimatedBudget}
                           onChange={(e) => {
-                            const val = e.target.value;
-                            if (/^[0-9]*\.?[0-9]{0,2}$/.test(val)) {
-                              setNewOrderData({ ...newOrderData, estimatedBudget: val });
-                            }
+                            let val = e.target.value.replace(/,/g, '');
+                            if (!/^\d*(?:\.\d{0,2})?$/.test(val)) return;
+                            const [intPart = ''] = val.split('.');
+                            if (intPart.length > 7) return;
+                            const num = Number(val || '0');
+                            if (num > BUDGET_MAX) return;
+                            setNewOrderData({ ...newOrderData, estimatedBudget: val });
                           }}
                           placeholder={t('client.recentOrders.newOrder.estimatedBudgetPlaceholder')}
                           className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                         />
+                        {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
+                          <p className="text-xs text-red-500">{t('client.recentOrders.newOrder.invalidBudget')} (máx 7 cifras)</p>
+                        )}
                         {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
                           <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidBudget')}</p>
                         )}

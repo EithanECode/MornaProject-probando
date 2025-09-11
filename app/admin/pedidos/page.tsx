@@ -519,7 +519,15 @@ export default function PedidosPage() {
 
   // Validaciones
   const isValidQuantity = (value: any) => /^[0-9]+$/.test(String(value)) && Number(value) >= QTY_MIN && Number(value) <= QTY_MAX;
-  const isValidBudget = (value: any) => /^[0-9]+(\.[0-9]{1,2})?$/.test(String(value)) && Number(value) > 0;
+  const BUDGET_MAX = 9_999_999;
+  const isValidBudget = (value: any) => {
+    const str = String(value);
+    if (!/^[0-9]+(\.[0-9]{1,2})?$/.test(str)) return false;
+    const [intPart] = str.split('.');
+    if (intPart.length > 7) return false;
+    const num = Number(str);
+    return num > 0 && num <= BUDGET_MAX;
+  };
   const isValidUrl = (value: string) => { try { new URL(value); return true; } catch { return false; } };
 
   // Sanitizar segmentos de ruta/nombre para Storage (evita espacios, tildes, barras y caracteres no seguros)
@@ -1614,10 +1622,20 @@ export default function PedidosPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="estimatedBudget">{t('admin.orders.form.estimatedBudgetUsd')}</Label>
-                  <Input id="estimatedBudget" type="number" min="0" value={newOrderData.estimatedBudget} onChange={(e) => {
-                    const val = e.target.value; if (/^[0-9]*\.?[0-9]{0,2}$/.test(val)) { setNewOrderData({ ...newOrderData, estimatedBudget: val }); }
+                  <Input id="estimatedBudget" type="text" inputMode="decimal" value={newOrderData.estimatedBudget} onChange={(e) => {
+                    let val = e.target.value.replace(/,/g, '');
+                    // Allow only digits and optional decimal point with up to 2 decimals
+                    if (!/^\d*(?:\.\d{0,2})?$/.test(val)) return;
+                    const [intPart = '', dec = ''] = val.split('.');
+                    if (intPart.length > 7) return; // limit to 7 integer digits
+                    // Prevent numbers greater than max
+                    const num = Number(val || '0');
+                    if (num > BUDGET_MAX) return;
+                    setNewOrderData({ ...newOrderData, estimatedBudget: val });
                   }} placeholder={t('admin.orders.form.estimatedBudgetPlaceholder')} />
-                  {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (<p className="text-xs text-red-500">{t('admin.orders.form.invalidBudget')}</p>)}
+                  {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
+                    <p className="text-xs text-red-500">{t('admin.orders.form.invalidBudget')} (máx 7 cifras)</p>
+                  )}
                 </div>
               </div>
             )}
