@@ -511,6 +511,26 @@ export default function PedidosPage() {
   const isValidQuantity = (value: any) => /^[0-9]+$/.test(String(value)) && Number(value) > 0;
   const isValidBudget = (value: any) => /^[0-9]+(\.[0-9]{1,2})?$/.test(String(value)) && Number(value) > 0;
   const isValidUrl = (value: string) => { try { new URL(value); return true; } catch { return false; } };
+
+  // Sanitizar segmentos de ruta/nombre para Storage (evita espacios, tildes, barras y caracteres no seguros)
+  const sanitizePathSegment = (input: string) => {
+    return (input || '')
+      // eliminar tildes/acentos
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      // reemplazar barras por guion para evitar subcarpetas accidentales
+      .replace(/[\/\\]/g, '-')
+      // reemplazar espacios por guion bajo
+      .replace(/\s+/g, '_')
+      // permitir solo ASCII seguro
+      .replace(/[^a-zA-Z0-9._-]/g, '')
+      // colapsar repeticiones
+      .replace(/_+/g, '_')
+      .replace(/-+/g, '-')
+      // recortar extremos
+      .replace(/^[_-]+|[_-]+$/g, '')
+      // limitar longitud
+      .slice(0, 120);
+  };
   const canProceedToNext = () => {
     switch (currentStep) {
       case 1:
@@ -557,7 +577,16 @@ export default function PedidosPage() {
     const yyyy = fechaObj.getFullYear();
     const fechaPedidoLegible = `${dd}-${mm}-${yyyy}`;
     const numeroPedido = Date.now();
-    const nombrePDF = `${newOrderData.productName}_${fechaPedidoLegible}_${numeroPedido}_${newOrderData.client_id}_${newOrderData.deliveryVenezuela}.pdf`;
+  // Construir nombre de archivo seguro para Storage
+  const safeProduct = sanitizePathSegment(newOrderData.productName);
+  const safeClient = sanitizePathSegment(newOrderData.client_id);
+  const safeDeliveryVzla = sanitizePathSegment(newOrderData.deliveryVenezuela);
+  const safeBase = sanitizePathSegment(`${safeProduct}_${fechaPedidoLegible}_${numeroPedido}_${safeClient}_${safeDeliveryVzla}`);
+  const nombrePDF = `${safeBase}.pdf`;
+
+  // Opcional: si luego se usa una carpeta (p. ej. deliveryType), sanitizarla también
+  // const safeFolder = sanitizePathSegment(newOrderData.deliveryType || 'misc');
+  // const storagePath = `${safeFolder}/${nombrePDF}`; // usar storagePath en el upload
 
     (async () => {
       try {
@@ -661,10 +690,11 @@ export default function PedidosPage() {
         const pdfBlob = doc.output('blob');
         let folder: string = String(newOrderData.deliveryType);
         if (folder === 'doorToDoor') folder = 'door-to-door';
+        const safeFolder = sanitizePathSegment(folder || 'misc');
         const nombrePDFCorr = nombrePDF;
         const uploadRes = await supabase.storage
           .from('orders')
-          .upload(`${folder}/${nombrePDFCorr}`, pdfBlob, {
+          .upload(`${safeFolder}/${nombrePDFCorr}`, pdfBlob, {
             cacheControl: '3600',
             upsert: true,
             contentType: 'application/pdf',
@@ -674,7 +704,10 @@ export default function PedidosPage() {
           alert(`Error al subir el PDF: ${uploadRes.error.message}`);
           return;
         }
-        const pdfUrl = `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${folder}/${nombrePDFCorr}`;
+        const { data: publicUrlData } = supabase.storage
+          .from('orders')
+          .getPublicUrl(`${safeFolder}/${nombrePDFCorr}`);
+        const pdfUrl = publicUrlData?.publicUrl || '';
 
         // Ahora crear el pedido vía API (service role) para evitar problemas RLS
         const payload = {

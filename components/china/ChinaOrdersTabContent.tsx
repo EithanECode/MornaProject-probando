@@ -12,6 +12,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Toaster } from '@/components/ui/toaster';
+import { useRealtimeChina } from '@/hooks/use-realtime-china';
 
 // Componente embebido (sin Sidebar/Header) replicando funcionalidades clave de la página China.
 
@@ -30,14 +31,10 @@ interface Pedido {
   totalQuote?: number | null;
   numericState?: number;
 }
-interface BoxItem { boxes_id?: number | string; id?: number | string; box_id?: number | string; container_id?: number | string | null; state?: number; creation_date?: string; created_at?: string; }
-interface ContainerItem { containers_id?: number | string; id?: number | string; container_id?: number | string; state?: number; creation_date?: string; created_at?: string; }
+interface BoxItem { boxes_id?: number | string; id?: number | string; box_id?: number | string; container_id?: number | string | null; state?: number; creation_date?: string; created_at?: string; name?: string }
+interface ContainerItem { containers_id?: number | string; id?: number | string; container_id?: number | string; state?: number; creation_date?: string; created_at?: string; name?: string }
 
 function mapStateToEstado(state: number): Pedido['estado'] {
-  // Rango solicitado:
-  // 2: pendiente
-  // 3-4: procesando (incluye cotizado previo, lo mostramos como procesando/cotizado según UI secundaria)
-  // 5-8: enviado
   if (state >= 5 && state <= 8) return 'enviado';
   if (state === 3 || state === 4) return state === 3 ? 'cotizado' : 'procesando';
   if (state === 2) return 'pendiente';
@@ -74,6 +71,8 @@ function getContainerBadge(stateNum?: number) {
 
 export default function ChinaOrdersTabContent() {
   const { t } = useTranslation();
+  // Current China user id for realtime filtering
+  const [chinaId, setChinaId] = useState<string | undefined>(undefined);
   const [activeSubTab, setActiveSubTab] = useState<'pedidos' | 'cajas' | 'contenedores'>('pedidos');
   const [mounted, setMounted] = useState(false);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -102,6 +101,7 @@ export default function ChinaOrdersTabContent() {
   const [modalEmpaquetarCaja, setModalEmpaquetarCaja] = useState<{open:boolean; boxId?: number | string}>({open:false});
   const [creatingBox, setCreatingBox] = useState(false);
   const [deletingBox, setDeletingBox] = useState(false);
+  const [newBoxName, setNewBoxName] = useState('');
   const [isClosingModalCrearCaja, setIsClosingModalCrearCaja] = useState(false);
   const [isClosingModalEliminarCaja, setIsClosingModalEliminarCaja] = useState(false);
   const [isClosingModalEmpaquetarCaja, setIsClosingModalEmpaquetarCaja] = useState(false);
@@ -121,6 +121,7 @@ export default function ChinaOrdersTabContent() {
   const [modalEliminarContenedor, setModalEliminarContenedor] = useState<{open:boolean; container?: ContainerItem}>({open:false});
   const [creatingContainer, setCreatingContainer] = useState(false);
   const [deletingContainer, setDeletingContainer] = useState(false);
+  const [newContainerName, setNewContainerName] = useState('');
   const [isClosingModalCrearContenedor, setIsClosingModalCrearContenedor] = useState(false);
   const [isClosingModalEliminarContenedor, setIsClosingModalEliminarContenedor] = useState(false);
   const modalCrearContenedorRef = useRef<HTMLDivElement>(null);
@@ -163,6 +164,115 @@ export default function ChinaOrdersTabContent() {
   }, [modalCotizar.open, modalEmpaquetarPedido.open, modalCrearCaja.open, modalEliminarCaja.open, modalEmpaquetarCaja.open, modalCrearContenedor.open, modalEliminarContenedor.open, modalVerCajasCont.open]);
 
   useEffect(()=>{ setMounted(true); fetchPedidos(); },[]);
+  // Resolve current user id for realtime subscriptions
+  useEffect(() => {
+    (async () => {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        setChinaId(user?.id);
+      } catch { /* ignore */ }
+    })();
+  }, []);
+
+  // Orders realtime (assigned to this China user)
+  useRealtimeChina(() => { fetchPedidos(); }, chinaId);
+
+  // Realtime for boxes/containers/orders to keep lists and open modals in sync
+  const activeSubTabRef = useRef(activeSubTab);
+  const modalVerPedidosCajaRefState = useRef(modalVerPedidosCaja.open);
+  const modalVerCajasContRefState = useRef(modalVerCajasCont.open);
+  const modalVerPedidosCajaIdRef = useRef<number | string | undefined>(undefined);
+  const modalVerCajasContIdRef = useRef<number | string | undefined>(undefined);
+
+  useEffect(() => { activeSubTabRef.current = activeSubTab; }, [activeSubTab]);
+  useEffect(() => { modalVerPedidosCajaRefState.current = modalVerPedidosCaja.open; }, [modalVerPedidosCaja.open]);
+  useEffect(() => { modalVerCajasContRefState.current = modalVerCajasCont.open; }, [modalVerCajasCont.open]);
+  useEffect(() => { modalVerPedidosCajaIdRef.current = modalVerPedidosCaja.boxId; }, [modalVerPedidosCaja.boxId]);
+  useEffect(() => { modalVerCajasContIdRef.current = modalVerCajasCont.containerId; }, [modalVerCajasCont.containerId]);
+
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    let boxesTimer: any = null;
+    let containersTimer: any = null;
+    const debounce = (which: 'boxes' | 'containers', fn: () => void) => {
+      if (which === 'boxes') {
+        if (boxesTimer) clearTimeout(boxesTimer);
+        boxesTimer = setTimeout(fn, 120);
+      } else {
+        if (containersTimer) clearTimeout(containersTimer);
+        containersTimer = setTimeout(fn, 150);
+      }
+    };
+
+    const boxesChannel = supabase
+      .channel('china-tab-boxes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'boxes' }, () => {
+        const tab = activeSubTabRef.current;
+        const needsBoxes = tab === 'cajas' || modalVerPedidosCajaRefState.current;
+        const needsContainers = tab === 'contenedores' || modalVerCajasContRefState.current;
+        if (needsBoxes) debounce('boxes', fetchBoxes);
+        if (needsContainers) debounce('containers', fetchContainers);
+        if (modalVerPedidosCajaRefState.current && modalVerPedidosCajaIdRef.current !== undefined) {
+          debounce('boxes', () => fetchOrdersByBoxId(modalVerPedidosCajaIdRef.current as any));
+        }
+        if (modalVerCajasContRefState.current && modalVerCajasContIdRef.current !== undefined) {
+          debounce('containers', () => fetchBoxesByContainerId(modalVerCajasContIdRef.current as any));
+        }
+      })
+      .subscribe();
+
+    const containersChannel = supabase
+      .channel('china-tab-containers')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'containers' }, () => {
+        const tab = activeSubTabRef.current;
+        const needsContainers = tab === 'contenedores' || modalVerCajasContRefState.current;
+        const needsBoxes = tab === 'cajas' || modalVerPedidosCajaRefState.current;
+        if (needsContainers) debounce('containers', fetchContainers);
+        if (needsBoxes) debounce('boxes', fetchBoxes);
+        if (modalVerPedidosCajaRefState.current && modalVerPedidosCajaIdRef.current !== undefined) {
+          debounce('boxes', () => fetchOrdersByBoxId(modalVerPedidosCajaIdRef.current as any));
+        }
+        if (modalVerCajasContRefState.current && modalVerCajasContIdRef.current !== undefined) {
+          debounce('containers', () => fetchBoxesByContainerId(modalVerCajasContIdRef.current as any));
+        }
+      })
+      .subscribe();
+
+    const ordersChannel = supabase
+      .channel('china-tab-orders')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+        // Always refresh orders list for stats and main view
+        debounce('boxes', fetchPedidos);
+        const tab = activeSubTabRef.current;
+        const needsBoxCounts = tab === 'cajas' || modalVerPedidosCajaRefState.current || modalVerCajasContRefState.current;
+        if (needsBoxCounts) debounce('boxes', fetchBoxes);
+        if (modalVerPedidosCajaRefState.current && modalVerPedidosCajaIdRef.current !== undefined) {
+          debounce('boxes', () => fetchOrdersByBoxId(modalVerPedidosCajaIdRef.current as any));
+        }
+        if (modalVerCajasContRefState.current && modalVerCajasContIdRef.current !== undefined) {
+          debounce('containers', () => fetchBoxesByContainerId(modalVerCajasContIdRef.current as any));
+        }
+      })
+      .subscribe();
+
+    // Optional: refresh when clients table changes (names might update)
+    const clientsChannel = supabase
+      .channel('china-tab-clients')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => {
+        debounce('boxes', fetchPedidos);
+      })
+      .subscribe();
+
+    return () => {
+      if (boxesTimer) clearTimeout(boxesTimer);
+      if (containersTimer) clearTimeout(containersTimer);
+      supabase.removeChannel(boxesChannel);
+      supabase.removeChannel(containersChannel);
+      supabase.removeChannel(ordersChannel);
+      supabase.removeChannel(clientsChannel);
+    };
+  }, []);
   useEffect(()=>{ if(activeSubTab==='cajas') fetchBoxes(); if(activeSubTab==='contenedores') fetchContainers(); },[activeSubTab]);
   // Reset de página al cambiar filtros/datasets
   useEffect(()=>{ setPedidosPage(1); }, [filtroCliente, filtroEstado, pedidos.length]);
@@ -172,13 +282,13 @@ export default function ChinaOrdersTabContent() {
   async function fetchPedidos(){
     setLoadingPedidos(true);
     try{
-      const supabase = getSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      const empleadoId = user?.id; if(!empleadoId){ setPedidos([]); return; }
-      const res = await fetch(`/china/pedidos/api/orders?asignedEChina=${empleadoId}`);
+      // Traer TODOS los pedidos que estén asignados a algún empleado de China (sin importar el usuario logueado)
+      const res = await fetch(`/china/pedidos/api/orders`, { cache: 'no-store' });
       const data = await res.json();
       if(!Array.isArray(data)){ setPedidos([]); return; }
+      // Mantener sólo los que tienen asignedEChina definido (el API ya lo hace si no se pasa el parámetro, esto es defensivo)
       const mappedPedidos = data
+        .filter((order:any)=> !!order.asignedEChina)
         .filter((order:any)=> Number(order.state) !== 1) // Ocultamos state 1 (creación)
         .map((order:any)=>({
           id: order.id,
@@ -202,12 +312,17 @@ export default function ChinaOrdersTabContent() {
   // ================== CAJAS ==================
   async function handleConfirmCrearCaja(){
     try{
+      if(!newBoxName.trim()){
+        toast({ title: t('admin.orders.china.modals.createBox.nameRequired', { defaultValue: 'El nombre de la caja es obligatorio' }) });
+        return;
+      }
       setCreatingBox(true);
       const supabase = getSupabaseBrowserClient();
-      const { error } = await supabase.from('boxes').insert([{ state:1, creation_date: new Date().toISOString() }]);
+      const { error } = await supabase.from('boxes').insert([{ state:1, creation_date: new Date().toISOString(), name: newBoxName.trim() }]);
       if(error) throw error;
-      toast({ title:'Caja creada', description:'La caja fue creada correctamente.' });
+      toast({ title: t('admin.orders.china.toasts.boxCreatedTitle', { defaultValue: 'Caja creada' }), description: t('admin.orders.china.toasts.boxCreatedDesc', { defaultValue: 'La caja fue creada correctamente.' }) });
       closeModalCrearCaja();
+      setNewBoxName('');
       fetchBoxes();
     } catch(e:any){ console.error(e); toast({ title:'No se pudo crear', description:'Intenta más tarde.'}); } finally { setCreatingBox(false);} }
 
@@ -253,12 +368,17 @@ export default function ChinaOrdersTabContent() {
   // ================== CONTENEDORES ==================
   async function handleConfirmCrearContenedor(){
     try{
+      if(!newContainerName.trim()){
+        toast({ title: t('admin.orders.china.modals.createContainer.nameRequired', { defaultValue: 'El nombre del contenedor es obligatorio' }) });
+        return;
+      }
       setCreatingContainer(true);
       const supabase = getSupabaseBrowserClient();
-      const { error } = await supabase.from('containers').insert([{ state:1, creation_date:new Date().toISOString() }]);
+      const { error } = await supabase.from('containers').insert([{ state:1, creation_date:new Date().toISOString(), name: newContainerName.trim() }]);
       if(error) throw error;
-      toast({ title:'Contenedor creado'});
+      toast({ title: t('admin.orders.china.toasts.containerCreatedTitle', { defaultValue: 'Contenedor creado' }) });
       closeModalCrearContenedor();
+      setNewContainerName('');
       fetchContainers();
     } catch(e:any){ console.error(e); toast({ title:'No se pudo crear contenedor' }); } finally { setCreatingContainer(false);} }
 
@@ -294,6 +414,12 @@ export default function ChinaOrdersTabContent() {
   async function handleSelectContenedorForCaja(boxId:number|string, container:ContainerItem){
     const containerId = container.container_id ?? container.containers_id ?? container.id; if(!containerId){ toast({ title:'Contenedor inválido'}); return; }
     try{ const supabase = getSupabaseBrowserClient(); if((container.state??1)>=3){ toast({ title:'No permitido', description:'Contenedor enviado'}); return; }
+      // Regla: No permitir empaquetar una caja vacía
+      try{
+        const { data: anyOrder, error: checkErr } = await supabase.from('orders').select('id').eq('box_id', boxId).limit(1);
+        if(checkErr){ console.error('Error verificando pedidos de la caja:', checkErr); }
+        if(!anyOrder || anyOrder.length===0){ toast({ title:'No permitido', description:'No puedes empaquetar una caja vacía. Agrega pedidos primero.' }); return; }
+      } catch(e){ console.error('Fallo verificando si la caja está vacía:', e); toast({ title:'Error inesperado', description:'Intenta más tarde.' }); return; }
       const { error: boxErr } = await supabase.from('boxes').update({ container_id: containerId, state:2 }).eq('box_id', boxId); if(boxErr) throw boxErr;
       const { error: ordersErr } = await supabase.from('orders').update({ state:7 }).eq('box_id', boxId); if(ordersErr) console.error(ordersErr);
       const { error: contUpdateErr } = await supabase.from('containers').update({ state:2 }).eq('container_id', containerId); if(contUpdateErr) console.error(contUpdateErr);
@@ -333,10 +459,10 @@ export default function ChinaOrdersTabContent() {
   // ================== MODALES CLOSE HELPERS ==================
   function closeModalCotizar(){ setIsClosingModalCotizar(true); setTimeout(()=>{ setModalCotizar({open:false}); setIsClosingModalCotizar(false); },200);} 
   function closeModalEmpaquetarPedido(){ setIsClosingModalEmpaquetarPedido(true); setTimeout(()=>{ setModalEmpaquetarPedido({open:false}); setIsClosingModalEmpaquetarPedido(false); },200);} 
-  function closeModalCrearCaja(){ setIsClosingModalCrearCaja(true); setTimeout(()=>{ setModalCrearCaja({open:false}); setIsClosingModalCrearCaja(false); },200);} 
+  function closeModalCrearCaja(){ setIsClosingModalCrearCaja(true); setTimeout(()=>{ setModalCrearCaja({open:false}); setIsClosingModalCrearCaja(false); setNewBoxName(''); },200);} 
   function closeModalEliminarCaja(){ setIsClosingModalEliminarCaja(true); setTimeout(()=>{ setModalEliminarCaja({open:false}); setIsClosingModalEliminarCaja(false); },200);} 
   function closeModalEmpaquetarCaja(){ setIsClosingModalEmpaquetarCaja(true); setTimeout(()=>{ setModalEmpaquetarCaja({open:false}); setIsClosingModalEmpaquetarCaja(false); },200);} 
-  function closeModalCrearContenedor(){ setIsClosingModalCrearContenedor(true); setTimeout(()=>{ setModalCrearContenedor({open:false}); setIsClosingModalCrearContenedor(false); },200);} 
+  function closeModalCrearContenedor(){ setIsClosingModalCrearContenedor(true); setTimeout(()=>{ setModalCrearContenedor({open:false}); setIsClosingModalCrearContenedor(false); setNewContainerName(''); },200);} 
   function closeModalEliminarContenedor(){ setIsClosingModalEliminarContenedor(true); setTimeout(()=>{ setModalEliminarContenedor({open:false}); setIsClosingModalEliminarContenedor(false); },200);} 
 
   // (Antiguas funciones básicas reemplazadas por versiones extendidas arriba)
@@ -580,6 +706,9 @@ export default function ChinaOrdersTabContent() {
                       <div className="p-3 bg-indigo-100 dark:bg-indigo-800/40 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600 dark:text-indigo-300" /></div>
                       <div className="space-y-1">
                         <h3 className="font-semibold text-slate-900 dark:text-white truncate">#BOX-{id}</h3>
+                        {box.name && (
+                          <p className="text-sm text-slate-700 dark:text-slate-200 truncate">{String(box.name)}</p>
+                        )}
                         <div className="flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400">
                           <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created? new Date(created).toLocaleString('es-ES'):'—'}</span>
                           <span className="flex items-center gap-1"><List className="h-3 w-3" />Pedidos: {orderCountsByBoxMain[countKey as any] ?? 0}</span>
@@ -588,7 +717,20 @@ export default function ChinaOrdersTabContent() {
                     </div>
                     <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
           <Badge className={badge.className}>{getBoxBadgeLabel(stateNum)}</Badge>
-                      {stateNum===1 && (<Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" onClick={()=>{ const currentBoxId=box.box_id ?? box.boxes_id ?? box.id; setModalEmpaquetarCaja({open:true, boxId: currentBoxId}); if(containers.length===0) fetchContainers(); }}>{t('admin.orders.china.boxes.pack')}</Button>)}
+                      {stateNum===1 && (
+                        <Button
+                          size="sm"
+                          className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={(orderCountsByBoxMain[countKey as any] ?? 0) <= 0}
+                          onClick={()=>{
+                            const currentBoxId=box.box_id ?? box.boxes_id ?? box.id;
+                            setModalEmpaquetarCaja({open:true, boxId: currentBoxId});
+                            if(containers.length===0) fetchContainers();
+                          }}
+                        >
+                          {t('admin.orders.china.boxes.pack')}
+                        </Button>
+                      )}
                       {stateNum===2 && (<Button variant="outline" size="sm" onClick={()=>{ const currentBoxId=box.box_id ?? box.boxes_id ?? box.id; if(currentBoxId!==undefined) handleUnpackBox(currentBoxId as any); }}>{t('admin.orders.china.boxes.unpack')}</Button>)}
                       {stateNum>=3 && (<Button variant="outline" size="sm" disabled>{t('admin.orders.china.boxes.unpack')}</Button>)}
                       <Button variant="outline" size="sm" onClick={()=>{ const boxId=box.box_id ?? box.boxes_id ?? box.id; setModalVerPedidosCaja({open:true, boxId}); if(boxId!==undefined) fetchOrdersByBoxId(boxId); }}>{t('admin.orders.china.boxes.viewOrders')}</Button>
@@ -637,6 +779,9 @@ export default function ChinaOrdersTabContent() {
                       <div className="p-3 bg-indigo-100 dark:bg-indigo-800/40 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600 dark:text-indigo-300" /></div>
                       <div className="space-y-1">
                         <h3 className="font-semibold text-slate-900 dark:text-white truncate">#CONT-{id}</h3>
+                        {container.name && (
+                          <p className="text-sm text-slate-700 dark:text-slate-200 truncate">{String(container.name)}</p>
+                        )}
                         <div className="flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400"><span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created? new Date(created).toLocaleString('es-ES'):'—'}</span></div>
                       </div>
                     </div>
@@ -669,7 +814,7 @@ export default function ChinaOrdersTabContent() {
 
   {/* Modales - Ver pedidos de una caja */}
       {modalVerPedidosCaja.open && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]">
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4"><h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('admin.orders.china.modals.boxOrders.title', { id: String(modalVerPedidosCaja.boxId ?? '') })}</h3><Button variant="ghost" size="sm" onClick={()=>setModalVerPedidosCaja({open:false})} className="h-8 w-8 p-0">✕</Button></div>
             {ordersByBoxLoading ? <p className="text-center text-sm text-slate-500 py-6">{t('admin.orders.china.modals.boxOrders.loading')}</p> : ordersByBox.length===0 ? (
@@ -699,7 +844,7 @@ export default function ChinaOrdersTabContent() {
               <div className="space-y-3">
                 {boxesByContainer.map((box,idx)=>{ const id = box.box_id ?? box.boxes_id ?? box.id ?? idx; const created = box.creation_date ?? box.created_at ?? ''; const stateNum=(box.state ?? 1) as number; const badge=getBoxBadge(stateNum); return (
                   <div key={id as any} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
-                    <div className="space-y-1"><p className="font-semibold text-slate-900 dark:text-white">#BOX-{id}</p><p className="text-xs text-slate-500 dark:text-slate-400">{created ? new Date(created).toLocaleString('es-ES') : '—'}</p></div>
+                    <div className="space-y-1"><p className="font-semibold text-slate-900 dark:text-white">#BOX-{id}</p>{box.name && (<p className="text-xs text-slate-500 dark:text-slate-400">{String(box.name)}</p>)}<p className="text-xs text-slate-500 dark:text-slate-400">{created ? new Date(created).toLocaleString('es-ES') : '—'}</p></div>
                     <div className="flex items-center gap-3">
                       <Badge className={badge.className}>{badge.label}</Badge>
                       {stateNum===2 && (<Button variant="outline" size="sm" onClick={()=>{ const boxId=box.box_id ?? box.boxes_id ?? box.id; const containerId=modalVerCajasCont.containerId; handleUnpackBox(boxId as any,{ containerId}); }}>{t('admin.orders.china.boxes.unpack')}</Button>)}
@@ -735,11 +880,10 @@ export default function ChinaOrdersTabContent() {
           <div ref={modalEmpaquetarPedidoRef} className={`bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[85vh] overflow-y-auto transition-all ${isClosingModalEmpaquetarPedido? 'scale-95 opacity-0' : 'scale-100 opacity-100'} duration-200`}>
     <div className="flex items-center justify-between mb-4"><h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('admin.orders.china.modals.selectBoxForOrder.title', { id: String(modalEmpaquetarPedido.pedidoId ?? '') })}</h3><Button variant="ghost" size="sm" onClick={closeModalEmpaquetarPedido} className="h-8 w-8 p-0">✕</Button></div>
     {boxesLoading ? (<p className="text-center text-sm py-6">{t('admin.orders.china.modals.selectBoxForOrder.loading')}</p>) : boxes.length===0 ? (<div className="text-center py-12"><Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" /><p className="text-sm text-slate-500">{t('admin.orders.china.modals.selectBoxForOrder.noneTitle')}</p></div>) : (
-              <div className="space-y-3">{boxes.map((box,idx)=>{ const id=box.box_id ?? box.boxes_id ?? box.id ?? idx; const created=box.creation_date ?? box.created_at ?? ''; const stateNum=(box.state??1) as number; return (
+        <div className="space-y-3">{boxes.map((box,idx)=>{ const id=box.box_id ?? box.boxes_id ?? box.id ?? idx; const created=box.creation_date ?? box.created_at ?? ''; const stateNum=(box.state??1) as number; return (
                 <div key={id as any} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
-                  <div className="space-y-1"><p className="font-semibold text-slate-900 dark:text-white">#BOX-{id}</p><p className="text-xs text-slate-500 dark:text-slate-400">{created? new Date(created).toLocaleString('es-ES'):'—'}</p></div>
-      <div className="flex items-center gap-3"><Badge className={`border ${stateNum===1?'bg-blue-100 text-blue-800 border-blue-200': stateNum===2? 'bg-green-100 text-green-800 border-green-200':'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum===1?t('admin.orders.china.boxesStatus.new'): stateNum===2? t('admin.orders.china.boxesStatus.ready'):t('admin.orders.china.boxesStatus.state', { num: stateNum })}</Badge><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" onClick={()=> modalEmpaquetarPedido.pedidoId && handleSelectCajaForPedido(modalEmpaquetarPedido.pedidoId, box)}>{t('admin.orders.china.modals.selectBoxForOrder.select')}</Button></div>
-  <div className="flex items-center gap-3"><Badge className={`border ${stateNum===1?'bg-blue-100 text-blue-800 border-blue-200': stateNum===2? 'bg-green-100 text-green-800 border-green-200':'bg-gray-100 text-gray-800 border-gray-200'}`}>{getBoxBadgeLabel(stateNum)}</Badge><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" onClick={()=> modalEmpaquetarPedido.pedidoId && handleSelectCajaForPedido(modalEmpaquetarPedido.pedidoId, box)}>{t('admin.orders.china.modals.selectBoxForOrder.select')}</Button></div>
+          <div className="space-y-1"><p className="font-semibold text-slate-900 dark:text-white">#BOX-{id}</p>{box.name && (<p className="text-xs text-slate-500 dark:text-slate-400">{String(box.name)}</p>)}<p className="text-xs text-slate-500 dark:text-slate-400">{created? new Date(created).toLocaleString('es-ES'):'—'}</p></div>
+  <div className="flex items-center gap-3"><Badge className={`border ${stateNum===1?'bg-blue-100 text-blue-800 border-blue-200': stateNum===2? 'bg-green-100 text-green-800 border-green-200':'bg-gray-100 text-gray-800 border-gray-200'}`}>{getBoxBadgeLabel(stateNum)}</Badge><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled={stateNum>=3} onClick={()=> modalEmpaquetarPedido.pedidoId && handleSelectCajaForPedido(modalEmpaquetarPedido.pedidoId, box)}>{t('admin.orders.china.modals.selectBoxForOrder.select')}</Button></div>
                 </div>
               ); })}</div>
             )}
@@ -752,8 +896,12 @@ export default function ChinaOrdersTabContent() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div ref={modalCrearCajaRef} className={`bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-md mx-4 w-full transition-all ${isClosingModalCrearCaja? 'scale-95 opacity-0':'scale-100 opacity-100'} duration-200`}>
             <div className="flex items-center justify-between mb-4"><h3 className="text-lg font-bold">{t('admin.orders.china.modals.createBox.title')}</h3><Button variant="ghost" size="sm" onClick={closeModalCrearCaja} className="h-8 w-8 p-0">✕</Button></div>
-            <p className="text-sm mb-6">{t('admin.orders.china.modals.createBox.question')}</p>
-            <div className="flex justify-end gap-2"><Button variant="outline" onClick={closeModalCrearCaja} disabled={creatingBox}>{t('admin.orders.china.modals.createBox.cancel')}</Button><Button className="bg-blue-600 hover:bg-blue-700" disabled={creatingBox} onClick={handleConfirmCrearCaja}>{creatingBox? t('admin.orders.china.modals.createBox.creating') : t('admin.orders.china.modals.createBox.accept')}</Button></div>
+            <p className="text-sm mb-4">{t('admin.orders.china.modals.createBox.question')}</p>
+            <div className="space-y-2 mb-4">
+              <label className="text-sm font-medium" htmlFor="boxName">{t('admin.orders.china.modals.createBox.nameLabel', { defaultValue: 'Nombre de la caja' })}</label>
+              <Input id="boxName" value={newBoxName} onChange={e=>setNewBoxName(e.target.value)} placeholder={t('admin.orders.china.modals.createBox.namePlaceholder', { defaultValue: 'Ej: Caja 01' })} required />
+            </div>
+            <div className="flex justify-end gap-2"><Button variant="outline" onClick={closeModalCrearCaja} disabled={creatingBox}>{t('admin.orders.china.modals.createBox.cancel')}</Button><Button className="bg-blue-600 hover:bg-blue-700" disabled={creatingBox || !newBoxName.trim()} onClick={handleConfirmCrearCaja}>{creatingBox? t('admin.orders.china.modals.createBox.creating') : t('admin.orders.china.modals.createBox.accept')}</Button></div>
           </div>
         </div>
       )}
@@ -777,8 +925,8 @@ export default function ChinaOrdersTabContent() {
     {containersLoading ? (<p className="text-center text-sm py-6">{t('admin.orders.china.modals.selectContainerForBox.loading')}</p>) : containers.length===0 ? (<div className="py-12 text-center"><Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" /><p className="text-sm">{t('admin.orders.china.modals.selectContainerForBox.noneTitle')}</p></div>) : (
               <div className="space-y-3">{containers.map((container,idx)=>{ const id=container.container_id ?? container.containers_id ?? container.id ?? idx; const created = container.creation_date ?? container.created_at ?? ''; const stateNum=(container.state??1) as number; return (
                 <div key={id as any} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
-  <div className="space-y-1"><p className="font-semibold">#CONT-{id}</p><p className="text-xs text-slate-500">{created? new Date(created).toLocaleString('es-ES'):'—'}</p></div>
-  <div className="flex items-center gap-3"><Badge className={getContainerBadge(stateNum).className}>{getContainerBadgeLabel(stateNum)}</Badge><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" onClick={()=> modalEmpaquetarCaja.boxId && handleSelectContenedorForCaja(modalEmpaquetarCaja.boxId, container)}>{t('admin.orders.china.modals.selectContainerForBox.select')}</Button></div>
+  <div className="space-y-1"><p className="font-semibold">#CONT-{id}</p>{container.name && (<p className="text-xs text-slate-500">{String(container.name)}</p>)}<p className="text-xs text-slate-500">{created? new Date(created).toLocaleString('es-ES'):'—'}</p></div>
+  <div className="flex items-center gap-3"><Badge className={getContainerBadge(stateNum).className}>{getContainerBadgeLabel(stateNum)}</Badge><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled={stateNum>=3} onClick={()=> modalEmpaquetarCaja.boxId && handleSelectContenedorForCaja(modalEmpaquetarCaja.boxId, container)}>{t('admin.orders.china.modals.selectContainerForBox.select')}</Button></div>
                 </div>
               ); })}</div>
             )}
@@ -791,8 +939,12 @@ export default function ChinaOrdersTabContent() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div ref={modalCrearContenedorRef} className={`bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-md mx-4 w-full transition-all ${isClosingModalCrearContenedor? 'scale-95 opacity-0':'scale-100 opacity-100'} duration-200`}>
             <div className="flex items-center justify-between mb-4"><h3 className="text-lg font-bold">{t('admin.orders.china.modals.createContainer.title')}</h3><Button variant="ghost" size="sm" onClick={closeModalCrearContenedor} className="h-8 w-8 p-0">✕</Button></div>
-            <p className="text-sm mb-6">{t('admin.orders.china.modals.createContainer.question')}</p>
-            <div className="flex justify-end gap-2"><Button variant="outline" onClick={closeModalCrearContenedor} disabled={creatingContainer}>{t('admin.orders.china.modals.createContainer.cancel')}</Button><Button className="bg-blue-600 hover:bg-blue-700" disabled={creatingContainer} onClick={handleConfirmCrearContenedor}>{creatingContainer? t('admin.orders.china.modals.createContainer.creating') : t('admin.orders.china.modals.createContainer.accept')}</Button></div>
+            <p className="text-sm mb-4">{t('admin.orders.china.modals.createContainer.question')}</p>
+            <div className="space-y-2 mb-4">
+              <label className="text-sm font-medium" htmlFor="containerName">{t('admin.orders.china.modals.createContainer.nameLabel', { defaultValue: 'Nombre del contenedor' })}</label>
+              <Input id="containerName" value={newContainerName} onChange={e=>setNewContainerName(e.target.value)} placeholder={t('admin.orders.china.modals.createContainer.namePlaceholder', { defaultValue: 'Ej: Contenedor A' })} required />
+            </div>
+            <div className="flex justify-end gap-2"><Button variant="outline" onClick={closeModalCrearContenedor} disabled={creatingContainer}>{t('admin.orders.china.modals.createContainer.cancel')}</Button><Button className="bg-blue-600 hover:bg-blue-700" disabled={creatingContainer || !newContainerName.trim()} onClick={handleConfirmCrearContenedor}>{creatingContainer? t('admin.orders.china.modals.createContainer.creating') : t('admin.orders.china.modals.createContainer.accept')}</Button></div>
           </div>
         </div>
       )}

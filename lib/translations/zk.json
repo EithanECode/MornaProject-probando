@@ -1198,7 +1198,9 @@
             "question": "你想创建一个新的集装箱吗？",
             "creating": "创建中...",
             "accept": "接受",
-            "cancel": "取消"
+            "cancel": "取消",
+            "nameLabel": "集装箱名称",
+            "namePlaceholder": "输入集装箱名称"
           },
           "containerBoxes": {
             "title": "集装箱 #CONT-{{id}} 的箱子",
@@ -1220,7 +1222,9 @@
             "question": "你想创建一个新的箱子吗？",
             "creating": "创建中...",
             "accept": "接受",
-            "cancel": "取消"
+            "cancel": "取消",
+            "nameLabel": "箱子名称",
+            "namePlaceholder": "输入箱子名称"
           },
           "boxOrders": {
             "title": "箱 #BOX-{{id}} 的订单",
@@ -1653,6 +1657,16 @@
         "inTransit": "运输中",
         "received": "已接收",
         "state": "状态{{num}}"
+      },
+      "actions": {
+  "viewOrders": "查看订单",
+  "viewBoxes": "查看箱子",
+  "viewContainers": "查看集装箱",
+  "sendToChina": "发送到中国",
+  "markAsReceived": "标记为已接收",
+  "exportPdf": "导出为 PDF",
+  "exportPdfShort": "PDF",
+  "send": "发送"
       }
     },
     "soporte": {
@@ -2297,7 +2311,9 @@
         "question": "你想创建一个新的集装箱吗？",
         "creating": "创建中...",
         "accept": "接受",
-        "cancel": "取消"
+        "cancel": "取消",
+        "containerNameLabel": "集装箱名称",
+        "containerNamePlaceholder": "输入集装箱名称"
       },
       "containerBoxes": {
         "title": "集装箱 #CONT-{{id}} 的箱子",
@@ -2319,7 +2335,9 @@
         "question": "你想创建一个新的箱子吗？",
         "creating": "创建中...",
         "accept": "接受",
-        "cancel": "取消"
+        "cancel": "取消",
+        "boxNameLabel": "箱子名称",
+        "boxNamePlaceholder": "输入箱子名称"
       },
       "boxOrders": {
         "title": "箱 #BOX-{{id}} 的订单",
