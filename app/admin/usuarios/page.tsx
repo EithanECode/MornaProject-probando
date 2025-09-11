@@ -184,6 +184,10 @@ export default function UsuariosPage() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [newUserPassword, setNewUserPassword] = useState('');
+  const [editUserPassword, setEditUserPassword] = useState('');
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
   const { toast } = useToast();
 
@@ -218,6 +222,16 @@ export default function UsuariosPage() {
     setPage(1);
   }, [searchTerm, roleFilter, statusFilter, users.length]);
 
+  const isNewUser = !!(editingUser && !/^[0-9a-fA-F-]{36}$/.test(editingUser.id));
+  const fullNameTooLong = !!(editingUser && editingUser.fullName.length > 50);
+  const emailValue = editingUser?.email || '';
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
+  const emailTooLong = emailValue.length > 50;
+  const passwordTooLong = newUserPassword.length > 50;
+  const editPasswordTooLong = editUserPassword.length > 50;
+  const hasEmptyRequired = !!(editingUser && (!editingUser.fullName || !editingUser.email));
+  const saveDisabled = hasEmptyRequired || fullNameTooLong || emailTooLong || (!emailValid && (editingUser?.email || '').length > 0) || (isNewUser && passwordTooLong) || (!isNewUser && editPasswordTooLong);
+
   function handleOpenCreate() {
     setEditingUser({
       id: `USR-${Math.floor(100 + Math.random() * 900)}`,
@@ -227,11 +241,14 @@ export default function UsuariosPage() {
       status: 'activo',
       createdAt: new Date().toISOString(),
     });
+  setNewUserPassword('');
     setIsDialogOpen(true);
   }
 
   function handleOpenEdit(user: User) {
     setEditingUser({ ...user });
+  setNewUserPassword('');
+  setEditUserPassword('');
     setIsDialogOpen(true);
   }
 
@@ -258,7 +275,7 @@ export default function UsuariosPage() {
     });
   }
 
-  function handleDelete(user: User) {
+  function performDelete(user: User) {
     const prevUsers = users;
     // Optimistic remove
     setUsers((prev) => prev.filter((u) => u.id !== user.id));
@@ -278,6 +295,24 @@ export default function UsuariosPage() {
       setUsers(prevUsers);
   toast({ title: t('admin.users.messages.errorDeleting'), description: t('admin.users.messages.couldNotDelete') });
     });
+  }
+
+  function handleRequestDelete(user: User) {
+    setUserToDelete(user);
+    setIsDeleteDialogOpen(true);
+  }
+
+  function handleConfirmDelete() {
+    if (userToDelete) {
+      performDelete(userToDelete);
+    }
+    setIsDeleteDialogOpen(false);
+    setUserToDelete(null);
+  }
+
+  function handleCancelDelete() {
+    setIsDeleteDialogOpen(false);
+    setUserToDelete(null);
   }
 
   function handleSave() {
@@ -301,7 +336,7 @@ export default function UsuariosPage() {
       fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName: editingUser.fullName, email: editingUser.email, role: dbRole, userLevel }),
+  body: JSON.stringify({ fullName: editingUser.fullName, email: editingUser.email, role: dbRole, userLevel, password: newUserPassword || undefined }),
       }).then(async (res) => {
         if (!res.ok) {
           const { error } = await res.json().catch(() => ({ error: 'Error' }));
@@ -338,6 +373,9 @@ export default function UsuariosPage() {
       role: dbRole,
       userLevel,
     };
+    if (!isNew && editUserPassword.trim().length > 0) {
+      payload.newPassword = editUserPassword.trim();
+    }
     // Optimistic apply
     setUsers((prev) => prev.map((u) => (u.id === editingUser.id ? editingUser : u)));
     fetch('/api/admin/users', {
@@ -361,6 +399,7 @@ export default function UsuariosPage() {
   }
 
   return (
+    <>
     <div
       className={
         `min-h-screen flex overflow-x-hidden ` +
@@ -438,7 +477,11 @@ export default function UsuariosPage() {
                             id="fullName"
                             value={editingUser?.fullName ?? ''}
                             onChange={(e) => setEditingUser((prev) => prev ? { ...prev, fullName: e.target.value } : prev)}
+                            maxLength={50}
                           />
+                          {fullNameTooLong && (
+                            <p className="text-xs text-red-500">{t('admin.users.form.max50Chars')}</p>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="email">{t('admin.users.form.email')}</Label>
@@ -447,8 +490,46 @@ export default function UsuariosPage() {
                             type="email"
                             value={editingUser?.email ?? ''}
                             onChange={(e) => setEditingUser((prev) => prev ? { ...prev, email: e.target.value } : prev)}
+                            maxLength={50}
                           />
+                          {editingUser?.email && !emailValid && (
+                            <p className="text-xs text-red-500">{t('admin.users.form.invalidEmail')}</p>
+                          )}
+                          {emailTooLong && (
+                            <p className="text-xs text-red-500">{t('admin.users.form.emailMax50')}</p>
+                          )}
                         </div>
+                        {isNewUser ? (
+                          <div className="space-y-2">
+                            <Label htmlFor="password">{t('admin.users.form.password')}</Label>
+                            <Input
+                              id="password"
+                              type="password"
+                              value={newUserPassword}
+                              onChange={(e) => setNewUserPassword(e.target.value)}
+                              placeholder={t('admin.users.form.passwordPlaceholder')}
+                              maxLength={50}
+                            />
+                            {passwordTooLong && (
+                              <p className="text-xs text-red-500">{t('admin.users.form.passwordMax50')}</p>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <Label htmlFor="editPassword">{t('admin.users.form.changePassword')}</Label>
+                            <Input
+                              id="editPassword"
+                              type="password"
+                              value={editUserPassword}
+                              onChange={(e) => setEditUserPassword(e.target.value)}
+                              placeholder={t('admin.users.form.changePasswordPlaceholder')}
+                              maxLength={50}
+                            />
+                            {editPasswordTooLong && (
+                              <p className="text-xs text-red-500">{t('admin.users.form.passwordMax50')}</p>
+                            )}
+                          </div>
+                        )}
                         <div className="space-y-2">
                           <Label>Rol</Label>
                           <Select
@@ -468,7 +549,7 @@ export default function UsuariosPage() {
                       </div>
                       <DialogFooter>
                         <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t('admin.users.form.cancel')}</Button>
-                        <Button onClick={handleSave} className="bg-blue-600 text-white">{t('admin.users.form.save')}</Button>
+                        <Button onClick={handleSave} className="bg-blue-600 text-white" disabled={saveDisabled}>{t('admin.users.form.save')}</Button>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
@@ -576,7 +657,7 @@ export default function UsuariosPage() {
                                             <Button
                                               variant="ghost"
                                               size="sm"
-                                              onClick={() => handleDelete(user)}
+                                              onClick={() => handleRequestDelete(user)}
                                               className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
                                             >
                                               <Trash2 className="w-4 h-4" />
@@ -666,7 +747,7 @@ export default function UsuariosPage() {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => handleDelete(user)}
+                                      onClick={() => handleRequestDelete(user)}
                                       className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
                                     >
                                       <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
@@ -729,5 +810,21 @@ export default function UsuariosPage() {
         </div>
       </main>
     </div>
+    <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t('admin.users.delete.confirmTitle')}</DialogTitle>
+          <DialogDescription>{t('admin.users.delete.confirmDescription', { name: userToDelete?.fullName || '' })}</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2 py-2">
+          <p className="text-sm text-slate-600 dark:text-slate-300">{t('admin.users.delete.irreversible')}</p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={handleCancelDelete}>{t('admin.users.delete.cancel')}</Button>
+          <Button variant="destructive" onClick={handleConfirmDelete}>{t('admin.users.delete.confirm')}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }

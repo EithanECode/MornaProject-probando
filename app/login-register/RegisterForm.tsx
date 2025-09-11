@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { MAX_NAME, MAX_EMAIL, MAX_PASSWORD } from '@/lib/constants/validation';
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import Lottie from "react-lottie";
 import { Eye, EyeOff } from "lucide-react";
@@ -294,9 +295,13 @@ export default function RegisterForm() {
         id="register-fullname"
         placeholder={t('auth.common.fullNamePlaceholder')}
         value={fullName}
-        onChange={(e) => setFullName(e.target.value)}
+        maxLength={MAX_NAME}
+        onChange={(e) => setFullName(e.target.value.slice(0, MAX_NAME))}
         required
       />
+      {fullName.length > 0 && fullName.length === MAX_NAME && (
+        <p className="text-xs text-slate-500">{fullName.length}/{MAX_NAME}</p>
+      )}
       {nameError && (
         <p className="text-red-500 text-sm mt-1" role="alert">{nameError}</p>
       )}
@@ -307,9 +312,13 @@ export default function RegisterForm() {
         id="register-email"
         placeholder={t('auth.common.emailPlaceholder')}
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        maxLength={MAX_EMAIL}
+        onChange={(e) => setEmail(e.target.value.slice(0, MAX_EMAIL))}
         required
       />
+      {email.length > 0 && email.length === MAX_EMAIL && (
+        <p className="text-xs text-slate-500">{email.length}/{MAX_EMAIL}</p>
+      )}
       {emailError && (
         <p className="text-red-500 text-sm mt-1" role="alert">{emailError}</p>
       )}
@@ -321,6 +330,7 @@ export default function RegisterForm() {
           id="register-password"
       placeholder={t('auth.common.passwordPlaceholder')}
           value={password}
+          maxLength={MAX_PASSWORD}
           onChange={handlePasswordChange}
           onFocus={handlePasswordFocus}
           onBlur={handlePasswordBlur}
@@ -331,6 +341,9 @@ export default function RegisterForm() {
               : ""
           }`}
         />
+        {password.length > 0 && password.length === MAX_PASSWORD && (
+          <span className="absolute -bottom-5 right-1 text-[10px] text-slate-500">{password.length}/{MAX_PASSWORD}</span>
+        )}
         <span className="password-toggle-icon" onClick={toggleShowPassword}>
           {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
         </span>
@@ -357,6 +370,7 @@ export default function RegisterForm() {
           id="register-confirm-password"
       placeholder={t('auth.common.passwordPlaceholder')}
           value={confirmPassword}
+          maxLength={MAX_PASSWORD}
           onChange={handleConfirmPasswordChange}
           required
         />
@@ -384,7 +398,10 @@ export default function RegisterForm() {
       {successMsg && (
         <p className="text-green-600 text-sm mt-2" role="status">{successMsg}</p>
       )}
-      <button type="submit" disabled={loading}>
+      <button
+        type="submit"
+        disabled={loading || !fullName || !email || !password || !confirmPassword || password !== confirmPassword || fullName.length > MAX_NAME || email.length > MAX_EMAIL || password.length > MAX_PASSWORD || confirmPassword.length > MAX_PASSWORD}
+      >
         {loading ? t('auth.common.loadingRegister') : t('auth.common.register')}
       </button>
     </form>

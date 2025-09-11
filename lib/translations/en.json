@@ -7,6 +7,12 @@
       "confirmPassword": "Confirm Password",
       "fullName": "Full Name",
       "fullNamePlaceholder": "Your name",
+  "fieldRequired": "This field is required",
+  "maxLengthExceeded": "Must not exceed {{max}} characters",
+  "descriptionMax": "Description must not exceed {{max}} characters",
+  "moneyMaxDigits": "No more than {{max}} integer digits",
+  "moneyInvalidFormat": "Invalid amount format (use up to 2 decimals)",
+  "moneyRequired": "Amount is required",
       "emailPlaceholder": "user@email.com",
       "passwordPlaceholder": "********",
       "login": "Login",
@@ -429,7 +435,7 @@
         "quoted": "Quoted",
         "processing": "Processing",
         "shipped": "Shipped",
-        "delivered": "Delivered",
+  "delivered": "Delivered",
   "cancelled": "Cancelled",
   "paymentValidated": "Payment validated",
   "packagingBox": "Packaging (box)",
@@ -437,8 +443,7 @@
   "sentFromChina": "Sent from China",
   "inCustoms": "In customs",
   "arriving": "Arriving",
-  "inStore": "Product in store",
-  "delivered": "Delivered"
+  "inStore": "Product in store"
       },
       "actions": {
         "view": "View details",
@@ -471,7 +476,8 @@
         "productDescription": "Product Description",
         "productDescriptionPlaceholder": "Describe in detail the product you want to import...",
         "quantity": "Quantity",
-        "invalidQuantity": "Quantity must be greater than zero.",
+  "invalidQuantity": "Quantity must be greater than zero.",
+  "quantityRangeHint": "Valid quantity: {{min}}–{{max}}.",
         "specifications": "Technical Specifications",
         "specificationsPlaceholder": "Color, size, model, specific features, etc.",
         "requestType": "Request Type",
@@ -501,7 +507,8 @@
         "express": "Express delivery",
         "estimatedBudget": "Estimated Budget (USD)",
         "estimatedBudgetPlaceholder": "E.g.: 500",
-        "invalidBudget": "Estimated budget must be a valid amount.",
+  "invalidBudget": "Estimated budget must be a valid amount.",
+  "max7DigitsHint": "(max 7 digits)",
         "summaryTitle": "Order Summary",
         "almostReady": "Almost ready!",
         "reviewMessage": "Your request will be reviewed by our team and you will receive a quote within the next 24 hours.",
@@ -553,7 +560,7 @@
       },
       "trackingModal": {
         "trackingNumber": "Tracking number",
-  "carrier": "Courier company",
+        "carrier": "Courier company",
         "estimatedDelivery": "Estimated delivery",
         "currentStatus": "Current status",
         "historyTitle": "Tracking history",
@@ -561,7 +568,7 @@
           "created": "Order created",
           "processing": "Processing",
           "shipped": "Shipped",
-          "in_transit": "In transit",
+          "in-transit": "In transit",
           "customs": "In customs",
           "delivered": "Delivered"
         }
@@ -874,11 +881,29 @@
         "description": "Define the role, status and contact details.",
         "fullName": "Full name",
         "email": "Email",
+        "invalidEmail": "Invalid email",
+        "max50Chars": "Max 50 characters.",
+        "emailMax50": "Email must not exceed 50 characters.",
+        "password": "Password",
+        "passwordPlaceholder": "Optional — set an initial password",
+        "passwordMax50": "Password must not exceed 50 characters.",
+  "changePassword": "Change password",
+  "changePasswordPlaceholder": "Leave blank to keep current password",
+  "deleteUser": "Delete User",
+  "confirmDelete": "Confirm Deletion",
+  "delete": "Delete",
         "role": "Role",
         "selectRole": "Select role",
         "cancel": "Cancel",
         "save": "Save",
         "active": "Active"
+      },
+      "delete": {
+        "confirmTitle": "Delete user?",
+        "confirmDescription": "You are about to delete user {{name}}.",
+        "irreversible": "This action cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Delete"
       },
       "messages": {
         "userCreated": "User created",
@@ -973,6 +998,7 @@
         "productDescription": "Product Description",
         "productDescriptionPlaceholder": "Describe the product...",
         "quantity": "Quantity",
+  "quantityRangeHint": "Valid quantity: {{min}}–{{max}}.",
   "invalidQuantity": "Quantity must be greater than zero.",
         "requestType": "Request Type",
         "productLink": "Product Link",
@@ -994,6 +1020,7 @@
   "estimatedBudget": "Estimated budget",
   "estimatedBudgetPlaceholder": "E.g.: 500",
   "invalidBudget": "Estimated budget must be a valid amount.",
+  "max7DigitsHint": "(max 7 digits)",
         "estimatedBudgetUsd": "Estimated Budget (USD)",
         "selectClient": "Select a client",
         "selectDelivery": "Select how you want to receive your order",
@@ -1040,7 +1067,8 @@
         "days": "{{count}} days"
       },
       "alerts": {
-        "onlyImages": "Only JPG, JPEG, PNG or WEBP images are allowed."
+  "onlyImages": "Only JPG, JPEG, PNG or WEBP images are allowed.",
+  "imageTooLarge": "The image must not exceed {{maxMB}} MB."
       },
       "messages": {
   "createError": "Could not create the order.",
@@ -1206,6 +1234,8 @@
           "sendContainer": {
             "title": "Send container #CONT-{{id}}",
             "subtitle": "Add the container's shipping information",
+            "trackingLinkLabel": "Tracking link",
+            "trackingLinkPlaceholder": "Enter the tracking link",
             "trackingLabel": "Tracking number",
             "trackingPlaceholder": "Enter the tracking number",
             "courierLabel": "Courier company",
@@ -2359,6 +2389,8 @@
       "sendContainer": {
             "title": "Send container #CONT-{{id}}",
             "subtitle": "Add the container's shipping information",
+            "trackingLink": "Tracking link",
+            "trackingLinkPlaceholder": "Enter the tracking link",
             "trackingNumber": "Tracking number",
             "trackingNumberPlaceholder": "Enter the tracking number",
             "courierCompany": "Courier company",

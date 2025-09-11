@@ -131,11 +131,12 @@ export default function ChinaOrdersTabContent() {
   const modalEnviarContenedorRef = useRef<HTMLDivElement>(null);
   const [modalEnviarContenedor, setModalEnviarContenedor] = useState<{open:boolean; container?: ContainerItem}>({ open:false });
   const [isClosingModalEnviarContenedor, setIsClosingModalEnviarContenedor] = useState(false);
+  const [sendTrackingLink, setSendTrackingLink] = useState(''); // nuevo campo URL obligatorio
   const [sendTrackingNumber, setSendTrackingNumber] = useState('');
   const [sendCourierCompany, setSendCourierCompany] = useState('');
   const [sendEtaDate, setSendEtaDate] = useState('');
   const [sendingContainer, setSendingContainer] = useState(false);
-  const [containerSendInfo, setContainerSendInfo] = useState<Record<string|number, { trackingNumber: string; courierCompany: string; etaDate: string }>>({});
+  const [containerSendInfo, setContainerSendInfo] = useState<Record<string|number, { trackingLink?: string; trackingNumber: string; courierCompany: string; etaDate: string }>>({});
 
   // ================== PAGINACIÓN (8 por página) ==================
   const ITEMS_PER_PAGE = 8;
@@ -450,12 +451,13 @@ export default function ChinaOrdersTabContent() {
       fetchPedidos();
     } catch(e:any){ console.error(e); toast({ title:'Error desempaquetando caja'});} }
 
-  async function handleSendContainer(container:ContainerItem, details?: { trackingNumber: string; courierCompany: string; etaDate: string }){
+  async function handleSendContainer(container:ContainerItem, details?: { trackingLink?: string; trackingNumber: string; courierCompany: string; etaDate: string }){
     const stateNum = (container.state??1) as number; if(stateNum!==2) return; const containerId = container.container_id ?? container.containers_id ?? container.id; if(!containerId) return;
     try{ const supabase = getSupabaseBrowserClient();
       const baseDetails: any = details ? {
-        tracking_number: details.trackingNumber,
-        tracking_company: details.courierCompany,
+  tracking_number: details.trackingNumber,
+  tracking_company: details.courierCompany,
+  ...(details.trackingLink ? { tracking_link: details.trackingLink } : {})
       } : {};
       // Try with column name 'arrive-data' first (as specified)
       let contErr: any = null;
@@ -468,6 +470,14 @@ export default function ChinaOrdersTabContent() {
           const payload2: any = { ...baseDetails, arrive_date: details.etaDate, state: 3 };
           const res2 = await supabase.from('containers').update(payload2).eq('container_id', containerId);
           contErr = res2.error;
+        }
+        // Si el error es por tracking_link inexistente, reintentar sin ese campo
+        if (contErr && /tracking_link/.test(contErr.message || '')) {
+          const baseWithoutLink = { ...baseDetails };
+          delete (baseWithoutLink as any).tracking_link;
+          const retryPayload: any = { ...baseWithoutLink, arrive_date: details.etaDate, state: 3 };
+          const resRetry = await supabase.from('containers').update(retryPayload).eq('container_id', containerId);
+          contErr = resRetry.error;
         }
         // If still error (likely RLS on tracking fields), try to at least set state=3
         if (contErr) {
@@ -503,7 +513,7 @@ export default function ChinaOrdersTabContent() {
   function closeModalEmpaquetarCaja(){ setIsClosingModalEmpaquetarCaja(true); setTimeout(()=>{ setModalEmpaquetarCaja({open:false}); setIsClosingModalEmpaquetarCaja(false); },200);} 
   function closeModalCrearContenedor(){ setIsClosingModalCrearContenedor(true); setTimeout(()=>{ setModalCrearContenedor({open:false}); setIsClosingModalCrearContenedor(false); setNewContainerName(''); },200);} 
   function closeModalEliminarContenedor(){ setIsClosingModalEliminarContenedor(true); setTimeout(()=>{ setModalEliminarContenedor({open:false}); setIsClosingModalEliminarContenedor(false); },200);} 
-  function closeModalEnviarContenedor(){ setIsClosingModalEnviarContenedor(true); setTimeout(()=>{ setModalEnviarContenedor({open:false}); setIsClosingModalEnviarContenedor(false); setSendTrackingNumber(''); setSendCourierCompany(''); setSendEtaDate(''); },200);} 
+  function closeModalEnviarContenedor(){ setIsClosingModalEnviarContenedor(true); setTimeout(()=>{ setModalEnviarContenedor({open:false}); setIsClosingModalEnviarContenedor(false); setSendTrackingLink(''); setSendTrackingNumber(''); setSendCourierCompany(''); setSendEtaDate(''); },200);} 
 
   // (Antiguas funciones básicas reemplazadas por versiones extendidas arriba)
 
@@ -837,6 +847,7 @@ export default function ChinaOrdersTabContent() {
                           if (id !== undefined && (containerSendInfo as any)[id]) {
                             const saved = (containerSendInfo as any)[id];
                             setSendTrackingNumber(saved.trackingNumber);
+                            setSendTrackingLink(saved.trackingLink || '');
                             setSendCourierCompany(saved.courierCompany);
                             setSendEtaDate(saved.etaDate);
                           } else {
@@ -1042,27 +1053,26 @@ export default function ChinaOrdersTabContent() {
                 e.preventDefault();
                 if (sendingContainer) return;
                 const containerId = modalEnviarContenedor.container?.container_id ?? modalEnviarContenedor.container?.containers_id ?? modalEnviarContenedor.container?.id;
-                if (!sendTrackingNumber.trim() || !sendCourierCompany.trim() || !sendEtaDate) {
-                  // Validación mínima
-                  try { (window as any).toast?.({ title: 'Datos incompletos', description: 'Completa todos los campos.'}); } catch {}
+                const urlOk = (()=>{ try { new URL(sendTrackingLink); return true; } catch { return false; } })();
+                if (!sendTrackingLink.trim() || !urlOk || !sendTrackingNumber.trim() || !sendCourierCompany.trim() || !sendEtaDate) {
+                  try { (window as any).toast?.({ title: 'Datos incompletos', description: !urlOk ? 'El link de tracking no es válido.' : 'Completa todos los campos.'}); } catch {}
                   return;
                 }
                 if (containerId === undefined || !modalEnviarContenedor.container) {
                   closeModalEnviarContenedor();
                   return;
                 }
-                // Guardar datos localmente (persistencia pendiente) y ejecutar envío real (state 2 -> 3)
                 setSendingContainer(true);
                 try {
                   await handleSendContainer(modalEnviarContenedor.container, {
+                    trackingLink: sendTrackingLink.trim(),
                     trackingNumber: sendTrackingNumber.trim(),
                     courierCompany: sendCourierCompany.trim(),
                     etaDate: sendEtaDate
                   });
-                  // Save locally after success
                   setContainerSendInfo(prev => ({
                     ...prev,
-                    [containerId as any]: { trackingNumber: sendTrackingNumber.trim(), courierCompany: sendCourierCompany.trim(), etaDate: sendEtaDate }
+                    [containerId as any]: { trackingLink: sendTrackingLink.trim(), trackingNumber: sendTrackingNumber.trim(), courierCompany: sendCourierCompany.trim(), etaDate: sendEtaDate }
                   }));
                   closeModalEnviarContenedor();
                 } finally {
@@ -1071,6 +1081,12 @@ export default function ChinaOrdersTabContent() {
               }}
               className="space-y-4"
             >
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="trackingLink">
+                  {t('admin.orders.china.modals.sendContainer.trackingLinkLabel', { defaultValue: 'Link de Tracking' })}
+                </label>
+                <Input id="trackingLink" type="url" value={sendTrackingLink} onChange={e=>setSendTrackingLink(e.target.value)} placeholder={t('admin.orders.china.modals.sendContainer.trackingLinkPlaceholder', { defaultValue: 'Ej: https://courier.com/track/XYZ' })} required />
+              </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium" htmlFor="trackingInput">
                   {t('admin.orders.china.modals.sendContainer.trackingLabel', { defaultValue: 'Número de seguimiento' })}
@@ -1094,7 +1110,7 @@ export default function ChinaOrdersTabContent() {
                 <Button
                   type="submit"
                   className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={sendingContainer || !sendTrackingNumber.trim() || !sendCourierCompany.trim() || !sendEtaDate}
+                  disabled={sendingContainer || !sendTrackingLink.trim() || (()=>{ try { new URL(sendTrackingLink); return false;} catch { return true; } })() || !sendTrackingNumber.trim() || !sendCourierCompany.trim() || !sendEtaDate}
                 >
                   {sendingContainer ? t('common.sending', { defaultValue: 'Enviando…' }) : t('admin.orders.china.modals.sendContainer.confirm', { defaultValue: 'Confirmar' })}
                 </Button>

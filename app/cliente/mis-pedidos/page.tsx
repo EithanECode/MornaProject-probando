@@ -55,6 +55,7 @@ import {
   X,
   Filter
   ,Download
+  ,QrCode
 } from 'lucide-react';
 
 // Rutas de animaciones Lottie (desde /public)
@@ -86,6 +87,11 @@ interface Order {
     url: string;
     label: string;
   }>;
+  // Campos de tracking del contenedor relacionado (si aplica)
+  tracking_number?: string | null;
+  tracking_company?: string | null;
+  arrive_date?: string | null;
+  tracking_link?: string | null; // NUEVO: link de tracking del contenedor
 }
 
 interface NewOrderData {
@@ -215,6 +221,11 @@ export default function MisPedidosPage() {
 
   // Estados de la página
   const [orders, setOrders] = useState<Order[]>([]);
+  // Variables solicitadas: mapas por id de pedido -> dato de contenedor
+  const [tracking_number, setTrackingNumberMap] = useState<Record<string, string | null>>({});
+  const [tracking_company, setTrackingCompanyMap] = useState<Record<string, string | null>>({});
+  const [arrive_date, setArriveDateMap] = useState<Record<string, string | null>>({});
+  const [tracking_link, setTrackingLinkMap] = useState<Record<string, string | null>>({}); // NUEVO mapa para link de tracking
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -222,6 +233,7 @@ export default function MisPedidosPage() {
   // Estado del modal de seguimiento
   const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
   const [selectedTrackingOrder, setSelectedTrackingOrder] = useState<TrackingOrder | null>(null);
+  const [isTrackingQRModalOpen, setIsTrackingQRModalOpen] = useState(false); // modal separado para QR del tracking link
 
   // Estados del modal de nuevo pedido
   const [isNewOrderModalOpen, setIsNewOrderModalOpen] = useState(false);
@@ -316,15 +328,89 @@ export default function MisPedidosPage() {
     try {
       const { data, error } = await supabase
         .from('orders')
-  .select('id, productName, description, estimatedBudget, totalQuote, state, created_at, pdfRoutes, quantity')
+  .select('id, productName, description, estimatedBudget, totalQuote, state, created_at, pdfRoutes, quantity, box_id')
         .eq('client_id', clientId)
         .order('created_at', { ascending: false });
       if (error) {
         console.error('Error cargando pedidos:', error);
         return;
       }
+      // Obtener mapas de tracking desde API (service role) para evitar problemas de RLS
+      let tnMap: Record<string, string | null> = {};
+      let tcMap: Record<string, string | null> = {};
+      let adMap: Record<string, string | null> = {};
+      let tlMap: Record<string, string | null> = {}; // tracking_link
+      try {
+        const res = await fetch(`/cliente/mis-pedidos/api/tracking?client_id=${encodeURIComponent(clientId)}`, { cache: 'no-store' });
+        if (res.ok) {
+          const json = await res.json();
+          tnMap = json?.tnMap || {};
+          tcMap = json?.tcMap || {};
+          adMap = json?.adMap || {};
+          tlMap = json?.tlMap || {};
+        } else {
+          console.warn('API tracking no OK:', res.status);
+        }
+      } catch (e) {
+        console.warn('Fallo llamando API tracking:', e);
+      }
+
+      // Fallback: si la API no devolvió nada útil, intentar desde el cliente (puede fallar por RLS)
+    const needsFallback = Object.keys(tnMap).length === 0 && Object.keys(tcMap).length === 0 && Object.keys(adMap).length === 0 && Object.keys(tlMap).length === 0;
+      if (needsFallback && (data || []).length > 0) {
+        try {
+          const boxIds = (data || [])
+            .map((row: any) => row.box_id)
+            .filter((v: any) => v !== null && v !== undefined);
+
+          let boxToContainer: Record<string | number, string | number | null> = {};
+          if (boxIds.length > 0) {
+            const { data: boxesRows } = await supabase
+              .from('boxes')
+              .select('box_id, container_id')
+              .in('box_id', boxIds as any);
+            (boxesRows || []).forEach((b: any) => {
+              if (b?.box_id !== undefined) boxToContainer[b.box_id] = b?.container_id ?? null;
+            });
+          }
+
+          const containerIds = Object.values(boxToContainer).filter((v) => v !== null && v !== undefined);
+          type ContainerTrack = { tracking_number?: string | null; tracking_company?: string | null; arrive_date?: string | null; ['arrive-data']?: string | null; tracking_link?: string | null };
+          const containerInfo: Record<string | number, ContainerTrack> = {};
+          if (containerIds.length > 0) {
+            const { data: containersRows } = await supabase
+              .from('containers')
+              .select('container_id, tracking_number, tracking_company, arrive_date, tracking_link')
+              .in('container_id', containerIds as any);
+            (containersRows || []).forEach((c: any) => {
+              const aid = c?.container_id;
+              if (aid !== undefined) containerInfo[aid] = c as ContainerTrack;
+            });
+          }
+
+          (data || []).forEach((row: any) => {
+            const containerId = row.box_id != null ? (boxToContainer[row.box_id] ?? null) : null;
+            const cInfo = containerId != null ? containerInfo[containerId] : undefined;
+            const arrive = cInfo?.arrive_date ?? (cInfo as any)?.['arrive-data'] ?? null;
+            const oid = String(row.id);
+            tnMap[oid] = cInfo?.tracking_number ?? null;
+            tcMap[oid] = cInfo?.tracking_company ?? null;
+            adMap[oid] = arrive;
+            tlMap[oid] = cInfo?.tracking_link ?? null;
+          });
+        } catch (fallbackErr) {
+          console.warn('Fallback tracking join falló:', fallbackErr);
+        }
+      }
+
       const mapped: Order[] = (data || []).map((row: any) => {
-        const amountNumber = (row.totalQuote ?? row.estimatedBudget ?? 0) as number;
+  const amountNumber = (row.totalQuote ?? row.estimatedBudget ?? 0) as number;
+        const oid = String(row.id);
+  const tn = tnMap[oid] ?? null;
+  const tc = tcMap[oid] ?? null;
+  const ad = adMap[oid] ?? null;
+        const tl = tlMap[oid] ?? null;
+
         return {
           id: String(row.id),
           product: row.productName || 'Pedido',
@@ -339,10 +425,19 @@ export default function MisPedidosPage() {
           estimatedBudget: typeof row.estimatedBudget === 'number' ? row.estimatedBudget : (row.estimatedBudget ? Number(row.estimatedBudget) : null),
           totalQuote: typeof row.totalQuote === 'number' ? row.totalQuote : (row.totalQuote ? Number(row.totalQuote) : null),
           stateNum: typeof row.state === 'number' ? row.state : (row.state ? Number(row.state) : undefined),
-          documents: row.pdfRoutes ? [{ type: 'link' as const, url: row.pdfRoutes, label: 'Resumen PDF' }] : []
+          documents: row.pdfRoutes ? [{ type: 'link' as const, url: row.pdfRoutes, label: 'Resumen PDF' }] : [],
+          tracking_number: tn,
+          tracking_company: tc,
+          arrive_date: ad,
+      tracking_link: tl,
         };
       });
       setOrders(mapped);
+      // Exponer variables solicitadas
+      setTrackingNumberMap(tnMap);
+      setTrackingCompanyMap(tcMap);
+      setArriveDateMap(adMap);
+    setTrackingLinkMap(tlMap);
     } catch (e) {
       console.error('Excepción cargando pedidos:', e);
     }
@@ -440,7 +535,7 @@ export default function MisPedidosPage() {
       { id: '1', key: 'created' },
       { id: '2', key: 'processing' },
       { id: '3', key: 'shipped' },
-  { id: '4', key: 'in_transit' },
+      { id: '4', key: 'in-transit' },
       { id: '5', key: 'customs' },
       { id: '6', key: 'delivered' },
     ];
@@ -486,30 +581,32 @@ export default function MisPedidosPage() {
   const closeTrackingModal = () => {
     setIsTrackingModalOpen(false);
     setTimeout(() => setSelectedTrackingOrder(null), 300);
-  };
-
-  // Funciones helper
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm transition-colors hover:from-yellow-50 hover:to-yellow-100 hover:ring-1 hover:ring-yellow-200 dark:hover:ring-yellow-500/20 hover:brightness-110 dark:hover:brightness-110';
-      case 'quoted': return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm transition-colors hover:from-green-50 hover:to-green-100 hover:ring-1 hover:ring-green-200 dark:hover:ring-green-500/20 hover:brightness-110 dark:hover:brightness-110';
-      case 'processing': return 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm transition-colors hover:from-blue-50 hover:to-blue-100 hover:ring-1 hover:ring-blue-200 dark:hover:ring-blue-500/20 hover:brightness-110 dark:hover:brightness-110';
-      case 'shipped': return 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border-purple-300 shadow-sm transition-colors hover:from-purple-50 hover:to-purple-100 hover:ring-1 hover:ring-purple-200 dark:hover:ring-purple-500/20 hover:brightness-110 dark:hover:brightness-110';
-      case 'delivered': return 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-sm transition-colors hover:from-emerald-50 hover:to-emerald-100 hover:ring-1 hover:ring-emerald-200 dark:hover:ring-emerald-500/20 hover:brightness-110 dark:hover:brightness-110';
-      case 'cancelled': return 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm transition-colors hover:from-red-50 hover:to-red-100 hover:ring-1 hover:ring-red-200 dark:hover:ring-red-500/20 hover:brightness-110 dark:hover:brightness-110';
-      default: return 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-sm transition-colors hover:from-slate-50 hover:to-slate-100 hover:ring-1 hover:ring-slate-200 dark:hover:ring-slate-500/20 hover:brightness-110 dark:hover:brightness-110';
-    }
+  setIsTrackingQRModalOpen(false);
   };
 
   const getStatusText = (status: string) => {
     return t(`client.recentOrders.statuses.${status}`) || status;
   };
 
+
   const getProgressColor = (progress: number) => {
     if (progress >= 80) return 'bg-gradient-to-r from-green-500 to-emerald-500';
     if (progress >= 50) return 'bg-gradient-to-r from-blue-500 to-indigo-500';
     if (progress >= 25) return 'bg-gradient-to-r from-yellow-500 to-orange-500';
     return 'bg-gradient-to-r from-slate-400 to-slate-500';
+  };
+
+  // Color de badge basado en status (se usa en lista y modal detalles)
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm';
+      case 'quoted': return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm';
+      case 'processing': return 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm';
+      case 'shipped': return 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border-purple-300 shadow-sm';
+      case 'delivered': return 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-sm';
+      case 'cancelled': return 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm';
+      default: return 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-sm';
+    }
   };
 
   // Métodos de pago disponibles
@@ -958,7 +1055,11 @@ export default function MisPedidosPage() {
       const file = e.target.files[0];
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
+        alert(t('admin.orders.alerts.onlyImages'));
+        return;
+      }
+      if (file.size > MAX_IMAGE_BYTES) {
+        alert(t('admin.orders.alerts.imageTooLarge', { maxMB: 50 }));
         return;
       }
       setNewOrderData({ ...newOrderData, productImage: file });
@@ -986,7 +1087,11 @@ export default function MisPedidosPage() {
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
       
       if (!validTypes.includes(file.type)) {
-        alert('Solo se permiten imágenes JPG, JPEG, PNG o WEBP.');
+        alert(t('admin.orders.alerts.onlyImages'));
+        return;
+      }
+      if (file.size > MAX_IMAGE_BYTES) {
+        alert(t('admin.orders.alerts.imageTooLarge', { maxMB: 50 }));
         return;
       }
       
@@ -994,12 +1099,25 @@ export default function MisPedidosPage() {
     }
   };
 
+  // Límites y rangos de validación (paridad con Admin)
+  const NAME_MAX = 50;
+  const DESCRIPTION_MAX = 200;
+  const QTY_MIN = 1;
+  const QTY_MAX = 9999;
+  const MAX_IMAGE_BYTES = 50 * 1024 * 1024; // 50 MB
+  const BUDGET_MAX = 9_999_999;
+
   // Validaciones de campos
   const isValidQuantity = (value: any) => {
-    return /^[0-9]+$/.test(String(value)) && Number(value) > 0;
+    return /^[0-9]+$/.test(String(value)) && Number(value) >= QTY_MIN && Number(value) <= QTY_MAX;
   };
   const isValidBudget = (value: any) => {
-    return /^[0-9]+(\.[0-9]{1,2})?$/.test(String(value)) && Number(value) > 0;
+    const str = String(value);
+    if (!/^[0-9]+(\.[0-9]{1,2})?$/.test(str)) return false;
+    const [intPart] = str.split('.');
+    if (intPart.length > 7) return false;
+    const num = Number(str);
+    return num > 0 && num <= BUDGET_MAX;
   };
   const isValidUrl = (value: string) => {
     try {
@@ -1012,7 +1130,9 @@ export default function MisPedidosPage() {
   const canProceedToNext = () => {
     switch (currentStep) {
       case 1:
-        if (!newOrderData.productName || !newOrderData.description) return false;
+  if (!newOrderData.productName || !newOrderData.description) return false;
+  if (newOrderData.productName.length > NAME_MAX) return false;
+  if (newOrderData.description.length > DESCRIPTION_MAX) return false;
         if (!isValidQuantity(newOrderData.quantity)) return false;
         if (newOrderData.requestType === 'link') {
           if (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) return false;
@@ -1215,10 +1335,12 @@ export default function MisPedidosPage() {
                           <Input
                             id="productName"
                             value={newOrderData.productName}
-                            onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value })}
+                            onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value.slice(0, NAME_MAX) })}
                             placeholder={t('client.recentOrders.newOrder.productNamePlaceholder')}
+                            maxLength={NAME_MAX}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
+                          <p className="text-xs text-slate-500 mt-1">{newOrderData.productName.length}/{NAME_MAX}</p>
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
@@ -1232,11 +1354,13 @@ export default function MisPedidosPage() {
                           <Textarea
                             id="description"
                             value={newOrderData.description}
-                            onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value })}
+                            onChange={(e) => setNewOrderData({ ...newOrderData, description: e.target.value.slice(0, DESCRIPTION_MAX) })}
                             placeholder={t('client.recentOrders.newOrder.productDescriptionPlaceholder')}
                             rows={4}
+                            maxLength={DESCRIPTION_MAX}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
+                          <p className="text-xs text-slate-500 mt-1">{newOrderData.description.length}/{DESCRIPTION_MAX}</p>
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
@@ -1250,20 +1374,22 @@ export default function MisPedidosPage() {
                           <Input
                             id="quantity"
                             type="number"
-                            min="1"
+                            min={QTY_MIN}
+                            max={QTY_MAX}
                             value={newOrderData.quantity === 0 ? '' : newOrderData.quantity}
                             onChange={(e) => {
                               const val = e.target.value;
                               if (val === '') {
                                 setNewOrderData({ ...newOrderData, quantity: 0 });
                               } else if (/^[0-9]+$/.test(val)) {
-                                setNewOrderData({ ...newOrderData, quantity: parseInt(val) });
+                                const next = Math.min(QTY_MAX, Math.max(QTY_MIN, parseInt(val)));
+                                setNewOrderData({ ...newOrderData, quantity: next });
                               }
                             }}
                             className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
                           />
-                          {newOrderData.quantity <= 0 && (
-                            <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidQuantity')}</p>
+                          {(!isValidQuantity(newOrderData.quantity) || newOrderData.quantity <= 0) && (
+                            <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidQuantity')} ({QTY_MIN}–{QTY_MAX})</p>
                           )}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
@@ -1374,98 +1500,42 @@ export default function MisPedidosPage() {
                               <Image className="w-4 h-4 mr-2 text-blue-600" />
                               {t('client.recentOrders.newOrder.productImage')}
                             </Label>
-                            
                             {newOrderData.productImage ? (
-                              // Vista de imagen subida
-                              <div className="relative group">
-                                <div className="border-2 border-slate-200 rounded-xl overflow-hidden bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg">
-                                  <div className="relative">
-                                    <img
-                                      src={URL.createObjectURL(newOrderData.productImage)}
-                                      alt="Producto"
-                                      className="w-full h-48 object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                                      <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => document.getElementById('imageUpload')?.click()}
-                                          className="bg-white/90 hover:bg-white text-slate-700 border-0 shadow-lg"
-                                        >
-                                          <Upload className="w-4 h-4 mr-1" />
-                                          {t('client.recentOrders.newOrder.change')}
-                                        </Button>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => setNewOrderData({ ...newOrderData, productImage: undefined })}
-                                          className="bg-white/90 hover:bg-white text-red-600 border-0 shadow-lg hover:text-red-700"
-                                        >
-                                          <X className="w-4 h-4 mr-1" />
-                                          {t('client.recentOrders.newOrder.delete')}
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="p-4">
-                                    <p className="text-sm font-medium text-slate-800 truncate">
-                                      {newOrderData.productImage.name}
-                                    </p>
-                                    <p className="text-xs text-slate-500">
-                                      {(newOrderData.productImage.size / 1024 / 1024).toFixed(2)} MB
-                                    </p>
+                              <div className="relative">
+                                <div className="border-2 border-slate-200 rounded-xl overflow-hidden bg-white">
+                                  <img
+                                    src={URL.createObjectURL(newOrderData.productImage)}
+                                    alt={t('client.recentOrders.newOrder.productImage')}
+                                    className="w-full h-48 object-cover"
+                                  />
+                                  <div className="p-3 flex gap-2">
+                                    <Button variant="outline" size="sm" onClick={() => document.getElementById('imageUpload')?.click()}>
+                                      <Upload className="w-4 h-4 mr-1" />{t('client.recentOrders.newOrder.change')}
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setNewOrderData({ ...newOrderData, productImage: undefined })}
+                                      className="text-red-600"
+                                    >
+                                      <X className="w-4 h-4 mr-1" />{t('client.recentOrders.newOrder.delete')}
+                                    </Button>
                                   </div>
                                 </div>
-                                <input
-                                  id="imageUpload"
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handleImageUpload}
-                                  className="hidden"
-                                />
+                                <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                               </div>
                             ) : (
-                              // Vista de drag & drop
-                              <div 
-                                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 bg-white/80 backdrop-blur-sm group cursor-pointer ${
-                                  isDragOver 
-                                    ? 'border-blue-500 bg-blue-50 shadow-lg' 
-                                    : 'border-slate-300 hover:border-blue-400 hover:shadow-lg'
-                                }`}
-                                onMouseEnter={() => setIsFolderHovered(true)}
-                                onMouseLeave={() => setIsFolderHovered(false)}
+                              <div
+                                className={`border-2 border-dashed rounded-xl p-8 text-center bg-white ${isDragOver ? 'border-blue-500 bg-blue-50' : 'border-slate-300'}`}
                                 onDragOver={handleDragOver}
                                 onDragLeave={handleDragLeave}
                                 onDrop={handleDrop}
                               >
-                                <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                                  <Player
-                                    key={isFolderHovered ? 'folder-active' : 'folder-inactive'}
-                                    src={folderLottie}
-                                    className="w-6 h-6"
-                                    loop={false}
-                                    autoplay={isFolderHovered}
-                                  />
-                                </div>
-                                <p className="text-sm text-slate-600 mb-4 font-medium">
-                                  {t('client.recentOrders.newOrder.dragDrop')}
-                                </p>
-                                <Button
-                                  variant="outline"
-                                  onClick={() => document.getElementById('imageUpload')?.click()}
-                                  className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
-                                >
-                                  <Upload className="w-4 h-4 mr-2" />
-                                  {t('client.recentOrders.newOrder.selectImage')}
+                                <p className="text-sm text-slate-600 mb-4">{t('client.recentOrders.newOrder.dragDrop')}</p>
+                                <Button variant="outline" onClick={() => document.getElementById('imageUpload')?.click()}>
+                                  <Upload className="w-4 h-4 mr-2" />{t('client.recentOrders.newOrder.selectImage')}
                                 </Button>
-                                <input
-                                  id="imageUpload"
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handleImageUpload}
-                                  className="hidden"
-                                />
+                                <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                               </div>
                             )}
                           </div>
@@ -1573,20 +1643,23 @@ export default function MisPedidosPage() {
                         <Label htmlFor="estimatedBudget">{t('client.recentOrders.newOrder.estimatedBudget')}</Label>
                         <Input
                           id="estimatedBudget"
-                          type="number"
-                          min="0"
+                          type="text"
+                          inputMode="decimal"
                           value={newOrderData.estimatedBudget}
                           onChange={(e) => {
-                            const val = e.target.value;
-                            if (/^[0-9]*\.?[0-9]{0,2}$/.test(val)) {
-                              setNewOrderData({ ...newOrderData, estimatedBudget: val });
-                            }
+                            let val = e.target.value.replace(/,/g, '');
+                            if (!/^\d*(?:\.\d{0,2})?$/.test(val)) return;
+                            const [intPart = ''] = val.split('.');
+                            if (intPart.length > 7) return;
+                            const num = Number(val || '0');
+                            if (num > BUDGET_MAX) return;
+                            setNewOrderData({ ...newOrderData, estimatedBudget: val });
                           }}
                           placeholder={t('client.recentOrders.newOrder.estimatedBudgetPlaceholder')}
                           className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                         />
                         {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
-                          <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidBudget')}</p>
+                          <p className="text-xs text-red-500">{t('client.recentOrders.newOrder.invalidBudget')} {t('client.recentOrders.newOrder.max7DigitsHint')}</p>
                         )}
                       </div>
                     </div>
@@ -2121,19 +2194,20 @@ export default function MisPedidosPage() {
                   </Button>
                 </div>
 
-                {/* Información del tracking */}
+                {/* Información del tracking del contenedor */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="space-y-2">
                     <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.trackingNumber')}</p>
-                    <p className="font-mono font-medium">{selectedTrackingOrder.trackingNumber}</p>
+                    <p className="font-mono font-medium">{tracking_number[String(selectedTrackingOrder.id)] || '—'}</p>
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.carrier')}</p>
-                    <p className="font-medium">{selectedTrackingOrder.carrier}</p>
+                    <p className="font-medium">{tracking_company[String(selectedTrackingOrder.id)] || '—'
+}</p>
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.estimatedDelivery')}</p>
-                    <p className="font-medium">{selectedTrackingOrder.estimatedDelivery}</p>
+                    <p className="font-medium">{arrive_date[String(selectedTrackingOrder.id)] || '—'}</p>
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.currentStatus')}</p>
@@ -2174,6 +2248,47 @@ export default function MisPedidosPage() {
                     ))}
                   </div>
                 </div>
+
+                {/* Tracking Link (al final del modal) */}
+                {(() => {
+                  const link = tracking_link[String(selectedTrackingOrder.id)];
+                  if (!link) return null;
+                  let valid = true;
+                  try { new URL(link); } catch { valid = false; }
+                  return (
+                    <div className="mt-8 pt-4 border-t">
+                      <div className="flex items-start gap-4 flex-col sm:flex-row sm:items-center">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold mb-1">Link de Tracking</h3>
+                          {valid ? (
+                            <a
+                              href={link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline break-all text-sm"
+                            >
+                              {link}
+                            </a>
+                          ) : (
+                            <p className="text-slate-500 break-all text-sm">{link}</p>
+                          )}
+                        </div>
+                        {valid && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsTrackingQRModalOpen(true)}
+                            className="flex items-center gap-2 border-blue-300 text-blue-600 hover:bg-blue-50"
+                          >
+                            <QrCode className="w-4 h-4" />
+                            QR
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
@@ -2362,6 +2477,57 @@ export default function MisPedidosPage() {
           </DialogContent>
         </Dialog>
       </main>
+      {/* Modal QR Tracking Link (reinsertado) */}
+      {isTrackingQRModalOpen && selectedTrackingOrder && (
+        <div
+          className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in-up"
+          onClick={() => setIsTrackingQRModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 md:p-8 shadow-2xl border border-slate-200 w-[90%] max-w-sm relative animate-fade-in-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-2 right-2 text-slate-500 hover:text-slate-700 text-sm"
+              onClick={() => setIsTrackingQRModalOpen(false)}
+              aria-label="Cerrar"
+            >
+              ✕
+            </button>
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <QrCode className="w-5 h-5 text-blue-600" /> Código QR Tracking
+            </h3>
+            {(() => {
+              const link = tracking_link[String(selectedTrackingOrder.id)];
+              if (!link) return <p className="text-sm text-slate-500">No disponible.</p>;
+              try { new URL(link); } catch { return <p className="text-sm text-slate-500 break-all">{link}</p>; }
+              const QR = require('react-qr-code').default;
+              return (
+                <div className="flex flex-col items-center gap-4">
+                  <div className="p-4 bg-white border rounded-xl shadow-md">
+                    <QR value={link} size={260} />
+                  </div>
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline break-all text-xs text-center"
+                  >
+                    {link}
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => { navigator.clipboard?.writeText(link).catch(()=>{}); }}
+                    className="text-xs px-3 py-1 rounded-md border border-slate-300 hover:bg-slate-50 text-slate-600"
+                  >
+                    Copiar enlace
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
       
       <style jsx>{`
         @keyframes slideInFromRight {

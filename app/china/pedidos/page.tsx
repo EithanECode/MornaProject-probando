@@ -266,6 +266,7 @@ export default function PedidosChina() {
   const modalEnviarContenedorRef = useRef<HTMLDivElement>(null);
   const [modalEnviarContenedor, setModalEnviarContenedor] = useState<{ open: boolean; container?: ContainerItem }>({ open: false });
   const [isModalEnviarContenedorClosing, setIsModalEnviarContenedorClosing] = useState(false);
+  const [sendTrackingLink, setSendTrackingLink] = useState('');
   const [sendTrackingNumber, setSendTrackingNumber] = useState('');
   const [sendCourierCompany, setSendCourierCompany] = useState('');
   const [sendEtaDate, setSendEtaDate] = useState('');
@@ -601,6 +602,7 @@ export default function PedidosChina() {
     setTimeout(() => {
       setModalEnviarContenedor({ open: false });
       setIsModalEnviarContenedorClosing(false);
+      setSendTrackingLink('');
       setSendTrackingNumber('');
       setSendCourierCompany('');
       setSendEtaDate('');
@@ -982,7 +984,7 @@ export default function PedidosChina() {
   };
 
   // Enviar contenedor: guardar tracking y cambiar estado a 3 (con cascadas)
-  const handleSendContainer = async (container: ContainerItem, details?: { trackingNumber: string; courierCompany: string; etaDate: string }): Promise<boolean> => {
+  const handleSendContainer = async (container: ContainerItem, details?: { trackingNumber: string; courierCompany: string; etaDate: string; trackingLink?: string }): Promise<boolean> => {
     const stateNum = (container.state ?? 1) as number;
     if (stateNum !== 2) return false;
     const containerId = container.container_id ?? container.containers_id ?? container.id;
@@ -990,7 +992,7 @@ export default function PedidosChina() {
     try {
       const supabase = getSupabaseBrowserClient();
       const baseDetails: any = details
-        ? { tracking_number: details.trackingNumber, tracking_company: details.courierCompany }
+        ? { tracking_number: details.trackingNumber, tracking_company: details.courierCompany, ...(details.trackingLink ? { tracking_link: details.trackingLink } : {}) }
         : {};
       // Intento 1: usar 'arrive-data'
       let updateErr: any = null;
@@ -1003,6 +1005,14 @@ export default function PedidosChina() {
           const payload2: any = { ...baseDetails, arrive_date: details.etaDate, state: 3 };
           const res2 = await supabase.from('containers').update(payload2).eq('container_id', containerId);
           updateErr = res2.error;
+        }
+        // Si el problema era tracking_link inexistente, reintentar sin él
+        if (updateErr && /tracking_link/.test(updateErr.message || '')) {
+          const baseWithoutLink = { ...baseDetails };
+          delete (baseWithoutLink as any).tracking_link;
+          const payloadRetry: any = { ...baseWithoutLink, arrive_date: details.etaDate, state: 3 };
+          const resRetry = await supabase.from('containers').update(payloadRetry).eq('container_id', containerId);
+          updateErr = resRetry.error;
         }
         // Si aún falla (p.ej. RLS en columnas de tracking), al menos cambiar el estado
         if (updateErr) {
@@ -1456,7 +1466,7 @@ export default function PedidosChina() {
                             <h3 className="font-semibold text-slate-900 text-sm sm:text-base">#ORD-{pedido.id}</h3>
                             {/* Badge estado principal: forzamos 'Pendiente' explícito para state 2 */}
                             {pedido.numericState === 2 ? (
-                              <Badge className={`hidden sm:inline-block border bg-yellow-100 text-yellow-800 border-yellow-200`}>{t('ordersPage.filters.pending')}</Badge>
+                              <Badge className={`hidden sm:inline-block border bg-yellow-100 text-yellow-800 border-yellow-200`}>{t('chinese.ordersPage.filters.pending')}</Badge>
                             ) : (
                               <Badge className={`hidden sm:inline-block ${getOrderBadge(pedido.numericState).className}`}>{getOrderBadge(pedido.numericState).label}</Badge>
                             )}
@@ -1484,7 +1494,7 @@ export default function PedidosChina() {
                       <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
                         <div className="hidden sm:block">
                           {pedido.numericState === 2 ? (
-                            <Badge className={`border bg-yellow-100 text-yellow-800 border-yellow-200`}>{t('ordersPage.filters.pending')}</Badge>
+                            <Badge className={`border bg-yellow-100 text-yellow-800 border-yellow-200`}>{t('chinese.ordersPage.filters.pending')}</Badge>
                           ) : (
                             <Badge className={`${getOrderBadge(pedido.numericState).className}`}>{getOrderBadge(pedido.numericState).label}</Badge>
                           )}
@@ -1881,13 +1891,22 @@ export default function PedidosChina() {
                 </Button>
               </div>
               <p className="text-slate-600 mb-4">{t('chinese.ordersPage.modals.sendContainer.subtitle')}</p>
+              {/* Helper local para validar URL */}
+              {/** Nota: validación simple usando URL constructor */}
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
+                  const urlOk = (() => { try { new URL(sendTrackingLink); return true; } catch { return false; } })();
                   if (!modalEnviarContenedor.container) return;
-                  if (!sendTrackingNumber.trim() || !sendCourierCompany.trim() || !sendEtaDate.trim()) return;
+                  if (!sendTrackingLink.trim() || !urlOk || !sendTrackingNumber.trim() || !sendCourierCompany.trim() || !sendEtaDate.trim()) {
+                    if (!urlOk) {
+                      toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.modals.sendContainer.invalidTrackingLink', { defaultValue: 'El enlace de tracking no es válido.' }) });
+                    }
+                    return;
+                  }
                   setSendingContainer(true);
                   const ok = await handleSendContainer(modalEnviarContenedor.container, {
+                    trackingLink: sendTrackingLink.trim(),
                     trackingNumber: sendTrackingNumber.trim(),
                     courierCompany: sendCourierCompany.trim(),
                     etaDate: sendEtaDate,
@@ -1911,11 +1930,22 @@ export default function PedidosChina() {
                 className="space-y-4"
               >
                 <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.sendContainer.trackingLink')}</label>
+                  <Input
+                    value={sendTrackingLink}
+                    onChange={(e) => setSendTrackingLink(e.target.value)}
+                    placeholder={t('chinese.ordersPage.modals.sendContainer.trackingLinkPlaceholder')}
+                    type="url"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.sendContainer.trackingNumber')}</label>
                   <Input
                     value={sendTrackingNumber}
-                    onChange={(e) => setSendTrackingNumber(e.target.value)}
+                    onChange={(e) => setSendTrackingNumber(e.target.value.slice(0,50))}
                     placeholder={t('chinese.ordersPage.modals.sendContainer.trackingNumberPlaceholder')}
+                    maxLength={50}
                     required
                   />
                 </div>
@@ -1923,8 +1953,9 @@ export default function PedidosChina() {
                   <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.sendContainer.courierCompany')}</label>
                   <Input
                     value={sendCourierCompany}
-                    onChange={(e) => setSendCourierCompany(e.target.value)}
+                    onChange={(e) => setSendCourierCompany(e.target.value.slice(0,50))}
                     placeholder={t('chinese.ordersPage.modals.sendContainer.courierCompanyPlaceholder')}
+                    maxLength={50}
                     required
                   />
                 </div>
@@ -1941,7 +1972,14 @@ export default function PedidosChina() {
                   <Button type="button" variant="outline" onClick={closeModalEnviarContenedor} disabled={sendingContainer}>
                     {t('chinese.ordersPage.modals.sendContainer.cancel')}
                   </Button>
-                  <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={sendingContainer || !sendTrackingNumber.trim() || !sendCourierCompany.trim() || !sendEtaDate.trim()}>
+                  <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={
+                    sendingContainer ||
+                    !sendTrackingLink.trim() ||
+                    (() => { try { new URL(sendTrackingLink); return false; } catch { return true; } })() ||
+                    !sendTrackingNumber.trim() ||
+                    !sendCourierCompany.trim() ||
+                    !sendEtaDate.trim()
+                  }>
                     {sendingContainer ? t('chinese.ordersPage.modals.sendContainer.sending') : t('chinese.ordersPage.modals.sendContainer.confirm')}
                   </Button>
                 </div>
