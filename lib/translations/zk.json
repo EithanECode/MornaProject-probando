@@ -425,12 +425,19 @@
         "actions": "操作"
       },
       "statuses": {
-        "pending": "待处理",
-        "quoted": "已报价",
-        "processing": "处理中",
-        "shipped": "已发货",
-        "delivered": "已交付",
-        "cancelled": "已取消"
+  "pending": "待处理",
+  "quoted": "已报价",
+  "processing": "处理中",
+  "shipped": "已发货",
+  "delivered": "已交付",
+  "cancelled": "已取消",
+  "paymentValidated": "付款已验证",
+  "packagingBox": "正在打包（箱）",
+  "packagingContainer": "正在打包（集装箱）",
+  "sentFromChina": "已从中国发出",
+  "inCustoms": "海关处理中",
+  "arriving": "正在到达",
+  "inStore": "已到店铺"
       },
       "actions": {
         "view": "查看详情",

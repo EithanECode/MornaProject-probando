@@ -1842,24 +1842,28 @@ export default function MisPedidosPage() {
                         {typeof order.stateNum === 'number' ? (
                           <Badge className={`text-xs md:text-sm font-semibold px-3 py-1 transition-colors hover:brightness-110 hover:ring-1 ${
                             order.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
-                            order.stateNum === 12 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
-                            order.stateNum === 11 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
-                            order.stateNum === 10 ? 'bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:ring-indigo-200 dark:hover:ring-indigo-500/20' :
-                            order.stateNum === 9 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
+                            order.stateNum === 12 ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200 dark:hover:ring-gray-500/20' :
+                            order.stateNum === 11 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
+                            order.stateNum === 10 ? 'bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-50 hover:ring-orange-200 dark:hover:ring-orange-500/20' :
+                            order.stateNum === 9 ? 'bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-50 hover:ring-cyan-200 dark:hover:ring-cyan-500/20' :
                             order.stateNum === 8 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
-                            (order.stateNum >= 5 && order.stateNum <= 7) ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200 dark:hover:ring-gray-500/20' :
+                            order.stateNum === 7 ? 'bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:ring-indigo-200 dark:hover:ring-indigo-500/20' :
+                            order.stateNum === 6 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
+                            order.stateNum === 5 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
                             order.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
                             order.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
                             order.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
                             'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20'
                           }`}>
-                            {order.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
-                             order.stateNum === 12 ? t('client.recentOrders.statuses.processing') :
-                             order.stateNum === 11 ? t('client.recentOrders.statuses.processing') :
-                             order.stateNum === 10 ? t('client.recentOrders.statuses.processing') :
-                             order.stateNum === 9 ? t('client.recentOrders.statuses.processing') :
+                            {order.stateNum === 5 ? t('client.recentOrders.statuses.paymentValidated') :
+                             order.stateNum === 6 ? t('client.recentOrders.statuses.packagingBox') :
+                             order.stateNum === 7 ? t('client.recentOrders.statuses.packagingContainer') :
+                             order.stateNum === 9 ? t('client.recentOrders.statuses.sentFromChina') :
+                             order.stateNum === 10 ? t('client.recentOrders.statuses.inCustoms') :
+                             order.stateNum === 11 ? t('client.recentOrders.statuses.arriving') :
+                             order.stateNum === 12 ? t('client.recentOrders.statuses.inStore') :
+                             order.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
                              order.stateNum === 8 ? t('client.recentOrders.statuses.shipped') :
-                             (order.stateNum >= 5 && order.stateNum <= 7) ? t('client.recentOrders.statuses.processing') :
                              order.stateNum === 4 ? t('client.recentOrders.statuses.processing') :
                              order.stateNum === 3 ? t('client.recentOrders.statuses.quoted') :
                              order.stateNum === 2 ? t('client.recentOrders.statuses.pending') :
@@ -1986,24 +1990,29 @@ export default function MisPedidosPage() {
                     {typeof selectedOrder.stateNum === 'number' ? (
                       <Badge className={`text-xs font-semibold px-3 py-1 transition-colors hover:brightness-110 hover:ring-1 ${
                         selectedOrder.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
-                        selectedOrder.stateNum === 12 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
-                        selectedOrder.stateNum === 11 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
-                        selectedOrder.stateNum === 10 ? 'bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:ring-indigo-200 dark:hover:ring-indigo-500/20' :
-                        selectedOrder.stateNum === 9 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
+                        selectedOrder.stateNum === 12 ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200 dark:hover:ring-gray-500/20' :
+                        selectedOrder.stateNum === 11 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
+                        selectedOrder.stateNum === 10 ? 'bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-50 hover:ring-orange-200 dark:hover:ring-orange-500/20' :
+                        selectedOrder.stateNum === 9 ? 'bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-50 hover:ring-cyan-200 dark:hover:ring-cyan-500/20' :
                         selectedOrder.stateNum === 8 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
-                        (selectedOrder.stateNum >= 5 && selectedOrder.stateNum <= 7) ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200 dark:hover:ring-gray-500/20' :
+                        selectedOrder.stateNum === 7 ? 'bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:ring-indigo-200 dark:hover:ring-indigo-500/20' :
+                        selectedOrder.stateNum === 6 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
+                        selectedOrder.stateNum === 5 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
                         selectedOrder.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
                         selectedOrder.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
                         selectedOrder.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
                         'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20'
                       }`}>
                         {selectedOrder.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
-                         selectedOrder.stateNum === 12 ? t('client.recentOrders.statuses.processing') :
-                         selectedOrder.stateNum === 11 ? t('client.recentOrders.statuses.processing') :
-                         selectedOrder.stateNum === 10 ? t('client.recentOrders.statuses.processing') :
-                         selectedOrder.stateNum === 9 ? t('client.recentOrders.statuses.processing') :
+                         selectedOrder.stateNum === 5 ? t('client.recentOrders.statuses.paymentValidated') :
+                         selectedOrder.stateNum === 6 ? t('client.recentOrders.statuses.packagingBox') :
+                         selectedOrder.stateNum === 7 ? t('client.recentOrders.statuses.packagingContainer') :
+                         selectedOrder.stateNum === 9 ? t('client.recentOrders.statuses.sentFromChina') :
+                         selectedOrder.stateNum === 10 ? t('client.recentOrders.statuses.inCustoms') :
+                         selectedOrder.stateNum === 11 ? t('client.recentOrders.statuses.arriving') :
+                         selectedOrder.stateNum === 12 ? t('client.recentOrders.statuses.inStore') :
+                         selectedOrder.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
                          selectedOrder.stateNum === 8 ? t('client.recentOrders.statuses.shipped') :
-                         (selectedOrder.stateNum >= 5 && selectedOrder.stateNum <= 7) ? t('client.recentOrders.statuses.processing') :
                          selectedOrder.stateNum === 4 ? t('client.recentOrders.statuses.processing') :
                          selectedOrder.stateNum === 3 ? t('client.recentOrders.statuses.quoted') :
                          selectedOrder.stateNum === 2 ? t('client.recentOrders.statuses.pending') :

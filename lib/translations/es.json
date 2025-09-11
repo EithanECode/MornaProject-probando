@@ -395,8 +395,15 @@
         "quoted": "Cotizado",
         "processing": "Procesando",
         "shipped": "Enviado",
-        "delivered": "Entregado",
-        "cancelled": "Cancelado"
+        "cancelled": "Cancelado",
+        "paymentValidated": "Pago validado",
+        "packagingBox": "Empaquetando (caja)",
+        "packagingContainer": "Empaquetando (contenedor)",
+        "sentFromChina": "Enviada de China",
+        "inCustoms": "En aduana",
+        "arriving": "Llegando",
+        "inStore": "Producto en tienda",
+        "delivered": "Entregado"
       },
       "actions": {
         "view": "Ver detalles",
