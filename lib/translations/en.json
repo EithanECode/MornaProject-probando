@@ -881,11 +881,23 @@
         "password": "Password",
         "passwordPlaceholder": "Optional — set an initial password",
         "passwordMax50": "Password must not exceed 50 characters.",
+  "changePassword": "Change password",
+  "changePasswordPlaceholder": "Leave blank to keep current password",
+  "deleteUser": "Delete User",
+  "confirmDelete": "Confirm Deletion",
+  "delete": "Delete",
         "role": "Role",
         "selectRole": "Select role",
         "cancel": "Cancel",
         "save": "Save",
         "active": "Active"
+      },
+      "delete": {
+        "confirmTitle": "Delete user?",
+        "confirmDescription": "You are about to delete user {{name}}.",
+        "irreversible": "This action cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Delete"
       },
       "messages": {
         "userCreated": "User created",

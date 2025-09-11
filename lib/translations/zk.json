@@ -882,11 +882,23 @@
         "password": "密码",
         "passwordPlaceholder": "可选 — 设定初始密码",
         "passwordMax50": "密码长度不能超过 50 个字符。",
+        "changePassword": "修改密码",
+        "changePasswordPlaceholder": "留空则保持当前密码",
+        "deleteUser": "删除用户",
+        "confirmDelete": "确认删除",
+        "delete": "删除",
         "role": "角色",
         "selectRole": "选择角色",
         "cancel": "取消",
         "save": "保存",
         "active": "启用"
+      },
+      "delete": {
+        "confirmTitle": "删除用户？",
+        "confirmDescription": "你即将删除用户 {{name}}。",
+        "irreversible": "该操作无法撤销。",
+        "cancel": "取消",
+        "confirm": "删除"
       },
       "messages": {
         "userCreated": "用户已创建",

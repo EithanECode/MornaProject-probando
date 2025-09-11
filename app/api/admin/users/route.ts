@@ -111,7 +111,7 @@ export async function PATCH(req: Request) {
   try {
     const supabase = getSupabaseServiceRoleClient();
     const body = await req.json();
-  const { id, fullName, email, role, status, prevRole, userLevel }: { id: string; fullName?: string; email?: string; role?: DbRole; status?: 'activo' | 'inactivo'; prevRole?: DbRole; userLevel?: string } = body || {};
+  const { id, fullName, email, role, status, prevRole, userLevel, newPassword }: { id: string; fullName?: string; email?: string; role?: DbRole; status?: 'activo' | 'inactivo'; prevRole?: DbRole; userLevel?: string; newPassword?: string } = body || {};
 
     if (!id) {
       return NextResponse.json({ error: 'Missing user id' }, { status: 400 });
@@ -154,14 +154,18 @@ export async function PATCH(req: Request) {
     }
 
     // Update auth user email and/or status in user_metadata
-    if (email || status) {
+    if (email || status || newPassword) {
       if (email && email.length > 50) {
         return NextResponse.json({ error: 'El email no debe exceder 50 caracteres.' }, { status: 400 });
       }
+      if (newPassword && newPassword.length > 50) {
+        return NextResponse.json({ error: 'La contraseña no puede superar 50 caracteres.' }, { status: 400 });
+      }
       const meta: Record<string, any> = {};
-      if (status) meta.status = status; // store as metadata; enforcement is app-specific
+      if (status) meta.status = status;
       const attrs: any = {};
       if (email) attrs.email = email;
+      if (newPassword && newPassword.trim().length > 0) attrs.password = newPassword.trim();
       if (Object.keys(meta).length > 0) attrs.user_metadata = meta;
       if (Object.keys(attrs).length > 0) {
         const { error: updAuthErr } = await supabase.auth.admin.updateUserById(id, attrs);

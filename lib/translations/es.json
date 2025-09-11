@@ -1338,11 +1338,23 @@
         "password": "Contraseña",
         "passwordPlaceholder": "Opcional — establece una contraseña inicial",
         "passwordMax50": "La contraseña no puede superar 50 caracteres.",
+        "changePassword": "Cambiar contraseña",
+        "changePasswordPlaceholder": "Deja vacío para mantener la actual",
+        "deleteUser": "Eliminar Usuario",
+        "confirmDelete": "Confirmar Eliminación",
+        "delete": "Eliminar",
         "role": "Rol",
         "selectRole": "Selecciona un rol",
         "cancel": "Cancelar",
         "save": "Guardar",
         "active": "Activo"
+      },
+      "delete": {
+        "confirmTitle": "¿Eliminar usuario?",
+        "confirmDescription": "Estás a punto de eliminar al usuario {{name}}.",
+        "irreversible": "Esta acción no se puede deshacer.",
+        "cancel": "Cancelar",
+        "confirm": "Eliminar"
       },
       "messages": {
         "userCreated": "Usuario creado",
