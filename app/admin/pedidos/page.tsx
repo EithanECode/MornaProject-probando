@@ -1354,13 +1354,13 @@ export default function PedidosPage() {
 
             <TabsContent
               value="venezuela"
-              className="space-y-6 data-[state=active]:animate-in data-[state=active]:fade-in-50 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-200 motion-reduce:transition-none motion-reduce:animate-none"
+              className="space-y-6 min-h-[60vh] data-[state=active]:animate-in data-[state=active]:fade-in-50 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-200 motion-reduce:transition-none motion-reduce:animate-none"
             >
               <VenezuelaOrdersTabContent />
             </TabsContent>
             <TabsContent
               value="china"
-              className="space-y-6 data-[state=active]:animate-in data-[state=active]:fade-in-50 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-200 motion-reduce:transition-none motion-reduce:animate-none"
+              className="space-y-6 min-h-[60vh] data-[state=active]:animate-in data-[state=active]:fade-in-50 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-200 motion-reduce:transition-none motion-reduce:animate-none"
             >
               <ChinaOrdersTabContent />
             </TabsContent>
