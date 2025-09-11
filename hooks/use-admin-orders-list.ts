@@ -30,7 +30,9 @@ export function useAdminOrdersList() {
       const [{ data: orders, error: ordersError }, { data: clients, error: clientsError }] = await Promise.all([
         supabase
           .from('orders')
-          .select('id, state, productName, description, client_id, asignedEVzla, asignedEChina, created_at, estimatedBudget, reputation, pdfRoutes'),
+          .select('id, state, productName, description, client_id, asignedEVzla, asignedEChina, created_at, estimatedBudget, reputation, pdfRoutes')
+          // FIFO: más antiguos primero
+          .order('created_at', { ascending: true }),
         supabase
           .from('clients')
           .select('user_id, name'),

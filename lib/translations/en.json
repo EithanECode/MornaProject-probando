@@ -430,7 +430,15 @@
         "processing": "Processing",
         "shipped": "Shipped",
         "delivered": "Delivered",
-        "cancelled": "Cancelled"
+  "cancelled": "Cancelled",
+  "paymentValidated": "Payment validated",
+  "packagingBox": "Packaging (box)",
+  "packagingContainer": "Packaging (container)",
+  "sentFromChina": "Sent from China",
+  "inCustoms": "In customs",
+  "arriving": "Arriving",
+  "inStore": "Product in store",
+  "delivered": "Delivered"
       },
       "actions": {
         "view": "View details",
@@ -545,7 +553,7 @@
       },
       "trackingModal": {
         "trackingNumber": "Tracking number",
-        "carrier": "Carrier",
+  "carrier": "Courier company",
         "estimatedDelivery": "Estimated delivery",
         "currentStatus": "Current status",
         "historyTitle": "Tracking history",
@@ -895,6 +903,7 @@
       "title": "Order Management",
       "subtitle": "Manage and track all orders",
   "chinaTabLabel": "China",
+  "vzlaTabLabel": "Venezuela",
       "listTitle": "Order List",
       "listDescription": "{{count}} orders found",
       "search": "Search orders...",
@@ -912,6 +921,7 @@
       },
       "table": {
         "id": "ID",
+  "date": "Date",
         "client": "Client",
         "description": "Description",
         "status": "Status",

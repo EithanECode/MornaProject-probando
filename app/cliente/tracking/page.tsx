@@ -438,7 +438,7 @@ export default function TrackingPage() {
                         <span className="font-mono font-medium">{order.trackingNumber}</span>
                       </div>
                       <div className="flex items-center justify-between text-xs md:text-sm">
-                        <span className="text-slate-600">Transportista:</span>
+                        <span className="text-slate-600">Empresa de encomienda:</span>
                         <span className="font-medium">{order.carrier}</span>
                       </div>
                       <div className="flex items-center justify-between text-xs md:text-sm">
@@ -528,7 +528,7 @@ export default function TrackingPage() {
                   <p className="font-mono font-medium">{selectedOrder.trackingNumber}</p>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-sm text-slate-600">Transportista</p>
+                  <p className="text-sm text-slate-600">Empresa de encomienda</p>
                   <p className="font-medium">{selectedOrder.carrier}</p>
                 </div>
                 <div className="space-y-2">
