@@ -787,7 +787,11 @@
         "notificationsUpdated": "Notifications updated",
         "notificationsUpdatedDesc": "Your notification preferences have been saved.",
         "securityUpdated": "Security settings updated",
-        "securityUpdatedDesc": "Security changes have been applied successfully."
+  "securityUpdatedDesc": "Security changes have been applied successfully.",
+  "photoUpdated": "Photo updated successfully",
+  "photoUpdatedDesc": "Your profile picture has been updated.",
+  "photoDeleted": "Photo removed",
+  "photoDeletedDesc": "Your profile picture has been deleted."
       }
     },
     "dashboard": {

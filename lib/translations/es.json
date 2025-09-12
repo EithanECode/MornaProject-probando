@@ -1246,7 +1246,11 @@
         "notificationsUpdated": "Notificaciones actualizadas",
         "notificationsUpdatedDesc": "Tus preferencias de notificación se han guardado.",
         "securityUpdated": "Configuración de seguridad actualizada",
-        "securityUpdatedDesc": "Los cambios de seguridad se han aplicado correctamente."
+  "securityUpdatedDesc": "Los cambios de seguridad se han aplicado correctamente.",
+  "photoUpdated": "Foto actualizada con éxito",
+  "photoUpdatedDesc": "Tu foto de perfil ha sido actualizada.",
+  "photoDeleted": "Foto eliminada",
+  "photoDeletedDesc": "Tu foto de perfil ha sido eliminada."
       }
     },
     "dashboard": {

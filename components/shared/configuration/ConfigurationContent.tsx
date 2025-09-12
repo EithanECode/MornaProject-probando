@@ -75,7 +75,8 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     idioma: language,
     zonaHoraria: 'America/Caracas',
     fotoPerfil: null as File | null,
-    fotoPreview: null as string | null
+  fotoPreview: null as string | null,
+  fotoVersion: 0 // para controlar cache busting sólo cuando cambie
   });
   // Baseline para detectar cambios en perfil
   const [profileBaseline, setProfileBaseline] = useState(() => ({
@@ -133,19 +134,24 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     loadUserImage();
   }, []);
 
-  // Sincronizar idioma del contexto con el formulario
+  // Inicializar idioma sólo al montar; no cambiar hasta guardar.
   useEffect(() => {
     setFormData(prev => ({ ...prev, idioma: language }));
-  }, [language]);
+    setProfileBaseline(prev => ({ ...prev, idioma: language }));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
     // Solo limitar longitud para campos solicitados
     const limitedValue = ['nombre', 'email'].includes(field) ? value.slice(0, MAX_FIELD_LENGTH) : value;
-    setFormData(prev => ({ ...prev, [field]: limitedValue }));
-
-    if (field === 'idioma' && ['es', 'en', 'zh'].includes(limitedValue)) {
-      setLanguage(limitedValue as 'es' | 'en' | 'zh');
+    let processed = limitedValue;
+    if (field === 'telefono') {
+      // Permitir + dígitos, espacios y guiones. Longitud máxima 20 para soportar formatos internacionales.
+      processed = processed.replace(/[^+0-9\-\s]/g, '').slice(0, 20);
     }
+    setFormData(prev => ({ ...prev, [field]: processed }));
+
+  // Cambio de idioma diferido hasta guardar
   };
 
   const handlePasswordChange = (field: string, value: string) => {
@@ -306,10 +312,11 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     }
 
   // Estado local + callback al contenedor
-    setFormData(prev => ({ ...prev, fotoPreview: urlData.publicUrl }));
-    onUserImageUpdate?.(urlData.publicUrl);
+  setFormData(prev => ({ ...prev, fotoPreview: urlData.publicUrl, fotoVersion: prev.fotoVersion + 1 }));
+    // Añadimos un query param único sólo para la versión global (Sidebar)
+    onUserImageUpdate?.(`${urlData.publicUrl}?v=${Date.now()}`);
 
-    toast({ title: 'Éxito', description: 'Foto de perfil actualizada.', variant: 'default' });
+  toast({ title: t('admin.configuration.messages.photoUpdated'), description: t('admin.configuration.messages.photoUpdatedDesc'), variant: 'default' });
   };
 
   const handleDeletePhoto = async () => {
@@ -338,10 +345,10 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
       await supabase.from('userlevel').update({ user_image: null }).eq('id', user.id);
 
       // Estado local + callback
-      setFormData(prev => ({ ...prev, fotoPreview: null }));
+  setFormData(prev => ({ ...prev, fotoPreview: null, fotoVersion: prev.fotoVersion + 1 }));
       onUserImageUpdate?.(undefined);
 
-      toast({ title: 'Foto eliminada', description: 'La foto de perfil ha sido eliminada.', variant: 'default' });
+  toast({ title: t('admin.configuration.messages.photoDeleted'), description: t('admin.configuration.messages.photoDeletedDesc'), variant: 'default' });
     } catch (err) {
       toast({ title: 'Error', description: 'No se pudo eliminar la foto.', variant: 'destructive' });
     } finally {
@@ -504,6 +511,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                             id="telefono"
                             value={formData.telefono}
                             onChange={(e) => handleInputChange('telefono', e.target.value)}
+                            maxLength={20}
                             placeholder={t('admin.configuration.profile.placeholders.phone')}
                           />
                         </div>
@@ -638,7 +646,11 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                         <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center">
                           {formData.fotoPreview ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={formData.fotoPreview} alt="avatar" className="w-full h-full object-cover" />
+                            <img
+                              src={`${formData.fotoPreview}${formData.fotoPreview.includes('?') ? '&' : '?'}v=${formData.fotoVersion}`}
+                              alt="avatar"
+                              className="w-full h-full object-cover"
+                            />
                           ) : (
                             <User className="w-14 h-14 md:w-16 md:h-16 text-slate-500" />
                           )}
@@ -660,7 +672,8 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>{t('admin.configuration.profile.profilePicture.confirmDeleteTitle')}</AlertDialogTitle>
+                                {/* Usar la clave sin el prefijo 'admin' según estructura existente (client.configuration...) */}
+                                <AlertDialogTitle>{t('client.configuration.profile.profilePicture.confirmDeleteTitle')}</AlertDialogTitle>
                                 <AlertDialogDescription>
                                   {t('common.actionCannotBeUndone')}
                                 </AlertDialogDescription>

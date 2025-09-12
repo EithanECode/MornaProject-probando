@@ -788,7 +788,11 @@
         "notificationsUpdated": "通知已更新",
         "notificationsUpdatedDesc": "你的通知偏好已保存。",
         "securityUpdated": "安全设置已更新",
-        "securityUpdatedDesc": "安全更改已成功应用。"
+  "securityUpdatedDesc": "安全更改已成功应用。",
+  "photoUpdated": "头像更新成功",
+  "photoUpdatedDesc": "你的头像已更新。",
+  "photoDeleted": "头像已删除",
+  "photoDeletedDesc": "你的头像已被删除。"
       }
     },
     "dashboard": {

@@ -1178,8 +1178,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
             <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center overflow-hidden`}>
               {userInfo.userImage && !imageError ? (
                 <Image
-                  key={userInfo.userImage} // Forzar recarga cuando cambie la URL
-                  src={`${userInfo.userImage}?t=${Date.now()}`} // Agregar timestamp para evitar cache del navegador
+                  src={userInfo.userImage} // URL estable para permitir cache entre navegaciones
                   alt="Foto de perfil"
                   width={40}
                   height={40}
