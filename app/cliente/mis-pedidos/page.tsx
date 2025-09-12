@@ -87,6 +87,7 @@ interface Order {
     url: string;
     label: string;
   }>;
+  pdfRoutes?: string | null; // URL del PDF del pedido
   // Campos de tracking del contenedor relacionado (si aplica)
   tracking_number?: string | null;
   tracking_company?: string | null;
@@ -426,6 +427,7 @@ export default function MisPedidosPage() {
           totalQuote: typeof row.totalQuote === 'number' ? row.totalQuote : (row.totalQuote ? Number(row.totalQuote) : null),
           stateNum: typeof row.state === 'number' ? row.state : (row.state ? Number(row.state) : undefined),
           documents: row.pdfRoutes ? [{ type: 'link' as const, url: row.pdfRoutes, label: 'Resumen PDF' }] : [],
+          pdfRoutes: row.pdfRoutes || null,
           tracking_number: tn,
           tracking_company: tc,
           arrive_date: ad,
@@ -2140,7 +2142,21 @@ export default function MisPedidosPage() {
                             {doc.type === 'image' ? '📷' : '🔗'}
                           </div>
                           <span className="text-sm">{doc.label}</span>
-                          <Button variant="ghost" size="sm" className="h-6 px-2 ml-auto">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-6 px-2 ml-auto"
+                            onClick={() => {
+                              if (selectedOrder.pdfRoutes) {
+                                try {
+                                  const url = selectedOrder.pdfRoutes;
+                                  window.open(url, '_blank', 'noopener,noreferrer');
+                                } catch (e) {
+                                  console.error('No se pudo abrir el PDF:', e);
+                              }
+                      }
+                    }}>
+                              
                             {t('client.recentOrders.actions.view')}
                           </Button>
                         </div>
@@ -2153,7 +2169,7 @@ export default function MisPedidosPage() {
                 <div className="flex gap-2 pt-4 border-t">
                   <Button variant="outline" className="flex-1">
                     <Download className="h-4 w-4 mr-2" />
-                    {t('client.recentOrders.modal.downloadInvoice')}
+                    {selectedOrder.pdfRoutes ? t('client.recentOrders.modal.downloadInvoice') : t('client.recentOrders.modal.downloadInvoice')}
                   </Button>
                 </div>
               </div>

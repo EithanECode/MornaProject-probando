@@ -794,12 +794,16 @@ export default function VenezuelaPedidosPage() {
                               stateNum === 1
                                 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50 transition-colors'
                                 : stateNum === 2
+                                ? 'bg-green-100 text-blue-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50 transition-colors'
+                                : stateNum === 3
+                                ? 'bg-green-100 text-blue-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50 transition-colors'
+                                : stateNum === 4
                                 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50 transition-colors'
                                 : stateNum === 5 || stateNum === 6
                                 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50 transition-colors'
                                 : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50 transition-colors'
                             }`}>
-                              {stateNum === 1 ? t('venezuela.pedidos.boxesBadges.new') : stateNum === 2 ? t('venezuela.pedidos.boxesBadges.ready') : stateNum === 5 ? t('venezuela.pedidos.boxesBadges.received') : stateNum === 6 ? t('venezuela.pedidos.boxesBadges.completed') : t('venezuela.pedidos.boxesBadges.state', { num: stateNum })}
+                              {stateNum === 1 ? t('venezuela.pedidos.boxesBadges.new') : stateNum === 2 ? t('venezuela.pedidos.boxesBadges.ready') : stateNum === 3 ? t('venezuela.pedidos.boxesBadges.inContainer') : stateNum === 4 ? t('venezuela.pedidos.boxesBadges.traveling') : stateNum === 5 ? t('venezuela.pedidos.boxesBadges.received') : stateNum === 6 ? t('venezuela.pedidos.boxesBadges.completed') : t('venezuela.pedidos.boxesBadges.state', { num: stateNum })}
                             </Badge>
                             {/* Botón Recibido: visible solo cuando boxes.state === 5 */}
                             {stateNum === 5 && (
@@ -956,7 +960,7 @@ export default function VenezuelaPedidosPage() {
                                 : stateNum === 2
                                 ? t('venezuela.pedidos.containersBadges.inTransit')
                                 : stateNum === 3
-                                ? 'viajando'
+                                ? t('venezuela.pedidos.containersBadges.traveling')
                                 : stateNum === 4
                                 ? t('venezuela.pedidos.containersBadges.received')
                                 : t('venezuela.pedidos.containersBadges.state', { num: stateNum })}

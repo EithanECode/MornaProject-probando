@@ -1712,10 +1712,10 @@ export default function PedidosPage() {
               <div className={mounted && theme === 'dark' ? 'md:w-2/3 p-4 md:p-6 lg:p-8 border-b md:border-b-0 md:border-r border-slate-700' : 'md:w-2/3 p-4 md:p-6 lg:p-8 border-b md:border-b-0 md:border-r border-gray-200'}>
                 <DialogHeader>
                   <DialogTitle className={`text-lg md:text-xl lg:text-2xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                    Detalles del Pedido: {selectedOrder.id}
+                    {t('admin.orders.modal.detailsTitle', { id: selectedOrder.id })}
                   </DialogTitle>
                   <DialogDescription className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-500'}`}>
-                    Información detallada sobre el pedido y su estado actual.
+                    {t('admin.orders.modal.detailsDescription')}
                   </DialogDescription>
                 </DialogHeader>
 
@@ -1726,7 +1726,7 @@ export default function PedidosPage() {
                       <Package className={mounted && theme === 'dark' ? 'w-4 h-4 md:w-5 md:h-5 text-blue-300' : 'w-4 h-4 md:w-5 md:h-5 text-blue-600'} />
                     </div>
                     <div>
-                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Cliente</p>
+                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('admin.orders.modal.client')}</p>
                       <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>{selectedOrder.client}</p>
                     </div>
                   </div>
@@ -1736,7 +1736,7 @@ export default function PedidosPage() {
                       <MapPin className={mounted && theme === 'dark' ? 'w-4 h-4 md:w-5 md:h-5 text-purple-300' : 'w-4 h-4 md:w-5 md:h-5 text-purple-600'} />
                     </div>
                     <div>
-                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Asignado a</p>
+                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('admin.orders.modal.assignedTo')}</p>
                       <Badge className={`${assignedConfig[selectedOrder.assignedTo].color} border text-xs md:text-sm`}>
                         {t(`admin.orders.assigned.${selectedOrder.assignedTo}`)}
                       </Badge>
@@ -1748,7 +1748,7 @@ export default function PedidosPage() {
                       <Clock className={mounted && theme === 'dark' ? 'w-4 h-4 md:w-5 md:h-5 text-green-300' : 'w-4 h-4 md:w-5 md:h-5 text-green-600'} />
                     </div>
                     <div>
-                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Tiempo Transcurrido</p>
+                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('admin.orders.modal.elapsedTime')}</p>
                       <p className={`text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>{t('admin.orders.table.daysElapsed', { count: selectedOrder.daysElapsed })}</p>
                     </div>
                   </div>
@@ -1758,7 +1758,7 @@ export default function PedidosPage() {
                       <Calendar className={mounted && theme === 'dark' ? 'w-4 h-4 md:w-5 md:h-5 text-orange-300' : 'w-4 h-4 md:w-5 md:h-5 text-orange-600'} />
                     </div>
                     <div>
-                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Estado Actual</p>
+                      <p className={`font-semibold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('admin.orders.modal.currentStatus')}</p>
                       <Badge className={`${statusConfig[selectedOrder.status].color} border text-xs md:text-sm`}>
                         {
                           (() => {
@@ -1773,49 +1773,34 @@ export default function PedidosPage() {
                 </div>
 
                 <div className="mt-6 md:mt-8">
-                  <p className={`font-semibold text-lg md:text-xl ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Descripción del Pedido</p>
+                  <p className={`font-semibold text-lg md:text-xl ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('admin.orders.modal.orderDescription')}</p>
                   <p className={`mt-2 text-sm md:text-base ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>{selectedOrder.description}</p>
                 </div>
               </div>
 
               {/* Sección derecha - Historial y Acciones */}
-              <div className={mounted && theme === 'dark' ? 'md:w-1/3 p-4 md:p-6 lg:p-8 bg-slate-800 flex flex-col justify-between' : 'md:w-1/3 p-4 md:p-6 lg:p-8 bg-gray-50 flex flex-col justify-between'}>
-                <div>
-                  <h3 className={`font-bold text-base md:text-lg ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Historial del Pedido</h3>
-                  <div className="mt-3 md:mt-4 space-y-3 md:space-y-4">
-                    {/* Placeholder para el historial */}
-                    <div className={mounted && theme === 'dark' ? 'flex items-center' : 'flex items-center'}>
-                      <div className={mounted && theme === 'dark' ? 'w-2 h-2 rounded-full bg-blue-400 mr-4' : 'w-2 h-2 rounded-full bg-blue-500 mr-4'}></div>
-                      <span className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}>{t('admin.orders.history.createdBy', { client: selectedOrder.client, days: selectedOrder.daysElapsed })}</span>
-                    </div>
-                    <div className={mounted && theme === 'dark' ? 'flex items-center' : 'flex items-center'}>
-                      <div className={mounted && theme === 'dark' ? 'w-2 h-2 rounded-full bg-yellow-400 mr-4' : 'w-2 h-2 rounded-full bg-yellow-500 mr-4'}></div>
-                      <span className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}>En espera de cotización</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 md:mt-8 flex flex-col space-y-2">
+              <div className={mounted && theme === 'dark' ? 'md:w-1/3 p-4 md:p-6 lg:p-8 bg-slate-800 flex flex-col' : 'md:w-1/3 p-4 md:p-6 lg:p-8 bg-gray-50 flex flex-col'}>
+                <div className="flex flex-col space-y-2">
                   <Button 
                     className={mounted && theme === 'dark' ? 'w-full bg-blue-600 text-white hover:bg-blue-700' : 'w-full bg-blue-600 text-white hover:bg-blue-700'}
                     onClick={() => handleOpenEditModal(selectedOrder)}
                   >
                     <Edit className="w-4 h-4 mr-2" />
-                    Actualizar
+                    {t('admin.orders.modal.buttons.update')}
                   </Button>
                   <Button 
                     className={mounted && theme === 'dark' ? 'w-full bg-red-600 text-white hover:bg-red-700' : 'w-full bg-red-600 text-white hover:bg-red-700'}
                     onClick={handleDeleteOrder}
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Eliminar
+                    {t('admin.orders.modal.buttons.delete')}
                   </Button>
                   <Button
                     className={mounted && theme === 'dark' ? 'w-full bg-slate-700 text-slate-200 hover:bg-slate-600' : 'w-full bg-gray-200 text-gray-700 hover:bg-gray-300'}
                     onClick={() => setIsDocumentsModalOpen(true)}
                   >
                     <Eye className="w-4 h-4 mr-2" />
-                    Ver Documentos
+                    {t('admin.orders.modal.buttons.viewDocuments')}
                   </Button>
                 </div>
               </div>
@@ -1829,14 +1814,14 @@ export default function PedidosPage() {
         {editFormData && (
           <DialogContent className={mounted && theme === 'dark' ? 'sm:max-w-[500px] bg-slate-900 border-slate-700' : 'sm:max-w-[500px]'}>
             <DialogHeader>
-              <DialogTitle className={mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}>Actualizar Pedido: {editFormData.id}</DialogTitle>
+              <DialogTitle className={mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}>{t('admin.orders.editModal.title', { id: editFormData.id })}</DialogTitle>
               <DialogDescription className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-500'}>
-                Modifica los detalles del pedido a continuación.
+                {t('admin.orders.editModal.description')}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="client" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>Cliente</Label>
+                <Label htmlFor="client" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>{t('admin.orders.editModal.client')}</Label>
                 <Input 
                   id="client" 
                   value={editFormData.client}
@@ -1845,7 +1830,7 @@ export default function PedidosPage() {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>Descripción</Label>
+                <Label htmlFor="description" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>{t('admin.orders.editModal.descriptionLabel')}</Label>
                 <Input 
                   id="description" 
                   value={editFormData.description}
@@ -1854,13 +1839,13 @@ export default function PedidosPage() {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="status" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>Estado</Label>
+                <Label htmlFor="status" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>{t('admin.orders.editModal.status')}</Label>
                 <Select 
                   value={editFormData.status}
                   onValueChange={(value) => setEditFormData({ ...editFormData, status: value as Order['status'] })}
                 >
                   <SelectTrigger className={`col-span-3 ${mounted && theme === 'dark' ? 'bg-slate-800 border-slate-600 text-slate-100' : ''}`}>
-                    <SelectValue placeholder="Selecciona un estado" />
+                    <SelectValue placeholder={t('admin.orders.editModal.selectStatus')} />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.keys(statusConfig).map(statusKey => (
@@ -1870,13 +1855,13 @@ export default function PedidosPage() {
                 </Select>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="assignedTo" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>Asignado a</Label>
+                <Label htmlFor="assignedTo" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>{t('admin.orders.editModal.assignedTo')}</Label>
                 <Select 
                   value={editFormData.assignedTo}
                   onValueChange={(value) => setEditFormData({ ...editFormData, assignedTo: value as Order['assignedTo'] })}
                 >
                   <SelectTrigger className={`col-span-3 ${mounted && theme === 'dark' ? 'bg-slate-800 border-slate-600 text-slate-100' : ''}`}>
-                    <SelectValue placeholder="Selecciona una ubicación" />
+                    <SelectValue placeholder={t('admin.orders.editModal.selectAssigned')} />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.keys(assignedConfig).map(assignedKey => (
@@ -1885,19 +1870,9 @@ export default function PedidosPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="daysElapsed" className={mounted && theme === 'dark' ? 'text-right text-slate-200' : 'text-right'}>{t('admin.orders.form.daysElapsed')}</Label>
-                <Input 
-                  id="daysElapsed" 
-                  type="number"
-                  value={editFormData.daysElapsed}
-                  onChange={(e) => setEditFormData({ ...editFormData, daysElapsed: parseInt(e.target.value) || 0 })}
-                  className={`col-span-3 ${mounted && theme === 'dark' ? 'bg-slate-800 border-slate-600 text-slate-100' : ''}`}
-                />
-              </div>
             </div>
             <div className="flex justify-end">
-              <Button onClick={handleUpdateOrder}>Guardar cambios</Button>
+              <Button onClick={handleUpdateOrder}>{t('admin.orders.editModal.save')}</Button>
             </div>
           </DialogContent>
         )}
@@ -1908,9 +1883,9 @@ export default function PedidosPage() {
         {selectedOrder && (
           <DialogContent className={mounted && theme === 'dark' ? 'sm:max-w-[500px] bg-slate-900 border-slate-700' : 'sm:max-w-[500px]'}>
             <DialogHeader>
-              <DialogTitle className={mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}>Documentos del Pedido: {selectedOrder.id}</DialogTitle>
+              <DialogTitle className={mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}>{t('admin.orders.modal.documentsTitle', { id: selectedOrder.id })}</DialogTitle>
               <DialogDescription className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-500'}>
-                Accede a las fotos y enlaces de este pedido.
+                {t('admin.orders.modal.documentsDescription')}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -1932,7 +1907,7 @@ export default function PedidosPage() {
                   </div>
                 ))
               ) : (
-                <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-gray-500'}>No hay documentos para este pedido.</p>
+                <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-gray-500'}>{t('admin.orders.modal.documents.empty')}</p>
               )}
             </div>
           </DialogContent>

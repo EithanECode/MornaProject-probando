@@ -1270,7 +1270,7 @@
         "manageUsers": "Gestionar Usuarios",
         "configuration": "Configuración",
         "alerts": "Alertas",
-        "reports": "Reportes"
+        "orders": "Pedidos"
       },
       "recentActivity": {
         "title": "Actividad Reciente del Sistema",
@@ -1329,7 +1329,9 @@
       },
       "status": {
         "activo": "Activo",
-        "inactivo": "Inactivo"
+        "inactivo": "Inactivo",
+        "active": "Active",
+        "inactive": "Inactive"
       },
       "form": {
         "newUser": "Nuevo Usuario",
@@ -1389,6 +1391,9 @@
       "listTitle": "Lista de Pedidos",
       "listDescription": "{{count}} pedidos encontrados",
       "search": "Buscar pedidos...",
+      "history": {
+        "createdBy": "Pedido creado"
+      },
       "stats": {
         "totalOrders": "Total de Pedidos",
         "pending": "Pendientes",
@@ -1440,7 +1445,33 @@
       "modal": {
         "createOrder": "Crear Nuevo Pedido",
         "orderDetails": "Detalles del Pedido",
-        "createdBy": "Creado por"
+        "createdBy": "Creado por",
+        "detailsTitle": "Detalles del pedido",
+        "detailsDescription": "Información completa sobre el pedido",
+        "client": "Cliente",
+        "assignedTo": "Asignado a:", 
+        "elapsedTime": "Tiempo transcurrido",
+        "currentStatus": "Estado",
+        "orderDescription": "Descripción",
+        "documentsTitle": "Documentos del pedido",
+        "documentsDescription": "Archivos relacionados con el pedido",
+        "documents": {
+          "empty": "No hay documentos para este pedido."
+        },
+        "buttons": {
+          "update": "Editar",
+          "delete": "Borrar",
+          "viewDocuments": "Ver Documentos"
+        }
+      },
+      "editModal": {
+        "title": "Editar pedido",
+        "description": "Modifica los datos del pedido",
+        "client": "Cliente",
+        "descriptionLabel": "Descripción",
+        "status": "Estado",
+        "assignedTo": "Asignado a",
+        "save": "Guardar cambios"
       },
       "deliveryTypes": {
         "doorToDoor": "Puerta a Puerta",
@@ -1487,6 +1518,7 @@
         "client": "Cliente",
         "clientId": "ID Cliente",
         "userName": "Nombre de Usuario",
+        "daysElapsed":"Días transcurridos",
         "followSteps": "Sigue los pasos para crear el pedido"
       },
       "steps": {
@@ -2055,6 +2087,8 @@
       "boxesBadges": {
         "new": "Nueva",
         "ready": "Lista",
+        "inContainer": "En contenedor",
+        "traveling": "Viajando",
         "received": "Recibida",
         "completed": "Completada",
         "state": "Est.{{num}}"
@@ -2708,6 +2742,7 @@
           "specifications": "Especificaciones:",
           "specificationsNA": "N/A",
           "unitPriceLabel": "Precio de cotización unitario *",
+          "unitPricePlaceholder": "Ingresa el precio unitario",
           "totalToPay": "Total a Pagar",
           "cancel": "Cancelar",
           "sendQuote": "Enviar Cotización"
