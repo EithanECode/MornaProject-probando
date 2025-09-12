@@ -2046,18 +2046,27 @@ export default function PedidosChina() {
                                      <div className="relative">
                      <span className="absolute left-3 top-3 text-slate-500">$</span>
                      <input
-                       type="number"
+                       type="text"
                        name="precio"
+                       inputMode="decimal"
                        required
-                       min="0"
-                       step="0.01"
                        className="w-full pl-8 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                        placeholder={t('chinese.ordersPage.modals.quote.unitPricePlaceholder')}
                        onChange={e => {
-                         const precio = Number(e.target.value);
-                         setModalCotizar(prev => ({...prev, precioCotizacion: precio}));
+                         // Sanitiza: solo dígitos y un punto, limita 7 dígitos enteros y 2 decimales
+                         let raw = e.target.value.replace(/,/g,'').replace(/[^0-9.]/g,'');
+                         const parts = raw.split('.');
+                         let intPart = parts[0] || '';
+                         let decPart = parts[1] || '';
+                         if (intPart.length > 7) intPart = intPart.slice(0,7);
+                         if (decPart.length > 2) decPart = decPart.slice(0,2);
+                         const cleaned = decPart ? `${intPart}.${decPart}` : intPart;
+                         e.target.value = cleaned;
+                         const numero = Number(cleaned || 0);
+                         setModalCotizar(prev => ({...prev, precioCotizacion: numero}));
                        }}
                      />
+                     <p className="mt-1 text-xs text-slate-500">Máx 7 dígitos enteros</p>
                    </div>
                 </div>
                 <div className="space-y-2">
@@ -2076,7 +2085,8 @@ export default function PedidosChina() {
                    </Button>
                   <Button
                     type="submit"
-                    className="bg-blue-600 hover:bg-blue-700"
+                    disabled={!(modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 && String(Math.trunc(modalCotizar.precioCotizacion)).length<=7)}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {t('chinese.ordersPage.modals.quote.sendQuote')}
                   </Button>

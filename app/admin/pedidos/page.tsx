@@ -1825,7 +1825,8 @@ export default function PedidosPage() {
                 <Input 
                   id="client" 
                   value={editFormData.client}
-                  onChange={(e) => setEditFormData({ ...editFormData, client: e.target.value })}
+                  maxLength={NAME_MAX}
+                  onChange={(e) => setEditFormData({ ...editFormData, client: e.target.value.slice(0, NAME_MAX) })}
                   className={`col-span-3 ${mounted && theme === 'dark' ? 'bg-slate-800 border-slate-600 text-slate-100' : ''}`}
                 />
               </div>
