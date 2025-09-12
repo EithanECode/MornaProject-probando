@@ -1170,6 +1170,7 @@
           "processing": "处理中",
           "readyToPack": "准备打包",
           "inBox": "在箱中",
+          "inTransit":"在途",
           "inContainer": "在集装箱中",
           "shippedVzla": "发往委内瑞拉",
           "state": "状态 {{num}}"
@@ -1653,6 +1654,19 @@
         "reviewing": "审核中",
         "quoted": "已报价",
         "processing": "处理中"
+      },
+      "statusExtended": {
+        "delivered": "已交付",
+        "readyToDeliver": "准备交付",
+        "received": "已接收",
+        "customs": "海关中",
+        "arrivedVzla": "已到达委内瑞拉",
+        "inTransit": "运输中",
+        "pending": "待处理",
+        "reviewing": "审核中",
+        "quoted": "已报价",
+        "processing": "处理中",
+        "inProcess": "进行中"
       },
       "badges": {
         "delivered": "已交付",

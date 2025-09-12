@@ -539,12 +539,18 @@ export default function ChinaOrdersTabContent() {
   const getOrderBadgeLabel = (stateNum?: number) => {
     const s = Number(stateNum ?? 0);
     if (s <= 0 || isNaN(s)) return t('admin.orders.china.badges.unknown');
+    if (s === 2) return t('admin.orders.china.badges.pending');
     if (s === 3) return t('admin.orders.china.badges.quoted');
     if (s === 4) return t('admin.orders.china.badges.processing');
     if (s === 5) return t('admin.orders.china.badges.readyToPack');
     if (s === 6) return t('admin.orders.china.badges.inBox');
     if (s === 7) return t('admin.orders.china.badges.inContainer');
+    if (s === 8) return t('admin.orders.china.badges.inTransit');
     if (s >= 9) return t('admin.orders.china.badges.shippedVzla');
+    if (s >= 10) return t('admin.orders.china.badges.shippedVzla');
+    if (s >= 11) return t('admin.orders.china.badges.shippedVzla');
+    if (s >= 12) return t('admin.orders.china.badges.shippedVzla');
+    if (s >= 13) return t('admin.orders.china.badges.shippedVzla');
     return t('admin.orders.china.badges.state', { num: s });
   };
   const getBoxBadgeLabel = (stateNum?: number) => {

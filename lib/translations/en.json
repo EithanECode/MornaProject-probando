@@ -1157,11 +1157,11 @@
         "subtitle": "Manage and quote customer orders",
         "pageTitle": "Orders",
         "stats": {
-          "pending": "PENDING",
-          "quoted": "QUOTED",
-          "processing": "PROCESSING",
-          "shipped": "SHIPPED",
-          "totalQuoted": "TOTAL QUOTED"
+          "pending": "Pending",
+          "quoted": "Quoted",
+          "processing": "Processing",
+          "shipped": "Shipped",
+          "totalQuoted": "Total quoted"
         },
         "badges": {
           "unknown": "Unknown",
@@ -1169,6 +1169,7 @@
           "processing": "Processing",
           "readyToPack": "Ready to pack",
           "inBox": "In box",
+          "inTransit":"In Transit",
           "inContainer": "In container",
           "shippedVzla": "Shipped to Venezuela",
           "state": "Stat {{num}}"
@@ -1648,12 +1649,25 @@
       "title": "Orders",
       "subtitle": "Review and send orders to China for quotation",
       "stats": {
-        "pending": "PENDING",
-        "reviewing": "REVIEWING",
-        "quoted": "QUOTED",
-        "processing": "PROCESSING"
+        "pending": "Pending",
+        "reviewing": "Reviewing",
+        "quoted": "Quoted",
+        "processing": "Processing"
       },
       "statusExtended": {
+        "delivered": "Delivered",
+        "readyToDeliver": "Ready for delivery",
+        "received": "Received",
+        "customs": "In customs",
+        "arrivedVzla": "Arrived in Vzla",
+        "inTransit": "In transit",
+        "pending": "Pending",
+        "reviewing": "Reviewing",
+        "quoted": "Quoted",
+        "processing": "Processing",
+        "inProcess": "In process"
+      },
+      "badges": {
         "delivered": "Delivered",
         "readyToDeliver": "Ready for delivery",
         "received": "Received",
@@ -1665,19 +1679,6 @@
         "quoted": "Quoted",
         "processing": "Processing",
         "inProcess": "In process"
-      },
-      "badges": {
-        "delivered": "DELIVERED",
-        "readyToDeliver": "READY FOR DELIVERY",
-        "received": "RECEIVED",
-        "customs": "IN CUSTOMS",
-        "arrivedVzla": "ARRIVED IN Vzla",
-        "onWayVzla": "ON THE WAY TO Vzla",
-        "pending": "PENDING",
-        "reviewing": "REVIEWING",
-        "quoted": "QUOTED",
-        "processing": "PROCESSING",
-        "inProcess": "IN PROCESS"
       },
       "tabs": {
         "ordersList": "Order List",
@@ -1995,12 +1996,12 @@
       "modal": {
         "title": "Report Details",
         "monthly": {
-          "period": "PERIOD",
-          "revenue": "REVENUE",
-          "totalOrders": "TOTAL ORDERS",
-          "completed": "COMPLETED",
-          "satisfaction": "SATISFACTION",
-          "exportAsPdf": "EXPORT AS PDF"
+          "period": "Period",
+          "revenue": "Revenue",
+          "totalOrders": "Total Orders",
+          "completed": "Completed",
+          "satisfaction": "Satisfaction",
+          "exportAsPdf": "Export as PDF"
         },
         "order": {
           "infoTitle": "Order Information",
@@ -2045,9 +2046,9 @@
         "generatedAt": "Generated:",
         "pageOf": "Page {{current}} of {{total}}",
         "titles": {
-          "monthlySummary": "MONTHLY SUMMARY",
-          "ordersSummary": "ORDERS SUMMARY",
-          "satisfaction": "CUSTOMER SATISFACTION"
+          "monthlySummary": "Monthly Summary",
+          "ordersSummary": "Orders Summary",
+          "satisfaction": "Customer Satisfaction"
         },
         "table": {
           "field": "Field",
@@ -2307,10 +2308,10 @@
     "subtitle": "Manage and quote customer orders",
     "pageTitle": "Orders",
     "stats": {
-      "pending": "PENDING",
-      "quoted": "QUOTED",
-      "processing": "PROCESSING",
-      "shipped": "SHIPPED"
+      "pending": "Pending",
+      "quoted": "Quoted",
+      "processing": "Processing",
+      "shipped": "Shipped"
     },
     "badges": {
       "unknown": "Unknown",

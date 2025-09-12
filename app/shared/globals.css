@@ -1,7 +1,7 @@
-@import url('https://fonts.cdnfonts.com/css/ace-sans-2');
+@import url('https://fonts.cdnfonts.com/css/fh-oscar-condensed-test');
 
 body, html, * {
-  font-family: 'Ace Sans', sans-serif !important;
+  font-family: 'FH Oscar Condensed Test', sans-serif !important;
 }
 @tailwind base;
 @tailwind components;
@@ -137,6 +137,8 @@ body, html, * {
 }
 
 :root {
+  /* Global text scale (1 = 100%). Used by html/body font-size below */
+  --text-scale: 1.25;
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
@@ -210,6 +212,8 @@ body, html, * {
 html {
   /* Reserve gutter space so content width stays stable as pages become scrollable (right side only) */
   scrollbar-gutter: stable;
+  /* Set base font-size in rem using the global scale var so typography keeps proportions */
+  font-size: calc(100% * var(--text-scale));
 }
 
 @layer base {
@@ -219,4 +223,16 @@ html {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Utility classes to scale all text proportionally. Apply on <html> in app/layout.tsx */
+@layer utilities {
+  .text-scale-90 { --text-scale: 0.90; }
+  .text-scale-95 { --text-scale: 0.95; }
+  .text-scale-100 { --text-scale: 1; }
+  .text-scale-105 { --text-scale: 1.05; }
+  .text-scale-110 { --text-scale: 1.10; }
+  .text-scale-115 { --text-scale: 1.15; }
+  .text-scale-120 { --text-scale: 1.20; }
+  .text-scale-125 { --text-scale: 1.25; }
 }

@@ -212,6 +212,7 @@
       "subtitle": "Bienvenido de vuelta, aquí tienes un resumen de tu actividad",
       "welcome": "¡Bienvenido de vuelta!",
       "panel": "Panel de Control - Cliente",
+      "pending": "Pendientes",
       "manage": "Gestiona tus pedidos, seguimiento y pagos desde un solo lugar",
       "activeShipments": "Envíos Activos",
       "totalOrders": "Total Pedidos",
@@ -1615,11 +1616,11 @@
         "subtitle": "Gestiona y cotiza pedidos de clientes",
         "pageTitle": "Pedidos",
         "stats": {
-          "pending": "PENDIENTES",
-          "quoted": "COTIZADOS",
-          "processing": "PROCESANDO",
-          "shipped": "ENVIADOS",
-          "totalQuoted": "TOTAL COTIZADOS"
+          "pending": "Pendientes",
+          "quoted": "Cotizados",
+          "processing": "Procesando",
+          "shipped": "Enviados",
+          "totalQuoted": "Total Cotizados"
         },
         "badges": {
           "unknown": "Desconocido",
@@ -1627,6 +1628,7 @@
           "processing": "Procesando",
           "readyToPack": "Listo para empaquetar",
           "inBox": "En caja",
+          "inTransit":"En tránsito",
           "inContainer": "En contenedor",
           "shippedVzla": "Enviado a Venezuela",
           "pending": "Pendiente",
@@ -1994,36 +1996,36 @@
       "title": "Pedidos",
       "subtitle": "Revisa y envía pedidos a China para cotización",
       "stats": {
-        "pending": "PENDIENTES",
-        "reviewing": "REVISANDO",
-        "quoted": "COTIZADOS",
-        "processing": "PROCESANDO"
+        "pending": "Pendientes",
+        "reviewing": "Revisando",
+        "quoted": "Cotizados",
+        "processing": "Procesando"
       },
       "statusExtended": {
         "delivered": "Entregado",
         "readyToDeliver": "Listo para entrega",
         "received": "Recibido",
-        "customs": "In customs",
-        "arrivedVzla": "Arrived in Vzla",
-        "onWayVzla": "On the way to Vzla",
+        "customs": "En aduana",
+        "arrivedVzla": "Llegado a Vzla",
+        "inTransit": "En tránsito",
         "pending": "Pendiente",
         "reviewing": "En revisión",
         "quoted": "Cotizado",
-        "processing": "Proecesando",
-        "inProcess": "In process"
+        "processing": "Procesando",
+        "inProcess": "En proceso"
       },
       "badges": {
-        "delivered": "ENTREGADO",
-        "readyToDeliver": "LISTO PARA ENTREGA",
-        "received": "RECIBIDO",
-        "customs": "EN ADUANA",
-        "arrivedVzla": "LLEGADO A Vzla",
-        "onWayVzla": "EN CAMINO A Vzla",
-        "pending": "PENDIENTE",
-        "reviewing": "REVISANDO",
-        "quoted": "COTIZADO",
-        "processing": "PROCESANDO",
-        "inProcess": "EN PROCESO"
+        "delivered": "Entregado",
+        "readyToDeliver": "Listo para entrega",
+        "received": "Recibido",
+        "customs": "En aduana",
+        "arrivedVzla": "Llegado a Vzla",
+        "onWayVzla": "En camino a Vzla",
+        "pending": "Pendiente",
+        "reviewing": "Revisando",
+        "quoted": "Cotizado",
+        "processing": "Procesando",
+        "inProcess": "En proceso"
       },
       "tabs": {
         "ordersList": "Lista de Pedidos",
@@ -2340,12 +2342,12 @@
       "modal": {
         "title": "Detalles del Reporte",
         "monthly": {
-          "period": "PERIODO",
-          "revenue": "INGRESOS",
-          "totalOrders": "TOTAL PEDIDOS",
-          "completed": "COMPLETADOS",
-          "satisfaction": "SATISFACCIÓN",
-          "exportAsPdf": "EXPORTAR COMO PDF"
+          "period": "Período",
+          "revenue": "Ingresos",
+          "totalOrders": "Total Pedidos",
+          "completed": "Completados",
+          "satisfaction": "Satisfacción",
+          "exportAsPdf": "Exportar como PDF"
         },
         "order": {
           "infoTitle": "Información del Pedido",
@@ -2390,9 +2392,9 @@
         "generatedAt": "Generado:",
         "pageOf": "Página {{current}} de {{total}}",
         "titles": {
-          "monthlySummary": "RESUMEN MENSUAL",
-          "ordersSummary": "RESUMEN DE PEDIDOS",
-          "satisfaction": "SATISFACCIÓN DEL CLIENTE"
+          "monthlySummary": "Resumen Mensual",
+          "ordersSummary": "Resumen de Pedidos",
+          "satisfaction": "Satisfacción del Cliente"
         },
         "table": {
           "field": "Campo",
@@ -2651,10 +2653,10 @@
       "subtitle": "Gestiona y cotiza pedidos de clientes",
       "pageTitle": "Pedidos",
       "stats": {
-        "pending": "PENDIENTES",
-        "quoted": "COTIZADOS",
-        "processing": "PROCESANDO",
-        "shipped": "ENVIADOS"
+        "pending": "Pendientes",
+        "quoted": "Cotizados",
+        "processing": "Procesando",
+        "shipped": "Enviados"
       },
       "badges": {
         "unknown": "Desconocido",

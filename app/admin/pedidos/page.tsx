@@ -1230,7 +1230,7 @@ export default function PedidosPage() {
                     <col className="w-40" />
                     <col className="w-40" />
                     <col className="w-28" />
-                    <col className="w-24" />
+                    <col className="w-28" />
                     <col className="w-28" />
                   </colgroup>
                   <thead>
