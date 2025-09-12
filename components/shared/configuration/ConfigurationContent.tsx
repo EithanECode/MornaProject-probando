@@ -77,6 +77,13 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     fotoPerfil: null as File | null,
     fotoPreview: null as string | null
   });
+  // Baseline para detectar cambios en perfil
+  const [profileBaseline, setProfileBaseline] = useState(() => ({
+    nombre: roleData.nombre,
+    email: roleData.email,
+    telefono: roleData.telefono,
+    idioma: language as string
+  }));
 
   // Estados de contraseña
   const [passwordData, setPasswordData] = useState({
@@ -154,6 +161,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
         toast({ title: t('common.error'), description: `Los campos de contraseña no pueden exceder ${MAX_FIELD_LENGTH} caracteres.`, variant: 'destructive' });
         return;
       }
+      if (!hasPasswordChanges) return; // No hay cambios reales
       if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
         toast({ title: t('common.error'), description: t('common.fillRequiredFields'), variant: 'destructive' });
         return;
@@ -164,6 +172,10 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
       }
       if (passwordData.newPassword.length < 6) {
         toast({ title: t('common.error'), description: 'La nueva contraseña debe tener al menos 6 caracteres.', variant: 'destructive' });
+        return;
+      }
+      if (passwordData.currentPassword === passwordData.newPassword) {
+        toast({ title: t('common.error'), description: 'La nueva contraseña debe ser diferente a la actual.', variant: 'destructive' });
         return;
       }
 
@@ -323,12 +335,52 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
       toast({ title: t('common.error'), description: `Nombre y correo no pueden exceder ${MAX_FIELD_LENGTH} caracteres.`, variant: 'destructive' });
       return;
     }
+    if (!hasProfileChanges) return; // Nada que guardar
 
     if (formData.idioma && ['es', 'en', 'zh'].includes(formData.idioma)) {
       setLanguage(formData.idioma as 'es' | 'en' | 'zh');
     }
     toast({ title: t('admin.configuration.messages.profileUpdated'), description: t('admin.configuration.messages.profileUpdatedDesc'), variant: 'default' });
+    // Actualizar baseline tras guardar
+    setProfileBaseline({
+      nombre: formData.nombre,
+      email: formData.email,
+      telefono: formData.telefono,
+      idioma: formData.idioma as string
+    });
   };
+
+  // Derivados para habilitar/deshabilitar botones
+  const hasProfileChanges =
+    formData.nombre !== profileBaseline.nombre ||
+    formData.email !== profileBaseline.email ||
+    formData.telefono !== profileBaseline.telefono ||
+    formData.idioma !== profileBaseline.idioma;
+
+  const hasPasswordChanges =
+    passwordData.currentPassword.length > 0 ||
+    passwordData.newPassword.length > 0 ||
+    passwordData.confirmPassword.length > 0;
+
+  const canSavePassword =
+    hasPasswordChanges &&
+    passwordData.currentPassword.length > 0 &&
+    passwordData.newPassword.length >= 6 &&
+    passwordData.newPassword === passwordData.confirmPassword &&
+    passwordData.currentPassword !== passwordData.newPassword &&
+    passwordData.currentPassword.length <= MAX_FIELD_LENGTH &&
+    passwordData.newPassword.length <= MAX_FIELD_LENGTH &&
+    passwordData.confirmPassword.length <= MAX_FIELD_LENGTH;
+
+  // Feedback visual de coincidencia de contraseñas
+  const passwordMismatch =
+    passwordData.newPassword.length > 0 &&
+    passwordData.confirmPassword.length > 0 &&
+    passwordData.newPassword !== passwordData.confirmPassword;
+  const passwordMatch =
+    passwordData.newPassword.length > 0 &&
+    passwordData.confirmPassword.length > 0 &&
+    passwordData.newPassword === passwordData.confirmPassword;
 
   if (!mounted) return null;
 
@@ -386,7 +438,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
             <TabsContent value="perfil" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Información del perfil */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
                   <Card className="bg-white/80 backdrop-blur-sm border-slate-200 dark:bg-slate-800/80 dark:border-slate-700">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
@@ -440,7 +492,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                         </div>
                       </div>
                       <div className="flex justify-end">
-                        <Button onClick={handleSaveProfile}>
+                        <Button onClick={handleSaveProfile} disabled={!hasProfileChanges}>
                           <Save className="w-4 h-4 mr-2" />
                           {t('common.save')}
                         </Button>
@@ -458,7 +510,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
+                        <div className="space-y-2 md:col-span-2">
                           <Label>{t('admin.configuration.password.fields.current')}</Label>
                           <div className="relative">
                             <Input
@@ -481,6 +533,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                               value={passwordData.newPassword}
                               onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
                               maxLength={MAX_FIELD_LENGTH}
+                              className={`${passwordMismatch ? 'border-red-500 focus-visible:ring-red-500' : passwordMatch ? 'border-blue-500 focus-visible:ring-blue-500' : ''}`}
                               placeholder={t('admin.configuration.password.placeholders.new')}
                             />
                             <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-500" onClick={() => setPasswordData(p => ({ ...p, showNewPassword: !p.showNewPassword }))}>
@@ -488,7 +541,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                             </button>
                           </div>
                         </div>
-                        <div className="space-y-2 md:col-span-2">
+                        <div className="space-y-2">
                           <Label>{t('admin.configuration.password.fields.confirm')}</Label>
                           <div className="relative">
                             <Input
@@ -496,8 +549,12 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                               value={passwordData.confirmPassword}
                               onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
                               maxLength={MAX_FIELD_LENGTH}
+                              className={`${passwordMismatch ? 'border-red-500 focus-visible:ring-red-500' : passwordMatch ? 'border-blue-500 focus-visible:ring-blue-500' : ''}`}
                               placeholder={t('admin.configuration.password.placeholders.confirm')}
                             />
+                            {passwordMismatch && (
+                              <p className="mt-1 text-xs text-red-600">{t('admin.configuration.messages.passwordMismatch')}</p>
+                            )}
                             <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-500" onClick={() => setPasswordData(p => ({ ...p, showConfirmPassword: !p.showConfirmPassword }))}>
                               {passwordData.showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
@@ -505,7 +562,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                         </div>
                       </div>
                       <div className="flex justify-end">
-                        <Button onClick={handleSavePassword} disabled={changingPassword}>
+                        <Button onClick={handleSavePassword} disabled={!canSavePassword || changingPassword}>
                           <Save className="w-4 h-4 mr-2" />
                           {changingPassword ? t('common.loading') : t('common.save')}
                         </Button>
@@ -514,8 +571,8 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                   </Card>
                 </div>
 
-                {/* Foto de perfil + Info de la cuenta */}
-                <div className="space-y-6">
+                {/* Foto de perfil + Info de la cuenta (primero en mobile/tablet) */}
+                <div className="space-y-6 order-1 lg:order-2">
                   <Card className="bg-white/80 backdrop-blur-sm border-slate-200 dark:bg-slate-800/80 dark:border-slate-700">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
@@ -596,10 +653,6 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-slate-600 dark:text-slate-400">{t('admin.configuration.profile.accountInfo.lastLogin')}</span>
                         <span className="text-sm font-medium">{security.ultimoAcceso}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-slate-600 dark:text-slate-400">IP</span>
-                        <span className="text-sm font-mono">{security.ipUltimoAcceso}</span>
                       </div>
                     </CardContent>
                   </Card>
