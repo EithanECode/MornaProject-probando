@@ -227,18 +227,7 @@ export default function PedidosChina() {
   const [filtroCaja, setFiltroCaja] = useState('');
   const [filtroContenedor, setFiltroContenedor] = useState('');
 
-  // Bloquear scroll en mobile/tablet cuando el menú lateral está abierto
-  useEffect(() => {
-    const isSmall = typeof window !== 'undefined' && window.innerWidth < 1024; // < lg
-    if (isMobileMenuOpen && isSmall) {
-      const original = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = original; };
-    } else if (!isMobileMenuOpen) {
-      // restaurar cuando se cierre
-      document.body.style.overflow = '';
-    }
-  }, [isMobileMenuOpen]);
+  // (Scroll lock centralizado en Sidebar)
 
   // Refs para cerrar modales
   const modalCotizarRef = useRef<HTMLDivElement>(null);

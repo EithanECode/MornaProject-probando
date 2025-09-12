@@ -1063,6 +1063,18 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     setHoverTimeout(timeout);
   }, [setIsExpanded, responsiveConfig.isMobile, responsiveConfig.isTablet]);
 
+  // --- Scroll lock centralizado en mobile/tablet ---
+  useEffect(() => {
+    const isSmall = (responsiveConfig.isMobile || responsiveConfig.isTablet);
+    if (isSmall && isMobileMenuOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = originalOverflow; };
+    } else if (isSmall && !isMobileMenuOpen) {
+      document.body.style.overflow = '';
+    }
+  }, [isMobileMenuOpen, responsiveConfig.isMobile, responsiveConfig.isTablet]);
+
 
 
   // Memoizar el renderizado de los elementos del menú

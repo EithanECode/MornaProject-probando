@@ -96,17 +96,7 @@ export default function VenezuelaPedidosPage() {
   const [orderCountsByBox, setOrderCountsByBox] = useState<Record<string | number, number>>({});
   const [modalVerCajas, setModalVerCajas] = useState<{ open: boolean; containerId?: number | string }>({ open: false });
 
-  // Bloquear scroll en mobile/tablet cuando el sidebar móvil está abierto
-  useEffect(() => {
-    const isSmall = typeof window !== 'undefined' && window.innerWidth < 1024; // < lg
-    if (isMobileMenuOpen && isSmall) {
-      const original = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = original; };
-    } else if (!isMobileMenuOpen) {
-      document.body.style.overflow = '';
-    }
-  }, [isMobileMenuOpen]);
+  // (Scroll lock centralizado en Sidebar)
 
   // Reset boxes/containers pagination when filters or data length change
   useEffect(() => { setBoxesPage(1); }, [filtroCaja, boxes.length]);
