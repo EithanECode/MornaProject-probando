@@ -1287,7 +1287,8 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
               // Elimina el token del almacenamiento local
               localStorage.removeItem('token');
               sessionStorage.removeItem('token');
-              // Redirige al login-register
+              // Limpia cookie de rol y redirige al login
+              document.cookie = 'role=; Path=/; Max-Age=0; SameSite=Lax';
               window.location.href = '/login-register';
             }}
           >

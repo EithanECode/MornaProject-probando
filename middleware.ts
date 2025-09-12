@@ -1,0 +1,96 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+// Definición de rutas base por rol
+const ROLE_BASE: Record<string, string> = {
+  client: '/cliente',
+  venezuela: '/venezuela',
+  china: '/china',
+  admin: '/admin',
+  pagos: '/pagos'
+};
+
+// Prefijos permitidos por rol (puede ampliarse si hay subrutas)
+const ROLE_ALLOWED_PREFIXES: Record<string, string[]> = {
+  client: ['/cliente'],
+  venezuela: ['/venezuela'],
+  china: ['/china'],
+  admin: ['/admin'],
+  pagos: ['/pagos']
+};
+
+// Rutas públicas que no requieren autenticación / rol
+const PUBLIC_PATHS = [
+  '/login-register',
+  '/manifest.json',
+  '/api', // permitir APIs (ajustar si se requiere proteger algunas)
+  '/videos',
+  '/images',
+  '/animations'
+];
+
+function isPublic(pathname: string) {
+  return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'));
+}
+
+export function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // Permitir archivos estáticos y Next internals
+  if (pathname.startsWith('/_next') || pathname.startsWith('/favicon') || pathname.match(/\.(?:png|jpg|jpeg|gif|webp|svg|ico|css|js|mp4|json)$/)) {
+    return NextResponse.next();
+  }
+
+  if (isPublic(pathname)) {
+    return NextResponse.next();
+  }
+
+  const roleCookie = req.cookies.get('role')?.value?.toLowerCase();
+
+  // Si no hay cookie de rol -> redirigir a login
+  if (!roleCookie) {
+    const loginUrl = new URL('/login-register', req.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Normalización básica
+  let normalized: string = roleCookie;
+  if (['cliente', 'client'].includes(normalized)) normalized = 'client';
+  else if (['vzla', 'venezuela'].includes(normalized)) normalized = 'venezuela';
+  else if (['china'].includes(normalized)) normalized = 'china';
+  else if (['admin', 'administrador', 'administrator'].includes(normalized)) normalized = 'admin';
+  else if (['pagos', 'payments', 'payment'].includes(normalized)) normalized = 'pagos';
+
+  const allowed = ROLE_ALLOWED_PREFIXES[normalized];
+
+  if (!allowed) {
+    // Rol desconocido -> limpiar y redirigir
+    const loginUrl = new URL('/login-register', req.url);
+    const res = NextResponse.redirect(loginUrl);
+    res.cookies.delete('role');
+    return res;
+  }
+
+  // Verificar si la ruta solicitada está bajo alguno de los prefijos permitidos
+  const isAllowed = allowed.some(prefix => pathname === prefix || pathname.startsWith(prefix + '/'));
+  if (!isAllowed) {
+    // Redirigir a la base de su rol
+    const base = ROLE_BASE[normalized] || '/login-register';
+    const target = new URL(base, req.url);
+    return NextResponse.redirect(target);
+  }
+
+  // Asegurarnos que la cookie esté normalizada (para consistencia)
+  const res = NextResponse.next();
+  if (roleCookie !== normalized) {
+    res.cookies.set('role', normalized, { path: '/', maxAge: 60 * 60 * 12 }); // 12h
+  }
+  return res;
+}
+
+export const config = {
+  matcher: [
+    '/((?!api/public).*)' // Ajustar si se necesitan excluir paths específicos
+  ]
+};

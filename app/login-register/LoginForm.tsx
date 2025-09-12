@@ -145,16 +145,37 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
       const isChina = ["china"].includes(normalized);
       const isAdmin = ["admin", "administrador", "administrator"].includes(normalized);
 
+      // Set cookie role (client/venezuela/china/admin/pagos) para middleware
+      try {
+        const roleForCookie = isClient
+          ? 'client'
+          : isVzla
+            ? 'venezuela'
+            : isChina
+              ? 'china'
+              : isAdmin
+                ? 'admin'
+                : '';
+        if (roleForCookie) {
+          document.cookie = `role=${roleForCookie}; Path=/; Max-Age=${60 * 60 * 12}; SameSite=Lax`;
+        } else {
+          // limpiar cookie si existe
+          document.cookie = 'role=; Path=/; Max-Age=0; SameSite=Lax';
+        }
+      } catch (e) {
+        console.warn('No se pudo setear cookie de rol', e);
+      }
+
       if (isClient) {
-        window.location.href = "/cliente";
+        window.location.href = '/cliente';
       } else if (isVzla) {
-        window.location.href = "/venezuela";
+        window.location.href = '/venezuela';
       } else if (isChina) {
-        window.location.href = "/china";
+        window.location.href = '/china';
       } else if (isAdmin) {
-        window.location.href = "/admin";
+        window.location.href = '/admin';
       } else {
-        window.location.href = "/gestion";
+        window.location.href = '/gestion';
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
