@@ -1048,13 +1048,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     return menuItems;
   }, [menuItems, userRole, clientActiveOrders, clientPendingPayments, vzlaActiveOrders, vzlaActiveSupports, vzlaPendingPayments, chinaActiveOrders]);
 
-  // Defer para evitar picos de renders en mobile
-  const deferredMenuItems = useDeferredValue(menuItemsWithCounts);
-  const deferredActiveItem = useDeferredValue(activeItem);
-  const isMobileOrTablet = responsiveConfig?.isMobile || responsiveConfig?.isTablet;
-  const disablePrefetch = isMobileOrTablet; // Evita carga extra de rutas en mobile/tablet
-
-  // Memoizar los cálculos responsivos con optimización
+  // Memoizar los cálculos responsivos con optimización (debe ir antes de usar responsiveConfig)
   const responsiveConfig = useMemo(() => {
     // Breakpoints específicos para evitar gaps
     const isMobile = screenWidth < 768;           // Mobile: < 768px
@@ -1097,6 +1091,12 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       isDesktop
     };
   }, [screenWidth, isExpanded, isMobileMenuOpen]);
+
+  // Defer para evitar picos de renders en mobile (ahora después de responsiveConfig)
+  const deferredMenuItems = useDeferredValue(menuItemsWithCounts);
+  const deferredActiveItem = useDeferredValue(activeItem);
+  const isMobileOrTablet = responsiveConfig.isMobile || responsiveConfig.isTablet;
+  const disablePrefetch = isMobileOrTablet; // Evita carga extra de rutas en mobile/tablet
 
   // Actualizar isExpanded automáticamente cuando cambie la resolución
   useEffect(() => {
