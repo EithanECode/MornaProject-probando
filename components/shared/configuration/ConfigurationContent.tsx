@@ -49,6 +49,7 @@ interface ConfigurationContentProps {
 }
 
 export default function ConfigurationContent({ role, onUserImageUpdate }: ConfigurationContentProps) {
+  const MAX_FIELD_LENGTH = 50; // Límite requerido para nombre, email y contraseñas
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -128,19 +129,31 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
   }, [language]);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    // Solo limitar longitud para campos solicitados
+    const limitedValue = ['nombre', 'email'].includes(field) ? value.slice(0, MAX_FIELD_LENGTH) : value;
+    setFormData(prev => ({ ...prev, [field]: limitedValue }));
 
-    if (field === 'idioma' && ['es', 'en', 'zh'].includes(value)) {
-      setLanguage(value as 'es' | 'en' | 'zh');
+    if (field === 'idioma' && ['es', 'en', 'zh'].includes(limitedValue)) {
+      setLanguage(limitedValue as 'es' | 'en' | 'zh');
     }
   };
 
   const handlePasswordChange = (field: string, value: string) => {
-    setPasswordData(prev => ({ ...prev, [field]: value }));
+    const limitedValue = value.slice(0, MAX_FIELD_LENGTH);
+    setPasswordData(prev => ({ ...prev, [field]: limitedValue }));
   };
 
   const handleSavePassword = async () => {
     try {
+      // Validaciones de longitud (solo al guardar)
+      if (
+        passwordData.currentPassword.length > MAX_FIELD_LENGTH ||
+        passwordData.newPassword.length > MAX_FIELD_LENGTH ||
+        passwordData.confirmPassword.length > MAX_FIELD_LENGTH
+      ) {
+        toast({ title: t('common.error'), description: `Los campos de contraseña no pueden exceder ${MAX_FIELD_LENGTH} caracteres.`, variant: 'destructive' });
+        return;
+      }
       if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
         toast({ title: t('common.error'), description: t('common.fillRequiredFields'), variant: 'destructive' });
         return;
@@ -305,6 +318,12 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
   };
 
   const handleSaveProfile = () => {
+    // Validaciones de longitud solo al guardar (el input ya está limitado, esto es por seguridad extra)
+    if (formData.nombre.length > MAX_FIELD_LENGTH || formData.email.length > MAX_FIELD_LENGTH) {
+      toast({ title: t('common.error'), description: `Nombre y correo no pueden exceder ${MAX_FIELD_LENGTH} caracteres.`, variant: 'destructive' });
+      return;
+    }
+
     if (formData.idioma && ['es', 'en', 'zh'].includes(formData.idioma)) {
       setLanguage(formData.idioma as 'es' | 'en' | 'zh');
     }
@@ -383,6 +402,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                             id="nombre"
                             value={formData.nombre}
                             onChange={(e) => handleInputChange('nombre', e.target.value)}
+                            maxLength={MAX_FIELD_LENGTH}
                             placeholder={t('admin.configuration.profile.placeholders.name')}
                           />
                         </div>
@@ -392,6 +412,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                             id="email"
                             value={formData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
+                            maxLength={MAX_FIELD_LENGTH}
                             placeholder={t('admin.configuration.profile.placeholders.email')}
                           />
                         </div>
@@ -444,6 +465,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                               type={passwordData.showCurrentPassword ? 'text' : 'password'}
                               value={passwordData.currentPassword}
                               onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
+                              maxLength={MAX_FIELD_LENGTH}
                               placeholder={t('admin.configuration.password.placeholders.current')}
                             />
                             <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-500" onClick={() => setPasswordData(p => ({ ...p, showCurrentPassword: !p.showCurrentPassword }))}>
@@ -458,6 +480,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                               type={passwordData.showNewPassword ? 'text' : 'password'}
                               value={passwordData.newPassword}
                               onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
+                              maxLength={MAX_FIELD_LENGTH}
                               placeholder={t('admin.configuration.password.placeholders.new')}
                             />
                             <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-500" onClick={() => setPasswordData(p => ({ ...p, showNewPassword: !p.showNewPassword }))}>
@@ -472,6 +495,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                               type={passwordData.showConfirmPassword ? 'text' : 'password'}
                               value={passwordData.confirmPassword}
                               onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
+                              maxLength={MAX_FIELD_LENGTH}
                               placeholder={t('admin.configuration.password.placeholders.confirm')}
                             />
                             <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-500" onClick={() => setPasswordData(p => ({ ...p, showConfirmPassword: !p.showConfirmPassword }))}>
