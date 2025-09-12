@@ -1,5 +1,5 @@
-export type TFunction = (key: string, options?: Record<string, any>) => string;
 "use client";
+export type TFunction = (key: string, options?: Record<string, any>) => string;
 
 import { useLanguage } from '@/lib/LanguageContext';
 import esTranslations from '@/lib/translations/es.json';
@@ -46,7 +46,9 @@ export function useTranslation() {
     // Interpolación de variables en la cadena
     if (options) {
       Object.entries(options).forEach(([k, v]) => {
-        result = result.replace(new RegExp(`{{\s*${k}\s*}}`, 'g'), String(v));
+        // Regex correcta con escapes para espacios opcionales
+        const pattern = new RegExp(`{{\\s*${k}\\s*}}`, 'g');
+        result = result.replace(pattern, String(v));
       });
     }
 

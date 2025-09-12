@@ -6,7 +6,8 @@ import * as React from 'react';
 import type { ToastActionElement, ToastProps } from '@/components/ui/toast';
 
 const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000; // fallback si no se especifica duration
+// Duración por defecto de los toasts (5s)
+const TOAST_REMOVE_DELAY = 5000; // fallback si no se especifica duration
 
 type ToasterToast = ToastProps & {
   id: string;
@@ -143,8 +144,11 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, 'id'>;
 
-function toast({ ...props }: Toast) {
+function toast({ duration = 5000, ...props }: Toast & { duration?: number }) {
   const id = genId();
+  if (process.env.NODE_ENV === 'development') {
+    console.debug('[toast] creando', { id, title: props.title, duration });
+  }
 
   const update = (props: ToasterToast) =>
     dispatch({
@@ -158,12 +162,19 @@ function toast({ ...props }: Toast) {
     toast: {
       ...props,
       id,
+      duration, // almacenar duración para la cola de eliminación
       open: true,
       onOpenChange: (open) => {
         if (!open) dismiss();
       },
     },
   });
+
+  // Programar su eliminación automática
+  addToRemoveQueue(id);
+  if (process.env.NODE_ENV === 'development') {
+    console.debug('[toast] programado para remover en', duration, 'ms');
+  }
 
   return {
     id: id,
@@ -177,13 +188,19 @@ function useToast() {
 
   React.useEffect(() => {
     listeners.push(setState);
+    if (process.env.NODE_ENV === 'development') {
+      console.debug('[toast] listener añadido. Total:', listeners.length);
+    }
     return () => {
       const index = listeners.indexOf(setState);
       if (index > -1) {
         listeners.splice(index, 1);
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('[toast] listener removido. Total:', listeners.length);
+        }
       }
     };
-  }, [state]);
+  }, []);
 
   return {
     ...state,

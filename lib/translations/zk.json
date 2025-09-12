@@ -21,6 +21,7 @@
       "loadingRegister": "创建账户...",
       "forgotPassword": "忘记密码？",
       "passwordRequired": "密码是必填项",
+  "fillRequiredFields": "请填写必填字段。",
       "invalidEmail": "邮箱无效",
       "invalidEmailAlt": "邮箱格式不正确",
       "nameInvalid": "姓名至少 3 个字母且仅包含有效字符。",
@@ -781,7 +782,7 @@
       },
       "messages": {
         "profileUpdated": "资料已更新",
-        "profileUpdatedDesc": "更改已成功保存，包括应用语言。",
+  "profileUpdatedDesc": "更改已成功保存。",
         "passwordUpdated": "密码已更新",
         "passwordUpdatedDesc": "你的密码已成功更改。",
         "passwordMismatch": "密码不匹配。",

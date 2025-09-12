@@ -55,7 +55,9 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
-  const { language, setLanguage } = useLanguage();
+  const { language, committedLanguage, previewLanguage, commitLanguage, revertLanguage } = useLanguage();
+  // Flag para saber si se guardó y evitar revert posterior accidental
+  const didSaveRef = React.useRef(false);
   const { t } = useTranslation();
 
   // Datos base (simulados) — se pueden adaptar por rol si hace falta más adelante
@@ -184,24 +186,24 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
         passwordData.newPassword.length > MAX_FIELD_LENGTH ||
         passwordData.confirmPassword.length > MAX_FIELD_LENGTH
       ) {
-        toast({ title: t('common.error'), description: `Los campos de contraseña no pueden exceder ${MAX_FIELD_LENGTH} caracteres.`, variant: 'destructive' });
+  toast({ title: t('common.error'), description: `Los campos de contraseña no pueden exceder ${MAX_FIELD_LENGTH} caracteres.`, variant: 'destructive', duration: 5000 });
         return;
       }
       if (!hasPasswordChanges) return; // No hay cambios reales
       if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
-        toast({ title: t('common.error'), description: t('common.fillRequiredFields'), variant: 'destructive' });
+  toast({ title: t('common.error'), description: t('common.fillRequiredFields'), variant: 'destructive', duration: 5000 });
         return;
       }
       if (passwordData.newPassword !== passwordData.confirmPassword) {
-        toast({ title: t('admin.configuration.messages.passwordMismatch'), description: '', variant: 'destructive' });
+  toast({ title: t('admin.configuration.messages.passwordMismatch'), description: '', variant: 'destructive', duration: 5000 });
         return;
       }
       if (passwordData.newPassword.length < 6) {
-        toast({ title: t('common.error'), description: 'La nueva contraseña debe tener al menos 6 caracteres.', variant: 'destructive' });
+  toast({ title: t('common.error'), description: 'La nueva contraseña debe tener al menos 6 caracteres.', variant: 'destructive', duration: 5000 });
         return;
       }
       if (passwordData.currentPassword === passwordData.newPassword) {
-        toast({ title: t('common.error'), description: 'La nueva contraseña debe ser diferente a la actual.', variant: 'destructive' });
+  toast({ title: t('common.error'), description: 'La nueva contraseña debe ser diferente a la actual.', variant: 'destructive', duration: 5000 });
         return;
       }
 
@@ -209,7 +211,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
       const supabase = getSupabaseBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !user.email) {
-        toast({ title: t('common.error'), description: 'Usuario no autenticado.', variant: 'destructive' });
+  toast({ title: t('common.error'), description: 'Usuario no autenticado.', variant: 'destructive', duration: 5000 });
         return;
       }
 
@@ -219,7 +221,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
         password: passwordData.currentPassword,
       });
       if (signInError) {
-        toast({ title: t('common.error'), description: 'La contraseña actual es incorrecta.', variant: 'destructive' });
+  toast({ title: t('common.error'), description: 'La contraseña actual es incorrecta.', variant: 'destructive', duration: 5000 });
         return;
       }
 
@@ -228,7 +230,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
         password: passwordData.newPassword,
       });
       if (updateError) {
-        toast({ title: t('common.error'), description: `No se pudo actualizar la contraseña: ${updateError.message}`, variant: 'destructive' });
+  toast({ title: t('common.error'), description: `No se pudo actualizar la contraseña: ${updateError.message}`, variant: 'destructive', duration: 5000 });
         return;
       }
 
@@ -241,9 +243,9 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
         showNewPassword: false,
         showConfirmPassword: false,
       });
-      toast({ title: t('admin.configuration.messages.passwordUpdated'), description: t('admin.configuration.messages.passwordUpdatedDesc'), variant: 'default' });
+  toast({ title: t('admin.configuration.messages.passwordUpdated'), description: t('admin.configuration.messages.passwordUpdatedDesc'), variant: 'default', duration: 5000 });
     } catch (e: any) {
-      toast({ title: t('common.error'), description: e?.message || 'Error al actualizar la contraseña.', variant: 'destructive' });
+  toast({ title: t('common.error'), description: e?.message || 'Error al actualizar la contraseña.', variant: 'destructive', duration: 5000 });
     } finally {
       setChangingPassword(false);
     }
@@ -278,13 +280,13 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     const supabase = getSupabaseBrowserClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast({ title: 'Error', description: 'Usuario no autenticado.', variant: 'destructive' });
+  toast({ title: 'Error', description: 'Usuario no autenticado.', variant: 'destructive', duration: 5000 });
       return;
     }
 
     const jpegBlob = await convertToJPEG(file);
     if (!jpegBlob) {
-      toast({ title: 'Error', description: 'No se pudo convertir la imagen.', variant: 'destructive' });
+  toast({ title: 'Error', description: 'No se pudo convertir la imagen.', variant: 'destructive', duration: 5000 });
       return;
     }
 
@@ -294,7 +296,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
       .upload(fileName, jpegBlob, { upsert: true });
 
     if (error) {
-      toast({ title: 'Error', description: `No se pudo subir la imagen: ${error.message}` , variant: 'destructive' });
+  toast({ title: 'Error', description: `No se pudo subir la imagen: ${error.message}` , variant: 'destructive', duration: 5000 });
       return;
     }
 
@@ -307,7 +309,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
       .eq('id', user.id);
 
     if (updateError) {
-      toast({ title: 'Error', description: `No se pudo guardar la URL: ${updateError.message}`, variant: 'destructive' });
+  toast({ title: 'Error', description: `No se pudo guardar la URL: ${updateError.message}`, variant: 'destructive', duration: 5000 });
       return;
     }
 
@@ -316,7 +318,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     // Añadimos un query param único sólo para la versión global (Sidebar)
     onUserImageUpdate?.(`${urlData.publicUrl}?v=${Date.now()}`);
 
-  toast({ title: t('admin.configuration.messages.photoUpdated'), description: t('admin.configuration.messages.photoUpdatedDesc'), variant: 'default' });
+  toast({ title: t('admin.configuration.messages.photoUpdated'), description: t('admin.configuration.messages.photoUpdatedDesc'), variant: 'default', duration: 5000 });
   };
 
   const handleDeletePhoto = async () => {
@@ -326,7 +328,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
       const supabase = getSupabaseBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast({ title: 'Error', description: 'Usuario no autenticado.', variant: 'destructive' });
+  toast({ title: 'Error', description: 'Usuario no autenticado.', variant: 'destructive', duration: 5000 });
         return;
       }
 
@@ -348,9 +350,9 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
   setFormData(prev => ({ ...prev, fotoPreview: null, fotoVersion: prev.fotoVersion + 1 }));
       onUserImageUpdate?.(undefined);
 
-  toast({ title: t('admin.configuration.messages.photoDeleted'), description: t('admin.configuration.messages.photoDeletedDesc'), variant: 'default' });
+  toast({ title: t('admin.configuration.messages.photoDeleted'), description: t('admin.configuration.messages.photoDeletedDesc'), variant: 'default', duration: 5000 });
     } catch (err) {
-      toast({ title: 'Error', description: 'No se pudo eliminar la foto.', variant: 'destructive' });
+  toast({ title: 'Error', description: 'No se pudo eliminar la foto.', variant: 'destructive', duration: 5000 });
     } finally {
       setDeletingPhoto(false);
     }
@@ -359,22 +361,29 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
   const handleSaveProfile = () => {
     // Validaciones de longitud solo al guardar (el input ya está limitado, esto es por seguridad extra)
     if (formData.nombre.length > MAX_FIELD_LENGTH || formData.email.length > MAX_FIELD_LENGTH) {
-      toast({ title: t('common.error'), description: `Nombre y correo no pueden exceder ${MAX_FIELD_LENGTH} caracteres.`, variant: 'destructive' });
+  toast({ title: t('common.error'), description: `Nombre y correo no pueden exceder ${MAX_FIELD_LENGTH} caracteres.`, variant: 'destructive', duration: 5000 });
       return;
     }
     if (!hasProfileChanges) return; // Nada que guardar
 
-    if (formData.idioma && ['es', 'en', 'zh'].includes(formData.idioma)) {
-      setLanguage(formData.idioma as 'es' | 'en' | 'zh');
+    if (formData.idioma && ['es', 'en', 'zh'].includes(formData.idioma) && formData.idioma !== committedLanguage) {
+      console.log('[config][saveProfile] committing language USING formData.idioma', {
+        formDataIdioma: formData.idioma,
+        visibleBefore: language,
+        committedBefore: committedLanguage
+      });
+      commitLanguage(formData.idioma as any);
+      console.log('[config][saveProfile] committed language', { committedLanguageAfter: formData.idioma });
     }
-    toast({ title: t('admin.configuration.messages.profileUpdated'), description: t('admin.configuration.messages.profileUpdatedDesc'), variant: 'default' });
+    toast({ title: t('admin.configuration.messages.profileUpdated'), description: t('admin.configuration.messages.profileUpdatedDesc'), variant: 'default', duration: 5000 });
     // Actualizar baseline tras guardar
     setProfileBaseline({
       nombre: formData.nombre,
       email: formData.email,
       telefono: formData.telefono,
-      idioma: formData.idioma as string
+      idioma: language as string
     });
+    didSaveRef.current = true;
   };
 
   // Derivados para habilitar/deshabilitar botones
@@ -408,6 +417,41 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     passwordData.newPassword.length > 0 &&
     passwordData.confirmPassword.length > 0 &&
     passwordData.newPassword === passwordData.confirmPassword;
+
+  // Revertir idioma preview SOLO al desmontar si no se guardó (evita revert accidental post-commit)
+  const unmountLanguageRef = React.useRef({
+    formIdioma: formData.idioma,
+    baselineIdioma: profileBaseline.idioma,
+    visible: language,
+    committed: committedLanguage,
+  });
+
+  useEffect(() => {
+    unmountLanguageRef.current = {
+      formIdioma: formData.idioma,
+      baselineIdioma: profileBaseline.idioma,
+      visible: language,
+      committed: committedLanguage,
+    };
+  }, [formData.idioma, profileBaseline.idioma, language, committedLanguage]);
+
+  useEffect(() => {
+    return () => {
+      if (didSaveRef.current) {
+        console.log('[config][unmount] skip revert (already saved)');
+        return;
+      }
+      const { formIdioma, baselineIdioma, visible, committed } = unmountLanguageRef.current;
+      const hasUnsaved = formIdioma !== baselineIdioma;
+      const visibleDiffers = visible !== committed;
+      if (hasUnsaved && visibleDiffers) {
+        console.log('[config][unmount] reverting unsaved language change', unmountLanguageRef.current);
+        revertLanguage();
+      } else {
+        console.log('[config][unmount] no revert needed', unmountLanguageRef.current);
+      }
+    };
+  }, [revertLanguage]);
 
   const strengthText = (() => {
     switch (passwordStrength) {
@@ -517,7 +561,13 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="idioma">{t('admin.configuration.profile.fields.language')}</Label>
-                          <Select value={String(formData.idioma)} onValueChange={(value) => handleInputChange('idioma', value)}>
+                          <Select value={String(formData.idioma)} onValueChange={(value) => {
+                            handleInputChange('idioma', value);
+                            if (value === 'es' || value === 'en' || value === 'zh') {
+                              // Preview inmediato sin persistir
+                              previewLanguage(value as any);
+                            }
+                          }}>
                             <SelectTrigger>
                               <SelectValue placeholder={t('admin.configuration.profile.placeholders.selectLanguage')} />
                             </SelectTrigger>

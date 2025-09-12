@@ -21,6 +21,7 @@
       "loadingRegister": "Creating account...",
       "forgotPassword": "Forgot your password?",
       "passwordRequired": "Password is required",
+  "fillRequiredFields": "Please fill in the required fields.",
       "invalidEmail": "Invalid email",
       "invalidEmailAlt": "Email is not valid.",
       "nameInvalid": "Name must have at least 3 letters and valid characters only.",
@@ -780,7 +781,7 @@
       },
       "messages": {
         "profileUpdated": "Profile updated",
-        "profileUpdatedDesc": "Changes have been saved successfully, including the application language.",
+  "profileUpdatedDesc": "Changes have been saved successfully.",
         "passwordUpdated": "Password updated",
         "passwordUpdatedDesc": "Your password has been changed successfully.",
         "passwordMismatch": "Passwords do not match.",

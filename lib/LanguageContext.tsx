@@ -5,7 +5,17 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 export type Language = 'es' | 'en' | 'zh';
 
 export type LanguageContextType = {
+  // Idioma mostrado actualmente (puede incluir cambios en preview no confirmados)
   language: Language;
+  // Último idioma confirmado y persistido
+  committedLanguage: Language;
+  // Cambia el idioma solo en memoria (preview) sin persistir
+  previewLanguage: (lang: Language) => void;
+  // Confirma y persiste el idioma
+  commitLanguage: (lang: Language) => void;
+  // Revertir a committedLanguage descartando preview
+  revertLanguage: () => void;
+  // Alias legacy (compatibilidad): setLanguage = commitLanguage
   setLanguage: (lang: Language) => void;
 };
 
@@ -21,6 +31,7 @@ export const useLanguage = () => {
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>('es');
+  const [committedLanguage, setCommittedLanguage] = useState<Language>('es');
   const [mounted, setMounted] = useState(false);
 
   // Cargar idioma desde localStorage al montar el componente
@@ -28,18 +39,36 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const savedLanguage = localStorage.getItem('pita-language') as Language;
     if (savedLanguage && ['es', 'en', 'zh'].includes(savedLanguage)) {
       setLanguageState(savedLanguage);
+      setCommittedLanguage(savedLanguage);
     }
     setMounted(true);
   }, []);
-
-  // Función para cambiar idioma y guardarlo en localStorage
-  const setLanguage = (lang: Language) => {
+  // Preview (no persistir)
+  const previewLanguage = (lang: Language) => {
+  console.log('[language][preview] from', language, 'to', lang);
     setLanguageState(lang);
-    localStorage.setItem('pita-language', lang);
-    
-    // Cambiar el atributo lang del documento HTML
     if (typeof document !== 'undefined') {
       document.documentElement.lang = lang;
+    }
+  };
+
+  // Commit (persistir en localStorage)
+  const commitLanguage = (lang: Language) => {
+  console.log('[language][commit] requested', lang, 'currentVisible', language, 'committedBefore', committedLanguage);
+    setLanguageState(lang);
+    setCommittedLanguage(lang);
+    localStorage.setItem('pita-language', lang);
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = lang;
+    }
+  console.log('[language][commit] done -> committed', lang);
+  };
+
+  const revertLanguage = () => {
+  console.log('[language][revert] reverting visible', language, 'to committed', committedLanguage);
+    setLanguageState(committedLanguage);
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = committedLanguage;
     }
   };
 
@@ -49,7 +78,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage }}>
+  <LanguageContext.Provider value={{ language, committedLanguage, previewLanguage, commitLanguage, revertLanguage, setLanguage: commitLanguage }}>
       {children}
     </LanguageContext.Provider>
   );

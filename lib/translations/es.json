@@ -22,6 +22,7 @@
       "loadingRegister": "Creando cuenta...",
       "forgotPassword": "¿Olvidaste tu contraseña?",
       "passwordRequired": "La contraseña es obligatoria",
+  "fillRequiredFields": "Por favor completa los campos requeridos.",
       "invalidEmail": "Correo electrónico inválido",
       "invalidEmailAlt": "El correo electrónico no es válido.",
       "nameInvalid": "El nombre debe tener al menos 3 letras y solo caracteres válidos.",
@@ -1239,7 +1240,7 @@
       },
       "messages": {
         "profileUpdated": "Perfil actualizado",
-        "profileUpdatedDesc": "Los cambios se han guardado correctamente, incluido el idioma de la aplicación.",
+  "profileUpdatedDesc": "Los cambios se han guardado correctamente.",
         "passwordUpdated": "Contraseña actualizada",
         "passwordUpdatedDesc": "Tu contraseña se ha cambiado exitosamente.",
         "passwordMismatch": "Las contraseñas no coinciden.",
