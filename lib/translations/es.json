@@ -2115,6 +2115,7 @@
       "containersBadges": {
         "new": "Nuevo",
         "inTransit": "En tránsito",
+  "traveling": "Viajando",
         "received": "Recibido",
         "state": "Est.{{num}}"
       },
