@@ -1056,7 +1056,9 @@
   "selectLanguage": "Selecciona un idioma",
   "chinese": "Chino",
   "english": "Inglés",
-  "spanish": "Español"
+  "spanish": "Español",
+  "dias": "días",
+  "eta": "Tiempo estimado"
   },
   "admin": {
     "configuration": {

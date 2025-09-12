@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { 
@@ -87,6 +87,8 @@ export default function ConfiguracionPage() {
     sessionTimeout: 60,
     requireTwoFactor: false
   });
+  // Referencia al estado base para detectar cambios
+  const baseConfigRef = useRef<BusinessConfig | null>(null);
   
   const [isLoading, setIsLoading] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -96,6 +98,10 @@ export default function ConfiguracionPage() {
     const savedDate = localStorage.getItem('lastConfigSaved');
     if (savedDate) {
       setLastSaved(new Date(savedDate));
+    }
+    // Inicializar base solo una vez
+    if (!baseConfigRef.current) {
+      baseConfigRef.current = { ...config };
     }
     setMounted(true);
   }, []);
@@ -123,10 +129,60 @@ export default function ConfiguracionPage() {
       title: t('admin.management.messages.configSaved'),
       description: t('admin.management.messages.configSavedDesc'),
     });
+
+  // Actualizar baseline para futuras comparaciones
+  baseConfigRef.current = { ...config };
   };
 
   const updateConfig = (field: keyof BusinessConfig, value: any) => {
     setConfig(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Comparar configuraciones (stringify simple dado el tamaño pequeño)
+  const hasChanges = useMemo(() => {
+    if (!baseConfigRef.current) return false;
+    return JSON.stringify(baseConfigRef.current) !== JSON.stringify(config);
+  }, [config]);
+
+  // =============================
+  // Sanitizadores / Validaciones
+  // =============================
+  const MAX_COST_INT_DIGITS = 7; // costos: hasta 7 cifras en parte entera
+  const MAX_DAY_VALUE = 365;    // días: máximo 365
+
+  const sanitizeCost = (raw: string) => {
+    if (raw === '') return '';
+    let v = raw.replace(/[^0-9.,]/g, '').replace(',', '.');
+    const parts = v.split('.');
+    let intPart = parts[0].slice(0, MAX_COST_INT_DIGITS);
+    let decPart = parts[1] ? parts[1].slice(0, 2) : '';
+    // Evitar que el usuario empiece con ceros largos (pero permitir 0.x)
+    if (intPart.length > 1 && intPart.startsWith('0')) {
+      intPart = intPart.replace(/^0+/, '') || '0';
+    }
+    return decPart ? `${intPart}.${decPart}` : intPart;
+  };
+
+  const applyCost = (field: keyof BusinessConfig, raw: string) => {
+    const cleaned = sanitizeCost(raw);
+    const num = cleaned === '' ? 0 : parseFloat(cleaned);
+    updateConfig(field, isNaN(num) ? 0 : num);
+  };
+
+  const applyDayValue = (group: 'airDeliveryDays' | 'seaDeliveryDays', sub: 'min' | 'max', raw: string) => {
+    let onlyDigits = raw.replace(/\D/g, '');
+    if (onlyDigits.length > 4) onlyDigits = onlyDigits.slice(0,4);
+    let num = onlyDigits === '' ? 0 : parseInt(onlyDigits, 10);
+    if (num > MAX_DAY_VALUE) num = MAX_DAY_VALUE;
+    updateConfig(group, { ...config[group], [sub]: num });
+  };
+
+  const applySingleDay = (field: keyof BusinessConfig, raw: string) => {
+    let onlyDigits = raw.replace(/\D/g, '');
+    if (onlyDigits.length > 4) onlyDigits = onlyDigits.slice(0,4);
+    let num = onlyDigits === '' ? 0 : parseInt(onlyDigits, 10);
+    if (num > MAX_DAY_VALUE) num = MAX_DAY_VALUE;
+    updateConfig(field, num);
   };
 
   const formatCurrency = (amount: number) => {
@@ -198,15 +254,15 @@ export default function ConfiguracionPage() {
                 )}
                 <Button 
                   onClick={handleSave}
-                  disabled={isLoading}
-                  className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                  disabled={isLoading || !hasChanges}
+                  className={`w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg transition-all duration-300 ${(!hasChanges || isLoading) ? 'opacity-50 cursor-not-allowed hover:shadow-lg' : 'hover:shadow-xl'}`}
                 >
                   {isLoading ? (
                     <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
                   ) : (
                     <Save className="w-4 h-4 mr-2" />
                   )}
-                  {isLoading ? t('admin.management.actions.saving') : t('admin.management.actions.save')}
+                  {isLoading ? t('admin.management.actions.saving') : (hasChanges ? t('admin.management.actions.save') : t('admin.management.actions.save'))}
                 </Button>
               </div>
             </div>
@@ -263,12 +319,7 @@ export default function ConfiguracionPage() {
                           step="0.01"
                           min={0}
                           value={config.airShippingRate}
-                          onChange={(e) => {
-                            const value = parseFloat(e.target.value);
-                            if (value >= 0 || e.target.value === "") {
-                              updateConfig('airShippingRate', isNaN(value) ? 0 : value);
-                            }
-                          }}
+                          onChange={(e) => applyCost('airShippingRate', e.target.value)}
                           className="pl-10"
                         />
                       </div>
@@ -284,16 +335,9 @@ export default function ConfiguracionPage() {
                           id="airMin"
                           type="number"
                           min={0}
+                          max={365}
                           value={config.airDeliveryDays.min}
-                          onChange={(e) => {
-                            const value = parseInt(e.target.value);
-                            if (value >= 0 || e.target.value === "") {
-                              updateConfig('airDeliveryDays', {
-                                ...config.airDeliveryDays,
-                                min: isNaN(value) ? 0 : value
-                              });
-                            }
-                          }}
+                          onChange={(e) => applyDayValue('airDeliveryDays','min', e.target.value)}
                         />
                       </div>
                       <div className="space-y-2">
@@ -302,16 +346,9 @@ export default function ConfiguracionPage() {
                           id="airMax"
                           type="number"
                           min={0}
+                          max={365}
                           value={config.airDeliveryDays.max}
-                          onChange={(e) => {
-                            const value = parseInt(e.target.value);
-                            if (value >= 0 || e.target.value === "") {
-                              updateConfig('airDeliveryDays', {
-                                ...config.airDeliveryDays,
-                                max: isNaN(value) ? 0 : value
-                              });
-                            }
-                          }}
+                          onChange={(e) => applyDayValue('airDeliveryDays','max', e.target.value)}
                         />
                       </div>
                     </div>
@@ -344,12 +381,7 @@ export default function ConfiguracionPage() {
                           step="0.01"
                           min={0}
                           value={config.seaShippingRate}
-                          onChange={(e) => {
-                            const value = parseFloat(e.target.value);
-                            if (value >= 0 || e.target.value === "") {
-                              updateConfig('seaShippingRate', isNaN(value) ? 0 : value);
-                            }
-                          }}
+                          onChange={(e) => applyCost('seaShippingRate', e.target.value)}
                           className="pl-10"
                         />
                       </div>
@@ -365,16 +397,9 @@ export default function ConfiguracionPage() {
                           id="seaMin"
                           type="number"
                           min={0}
+                          max={365}
                           value={config.seaDeliveryDays.min}
-                          onChange={(e) => {
-                            const value = parseInt(e.target.value);
-                            if (value >= 0 || e.target.value === "") {
-                              updateConfig('seaDeliveryDays', {
-                                ...config.seaDeliveryDays,
-                                min: isNaN(value) ? 0 : value
-                              });
-                            }
-                          }}
+                          onChange={(e) => applyDayValue('seaDeliveryDays','min', e.target.value)}
                         />
                       </div>
                       <div className="space-y-2">
@@ -383,16 +408,9 @@ export default function ConfiguracionPage() {
                           id="seaMax"
                           type="number"
                           min={0}
+                          max={365}
                           value={config.seaDeliveryDays.max}
-                          onChange={(e) => {
-                            const value = parseInt(e.target.value);
-                            if (value >= 0 || e.target.value === "") {
-                              updateConfig('seaDeliveryDays', {
-                                ...config.seaDeliveryDays,
-                                max: isNaN(value) ? 0 : value
-                              });
-                            }
-                          }}
+                          onChange={(e) => applyDayValue('seaDeliveryDays','max', e.target.value)}
                         />
                       </div>
                     </div>
@@ -427,12 +445,7 @@ export default function ConfiguracionPage() {
                         step="0.01"
                         min={0}
                         value={config.usdRate}
-                        onChange={(e) => {
-                          const value = parseFloat(e.target.value);
-                          if (value >= 0 || e.target.value === "") {
-                            updateConfig('usdRate', isNaN(value) ? 0 : value);
-                          }
-                        }}
+                        onChange={(e) => applyCost('usdRate', e.target.value)}
                       />
                     </div>
                     <Alert>
@@ -536,13 +549,9 @@ export default function ConfiguracionPage() {
                         id="alertDays"
                         type="number"
                         min={0}
+                        max={365}
                         value={config.alertsAfterDays}
-                        onChange={(e) => {
-                          const value = parseInt(e.target.value);
-                          if (value >= 0 || e.target.value === "") {
-                            updateConfig('alertsAfterDays', isNaN(value) ? 0 : value);
-                          }
-                        }}
+                        onChange={(e) => applySingleDay('alertsAfterDays', e.target.value)}
                       />
                       <p className="text-xs text-slate-500">{t('admin.management.notifications.alertAfterDaysHelp')}</p>
                     </div>
