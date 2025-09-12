@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { useAdminUsers } from '@/hooks/use-admin-users';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -48,6 +48,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { 
   MoreVertical, 
@@ -191,6 +192,9 @@ export default function UsuariosPage() {
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
   const { toast } = useToast();
+  const lastDeletedRef = useRef<User | null>(null);
+  const undoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [flashUserId, setFlashUserId] = useState<string | null>(null);
 
   const filteredUsers = useMemo(() => {
     const filtered = users.filter((u) => {
@@ -279,7 +283,11 @@ export default function UsuariosPage() {
   function performDelete(user: User) {
     const prevUsers = users;
     // Optimistic remove
-    setUsers((prev) => prev.filter((u) => u.id !== user.id));
+    setUsers((p) => p.filter((u) => u.id !== user.id));
+    lastDeletedRef.current = user;
+    // Clear previous undo timeout if any
+    if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
+
     fetch('/api/admin/users', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -288,13 +296,41 @@ export default function UsuariosPage() {
       if (!res.ok) {
         const { error } = await res.json().catch(() => ({ error: 'Error' }));
         setUsers(prevUsers);
-    toast({ title: t('admin.users.messages.errorDeleting'), description: error || t('admin.users.messages.couldNotDelete') });
+        toast({ title: t('admin.users.messages.errorDeleting'), description: error || t('admin.users.messages.couldNotDelete') });
+        lastDeletedRef.current = null;
         return;
       }
-  toast({ title: t('admin.users.messages.userDeleted'), description: t('admin.users.messages.userDeletedDesc', { name: user.fullName }) });
+      // Show undo toast
+      const undoId = `undo-${user.id}`;
+      toast({
+        title: t('admin.users.messages.userDeleted') || 'Usuario eliminado',
+        description: t('admin.users.messages.userDeletedDesc', { name: user.fullName }) || `Se eliminó ${user.fullName}`,
+        action: (
+          <ToastAction altText={t('admin.users.messages.undo')} onClick={() => {
+            if (!lastDeletedRef.current) return;
+            const restored = lastDeletedRef.current;
+            setUsers((p) => [restored, ...p]);
+            setFlashUserId(restored.id);
+            setTimeout(() => setFlashUserId(null), 2000);
+            // Patch status back to activo
+            fetch('/api/admin/users', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: restored.id, status: 'activo' }),
+            }).catch(() => {/* silent */});
+            lastDeletedRef.current = null;
+          }}>
+            {t('admin.users.messages.undo') || 'Deshacer'}
+          </ToastAction>
+        ),
+  duration: 5000,
+      });
+      // Auto-clear after toast window
+  undoTimeoutRef.current = setTimeout(() => { lastDeletedRef.current = null; }, 5000);
     }).catch(() => {
       setUsers(prevUsers);
-  toast({ title: t('admin.users.messages.errorDeleting'), description: t('admin.users.messages.couldNotDelete') });
+  toast({ title: t('admin.users.messages.errorDeleting') || 'Error al eliminar', description: t('admin.users.messages.couldNotDelete') || 'No se pudo eliminar' });
+      lastDeletedRef.current = null;
     });
   }
 
@@ -428,49 +464,53 @@ export default function UsuariosPage() {
         <div className="p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6">
           <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between gap-3 flex-wrap">
-                <CardTitle className="text-lg md:text-xl flex items-center text-black">
+              {/* Layout ajustado: en móvil apilar título y controles; en >=sm distribución horizontal */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <CardTitle className="text-lg md:text-xl flex items-center text-black w-full sm:w-auto">
                   <Users className="w-4 h-4 md:w-5 md:h-5 mr-2 text-blue-600" />
                   {t('admin.users.listTitle')}
                 </CardTitle>
-                {/* Toolbar compacta a la derecha */}
-                <div className="flex items-center justify-end gap-2 flex-wrap">
+                {/* Toolbar: en móvil columna a ancho completo */}
+                <div className="flex flex-col sm:flex-row w-full sm:w-auto items-stretch sm:items-center gap-2 sm:gap-3">
                   {/* Search */}
-                  <div className="relative">
+                  <div className="relative w-full sm:w-auto">
                     <Input
                       placeholder={t('admin.users.search')}
                       value={searchTerm}
                       onChange={(e) => handleSearchChange(e.target.value)}
-                      className="px-3 h-10 w-56 md:w-64 bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                      className="px-3 h-10 w-full sm:w-56 md:w-64 bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
                     />
                   </div>
                   {/* Filtro Rol */}
-                  <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
-                    <SelectTrigger className="h-10 w-48 md:w-56 px-3 whitespace-nowrap bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 text-sm">
-                      <div className="flex items-center gap-2 truncate">
-                        <Filter className="w-4 h-4 mr-2 text-slate-400" />
-                        <SelectValue placeholder={t('admin.users.filters.role')} />
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t('admin.users.filters.allRoles')}</SelectItem>
-                      {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
-                        <SelectItem key={r} value={r}>{t(`admin.users.roles.${r}` as any)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="w-full sm:w-auto">
+                    <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
+                      <SelectTrigger className="h-10 w-full sm:w-48 md:w-56 px-3 whitespace-nowrap bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 text-sm">
+                        <div className="flex items-center gap-2 truncate">
+                          <Filter className="w-4 h-4 mr-2 text-slate-400" />
+                          <SelectValue placeholder={t('admin.users.filters.role')} />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('admin.users.filters.allRoles')}</SelectItem>
+                        {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
+                          <SelectItem key={r} value={r}>{t(`admin.users.roles.${r}` as any)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   {/* Nuevo usuario */}
-                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button onClick={handleOpenCreate} className="h-10 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg text-sm">
-                        <Plus className="w-3 h-3 mr-2" /> {t('admin.users.form.newUser')}
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>{editingUser && users.some(u => u.id === editingUser.id) ? t('admin.users.form.editUser') : t('admin.users.form.createUser')}</DialogTitle>
-                        <DialogDescription>{t('admin.users.form.description')}</DialogDescription>
-                      </DialogHeader>
+                  <div className="w-full sm:w-auto">
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button onClick={handleOpenCreate} className="h-10 w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg text-sm">
+                          <Plus className="w-3 h-3 mr-2" /> {t('admin.users.form.newUser')}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>{editingUser && users.some(u => u.id === editingUser.id) ? t('admin.users.form.editUser') : t('admin.users.form.createUser')}</DialogTitle>
+                          <DialogDescription>{t('admin.users.form.description')}</DialogDescription>
+                        </DialogHeader>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
                         <div className="space-y-2">
                           <Label htmlFor="fullName">{t('admin.users.form.fullName')}</Label>
@@ -548,12 +588,13 @@ export default function UsuariosPage() {
                           </Select>
                         </div>
                       </div>
-                      <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t('admin.users.form.cancel')}</Button>
-                        <Button onClick={handleSave} className="bg-blue-600 text-white" disabled={saveDisabled}>{t('admin.users.form.save')}</Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t('admin.users.form.cancel')}</Button>
+                          <Button onClick={handleSave} className="bg-blue-600 text-white" disabled={saveDisabled}>{t('admin.users.form.save')}</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </div>
               </div>
             </CardHeader>
@@ -637,10 +678,10 @@ export default function UsuariosPage() {
                                     </tr>
                                   </thead>
                                   <tbody className="divide-y divide-slate-100">
-                                    {pagedUsers.map((user, index) => (
+                  {pagedUsers.map((user, index) => (
                                       <tr 
-                                        key={`${user.id}-${animationKey}`}
-                                        className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-300 ease-out group"
+                    key={`${user.id}-${animationKey}`}
+                    className={`hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-300 ease-out group ${flashUserId === user.id ? 'animate-[pulse_1.2s_ease-in-out_2] bg-green-50/70' : ''}`}
                                         style={{
                                           animationDelay: `${index * 50}ms`,
                                           animation: 'fadeInUp 0.6s ease-out forwards'
@@ -719,10 +760,14 @@ export default function UsuariosPage() {
 
                             {/* Vista Mobile/Tablet - Cards */}
                             <div className="lg:hidden space-y-3 md:space-y-4">
-                              {pagedUsers.map((user, index) => (
+                {pagedUsers.map((user, index) => (
                                 <div
-                                  key={`${user.id}-${animationKey}`}
-                                  className="bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 p-4 md:p-5 hover:shadow-lg transition-all duration-300 group"
+                  key={`${user.id}-${animationKey}`}
+                  onClick={() => handleOpenEdit(user)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleOpenEdit(user); } }}
+                  role="button"
+                  tabIndex={0}
+                  className={`bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 p-4 md:p-5 hover:shadow-lg transition-all duration-300 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 ${flashUserId === user.id ? 'animate-[pulse_1.2s_ease-in-out_2] ring-2 ring-green-300/60' : ''}`}
                                   style={{
                                     animationDelay: `${index * 50}ms`,
                                     animation: 'fadeInUp 0.6s ease-out forwards'
@@ -750,15 +795,15 @@ export default function UsuariosPage() {
                                      </div>
                                      <div className="flex flex-col gap-2 w-full">
                                        <div className="flex items-center gap-1 md:gap-2 flex-wrap">
-                                        <Badge className={`${ROLE_COLORS[user.role]} border font-medium px-2 py-1 text-xs`}>
+                                        <Badge className={`${ROLE_COLORS[user.role]} border font-medium px-2 py-1 text-xs pointer-events-none select-none`}>
                                           {t(`admin.users.roles.${user.role}` as any)}
                                         </Badge>
                                         {user.status === 'activo' ? (
-                                          <Badge className="bg-green-100 text-green-800 border border-green-200 font-medium px-2 py-1 text-xs">
+                                          <Badge className="bg-green-100 text-green-800 border border-green-200 font-medium px-2 py-1 text-xs pointer-events-none select-none">
                                             <CheckCircle className="w-3 h-3 mr-1" /> {t('admin.users.status.active')}
                                           </Badge>
                                         ) : (
-                                          <Badge className="bg-red-100 text-red-800 border border-red-200 font-medium px-2 py-1 text-xs">
+                                          <Badge className="bg-red-100 text-red-800 border border-red-200 font-medium px-2 py-1 text-xs pointer-events-none select-none">
                                             <XCircle className="w-3 h-3 mr-1" /> {t('admin.users.status.inactive')}
                                           </Badge>
                                         )}
@@ -769,36 +814,24 @@ export default function UsuariosPage() {
                                        </div>
                                      </div>
                                    </div>
-                                                                     <div className="flex items-center justify-end gap-1 md:gap-2 mt-3 md:mt-4 pt-3 md:pt-4 border-t border-slate-100 w-full">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleOpenEdit(user)}
-                                      className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
-                                    >
-                                      <Edit3 className="w-3 h-3 md:w-4 md:h-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleToggleStatus(user)}
-                                      className={`h-7 w-7 md:h-8 md:w-8 p-0 transition-all duration-200 ${
-                                        user.status === 'activo' 
-                                          ? 'hover:bg-red-100 hover:text-red-700' 
-                                          : 'hover:bg-green-100 hover:text-green-700'
-                                      }`}
-                                    >
-                                      {user.status === 'activo' ? <UserX className="w-3 h-3 md:w-4 md:h-4" /> : <UserCheck className="w-3 h-3 md:w-4 md:h-4" />}
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleRequestDelete(user)}
-                                      className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
-                                    >
-                                      <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
-                                    </Button>
-                                  </div>
+                                                                    <div className="flex items-center justify-end gap-1 md:gap-2 mt-3 md:mt-4 pt-3 md:pt-4 border-t border-slate-100 w-full" onClick={(e) => e.stopPropagation()}>
+                                                                      <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={(e) => { e.stopPropagation(); handleOpenEdit(user); }}
+                                                                        className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                                                                      >
+                                                                        <Edit3 className="w-3 h-3 md:w-4 md:h-4" />
+                                                                      </Button>
+                                                                      <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={(e) => { e.stopPropagation(); handleRequestDelete(user); }}
+                                                                        className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
+                                                                      >
+                                                                        <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
+                                                                      </Button>
+                                                                    </div>
                                 </div>
                               ))}
                             </div>

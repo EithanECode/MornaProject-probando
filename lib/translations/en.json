@@ -911,7 +911,12 @@
         "changesSaved": "Changes saved",
         "changesSavedDesc": "User information has been updated.",
         "errorSaving": "Error saving",
-        "couldNotSave": "Could not save"
+  "couldNotSave": "Could not save",
+  "userDeleted": "User deleted",
+  "userDeletedDesc": "{{name}} was deleted. You can undo.",
+  "undo": "Undo",
+  "errorDeleting": "Error deleting",
+  "couldNotDelete": "Could not delete"
       },
       "common": {
         "loading": "Loading...",

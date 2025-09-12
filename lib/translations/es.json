@@ -1370,7 +1370,12 @@
         "changesSaved": "Cambios guardados",
         "changesSavedDesc": "La información del usuario ha sido actualizada.",
         "errorSaving": "Error al guardar",
-        "couldNotSave": "No se pudo guardar"
+  "couldNotSave": "No se pudo guardar",
+  "userDeleted": "Usuario eliminado",
+  "userDeletedDesc": "Se eliminó {{name}}. Puedes deshacer.",
+  "undo": "Deshacer",
+  "errorDeleting": "Error al eliminar",
+  "couldNotDelete": "No se pudo eliminar"
       },
       "common": {
         "loading": "Cargando...",

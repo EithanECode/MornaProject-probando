@@ -914,7 +914,12 @@
         "changesSaved": "更改已保存",
         "changesSavedDesc": "用户信息已更新。",
         "errorSaving": "保存出错",
-        "couldNotSave": "无法保存"
+  "couldNotSave": "无法保存",
+  "userDeleted": "用户已删除",
+  "userDeletedDesc": "{{name}} 已被删除。你可以撤销。",
+  "undo": "撤销",
+  "errorDeleting": "删除出错",
+  "couldNotDelete": "无法删除"
       },
       "common": {
         "loading": "加载中...",
