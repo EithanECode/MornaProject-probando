@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useDeferredValue, memo } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -339,6 +339,68 @@ const useActivePage = (menuItems: any[], userRole?: string, pathname?: string) =
     return currentItem?.id || currentBottomItem?.id || 'dashboard';
   }, [pathname, menuItems, userRole]);
 };
+
+// Item de menú memoizado para reducir rerenders (especialmente en mobile)
+const SidebarMenuItem = memo(function SidebarMenuItem({
+  item,
+  isActive,
+  responsiveConfig,
+  isMobileMenuOpen,
+  isExpanded,
+  screenWidth,
+  t,
+  disablePrefetch
+}: any) {
+  const Icon = item.icon;
+  return (
+    <div key={item.id}>
+      <Link
+        href={item.path}
+        prefetch={disablePrefetch ? false : true}
+        className={`
+            w-full flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`) : (isExpanded ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`)} rounded-xl
+            transition-all duration-120 ease-out group relative
+            active:scale-95 will-change-transform
+            ${isActive 
+              ? 'bg-gradient-to-r from-blue-600/25 to-indigo-600/25 text-white shadow-md border border-blue-500/30' 
+              : 'text-slate-400 hover:text-white hover:bg-slate-700/40'
+            }
+          `}
+      >
+        {/* Indicador activo */}
+        <div className={`
+          absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-indigo-500 rounded-r-full
+          transition-all duration-150 ease-out will-change-transform
+          ${isActive ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'}
+        `} />
+
+        <div className={`${responsiveConfig.iconContainerSize} flex items-center justify-center rounded-lg`}>
+          <Icon 
+            className={`${responsiveConfig.iconSize} ${item.color} transition-all duration-150 ease-out ${isActive ? 'scale-105' : 'scale-100'}`}
+          />
+        </div>
+        <div className={`
+          transition-all duration-150 ease-out overflow-hidden will-change-auto
+          ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
+        `}>
+          <div className="flex items-center justify-between whitespace-nowrap">
+            <span className={`font-medium ${responsiveConfig.textSize}`}>{t('sidebar.' + item.id) ?? item.id}</span>
+            {typeof item.badge === 'number' && item.badge > 0 ? (
+              <Badge className={`bg-red-500 text-white ${responsiveConfig.badgeSize}`}>
+                {item.badge}
+              </Badge>
+            ) : null}
+          </div>
+        </div>
+        {!responsiveConfig.isMobile && !responsiveConfig.isTablet && !isExpanded && typeof item.badge === 'number' && item.badge > 0 ? (
+          <div className={`absolute top-1 right-1 ${screenWidth < 1366 ? 'w-4 h-4' : 'w-5 h-5'} bg-red-500 rounded-full flex items-center justify-center`}>
+            <span className={`${responsiveConfig.badgeSize} text-white font-bold`}>{item.badge}</span>
+          </div>
+        ) : null}
+      </Link>
+    </div>
+  );
+});
 
 export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = false, onMobileMenuClose, userRole = 'client' }: SidebarProps) {
   const { t } = useTranslation();
@@ -986,6 +1048,12 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     return menuItems;
   }, [menuItems, userRole, clientActiveOrders, clientPendingPayments, vzlaActiveOrders, vzlaActiveSupports, vzlaPendingPayments, chinaActiveOrders]);
 
+  // Defer para evitar picos de renders en mobile
+  const deferredMenuItems = useDeferredValue(menuItemsWithCounts);
+  const deferredActiveItem = useDeferredValue(activeItem);
+  const isMobileOrTablet = responsiveConfig?.isMobile || responsiveConfig?.isTablet;
+  const disablePrefetch = isMobileOrTablet; // Evita carga extra de rutas en mobile/tablet
+
   // Memoizar los cálculos responsivos con optimización
   const responsiveConfig = useMemo(() => {
     // Breakpoints específicos para evitar gaps
@@ -1079,59 +1147,20 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
   // Memoizar el renderizado de los elementos del menú
   const renderMenuItem = useCallback((item: typeof menuItems[0]) => {
-    const Icon = item.icon;
-    const isActive = activeItem === item.id;
     return (
-      <div key={item.id}>
-        <Link
-          href={item.path}
-          prefetch={true}
-          className={`
-            w-full flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`) : (isExpanded ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`)} rounded-xl
-            transition-all duration-100 ease-out group relative
-            active:scale-95
-            ${isActive 
-              ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-white shadow-lg border border-blue-500/30' 
-              : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
-            }
-          `}
-        >
-        {/* Active indicator */}
-        <div className={`
-          absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-indigo-500 rounded-r-full
-          transition-all duration-150 ease-out
-          ${isActive ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'}
-        `} />
-        
-        <div className={`${responsiveConfig.iconContainerSize} flex items-center justify-center rounded-lg`}>
-          <Icon 
-            className={`${responsiveConfig.iconSize} ${item.color} transition-all duration-150 ease-out ${isActive ? 'scale-105' : 'scale-100'}`}
-          />
-        </div>
-        
-        <div className={`
-          transition-all duration-150 ease-out overflow-hidden
-          ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
-        `}>
-          <div className="flex items-center justify-between whitespace-nowrap">
-            <span className={`font-medium ${responsiveConfig.textSize}`}>{t('sidebar.' + item.id) ?? item.id}</span>
-            {typeof item.badge === 'number' && item.badge > 0 ? (
-              <Badge className={`bg-red-500 text-white ${responsiveConfig.badgeSize} animate-pulse`}>
-                {item.badge}
-              </Badge>
-            ) : null}
-          </div>
-        </div>
-        
-                    {!responsiveConfig.isMobile && !responsiveConfig.isTablet && !isExpanded && typeof item.badge === 'number' && item.badge > 0 ? (
-          <div className={`absolute top-1 right-1 ${screenWidth < 1366 ? 'w-4 h-4' : 'w-5 h-5'} bg-red-500 rounded-full flex items-center justify-center animate-pulse`}>
-            <span className={`${responsiveConfig.badgeSize} text-white font-bold`}>{item.badge}</span>
-          </div>
-        ) : null}
-      </Link>
-    </div>
-  );
-}, [isExpanded, activeItem, responsiveConfig, screenWidth, t]);
+      <SidebarMenuItem
+        key={item.id}
+        item={item}
+        isActive={deferredActiveItem === item.id}
+        responsiveConfig={responsiveConfig}
+        isMobileMenuOpen={isMobileMenuOpen}
+        isExpanded={isExpanded}
+        screenWidth={screenWidth}
+        t={t}
+        disablePrefetch={disablePrefetch}
+      />
+    );
+  }, [deferredActiveItem, responsiveConfig, isMobileMenuOpen, isExpanded, screenWidth, t, disablePrefetch]);
 
   return (
     <>
@@ -1180,10 +1209,12 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
         {/* Scrollable content (nav + bottom) */}
         <div className={`flex-1 overflow-y-auto sidebar-scrollbar momentum-scroll touch-pan-y overscroll-contain`}> 
-          {/* Navigation */}
-          <nav className={`${responsiveConfig.padding} space-y-2`}>
-            {menuItemsWithCounts.map(renderMenuItem)}
-          </nav>
+          {/* Navigation (no render en mobile/tablet si cerrado para reducir trabajo) */}
+          {(!isMobileOrTablet || isMobileMenuOpen) && (
+            <nav className={`${responsiveConfig.padding} space-y-2`}>
+              {deferredMenuItems.map(renderMenuItem)}
+            </nav>
+          )}
 
           {/* Bottom Section */}
           <div className={`mt-2 ${responsiveConfig.padding} border-t border-slate-700/50 space-y-4`}>        
