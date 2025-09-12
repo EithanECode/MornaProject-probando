@@ -116,6 +116,24 @@
     ]
   },
   "client": {
+    "dashboard": {
+      "title": "客户控制面板",
+      "subtitle": "欢迎回来，这里是你的活动概览",
+      "welcome": "欢迎回来！",
+      "panel": "控制面板 - 客户",
+      "manage": "在一个地方管理你的订单、追踪和支付",
+      "activeShipments": "进行中的运输",
+      "totalOrders": "订单总数",
+      "ordersPlaced": "已下订单",
+      "pending": "待处理",
+      "ordersInProcess": "处理中订单",
+      "inTransit": "运输中",
+      "activeShipmentsShort": "进行中",
+      "completed": "已完成",
+      "ordersDelivered": "已送达订单",
+      "totalSpent": "总花费",
+      "totalInvestment": "总投入"
+    },
     "support": {
       "title": "支持",
       "subtitle": "需要帮助吗？我们随时为你服务",
@@ -331,22 +349,6 @@
           "confirm": "确认新密码"
         }
       }
-  },
-  "dashboard": {
-      "title": "客户控制面板",
-      "subtitle": "欢迎回来，这是你的活动摘要",
-      "welcome": "欢迎回来！",
-      "panel": "控制面板 - 客户",
-      "manage": "在一个地方管理你的订单、追踪和支付",
-      "activeShipments": "进行中运输",
-      "totalOrders": "总订单",
-      "ordersPlaced": "已下订单",
-      "inTransit": "运输中",
-      "activeShipmentsShort": "活跃运输",
-      "totalSpent": "总支出",
-      "totalInvestment": "总投资",
-      "completed": "已完成",
-      "ordersDelivered": "已交付订单"
   },
   "quickActions": {
       "title": "快速操作",

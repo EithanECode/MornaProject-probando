@@ -297,16 +297,16 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-        <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-yellow-800">{t('client.dashboard.pending')}</CardTitle>
+                  <CardTitle className="text-sm font-medium text-yellow-800">{t('client.dashboard.pending')}</CardTitle>
                   <div className="p-2 bg-yellow-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Clock className="h-4 w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-900">{pedidosPendientes}</div>
-          <p className="text-xs text-yellow-700">{t('client.dashboard.pendingProcessing')}</p>
+                  <p className="text-xs text-yellow-700">{t('client.dashboard.ordersInProcess')}</p>
                   <div className="mt-2 w-full bg-yellow-200 rounded-full h-2">
                     <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / totalPedidos) * 100}%`}}></div>
                   </div>
@@ -329,9 +329,9 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-orange-800">{t('client.dashboard.completed')}</CardTitle>
+                  <CardTitle className="text-sm font-medium text-orange-800">{t('client.dashboard.completed')}</CardTitle>
                   <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
                     <CheckCircle className="h-4 w-4 text-white" />
                   </div>

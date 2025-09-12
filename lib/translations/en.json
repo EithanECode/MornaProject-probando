@@ -114,6 +114,24 @@
     ]
   },
   "client": {
+    "dashboard": {
+      "title": "Client Dashboard",
+      "subtitle": "Welcome back, here is a summary of your activity",
+      "welcome": "Welcome back!",
+      "panel": "Control Panel - Client",
+      "manage": "Manage your orders, tracking and payments from one place",
+      "activeShipments": "Active Shipments",
+      "totalOrders": "Total Orders",
+      "ordersPlaced": "Orders placed",
+      "pending": "Pending",
+      "ordersInProcess": "Orders in process",
+      "inTransit": "In Transit",
+      "activeShipmentsShort": "Active shipments",
+      "completed": "Completed",
+      "ordersDelivered": "Orders delivered",
+      "totalSpent": "Total Spent",
+      "totalInvestment": "Total investment"
+    },
     "support": {
       "title": "Support",
       "subtitle": "Need help? We're here for you",
@@ -329,24 +347,6 @@
           "confirm": "Confirm your new password"
         }
       }
-  },
-  "dashboard": {
-      "title": "Client Dashboard",
-      "subtitle": "Welcome back, here is a summary of your activity",
-      "welcome": "Welcome back!",
-      "panel": "Control Panel - Client",
-      "manage": "Manage your orders, tracking and payments from one place",
-      "activeShipments": "Active Shipments",
-      "totalOrders": "Total Orders",
-      "ordersPlaced": "Orders placed",
-      "inTransit": "In Transit",
-      "activeShipmentsShort": "Active shipments",
-      "totalSpent": "Total Spent",
-      "totalInvestment": "Total investment",
-      "completed": "Completed",
-  "ordersDelivered": "Orders delivered",
-  "pending": "Pending",
-  "pendingProcessing": "Orders in process"
   },
   "quickActions": {
       "title": "Quick Actions",

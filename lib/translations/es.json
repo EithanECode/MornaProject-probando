@@ -221,9 +221,7 @@
       "totalSpent": "Total Gastado",
       "totalInvestment": "Inversión total",
       "completed": "Completados",
-  "ordersDelivered": "Pedidos entregados",
-  "pending": "Pendientes",
-  "pendingProcessing": "Pedidos en proceso"
+      "ordersDelivered": "Pedidos entregados"
     },
     "quickActions": {
       "title": "Acciones Rápidas",
