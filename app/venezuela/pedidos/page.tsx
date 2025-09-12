@@ -492,10 +492,14 @@ export default function VenezuelaPedidosPage() {
               </div>
             </div>
           </div>
+          {/* Contenido por pestaña */}
           {activeTab === 'pedidos' && (
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
-              <CardHeader className="py-3">
-                <div className="flex items-center justify-end">
+              <CardHeader className="pb-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <CardTitle className="text-xl font-semibold">
+                    {t('venezuela.pedidos.tabs.ordersList', { defaultValue: 'Lista de pedidos' })}
+                  </CardTitle>
                   <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
                     <Input
                       placeholder={t('venezuela.pedidos.searchPlaceholder')}
@@ -518,13 +522,6 @@ export default function VenezuelaPedidosPage() {
                   </div>
                 </div>
               </CardHeader>
-            </Card>
-          )}
-
-
-          {/* Contenido por pestaña */}
-          {activeTab === 'pedidos' && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
               <CardContent>
                 {loading ? (
                   <div className="p-10 text-center text-sm text-slate-600">{t('venezuela.pedidos.loadingOrders')}</div>
