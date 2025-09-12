@@ -145,25 +145,38 @@ export default function RegisterForm() {
     setEmailError("");
 
     // Validación de nombre
-    if (fullName.trim().length < 3 || !/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/.test(fullName.trim())) {
-  setNameError(t('auth.common.nameInvalid'));
+    if (!fullName.trim()) {
+      setNameError(t('auth.common.nameRequired'));
+      valid = false;
+    } else if (fullName.trim().length < 3 || !/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/.test(fullName.trim())) {
+      setNameError(t('auth.common.nameInvalid'));
       valid = false;
     }
     // Validación de email
-    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
-  setEmailError(t('auth.common.invalidEmailAlt'));
+    if (!email.trim()) {
+      setEmailError(t('auth.common.emailRequired'));
+      valid = false;
+    } else if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
+      setEmailError(t('auth.common.invalidEmailAlt'));
       valid = false;
     }
     // Validación de contraseñas
+    if (!password) {
+      // reutilizamos feedback de fortaleza
+      valid = false;
+    }
     if (password !== confirmPassword) {
       setPasswordMatchError(true);
       valid = false;
     }
     if (passwordStrength === "low" || passwordStrength === "none") {
-  alert(t('auth.common.passwordMustBeNormal'));
+      // No alert inmediato; mostramos mensaje general
       valid = false;
     }
-    if (!valid) return;
+    if (!valid) {
+      if (!errorMsg) setErrorMsg(t('auth.register.fieldsRequired'));
+      return;
+    }
     setPasswordMatchError(false);
     try {
       setLoading(true);
@@ -298,6 +311,8 @@ export default function RegisterForm() {
         maxLength={MAX_NAME}
         onChange={(e) => setFullName(e.target.value.slice(0, MAX_NAME))}
         required
+        className={nameError ? 'invalid' : ''}
+        aria-invalid={!!nameError}
       />
       {fullName.length > 0 && fullName.length === MAX_NAME && (
         <p className="text-xs text-slate-500">{fullName.length}/{MAX_NAME}</p>
@@ -315,6 +330,8 @@ export default function RegisterForm() {
         maxLength={MAX_EMAIL}
         onChange={(e) => setEmail(e.target.value.slice(0, MAX_EMAIL))}
         required
+        className={emailError ? 'invalid' : ''}
+        aria-invalid={!!emailError}
       />
       {email.length > 0 && email.length === MAX_EMAIL && (
         <p className="text-xs text-slate-500">{email.length}/{MAX_EMAIL}</p>
@@ -373,6 +390,8 @@ export default function RegisterForm() {
           maxLength={MAX_PASSWORD}
           onChange={handleConfirmPasswordChange}
           required
+          className={passwordMatchError ? 'invalid' : ''}
+          aria-invalid={passwordMatchError}
         />
         <span
           className={`password-toggle-icon ${showCheckmark ? "hidden" : ""}`}

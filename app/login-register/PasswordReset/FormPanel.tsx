@@ -5,6 +5,7 @@ import { Mail, ChevronRight, ArrowLeft, Check, Eye, EyeOff } from "lucide-react"
 import Lottie from "react-lottie";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { STEPS } from "@/lib/constants/auth";
+import { MAX_PASSWORD, MAX_EMAIL } from "@/lib/constants/validation";
 import Image from "next/image";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -128,7 +129,7 @@ export default function FormPanel(props: Props) {
   };
 
   const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newPasswordValue = e.target.value;
+    const newPasswordValue = e.target.value.slice(0, MAX_PASSWORD);
     setNewPassword(newPasswordValue);
     const { level } = getPasswordStrengthInfo(newPasswordValue);
     setPasswordStrength(level);
@@ -140,7 +141,7 @@ export default function FormPanel(props: Props) {
   };
 
   const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newConfirmPassword = e.target.value;
+    const newConfirmPassword = e.target.value.slice(0, MAX_PASSWORD);
     setConfirmPassword(newConfirmPassword);
     const doMatch = newPassword === newConfirmPassword && newConfirmPassword.length > 0;
     setPasswordMatchError(!doMatch);
@@ -250,8 +251,9 @@ export default function FormPanel(props: Props) {
                 type="email"
                 placeholder={t('auth.passwordReset.placeholders.email')}
                 value={contactValue}
-                onChange={(e) => setContactValue(e.target.value)}
+                onChange={(e) => setContactValue(e.target.value.slice(0, MAX_EMAIL))}
                 className="input-field-with-icon"
+                maxLength={MAX_EMAIL}
                 required
               />
             </div>
@@ -289,6 +291,7 @@ export default function FormPanel(props: Props) {
                   currentStrengthInfo.level !== "none" ? `password-strength-border-${currentStrengthInfo.level}` : ""
                 }`}
                 required
+                maxLength={MAX_PASSWORD}
               />
               <span className="password-toggle-icon" onClick={toggleShowNewPassword}>
                 {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -312,6 +315,7 @@ export default function FormPanel(props: Props) {
                 onChange={handleConfirmPasswordChange}
                 className="input-field password-input"
                 required
+                maxLength={MAX_PASSWORD}
               />
               <span className={`password-toggle-icon ${showCheckmark ? "hidden" : ""}`} onClick={toggleShowConfirmPassword}>
                 {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}

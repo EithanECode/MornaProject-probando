@@ -368,16 +368,25 @@ html, body, #root, .App {
 
 /* Estilo de foco genérico para CUALQUIER input cuando está activo */
 .auth-form input:focus {
-  border-color: #ee3c23; /* Borde de foco con tu color principal */
-  box-shadow: 0 0 0 3px #ee3b238d; /* Sombra de foco con tu color principal */
+  /* Color de enfoque neutral (no de error) */
+  border-color: #202841; /* Acento principal */
+  box-shadow: 0 0 0 3px rgba(32, 40, 65, 0.35);
 }
 
-.auth-form input.valid {
-  color: #2ed573; /* Mantener color verde para "válido" */
+/* Estado válido explícito (si se usa) */
+.auth-form input.valid,
+.auth-form input.valid:focus {
+  border-color: #2ed573;
+  box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.25);
+  color: #2b9d55;
 }
 
-.auth-form input.invalid {
-  color: #ee3c23; /* Tu nuevo rojo para "inválido" */
+/* Estado inválido: sólo aparece cuando añadimos la clase desde React */
+.auth-form input.invalid,
+.auth-form input.invalid:focus {
+  border-color: #ee3c23 !important;
+  box-shadow: 0 0 0 3px #ee3b238d !important;
+  color: #ee3c23;
 }
 
 /* Estilos para los labels */
@@ -584,6 +593,17 @@ html, body, #root, .App {
 .auth-form input.password-strength-border-very-strong:focus {
   border-color: #1e90ff !important;
   box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.25) !important;
+}
+
+/* Forzar que el estado inválido tenga prioridad incluso sobre las clases de fortaleza */
+.auth-form input.invalid,
+.auth-form input.invalid.password-strength-border-low,
+.auth-form input.invalid.password-strength-border-medium,
+.auth-form input.invalid.password-strength-border-strong,
+.auth-form input.invalid.password-strength-border-very-strong {
+  border-color: #ee3c23 !important;
+  box-shadow: 0 0 0 3px #ee3b238d !important;
+  color: #ee3c23;
 }
 
 /* Estilos para el contenedor del input de contraseña y el icono */

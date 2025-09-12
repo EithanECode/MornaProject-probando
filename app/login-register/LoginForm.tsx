@@ -63,8 +63,11 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
     let valid = true;
 
     // Validar email
-    if (!validateEmail(email)) {
-  setEmailError(t('auth.common.invalidEmail'));
+    if (!email) {
+      setEmailError(t('auth.common.emailRequired'));
+      valid = false;
+    } else if (!validateEmail(email)) {
+      setEmailError(t('auth.common.invalidEmail'));
       valid = false;
     } else {
       setEmailError("");
@@ -72,13 +75,16 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
 
     // Validar contraseña
     if (!password) {
-  setPasswordError(t('auth.common.passwordRequired'));
+      setPasswordError(t('auth.common.passwordRequired'));
       valid = false;
     } else {
       setPasswordError("");
     }
 
-    if (!valid) return;
+    if (!valid) {
+      if (!errorMsg) setErrorMsg(t('auth.login.fieldsRequired'));
+      return;
+    }
     setLoading(true);
     try {
       const supabase = getSupabaseBrowserClient();
@@ -188,6 +194,8 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
         maxLength={MAX_EMAIL}
         onChange={(e) => setEmail(e.target.value.slice(0, MAX_EMAIL))}
         required
+        className={emailError ? 'invalid' : ''}
+        aria-invalid={!!emailError}
       />
       {emailError && (
         <p className="text-red-500 text-xs mt-1" role="alert">{emailError}</p>
@@ -203,6 +211,8 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
           maxLength={MAX_PASSWORD}
           onChange={(e) => setPassword(e.target.value.slice(0, MAX_PASSWORD))}
           required
+          className={passwordError ? 'invalid' : ''}
+          aria-invalid={!!passwordError}
         />
         <span className="password-toggle-icon" onClick={toggleShowPassword}>
           {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
