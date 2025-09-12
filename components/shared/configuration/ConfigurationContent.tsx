@@ -94,6 +94,9 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     showNewPassword: false,
     showConfirmPassword: false
   });
+  // Nivel de seguridad de la nueva contraseña
+  const [passwordStrength, setPasswordStrength] = useState<'none' | 'low' | 'medium' | 'strong' | 'very-strong'>('none');
+  const [newPasswordFocused, setNewPasswordFocused] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
 
   // Estados de seguridad mínimos (solo para mostrar info de cuenta)
@@ -148,6 +151,23 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
   const handlePasswordChange = (field: string, value: string) => {
     const limitedValue = value.slice(0, MAX_FIELD_LENGTH);
     setPasswordData(prev => ({ ...prev, [field]: limitedValue }));
+    if (field === 'newPassword') {
+      // Calcular fortaleza
+      const pwd = limitedValue;
+      if (!pwd) {
+        setPasswordStrength('none');
+      } else {
+        let strength = 1; // base
+        if (pwd.length >= 6) strength++;
+        if (pwd.length >= 8 && /[A-Z]/.test(pwd)) strength++;
+        if (pwd.length >= 10 && /[0-9]/.test(pwd)) strength++;
+        if (pwd.length >= 12 && /[^A-Za-z0-9]/.test(pwd)) strength++;
+        if (strength <= 1) setPasswordStrength('low');
+        else if (strength === 2) setPasswordStrength('medium');
+        else if (strength === 3) setPasswordStrength('strong');
+        else setPasswordStrength('very-strong');
+      }
+    }
   };
 
   const handleSavePassword = async () => {
@@ -382,6 +402,16 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     passwordData.confirmPassword.length > 0 &&
     passwordData.newPassword === passwordData.confirmPassword;
 
+  const strengthText = (() => {
+    switch (passwordStrength) {
+      case 'low': return t('auth.common.passwordLevelLow');
+      case 'medium': return t('auth.common.passwordLevelMedium');
+      case 'strong': return t('auth.common.passwordLevelStrong');
+      case 'very-strong': return t('auth.common.passwordLevelVeryStrong');
+      default: return '';
+    }
+  })();
+
   if (!mounted) return null;
 
   return (
@@ -535,11 +565,34 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                               maxLength={MAX_FIELD_LENGTH}
                               className={`${passwordMismatch ? 'border-red-500 focus-visible:ring-red-500' : passwordMatch ? 'border-blue-500 focus-visible:ring-blue-500' : ''}`}
                               placeholder={t('admin.configuration.password.placeholders.new')}
+                              onFocus={() => setNewPasswordFocused(true)}
+                              onBlur={() => setNewPasswordFocused(false)}
                             />
                             <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-500" onClick={() => setPasswordData(p => ({ ...p, showNewPassword: !p.showNewPassword }))}>
                               {passwordData.showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
                           </div>
+                          {newPasswordFocused && passwordStrength !== 'none' && (
+                            <div className="mt-1 space-y-1">
+                              <div className="flex items-center justify-between text-[11px] font-medium">
+                                <span className={`
+                                  ${passwordStrength === 'low' && 'text-red-600'}
+                                  ${passwordStrength === 'medium' && 'text-yellow-600'}
+                                  ${passwordStrength === 'strong' && 'text-green-600'}
+                                  ${passwordStrength === 'very-strong' && 'text-emerald-600'}
+                                `}>{strengthText}</span>
+                                <span className="text-slate-400">{passwordData.newPassword.length}/{MAX_FIELD_LENGTH}</span>
+                              </div>
+                              <div className="h-1 w-full rounded bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                                <div className={`h-full transition-all duration-300
+                                  ${passwordStrength === 'low' && 'w-1/5 bg-red-500'}
+                                  ${passwordStrength === 'medium' && 'w-2/5 bg-yellow-500'}
+                                  ${passwordStrength === 'strong' && 'w-3/5 bg-green-500'}
+                                  ${passwordStrength === 'very-strong' && 'w-full bg-emerald-500'}
+                                `} />
+                              </div>
+                            </div>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label>{t('admin.configuration.password.fields.confirm')}</Label>
