@@ -11,15 +11,8 @@ import {
   MessageCircle, 
   Settings, 
   LogOut,
-  User,
-  MapPin,
   Users,
-  AlertTriangle,
   BarChart3,
-  FileText,
-  Calculator,
-  Truck,
-  Flag,
   CreditCard,
   Shield,
   BadgeDollarSign
@@ -1003,7 +996,6 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   }, [userRole, clientCtx?.clientId, vzlaCtx?.vzlaId, chinaCtx?.chinaId]);
 
   // Merge dynamic badges into client menu
-    let isCancelled = false;
   // Merge dynamic badges into client menu
   const menuItemsWithCounts = useMemo(() => {
     if (userRole === 'client') {
