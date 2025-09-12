@@ -814,7 +814,7 @@
         "manageUsers": "管理用户",
         "configuration": "配置",
         "alerts": "警报",
-        "reports": "报告"
+        "orders": "订单"
       },
       "recentActivity": {
         "title": "最近系统活动",
@@ -873,7 +873,9 @@
       },
       "status": {
         "activo": "启用",
-        "inactivo": "停用"
+        "inactivo": "停用",
+        "active": "启用",
+        "inactive": "停用"
       },
       "form": {
         "newUser": "新用户",
@@ -933,6 +935,9 @@
       "listTitle": "订单列表",
       "listDescription": "找到 {{count}} 个订单",
       "search": "搜索订单...",
+      "history": {
+        "createdBy": "订单已创建"
+      },
       "stats": {
         "totalOrders": "总订单",
         "pending": "待处理",
@@ -984,7 +989,33 @@
       "modal": {
         "createOrder": "创建新订单",
         "orderDetails": "订单详情",
-        "createdBy": "创建者"
+        "createdBy": "创建者",
+        "detailsTitle": "订单详情",
+        "detailsDescription": "有关订单的完整信息",
+        "client": "客户",
+        "assignedTo": "分配给", 
+        "elapsedTime": "经过的时间",
+        "currentStatus": "地位",
+        "orderDescription": "描述",
+        "documentsTitle": "订单文件",
+        "documentsDescription": "与订单相关的文件",
+        "documents": {
+          "empty": "该订单无文件"
+        },
+        "buttons": {
+          "update": "更新",
+          "delete": "删除",
+          "viewDocuments": "查看文档"
+        }
+      },
+      "editModal": {
+        "title": "编辑订单",
+        "description": "修改订单详情",
+        "client": "客户",
+        "descriptionLabel": "描述",
+        "status": "状态",
+        "assignedTo": "分配给",
+        "save": "保存更改"
       },
       "deliveryTypes": {
         "doorToDoor": "门到门",
@@ -1030,6 +1061,7 @@
         "client": "客户",
         "clientId": "客户 ID",
         "userName": "用户名",
+        "daysElapsed":"日子过去了",
         "followSteps": "按步骤创建订单"
       },
       "steps": {
@@ -1698,6 +1730,8 @@
       "boxesBadges": {
         "new": "新建",
         "ready": "就绪",
+        "inContainer": "在容器中",
+        "traveling": "运输中",
         "received": "已接收",
         "completed": "已完成",
         "state": "状态{{num}}"
@@ -1705,6 +1739,7 @@
       "containersBadges": {
         "new": "新建",
         "inTransit": "运输中",
+        "traveling": "运输中",
         "received": "已接收",
         "state": "状态{{num}}"
       },
@@ -2346,6 +2381,7 @@
         "specifications": "规格：",
         "specificationsNA": "无",
         "unitPriceLabel": "单价报价 *",
+        "unitPricePlaceholder": "输入单价",
         "totalToPay": "应付总额",
         "cancel": "取消",
         "sendQuote": "发送报价"

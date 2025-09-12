@@ -313,7 +313,7 @@ export default function VenezuelaDashboard() {
                 <p className="text-xs md:text-sm text-slate-600">{t('venezuela.quickActions.subtitle')}</p>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-4 lg:gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4 lg:gap-6">
                   <Link href="/venezuela/pedidos">
                     <Button variant="outline" className="h-16 md:h-20 lg:h-24 flex flex-col gap-2 md:gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
                       <div className="p-2 md:p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
@@ -330,20 +330,14 @@ export default function VenezuelaDashboard() {
                       <span className="text-xs md:text-sm font-medium">{t('venezuela.quickActions.chatSupport')}</span>
                     </Button>
                   </Link>
-                  <Link href="/venezuela/tracking">
-                    <Button variant="outline" className="h-16 md:h-20 lg:h-24 flex flex-col gap-2 md:gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
-                      <div className="p-2 md:p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
-                        <MapPin className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8 text-purple-600" />
+                  <Link href="/venezuela/validacion-pagos">
+                    <Button variant="outline" className="h-16 md:h-20 lg:h-24 flex flex-col gap-2 md:gap-3 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group w-full">
+                      <div className="p-2 md:p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
+                        <DollarSign className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8 text-red-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">{t('venezuela.quickActions.updateTracking')}</span>
+                      <span className="text-xs md:text-sm font-medium">{t('venezuela.quickActions.validatePayment')}</span>
                     </Button>
                   </Link>
-                  <Button variant="outline" className="h-16 md:h-20 lg:h-24 flex flex-col gap-2 md:gap-3 hover:bg-red-50 hover:border-red-300 transition-all duration-300 group w-full">
-                    <div className="p-2 md:p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
-                      <DollarSign className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8 text-red-600" />
-                    </div>
-                    <span className="text-xs md:text-sm font-medium">{t('venezuela.quickActions.validatePayment')}</span>
-                  </Button>
                 </div>
               </CardContent>
             </Card>

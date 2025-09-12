@@ -2555,18 +2555,16 @@ export default function PedidosChina() {
                           </div>
                         </div>
             <div className="flex items-center gap-3">
-                          <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-                            {stateNum === 1 ? t('chinese.ordersPage.boxBadges.new') : stateNum === 2 ? t('chinese.ordersPage.boxBadges.packed') : t('chinese.ordersPage.boxBadges.state', { num: stateNum })}
-                          </Badge>
-                          <Button
-                            size="sm"
-              className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={stateNum >= 3}
-                            onClick={() => modalEmpaquetar?.pedidoId && handleSelectCajaForPedido(modalEmpaquetar.pedidoId, box)}
-                          >
-                            {t('chinese.ordersPage.modals.selectBoxForOrder.select')}
-                          </Button>
-                        </div>
+              <Badge className={`${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
+              <Button
+                size="sm"
+                className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={stateNum >= 3}
+                onClick={() => modalEmpaquetar?.pedidoId && handleSelectCajaForPedido(modalEmpaquetar.pedidoId, box)}
+              >
+                {t('chinese.ordersPage.modals.selectBoxForOrder.select')}
+              </Button>
+            </div>
                       </div>
                     );
                   })}

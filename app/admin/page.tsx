@@ -239,12 +239,12 @@ export default function AdminDashboard() {
                       <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.configuration')}</span>
                     </Button>
                   </Link>
-                  <Link href="/admin/reportes">
-                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 group w-full">
-                      <div className="p-2 md:p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
-                        <BarChart3 className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
+                  <Link href="/admin/pedidos">
+                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-orange-50 hover:border-orange-300 transition-all duration-300 group w-full">
+                      <div className="p-2 md:p-3 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors">
+                        <Package className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.reports')}</span>
+                      <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.orders')}</span>
                     </Button>
                   </Link>
                 </div>

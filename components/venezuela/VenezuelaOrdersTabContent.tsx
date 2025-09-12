@@ -197,6 +197,26 @@ export default function VenezuelaOrdersTabContent() {
       } else setOrderCountsByBox({});
     } catch (e) { console.error('Error fetchBoxesByContainerId:', e); } finally { setBoxesByContainerLoading(false); }
   };
+  // Reutilizamos exactamente la misma lógica de badges de cajas que en app/china/pedidos/page.tsx
+  function getBoxBadge(stateNum?: number) {
+    const s = Number(stateNum ?? 0);
+    const base = 'border';
+    if (s <= 1) return { label: t('chinese.ordersPage.boxBadges.new'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+    if (s === 2) return { label: t('chinese.ordersPage.boxBadges.packed'), className: `${base} bg-green-100 text-green-800 border-green-200` };
+    if (s === 3) return { label: t('chinese.ordersPage.boxBadges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
+    if (s >= 4) return { label: t('chinese.ordersPage.boxBadges.shipped'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    return { label: t('chinese.ordersPage.boxBadges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  }
+  // Lógica de badges de contenedores replicada exactamente de app/venezuela/pedidos/page.tsx
+  function getContainerBadge(stateNum?: number) {
+    // Reutilizamos las mismas keys de China para evitar traducir de nuevo
+    const s = Number(stateNum ?? 0);
+    const base = 'border';
+    if (s <= 1) return { label: t('chinese.ordersPage.containerBadges.new'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+    if (s === 2) return { label: t('chinese.ordersPage.containerBadges.loading'), className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
+    if (s >= 3) return { label: t('chinese.ordersPage.containerBadges.shipped'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    return { label: t('chinese.ordersPage.containerBadges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  }
   
 
   const filteredOrders = orders.filter(order => {
@@ -579,7 +599,7 @@ export default function VenezuelaOrdersTabContent() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-                        <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum === 1 ? t('venezuela.pedidos.boxesStatus.new') : stateNum === 2 ? t('venezuela.pedidos.boxesStatus.packed') : stateNum === 5 ? 'Container received' : stateNum === 6 ? 'Received' : `State ${stateNum}`}</Badge>
+                        <Badge className={`${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
                         {stateNum === 5 && (
                           <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-box', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'Error'); } await Promise.all([fetchBoxes(), fetchOrders()]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />RECEIVED</Button>
                         )}
@@ -642,7 +662,7 @@ export default function VenezuelaOrdersTabContent() {
                         </div>
                       </div>
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-                        <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 4 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum === 1 ? t('venezuela.pedidos.containersStatus.new') : stateNum === 4 ? 'Received' : `State ${stateNum}`}</Badge>
+                        <Badge className={getContainerBadge(stateNum).className}>{getContainerBadge(stateNum).label}</Badge>
                         {stateNum === 3 && (
                           <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-container', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ containerId: container.container_id ?? container.containers_id ?? container.id ?? id, nextState: 4 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'No se pudo actualizar el contenedor'); } await Promise.all([fetchContainers(), fetchBoxes(), fetchOrders()]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />Recibido</Button>
                         )}
@@ -754,7 +774,7 @@ export default function VenezuelaOrdersTabContent() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge className={`border ${stateNum === 1 ? 'bg-blue-100 text-blue-800 border-blue-200' : stateNum === 2 ? 'bg-green-100 text-green-800 border-green-200' : (stateNum === 5 || stateNum === 6) ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200'}`}>{stateNum === 1 ? t('venezuela.pedidos.boxesStatus.new') : stateNum === 2 ? t('venezuela.pedidos.boxesStatus.packed') : stateNum === 5 ? 'Container received' : stateNum === 6 ? 'Received' : `State ${stateNum}`}</Badge>
+                        <Badge className={`${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
                         {stateNum === 5 && (
                           <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-box', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'No se pudo actualizar la caja'); } await Promise.all([ modalVerCajas.containerId ? fetchBoxesByContainerId(modalVerCajas.containerId) : Promise.resolve(), fetchOrders() ]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />Recibido</Button>
                         )}

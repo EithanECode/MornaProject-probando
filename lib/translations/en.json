@@ -813,7 +813,7 @@
         "manageUsers": "Manage Users",
         "configuration": "Configuration",
         "alerts": "Alerts",
-        "reports": "Reports"
+        "orders": "Orders"
       },
       "recentActivity": {
         "title": "Recent System Activity",
@@ -932,6 +932,9 @@
       "listTitle": "Order List",
       "listDescription": "{{count}} orders found",
       "search": "Search orders...",
+      "history": {
+        "createdBy": "Order created"
+      },
       "stats": {
         "totalOrders": "Total Orders",
         "pending": "Pending",
@@ -983,7 +986,33 @@
       "modal": {
         "createOrder": "Create New Order",
         "orderDetails": "Order Details",
-        "createdBy": "Created by"
+        "createdBy": "Created by",
+        "detailsTitle": "Order Details",
+        "detailsDescription": "Full information about the order",
+        "client": "Client",
+        "assignedTo": "Assigned to", 
+        "elapsedTime": "Elapsed time",
+        "currentStatus": "Status",
+        "orderDescription": "Description",
+        "documentsTitle": "Documents for Order",
+        "documentsDescription": "Files related to the order",
+        "documents": {
+          "empty": "There are no documents for this order."
+        },
+        "buttons": {
+          "update": "Update",
+          "delete": "Delete",
+          "viewDocuments": "View Documents"
+        }
+      },
+      "editModal": {
+        "title": "Edit order",
+        "description": "Modify the order details",
+        "client": "Client",
+        "descriptionLabel": "Description",
+        "status": "State",
+        "assignedTo": "Assigned to",
+        "save": "Save changes"
       },
       "deliveryTypes": {
         "doorToDoor": "Door to Door",
@@ -1031,6 +1060,7 @@
         "client": "Client",
         "clientId": "Client ID",
         "userName": "User Name",
+        "daysElapsed":"Days elapsed",
         "followSteps": "Follow the steps to create the order"
       },
       "steps": {
@@ -1712,6 +1742,8 @@
       "boxesBadges": {
         "new": "New",
         "ready": "Ready",
+        "inContainer": "In container",
+        "traveling": "Traveling",
         "received": "Received",
         "completed": "Completed",
         "state": "St.{{num}}"
@@ -1726,6 +1758,7 @@
       "containersBadges": {
         "new": "New",
         "inTransit": "In transit",
+        "traveling": "Traveling",
         "received": "Received",
         "state": "St.{{num}}"
       },
@@ -2366,6 +2399,7 @@
         "specifications": "Specifications:",
         "specificationsNA": "N/A",
         "unitPriceLabel": "Unit quotation price *",
+        "unitPricePlaceholder": "Enter unit price",
         "totalToPay": "Total to Pay",
         "cancel": "Cancel",
         "sendQuote": "Send Quote"
