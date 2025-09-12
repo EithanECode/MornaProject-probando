@@ -463,34 +463,42 @@ export default function VenezuelaPedidosPage() {
                 </CardContent>
               </Card>
             </div>
-            {/* Tabs: Pedidos | Cajas | Contenedores (debajo de estadísticas) */}
-            <div className="pt-2">
-              <div className="flex w-full rounded-lg border border-slate-200 bg-white/70 backdrop-blur px-1 py-1 shadow-sm gap-1">
-                <Button
-                  variant={activeTab === 'pedidos' ? 'default' : 'ghost'}
-                  size="sm"
-                  className={`flex-1 min-w-0 justify-center whitespace-nowrap truncate rounded-md transition-colors ${activeTab === 'pedidos' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
-                  onClick={() => setActiveTab('pedidos')}
-                >
-                  {t('venezuela.pedidos.tabs.ordersList')}
-                </Button>
-                <Button
-                  variant={activeTab === 'cajas' ? 'default' : 'ghost'}
-                  size="sm"
-                  className={`flex-1 min-w-0 justify-center whitespace-nowrap truncate rounded-md transition-colors ${activeTab === 'cajas' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
-                  onClick={() => setActiveTab('cajas')}
-                >
-                  {t('venezuela.pedidos.tabs.boxes')}
-                </Button>
-                <Button
-                  variant={activeTab === 'contenedores' ? 'default' : 'ghost'}
-                  size="sm"
-                  className={`flex-1 min-w-0 justify-center whitespace-nowrap truncate rounded-md transition-colors ${activeTab === 'contenedores' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
-                  onClick={() => setActiveTab('contenedores')}
-                >
-                  {t('venezuela.pedidos.tabs.containers')}
-                </Button>
-              </div>
+            {/* Tabs con deslizador animado */}
+            <div className="pt-2 w-full">
+              {(() => {
+                const activeTabIndex = activeTab === 'pedidos' ? 0 : activeTab === 'cajas' ? 1 : 2;
+                const indicatorGradient = activeTab === 'pedidos'
+                  ? 'from-blue-600 to-indigo-600'
+                  : activeTab === 'cajas'
+                    ? 'from-amber-500 to-orange-600'
+                    : 'from-emerald-600 to-teal-600';
+                return (
+                  <div className="relative overflow-hidden flex w-full gap-1 rounded-2xl p-1 bg-gradient-to-r from-slate-100/70 via-white/60 to-slate-100/70 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+                    <div
+                      className={`pointer-events-none absolute inset-y-1 left-1 w-1/3 rounded-xl bg-gradient-to-r ${indicatorGradient} shadow-lg transition-transform duration-300 ease-out z-0`}
+                      style={{ transform: `translateX(${activeTabIndex * 100}%)` }}
+                    />
+                    <button
+                      onClick={() => setActiveTab('pedidos')}
+                      className={`relative z-10 flex-1 min-w-0 justify-center whitespace-nowrap truncate transition-all text-xs sm:text-sm px-3 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent ${activeTab === 'pedidos' ? 'text-white' : 'text-slate-700 dark:text-slate-300'}`}
+                    >
+                      {t('venezuela.pedidos.tabs.ordersList')}
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('cajas')}
+                      className={`relative z-10 flex-1 min-w-0 justify-center whitespace-nowrap truncate transition-all text-xs sm:text-sm px-3 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent ${activeTab === 'cajas' ? 'text-white' : 'text-slate-700 dark:text-slate-300'}`}
+                    >
+                      {t('venezuela.pedidos.tabs.boxes')}
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('contenedores')}
+                      className={`relative z-10 flex-1 min-w-0 justify-center whitespace-nowrap truncate transition-all text-xs sm:text-sm px-3 py-2 rounded-xl font-medium flex items-center gap-2 border border-transparent ${activeTab === 'contenedores' ? 'text-white' : 'text-slate-700 dark:text-slate-300'}`}
+                    >
+                      {t('venezuela.pedidos.tabs.containers')}
+                    </button>
+                  </div>
+                );
+              })()}
             </div>
           </div>
           {activeTab === 'pedidos' && (
