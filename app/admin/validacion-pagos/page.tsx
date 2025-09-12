@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Toaster } from '@/components/ui/toaster';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -109,61 +109,63 @@ const AnimatedIcon: React.FC<{
 // ================================
 const StatsCards: React.FC<{ stats: PaymentStats }> = ({ stats }) => {
   const { t } = useTranslation();
-  const cardsData = [
-    {
-      title: t('venezuela.pagos.stats.totalSpent'),
-      value: `$${stats.totalGastado.toLocaleString()}`,
-      icon: <TrendingUp size={24} />,
-      bgColor: 'bg-gradient-to-r from-blue-500 to-blue-600',
-      textColor: 'text-blue-100'
-    },
-    {
-      title: t('venezuela.pagos.stats.totalPayments'),
-      value: stats.pagosTotales,
-      icon: <CreditCard size={24} />,
-      bgColor: 'bg-gradient-to-r from-orange-500 to-orange-600',
-      textColor: 'text-orange-100'
-    },
-    {
-      title: t('venezuela.pagos.stats.completed'),
-      value: stats.completados,
-      icon: <AnimatedIcon animation={["pulse","bounce"]}><CheckCircle size={24} /></AnimatedIcon>,
-      bgColor: 'bg-gradient-to-r from-green-500 to-green-600',
-      textColor: 'text-green-100'
-    },
-    {
-      title: t('venezuela.pagos.stats.pending'),
-      value: stats.pendientes,
-      icon: <AnimatedIcon animation={["pulse","spin"]}><Clock size={24} /></AnimatedIcon>,
-      bgColor: 'bg-gradient-to-r from-purple-500 to-purple-600',
-      textColor: 'text-purple-100'
-    }
-  ];
-
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-      {cardsData.map((card, index) => (
-        <div 
-          key={index}
-          className={`${card.bgColor} text-white p-4 md:p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer`}
-        >
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 dark:from-blue-900/20 dark:to-indigo-900/20 dark:border-blue-700 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardContent className="p-4 md:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className={`${card.textColor} text-xs md:text-sm font-medium mb-1`}>
-                {card.title}
-              </p>
-              <p className="text-xl md:text-2xl lg:text-3xl font-bold">
-                {card.value}
-              </p>
+              <p className="text-blue-700 dark:text-blue-300 text-xs md:text-sm font-medium mb-1">{t('venezuela.pagos.stats.totalSpent')}</p>
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-800 dark:text-blue-200">${stats.totalGastado.toLocaleString()}</p>
             </div>
-            <div className="bg-white bg-opacity-20 p-2 md:p-3 rounded-lg">
-              <AnimatedIcon animation="float">
-                {card.icon}
-              </AnimatedIcon>
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-800/30 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
-        </div>
-      ))}
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200 dark:from-yellow-900/20 dark:to-orange-900/20 dark:border-yellow-700 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardContent className="p-4 md:p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-yellow-700 dark:text-yellow-300 text-xs md:text-sm font-medium mb-1">{t('venezuela.pagos.stats.totalPayments')}</p>
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-800 dark:text-yellow-200">{stats.pagosTotales}</p>
+            </div>
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-yellow-100 dark:bg-yellow-800/30 rounded-lg flex items-center justify-center">
+              <CreditCard className="w-5 h-5 md:w-6 md:h-6 text-yellow-600 dark:text-yellow-400" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 dark:from-green-900/20 dark:to-emerald-900/20 dark:border-green-700 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardContent className="p-4 md:p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-700 dark:text-green-300 text-xs md:text-sm font-medium mb-1">{t('venezuela.pagos.stats.completed')}</p>
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-green-800 dark:text-green-200">{stats.completados}</p>
+            </div>
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-800/30 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-600 dark:text-green-400" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border-purple-200 dark:from-purple-900/20 dark:to-violet-900/20 dark:border-purple-700 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardContent className="p-4 md:p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-purple-700 dark:text-purple-300 text-xs md:text-sm font-medium mb-1">{t('venezuela.pagos.stats.pending')}</p>
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-800 dark:text-purple-200">{stats.pendientes}</p>
+            </div>
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 dark:bg-purple-800/30 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 md:w-6 md:h-6 text-purple-600 dark:text-purple-400" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
@@ -290,13 +292,16 @@ const PaymentDetailsModal: React.FC<{
 // ================================
 // COMPONENTE: CARD DE PAGO PARA MOBILE
 // ================================
-const PaymentCard: React.FC<{ payment: Payment; onApprove: (id: string) => void; onReject: (id: string) => void; onViewDetails: (payment: Payment) => void }> = ({ 
-  payment, 
-  onApprove, 
-  onReject, 
-  onViewDetails 
+const PaymentCard: React.FC<{ payment: Payment; onApprove: (id: string) => void; onReject: (id: string) => void; onViewDetails: (payment: Payment) => void }> = ({
+  payment,
+  onApprove,
+  onReject,
+  onViewDetails
 }) => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const formatCurrency = (amount: number) => {
     return `$${amount.toLocaleString('es-ES', { 
       minimumFractionDigits: 2,
@@ -313,7 +318,7 @@ const PaymentCard: React.FC<{ payment: Payment; onApprove: (id: string) => void;
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 space-y-3">
+    <div className={`rounded-xl p-4 space-y-3 backdrop-blur-sm transition-shadow shadow-lg hover:shadow-xl border ${mounted && theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-white/80 border-slate-200'}`}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -869,36 +874,43 @@ const PaymentValidationDashboard: React.FC = () => {
             {/* ================================ */}
             {/* BARRA COMPACTA DERECHA */}
             {/* ================================ */}
-            <Card className={mounted && theme === 'dark' ? 'bg-slate-800 border-slate-700 mb-4 md:mb-6' : 'bg-white border-gray-200 mb-4 md:mb-6'}>
+            <Card className={mounted && theme === 'dark' ? 'mb-4 md:mb-6 bg-slate-800/70 border border-slate-700 backdrop-blur-sm shadow-lg hover:shadow-xl transition-shadow' : 'mb-4 md:mb-6 bg-white/80 border border-slate-200 backdrop-blur-sm shadow-lg hover:shadow-xl transition-shadow'}>
               <CardHeader className="py-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-semibold">{t('venezuela.pagos.listCardTitle')}</CardTitle>
-                  <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
-                    <Input
-                      placeholder={t('venezuela.pagos.searchPlaceholder')}
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="h-10 w-56 md:w-64 px-3"
-                    />
-                    <Select value={filterStatus} onValueChange={setFilterStatus}>
-                      <SelectTrigger className="h-10 w-40 md:w-48 px-3 whitespace-nowrap truncate">
-                        <SelectValue placeholder={t('venezuela.pagos.filters.allStatuses')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">{t('venezuela.pagos.filters.allStatuses')}</SelectItem>
-                        <SelectItem value="completado">{t('venezuela.pagos.filters.completed')}</SelectItem>
-                        <SelectItem value="pendiente">{t('venezuela.pagos.filters.pending')}</SelectItem>
-                        <SelectItem value="rechazado">{t('venezuela.pagos.filters.rejected')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      className="h-10 bg-[#202841] text-white hover:bg-opacity-90"
-                      onClick={exportarGeneral}
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      <span className="hidden sm:inline">{t('venezuela.pagos.actions.export')}</span>
-                      <span className="sm:hidden">{t('venezuela.pagos.actions.exportShort')}</span>
-                    </Button>
+                <div className="flex flex-col gap-3 sm:gap-4">
+                  <CardTitle className="text-lg font-semibold tracking-tight">{t('venezuela.pagos.listCardTitle')}</CardTitle>
+                  {/* Controles Responsivos */}
+                  <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+                    {/* Buscador */}
+                    <div className="w-full sm:flex-1 min-w-[12rem]">
+                      <Input
+                        placeholder={t('venezuela.pagos.searchPlaceholder')}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="h-10 w-full px-3"
+                      />
+                    </div>
+                    {/* Fila Filtro + Botón en mobile */}
+                    <div className="flex flex-col xs:flex-row w-full sm:w-auto gap-2 sm:gap-3">
+                      <Select value={filterStatus} onValueChange={setFilterStatus}>
+                        <SelectTrigger className="h-10 w-full xs:min-w-[9rem] sm:w-44 md:w-48 px-3 whitespace-nowrap truncate">
+                          <SelectValue placeholder={t('venezuela.pagos.filters.allStatuses')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">{t('venezuela.pagos.filters.allStatuses')}</SelectItem>
+                          <SelectItem value="completado">{t('venezuela.pagos.filters.completed')}</SelectItem>
+                          <SelectItem value="pendiente">{t('venezuela.pagos.filters.pending')}</SelectItem>
+                          <SelectItem value="rechazado">{t('venezuela.pagos.filters.rejected')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button
+                        className="h-10 w-full xs:w-auto bg-[#202841] text-white hover:bg-opacity-90 flex items-center justify-center"
+                        onClick={exportarGeneral}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        <span className="hidden sm:inline">{t('venezuela.pagos.actions.export')}</span>
+                        <span className="sm:hidden">{t('venezuela.pagos.actions.exportShort')}</span>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardHeader>
@@ -907,8 +919,8 @@ const PaymentValidationDashboard: React.FC = () => {
             {/* ================================ */}
             {/* TABLA DE PAGOS */}
             {/* ================================ */}
-            <div className={mounted && theme === 'dark' ? 'bg-slate-800 rounded-xl shadow-sm overflow-hidden' : 'bg-white rounded-xl shadow-sm overflow-hidden'}>
-              <div className={mounted && theme === 'dark' ? 'px-4 md:px-6 py-3 md:py-4 border-b border-slate-700 bg-gradient-to-r from-slate-900 to-slate-800' : 'px-4 md:px-6 py-3 md:py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white'}>
+            <div className={mounted && theme === 'dark' ? 'rounded-xl shadow-lg overflow-hidden border border-slate-700 bg-slate-800/70 backdrop-blur-sm transition-shadow hover:shadow-xl' : 'rounded-xl shadow-lg overflow-hidden border border-slate-200 bg-white/80 backdrop-blur-sm transition-shadow hover:shadow-xl'}>
+              <div className={mounted && theme === 'dark' ? 'px-4 md:px-6 py-3 md:py-4 border-b border-slate-700/60' : 'px-4 md:px-6 py-3 md:py-4 border-b border-slate-200/70'}>
                 <h2 className={`text-lg md:text-xl font-semibold flex items-center gap-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   <AnimatedIcon animation="float">
                     <Package className="md:w-6 md:h-6 text-blue-500" />
