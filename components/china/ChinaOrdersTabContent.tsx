@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -84,6 +85,7 @@ export default function ChinaOrdersTabContent() {
   const [modalCotizar, setModalCotizar] = useState<{open:boolean; pedido?: Pedido; precioCotizacion?: number}>({open:false, precioCotizacion:0});
   const [modalEmpaquetarPedido, setModalEmpaquetarPedido] = useState<{open:boolean; pedidoId?: number}>({open:false});
   const [isClosingModalCotizar, setIsClosingModalCotizar] = useState(false);
+  const [enteredModalCotizar, setEnteredModalCotizar] = useState(false); // animación de entrada
   const [isClosingModalEmpaquetarPedido, setIsClosingModalEmpaquetarPedido] = useState(false);
   const modalCotizarRef = useRef<HTMLDivElement>(null);
   const modalEmpaquetarPedidoRef = useRef<HTMLDivElement>(null);
@@ -128,6 +130,17 @@ export default function ChinaOrdersTabContent() {
   const modalEliminarContenedorRef = useRef<HTMLDivElement>(null);
   const modalVerCajasContRef = useRef<HTMLDivElement>(null);
   // Nuevo: Modal para enviar contenedor con datos (tracking, empresa, fecha estimada)
+
+  // Animación de entrada del modal cotizar
+  useEffect(()=>{
+    if(modalCotizar.open){
+      setEnteredModalCotizar(false);
+      const id = requestAnimationFrame(()=> setEnteredModalCotizar(true));
+      return ()=> cancelAnimationFrame(id);
+    } else {
+      setEnteredModalCotizar(false);
+    }
+  }, [modalCotizar.open]);
   const modalEnviarContenedorRef = useRef<HTMLDivElement>(null);
   const [modalEnviarContenedor, setModalEnviarContenedor] = useState<{open:boolean; container?: ContainerItem}>({ open:false });
   const [isClosingModalEnviarContenedor, setIsClosingModalEnviarContenedor] = useState(false);
@@ -931,19 +944,66 @@ export default function ChinaOrdersTabContent() {
         </div>
       )}
 
-      {/* Modal Cotizar */}
-      {modalCotizar.open && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div ref={modalCotizarRef} className={`bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-lg mx-4 w-full transition-all ${isClosingModalCotizar? 'scale-95 opacity-0' : 'scale-100 opacity-100'} duration-200`}>
-            <div className="flex items-center justify-between mb-4"><h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('admin.orders.china.modals.quote.title')}</h3><Button variant="ghost" size="sm" onClick={closeModalCotizar} className="h-8 w-8 p-0">✕</Button></div>
+      {/* Modal Cotizar (portal para evitar clipping y asegurar blur pantalla completa) */}
+      {mounted && modalCotizar.open && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center">
+          {/* Capa de fondo (más oscura) */}
+          <div className="absolute inset-0 bg-black/70 dark:bg-black/75 backdrop-blur-sm transition-opacity" onClick={closeModalCotizar} />
+          {/* Contenido */}
+          <div ref={modalCotizarRef} className={`relative bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-lg mx-4 w-full shadow-2xl border border-slate-200 dark:border-slate-700 transition-all duration-200 ease-out ${isClosingModalCotizar? 'scale-95 opacity-0' : enteredModalCotizar ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}> 
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('admin.orders.china.modals.quote.title')}</h3>
+              <Button variant="ghost" size="sm" onClick={closeModalCotizar} className="h-8 w-8 p-0">✕</Button>
+            </div>
             <form onSubmit={e=>{ e.preventDefault(); const precio=Number((e.target as any).precio.value); if(precio>0 && modalCotizar.pedido) cotizarPedido(modalCotizar.pedido, precio); }} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 text-sm"><div><p className="font-medium">{t('admin.orders.china.modals.quote.client')}</p><p>{modalCotizar.pedido?.cliente}</p></div><div><p className="font-medium">{t('admin.orders.china.modals.quote.product')}</p><p>{modalCotizar.pedido?.producto}</p></div><div><p className="font-medium">{t('admin.orders.china.modals.quote.quantity')}</p><p>{modalCotizar.pedido?.cantidad}</p></div><div><p className="font-medium">{t('admin.orders.table.status')}</p><p>{modalCotizar.pedido?.estado}</p></div></div>
-              <div><label className="text-sm font-medium">{t('admin.orders.china.modals.quote.unitPriceLabel')}</label><div className="relative mt-1"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span><input name="precio" type="text" inputMode="decimal" required min="0" step="0.01" defaultValue={modalCotizar.precioCotizacion} onChange={e=>{ const raw=e.target.value.replace(/,/g,'').replace(/[^0-9.]/g,''); const parts=raw.split('.'); let intPart=parts[0]||''; const decPart=parts[1]||''; if(intPart.length>7) intPart=intPart.slice(0,7); const cleaned = decPart? `${intPart}.${decPart.slice(0,2)}`: intPart; e.target.value=cleaned; setModalCotizar(prev=>({...prev, precioCotizacion:Number(cleaned||0)})); }} className="w-full pl-7 pr-3 py-2 rounded-md border border-slate-300 bg-white dark:bg-slate-800" placeholder="0.00" /></div><p className="mt-1 text-xs text-slate-500">Máx 7 dígitos enteros</p></div>
-              <div className="text-sm"><p className="font-medium">{t('admin.orders.china.modals.quote.totalToPay')}</p><p className="text-green-600 dark:text-green-400 font-semibold text-lg">${((modalCotizar.precioCotizacion||0)*(modalCotizar.pedido?.cantidad||0)).toLocaleString()}</p></div>
-              <div className="flex justify-end gap-2"><Button type="button" variant="outline" onClick={closeModalCotizar}>{t('admin.orders.china.modals.quote.cancel')}</Button><Button type="submit" disabled={!(modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 && String(Math.trunc(modalCotizar.precioCotizacion)).length<=7)} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">{t('admin.orders.china.modals.quote.sendQuote')}</Button></div>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div><p className="font-medium">{t('admin.orders.china.modals.quote.client')}</p><p>{modalCotizar.pedido?.cliente}</p></div>
+                <div><p className="font-medium">{t('admin.orders.china.modals.quote.product')}</p><p>{modalCotizar.pedido?.producto}</p></div>
+                <div><p className="font-medium">{t('admin.orders.china.modals.quote.quantity')}</p><p>{modalCotizar.pedido?.cantidad}</p></div>
+                <div><p className="font-medium">{t('admin.orders.table.status')}</p><p>{modalCotizar.pedido?.estado}</p></div>
+              </div>
+              <div>
+                <label className="text-sm font-medium">{t('admin.orders.china.modals.quote.unitPriceLabel')}</label>
+                <div className="relative mt-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 select-none">$</span>
+                  <input
+                    name="precio"
+                    type="text"
+                    inputMode="decimal"
+                    required
+                    min="0"
+                    step="0.01"
+                    defaultValue={modalCotizar.precioCotizacion}
+                    onChange={e=>{ 
+                      const raw=e.target.value.replace(/,/g,'').replace(/[^0-9.]/g,''); 
+                      const parts=raw.split('.'); 
+                      let intPart=parts[0]||''; 
+                      const decPartFull=parts[1]||''; 
+                      if(intPart.length>7) intPart=intPart.slice(0,7); 
+                      const decPart=decPartFull.slice(0,2); 
+                      const cleaned = decPart? `${intPart}.${decPart}`: intPart; 
+                      e.target.value=cleaned; 
+                      setModalCotizar(prev=>({...prev, precioCotizacion:Number(cleaned||0)})); 
+                    }}
+                    className={`w-full pl-7 pr-3 py-2 rounded-md bg-white dark:bg-slate-800 border focus:outline-none transition-colors ${modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                    placeholder="0.00"
+                  />
+                </div>
+                <p className={`mt-1 text-xs ${modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 ? 'text-slate-500' : 'text-red-500'}`}>
+                  {modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 ? 'Máx 7 dígitos enteros' : 'Ingresa un precio mayor a 0'}
+                </p>
+              </div>
+              <div className="text-sm">
+                <p className="font-medium">{t('admin.orders.china.modals.quote.totalToPay')}</p>
+                <p className="text-green-600 dark:text-green-400 font-semibold text-lg">${((modalCotizar.precioCotizacion||0)*(modalCotizar.pedido?.cantidad||0)).toLocaleString()}</p>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={closeModalCotizar}>{t('admin.orders.china.modals.quote.cancel')}</Button>
+                <Button type="submit" disabled={!(modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 && String(Math.trunc(modalCotizar.precioCotizacion)).length<=7)} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">{t('admin.orders.china.modals.quote.sendQuote')}</Button>
+              </div>
             </form>
           </div>
-        </div>
+        </div>, document.body
       )}
 
       {/* Modal seleccionar caja para pedido */}

@@ -2050,23 +2050,21 @@ export default function PedidosChina() {
                        name="precio"
                        inputMode="decimal"
                        required
-                       className="w-full pl-8 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       className={`w-full pl-8 pr-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
                        placeholder={t('chinese.ordersPage.modals.quote.unitPricePlaceholder')}
                        onChange={e => {
-                         // Sanitiza: solo dígitos y un punto, limita 7 dígitos enteros y 2 decimales
                          let raw = e.target.value.replace(/,/g,'').replace(/[^0-9.]/g,'');
                          const parts = raw.split('.');
                          let intPart = parts[0] || '';
-                         let decPart = parts[1] || '';
+                         let decPart = (parts[1] || '').slice(0,2);
                          if (intPart.length > 7) intPart = intPart.slice(0,7);
-                         if (decPart.length > 2) decPart = decPart.slice(0,2);
                          const cleaned = decPart ? `${intPart}.${decPart}` : intPart;
                          e.target.value = cleaned;
                          const numero = Number(cleaned || 0);
                          setModalCotizar(prev => ({...prev, precioCotizacion: numero}));
                        }}
                      />
-                     <p className="mt-1 text-xs text-slate-500">Máx 7 dígitos enteros</p>
+                     <p className={`mt-1 text-xs ${modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 ? 'Máx 7 dígitos enteros' : 'Ingresa un precio mayor a 0'}</p>
                    </div>
                 </div>
                 <div className="space-y-2">
