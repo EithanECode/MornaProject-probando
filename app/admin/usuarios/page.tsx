@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { useAdminUsers } from '@/hooks/use-admin-users';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from '@/hooks/useTranslation';
 
 // Estilos para animaciones
@@ -126,7 +127,7 @@ export default function UsuariosPage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
-  const { data: fetchedUsers } = useAdminUsers();
+  const { data: fetchedUsers, loading: usersLoading } = useAdminUsers();
   const [users, setUsers] = useState<User[]>([]);
 
   // Mapear datos reales del hook a la estructura de la tabla
@@ -557,7 +558,52 @@ export default function UsuariosPage() {
               </div>
             </CardHeader>
             <CardContent className="overflow-x-hidden">
+              {usersLoading && (
+                <div className="hidden lg:block rounded-xl border border-slate-200 bg-white/50 backdrop-blur-sm overflow-hidden mb-4">
+                  <div className="divide-y divide-slate-100">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div key={i} className="flex items-center gap-4 py-4 px-6 animate-fade-in">
+                        <Skeleton className="h-12 w-12 rounded-full" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-4 w-1/3" />
+                          <Skeleton className="h-3 w-1/4" />
+                          <Skeleton className="h-2 w-1/5" />
+                        </div>
+                        <Skeleton className="h-6 w-28 rounded-full" />
+                        <Skeleton className="h-4 w-24" />
+                        <div className="flex gap-2">
+                          <Skeleton className="h-8 w-8 rounded-md" />
+                          <Skeleton className="h-8 w-8 rounded-md" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {usersLoading && (
+                <div className="lg:hidden space-y-3 mb-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 p-4">
+                      <div className="flex items-center gap-4">
+                        <Skeleton className="h-12 w-12 rounded-full" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-4 w-2/3" />
+                          <Skeleton className="h-3 w-1/2" />
+                          <Skeleton className="h-2 w-1/3" />
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-end gap-2 mt-4">
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
+                            {!usersLoading && (
+                            <>
                             {/* Vista Desktop - Tabla */}
                             <div className="hidden lg:block rounded-xl border border-slate-200 bg-white/50 backdrop-blur-sm overflow-x-auto">
                               <div className="min-h-[400px] transition-all duration-700 ease-in-out">
@@ -804,6 +850,8 @@ export default function UsuariosPage() {
                                   </div>
                                 </div>
                               </div>
+                            )}
+                            </>
                             )}
             </CardContent>
           </Card>
