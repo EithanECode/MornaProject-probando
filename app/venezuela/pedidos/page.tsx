@@ -463,33 +463,32 @@ export default function VenezuelaPedidosPage() {
                 </CardContent>
               </Card>
             </div>
-            {/* Tabs: Pedidos | Cajas | Contenedores (debajo de estadísticas) */}
+            {/* Tabs: Pedidos | Cajas | Contenedores (con indicador deslizante) */}
             <div className="pt-2">
-              <div className="flex w-full rounded-lg border border-slate-200 bg-white/70 backdrop-blur px-1 py-1 shadow-sm gap-1">
-                <Button
-                  variant={activeTab === 'pedidos' ? 'default' : 'ghost'}
-                  size="sm"
-                  className={`flex-1 min-w-0 justify-center whitespace-nowrap truncate rounded-md transition-colors ${activeTab === 'pedidos' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
-                  onClick={() => setActiveTab('pedidos')}
-                >
-                  {t('venezuela.pedidos.tabs.ordersList')}
-                </Button>
-                <Button
-                  variant={activeTab === 'cajas' ? 'default' : 'ghost'}
-                  size="sm"
-                  className={`flex-1 min-w-0 justify-center whitespace-nowrap truncate rounded-md transition-colors ${activeTab === 'cajas' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
-                  onClick={() => setActiveTab('cajas')}
-                >
-                  {t('venezuela.pedidos.tabs.boxes')}
-                </Button>
-                <Button
-                  variant={activeTab === 'contenedores' ? 'default' : 'ghost'}
-                  size="sm"
-                  className={`flex-1 min-w-0 justify-center whitespace-nowrap truncate rounded-md transition-colors ${activeTab === 'contenedores' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'}`}
-                  onClick={() => setActiveTab('contenedores')}
-                >
-                  {t('venezuela.pedidos.tabs.containers')}
-                </Button>
+              <div className="relative flex w-full gap-2 rounded-lg border border-slate-200 bg-white/70 dark:border-slate-700 dark:bg-slate-800/60 backdrop-blur px-1 py-1 shadow-sm overflow-hidden">
+                {/* Indicador deslizante */}
+                <span
+                  className="absolute top-1 bottom-1 rounded-md bg-slate-900/95 dark:bg-slate-200 transition-all duration-300 ease-out shadow-sm"
+                  style={{
+                    left: `${(['pedidos','cajas','contenedores'] as const).indexOf(activeTab) * (100/3)}%`,
+                    width: 'calc((100% - 0.5rem * 2) / 3)' // gap-2 => 0.5rem; reutilizamos fórmula del componente interno
+                  }}
+                />
+                {(['pedidos','cajas','contenedores'] as const).map(tab => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setActiveTab(tab)}
+                    className={'relative z-10 flex-1 min-w-0 px-2 py-2 text-xs md:text-sm font-medium truncate rounded-md transition-colors duration-200 ' +
+                      (activeTab === tab
+                        ? 'text-white dark:text-slate-900'
+                        : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white')}
+                  >
+                    {tab === 'pedidos' && t('venezuela.pedidos.tabs.ordersList')}
+                    {tab === 'cajas' && t('venezuela.pedidos.tabs.boxes')}
+                    {tab === 'contenedores' && t('venezuela.pedidos.tabs.containers')}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
