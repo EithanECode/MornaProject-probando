@@ -1179,7 +1179,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         </div>
 
         {/* Navigation */}
-        <nav className={`flex-1 ${responsiveConfig.padding} space-y-2 overflow-y-auto sidebar-scrollbar`}>
+  <nav className={`flex-1 ${responsiveConfig.padding} space-y-2 overflow-y-auto sidebar-scrollbar touch-pan-y overscroll-contain`}>
           {menuItemsWithCounts.map(renderMenuItem)}
         </nav>
 
