@@ -645,9 +645,16 @@ export default function ChinaOrdersTabContent() {
         </Card>
       </div>
 
-      {/* Sub-tabs */}
+      {/* Sub-tabs con indicador animado */}
       <div className="w-full">
-        <div className="flex w-full gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/60 backdrop-blur px-1 py-1 shadow-sm">
+        <div className="relative flex w-full gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/60 backdrop-blur px-1 py-1 shadow-sm overflow-hidden">
+          <span
+            className="absolute top-1 bottom-1 rounded-md bg-slate-900/95 dark:bg-slate-200 transition-all duration-300 ease-out shadow-sm"
+            style={{
+              left: `${(['pedidos','cajas','contenedores'] as const).indexOf(activeSubTab)*(100/3)}%`,
+              width: 'calc((100% - 0.5rem * 2) / 3)'
+            }}
+          />
           {(['pedidos','cajas','contenedores'] as const).map(tab => {
             const label = tab === 'pedidos'
               ? t('admin.orders.china.tabs.ordersList')
@@ -655,15 +662,17 @@ export default function ChinaOrdersTabContent() {
               ? t('admin.orders.china.boxes.title')
               : t('admin.orders.china.containers.title');
             return (
-              <Button
+              <button
                 key={tab}
-                variant={activeSubTab===tab? 'default':'ghost'}
-                size="sm"
+                type="button"
                 onClick={()=>setActiveSubTab(tab)}
-                className={`flex-1 min-w-0 justify-center truncate rounded-md ${activeSubTab===tab? 'bg-slate-900 text-white dark:bg-slate-200 dark:text-slate-900':'text-slate-700 dark:text-slate-300'}`}
+                className={
+                  'relative z-10 flex-1 min-w-0 px-2 py-2 text-xs md:text-sm font-medium truncate rounded-md transition-colors duration-200 ' +
+                  (activeSubTab===tab ? 'text-white dark:text-slate-900' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white')
+                }
               >
                 {label}
-              </Button>
+              </button>
             );
           })}
         </div>
