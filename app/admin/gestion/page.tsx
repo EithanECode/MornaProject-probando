@@ -89,6 +89,7 @@ export default function ConfiguracionPage() {
   });
   // Referencia al estado base para detectar cambios
   const baseConfigRef = useRef<BusinessConfig | null>(null);
+  const [baselineVersion, setBaselineVersion] = useState(0);
   
   const [isLoading, setIsLoading] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -132,6 +133,7 @@ export default function ConfiguracionPage() {
 
   // Actualizar baseline para futuras comparaciones
   baseConfigRef.current = { ...config };
+  setBaselineVersion(v => v + 1); // forzar recomputo de hasChanges
   };
 
   const updateConfig = (field: keyof BusinessConfig, value: any) => {
@@ -142,7 +144,7 @@ export default function ConfiguracionPage() {
   const hasChanges = useMemo(() => {
     if (!baseConfigRef.current) return false;
     return JSON.stringify(baseConfigRef.current) !== JSON.stringify(config);
-  }, [config]);
+  }, [config, baselineVersion]);
 
   // =============================
   // Sanitizadores / Validaciones
