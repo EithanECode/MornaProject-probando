@@ -497,7 +497,8 @@ export default function VenezuelaPedidosPage() {
             <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
               <CardHeader className="pb-3">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <CardTitle className="text-xl font-semibold">
+                  <CardTitle className="text-xl font-semibold flex items-center gap-2">
+                    <Package className="h-5 w-5 text-black" />
                     {t('venezuela.pedidos.tabs.ordersList', { defaultValue: 'Lista de pedidos' })}
                   </CardTitle>
                   <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">

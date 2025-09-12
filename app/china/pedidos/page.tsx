@@ -1390,17 +1390,15 @@ export default function PedidosChina() {
             </div>
           </div>
 
-          {/* Barra compacta y alineada a la derecha */}
+          {/* Header unificado + contenido dinámico */}
           <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
             <CardHeader className="py-3">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <CardTitle className="text-lg font-semibold">
-                  <span className="flex items-center gap-2">
-                    {activeTab === 'pedidos' && <Package className="h-4 w-4" />}
-                    {activeTab === 'cajas' && <Boxes className="h-4 w-4" />}
-                    {activeTab === 'contenedores' && <Boxes className="h-4 w-4" />}
-                    <span>{activeTab === 'pedidos' ? t('chinese.ordersPage.tabs.ordersList') : activeTab === 'cajas' ? t('chinese.ordersPage.tabs.boxes') : t('chinese.ordersPage.tabs.containers')}</span>
-                  </span>
+                <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                  {activeTab === 'pedidos' && <Package className="h-5 w-5" />}
+                  {activeTab === 'cajas' && <Boxes className="h-5 w-5" />}
+                  {activeTab === 'contenedores' && <Boxes className="h-5 w-5" />}
+                  <span>{activeTab === 'pedidos' ? t('chinese.ordersPage.tabs.ordersList') : activeTab === 'cajas' ? t('chinese.ordersPage.tabs.boxes') : t('chinese.ordersPage.tabs.containers')}</span>
                 </CardTitle>
                 <div className="w-full sm:w-auto grid grid-cols-1 sm:flex sm:items-center sm:justify-end gap-2 md:gap-3">
                   {activeTab === 'pedidos' && (
@@ -1426,29 +1424,47 @@ export default function PedidosChina() {
                     </>
                   )}
                   {activeTab === 'cajas' && (
-                    <Input
-                      placeholder={t('chinese.ordersPage.filters.searchBoxPlaceholder')}
-                      value={filtroCaja}
-                      onChange={(e) => setFiltroCaja(e.target.value)}
-                      className="h-10 w-full sm:w-64 px-3"
-                    />
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder={t('chinese.ordersPage.filters.searchBoxPlaceholder')}
+                        value={filtroCaja}
+                        onChange={(e) => setFiltroCaja(e.target.value)}
+                        className="h-10 w-full sm:w-64 px-3"
+                      />
+                      <Button
+                        size="sm"
+                        className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700"
+                        onClick={() => setModalCrearCaja({ open: true })}
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.create')}</span>
+                      </Button>
+                    </div>
                   )}
                   {activeTab === 'contenedores' && (
-                    <Input
-                      placeholder={t('chinese.ordersPage.filters.searchContainerPlaceholder')}
-                      value={filtroContenedor}
-                      onChange={(e) => setFiltroContenedor(e.target.value)}
-                      className="h-10 w-full sm:w-64 px-3"
-                    />
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder={t('chinese.ordersPage.filters.searchContainerPlaceholder')}
+                        value={filtroContenedor}
+                        onChange={(e) => setFiltroContenedor(e.target.value)}
+                        className="h-10 w-full sm:w-64 px-3"
+                      />
+                      <Button
+                        size="sm"
+                        className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700"
+                        onClick={() => setModalCrearContenedor({ open: true })}
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span className="hidden sm:inline">{t('chinese.ordersPage.containers.create')}</span>
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>
             </CardHeader>
-          </Card>
-
+            <CardContent>
           {activeTab === 'pedidos' && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-              <CardContent>
+              <>
                 <div className="space-y-4">
                   {pedidosFiltrados.map((pedido) => (
                     <div
@@ -1581,31 +1597,11 @@ export default function PedidosChina() {
                     </div>
                   )}
                 </div>
-              </CardContent>
-            </Card>
+              </>
           )}
 
           {activeTab === 'cajas' && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                    <Boxes className="h-5 w-5" />
-                    {t('chinese.ordersPage.boxes.title')}
-                  </CardTitle>
-                  <div className="flex items-center">
-                    <Button
-                      size="sm"
-                      className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700"
-                      onClick={() => setModalCrearCaja({ open: true })}
-                    >
-                      <Plus className="h-4 w-4" />
-                      <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.create')}</span>
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
+              <>
                 {boxes.length === 0 ? (
                   <div className="text-center py-12">
                     <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
@@ -1733,31 +1729,10 @@ export default function PedidosChina() {
                 {boxesLoading && (
                   <p className="text-center text-sm text-slate-500 mt-4">{t('chinese.ordersPage.boxes.loading')}</p>
                 )}
-              </CardContent>
-            </Card>
+              </>
           )}
-
-            {activeTab === 'contenedores' && (
-              <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                      <Boxes className="h-5 w-5" />
-                      {t('chinese.ordersPage.containers.title')}
-                    </CardTitle>
-                    <div className="flex items-center">
-                      <Button
-                        size="sm"
-                        className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700"
-                        onClick={() => setModalCrearContenedor({ open: true })}
-                      >
-                        <Plus className="h-4 w-4" />
-                        <span className="hidden sm:inline">{t('chinese.ordersPage.containers.create')}</span>
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
+          {activeTab === 'contenedores' && (
+              <>
                   {containers.length === 0 ? (
                     <div className="text-center py-12">
                       <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
@@ -1867,9 +1842,10 @@ export default function PedidosChina() {
                   {containersLoading && (
                     <p className="text-center text-sm text-slate-500 mt-4">{t('chinese.ordersPage.containers.loading')}</p>
                   )}
-                </CardContent>
-              </Card>
-            )}
+              </>
+          )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Modal Enviar Contenedor: tracking + confirm */}
