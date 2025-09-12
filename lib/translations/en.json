@@ -344,7 +344,9 @@
       "totalSpent": "Total Spent",
       "totalInvestment": "Total investment",
       "completed": "Completed",
-      "ordersDelivered": "Orders delivered"
+  "ordersDelivered": "Orders delivered",
+  "pending": "Pending",
+  "pendingProcessing": "Orders in process"
   },
   "quickActions": {
       "title": "Quick Actions",
