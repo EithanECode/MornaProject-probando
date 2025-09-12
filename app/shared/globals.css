@@ -119,6 +119,13 @@ body, html, * {
     scrollbar-width: thin;
     scrollbar-color: #3b82f6 rgba(51, 65, 85, 0.3);
   }
+
+  /* Momentum scroll para contenedores táctiles (sidebar) */
+  .momentum-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+  }
   
   /* Line clamp para controlar líneas de texto */
   .line-clamp-2 {

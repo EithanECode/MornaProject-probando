@@ -1178,13 +1178,15 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           </div>
         </div>
 
-        {/* Navigation */}
-  <nav className={`flex-1 ${responsiveConfig.padding} space-y-2 overflow-y-auto sidebar-scrollbar touch-pan-y overscroll-contain`}>
-          {menuItemsWithCounts.map(renderMenuItem)}
-        </nav>
+        {/* Scrollable content (nav + bottom) */}
+        <div className={`flex-1 overflow-y-auto sidebar-scrollbar momentum-scroll touch-pan-y overscroll-contain`}> 
+          {/* Navigation */}
+          <nav className={`${responsiveConfig.padding} space-y-2`}>
+            {menuItemsWithCounts.map(renderMenuItem)}
+          </nav>
 
-        {/* Bottom Section */}
-        <div className={`${responsiveConfig.padding} border-t border-slate-700/50 space-y-4 flex-shrink-0`}>
+          {/* Bottom Section */}
+          <div className={`mt-2 ${responsiveConfig.padding} border-t border-slate-700/50 space-y-4`}>        
           {/* User Profile */}
           <div className={`flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : 'space-x-3'} ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
             <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center overflow-hidden`}>
@@ -1276,6 +1278,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
               <span className="font-medium whitespace-nowrap">{t('sidebar.logout')}</span>
             </div>
           </button>
+          </div>
         </div>
       </div>
     </>
