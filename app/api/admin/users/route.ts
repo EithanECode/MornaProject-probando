@@ -28,23 +28,65 @@ export async function GET() {
       return NextResponse.json([], { status: 200 });
     }
 
-    // Obtener datos desde el Admin API (bypassa RLS y no requiere PostgREST en schema auth)
-  const results = await Promise.allSettled(
-      userIds.map(async (id) => {
-        const { data, error } = await supabase.auth.admin.getUserById(id);
-        if (error) throw error;
-    const status = (data.user?.user_metadata as any)?.status as string | undefined;
-    return { id, email: data.user?.email ?? '', created_at: data.user?.created_at ?? '', status: status ?? 'activo' };
-      })
-    );
+    // Obtener datos auth de forma BULK para evitar el patrón N+1 (gran causa de lentitud)
+    const usersMap = new Map<string, { email: string; created_at: string; status: 'activo' | 'inactivo' }>();
 
-  const usersMap = new Map<string, { email: string; created_at: string; status: 'activo' | 'inactivo' }>();
-    for (const r of results) {
-      if (r.status === 'fulfilled') {
-    usersMap.set(r.value.id, { email: r.value.email, created_at: r.value.created_at, status: (r.value.status as 'activo' | 'inactivo') ?? 'activo' });
+    // Si la cantidad es razonable (<=1000) intentar un listUsers una sola vez
+    if (userIds.length <= 1000) {
+      const { data: listData, error: listErr } = await supabase.auth.admin.listUsers({ page: 1, perPage: userIds.length });
+      if (!listErr && listData?.users) {
+        for (const u of listData.users) {
+          if (userIds.includes(u.id)) {
+            const status = (u.user_metadata as any)?.status ?? 'activo';
+            usersMap.set(u.id, { email: u.email ?? '', created_at: u.created_at ?? '', status });
+          }
+        }
       } else {
-        // Si falla uno, continuar sin bloquear toda la respuesta
-        // console.warn('getUserById failed:', r.reason);
+        // Fallback a N+1 sólo si el bulk falla
+        const results = await Promise.allSettled(
+          userIds.map(async (id) => {
+            const { data, error } = await supabase.auth.admin.getUserById(id);
+            if (error) throw error;
+            const status = (data.user?.user_metadata as any)?.status as string | undefined;
+            return { id, email: data.user?.email ?? '', created_at: data.user?.created_at ?? '', status: status ?? 'activo' };
+          })
+        );
+        for (const r of results) {
+          if (r.status === 'fulfilled') {
+            usersMap.set(r.value.id, { email: r.value.email, created_at: r.value.created_at, status: (r.value.status as 'activo' | 'inactivo') ?? 'activo' });
+          }
+        }
+      }
+    } else {
+      // Demasiados IDs: optar por chunking (1000 por página) o fallback rápido
+      const CHUNK = 1000;
+      for (let i = 0; i < userIds.length; i += CHUNK) {
+        const slice = userIds.slice(i, i + CHUNK);
+        const { data: listData, error: listErr } = await supabase.auth.admin.listUsers({ page: 1, perPage: CHUNK });
+        if (listErr || !listData?.users) break; // fallback silencioso
+        for (const u of listData.users) {
+          if (slice.includes(u.id)) {
+            const status = (u.user_metadata as any)?.status ?? 'activo';
+            usersMap.set(u.id, { email: u.email ?? '', created_at: u.created_at ?? '', status });
+          }
+        }
+      }
+      // Completar faltantes (si alguno no vino) con llamadas directas mínimas
+      const missing = userIds.filter(id => !usersMap.has(id));
+      if (missing.length) {
+        const results = await Promise.allSettled(
+          missing.map(async (id) => {
+            const { data, error } = await supabase.auth.admin.getUserById(id);
+            if (error) throw error;
+            const status = (data.user?.user_metadata as any)?.status as string | undefined;
+            return { id, email: data.user?.email ?? '', created_at: data.user?.created_at ?? '', status: status ?? 'activo' };
+          })
+        );
+        for (const r of results) {
+          if (r.status === 'fulfilled') {
+            usersMap.set(r.value.id, { email: r.value.email, created_at: r.value.created_at, status: (r.value.status as 'activo' | 'inactivo') ?? 'activo' });
+          }
+        }
       }
     }
 
