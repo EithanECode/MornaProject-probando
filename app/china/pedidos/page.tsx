@@ -2196,7 +2196,8 @@ export default function PedidosChina() {
                   id="newContainerName"
                   placeholder={t('chinese.ordersPage.modals.createContainer.containerNamePlaceholder', { defaultValue: 'Ej. CONT-Agosto-01' })}
                   value={newContainerName}
-                  onChange={(e) => setNewContainerName(e.target.value)}
+                  maxLength={50}
+                  onChange={(e) => setNewContainerName(e.target.value.slice(0,50))}
                   required
                 />
               </div>
@@ -2419,7 +2420,8 @@ export default function PedidosChina() {
                   id="newBoxName"
                   placeholder={t('chinese.ordersPage.modals.createBox.boxNamePlaceholder', { defaultValue: 'Ej. Electrónica lote A' })}
                   value={newBoxName}
-                  onChange={(e) => setNewBoxName(e.target.value)}
+                  maxLength={50}
+                  onChange={(e) => setNewBoxName(e.target.value.slice(0,50))}
                   required
                 />
               </div>
