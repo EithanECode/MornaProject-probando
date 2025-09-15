@@ -93,15 +93,29 @@ export default function VenezuelaOrdersTabContent() {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      // Traer TODOS los pedidos asignados a algún empleado de Venezuela (sin filtrar por el usuario logueado)
-      const res = await fetch(`/venezuela/pedidos/api/orders`, { cache: 'no-store' });
-      if (!res.ok) throw new Error('Error al obtener pedidos');
-      const data = await res.json();
-      // Filtrar para mantener sólo los que tienen un empleado de Venezuela asignado
-      const assigned = Array.isArray(data) ? data.filter((o:any) => !!o.asignedEVzla) : [];
+      const res = await fetch(`/venezuela/pedidos/api/orders`, { cache: 'no-store', credentials: 'include' });
+      const contentType = res.headers.get('content-type') || '';
+      let raw: any = null;
+      if (contentType.includes('application/json')) {
+        raw = await res.json().catch(() => null);
+      } else {
+        // Si no es JSON probablemente llegó HTML (por ejemplo una página de login / error)
+        const text = await res.text();
+        throw new Error(text.startsWith('<!DOCTYPE') ? 'Respuesta no JSON (posible HTML de error o redirección). Verifica autenticación.' : 'Respuesta no válida del servidor');
+      }
+      if (!res.ok) {
+        const msg = (raw && (raw.error || raw.message)) || 'Error al obtener pedidos';
+        throw new Error(msg);
+      }
+      if (!Array.isArray(raw)) {
+        throw new Error('Formato de datos inesperado (se esperaba un array)');
+      }
+      const assigned = raw.filter((o: any) => !!o.asignedEVzla);
       setOrders(assigned);
+      setError(null);
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Error desconocido obteniendo pedidos');
+      setOrders([]);
     } finally {
       setLoading(false);
     }

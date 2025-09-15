@@ -41,6 +41,11 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // Excluir cualquier ruta de API, incluso si va anidada (p.ej. /venezuela/.../api/...)
+  if (pathname.includes('/api/')) {
+    return NextResponse.next();
+  }
+
   if (isPublic(pathname)) {
     return NextResponse.next();
   }
@@ -91,6 +96,7 @@ export function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api/public).*)' // Ajustar si se necesitan excluir paths específicos
+    // Excluir top-level API y algunos internos de Next; lo demás pasa por el middleware
+    '/((?!api|_next/static|_next/image|favicon.ico).*)'
   ]
 };
