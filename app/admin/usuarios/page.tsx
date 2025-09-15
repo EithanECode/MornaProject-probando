@@ -197,17 +197,37 @@ export default function UsuariosPage() {
   const [flashUserId, setFlashUserId] = useState<string | null>(null);
 
   const filteredUsers = useMemo(() => {
+    const term = (searchTerm || '').toString().trim().toLowerCase();
+
+    // If there's an exact ID match, prefer showing only that user
+    if (term) {
+      const exact = users.find((u) => (u.id || '').toString().toLowerCase() === term);
+      if (exact) return [exact];
+    }
+
     const filtered = users.filter((u) => {
-      const matchesText =
-        u.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.id.toLowerCase().includes(searchTerm.toLowerCase());
+      const name = (u.fullName || '').toString().toLowerCase();
+      const email = (u.email || '').toString().toLowerCase();
+      const id = (u.id || '').toString().toLowerCase();
+
+      const matchesText = term.length === 0
+        ? true
+        : name.includes(term) || email.includes(term) || id.includes(term);
+
       const matchesRole = roleFilter === 'all' || u.role === roleFilter;
       const matchesStatus = statusFilter === 'all' || u.status === statusFilter;
       return matchesText && matchesRole && matchesStatus;
     });
-    
-    return filtered;
+
+    // Deduplicate by id to avoid repeated entries
+    const seen = new Set<string>();
+    const deduped = filtered.filter((u) => {
+      if (seen.has(u.id)) return false;
+      seen.add(u.id);
+      return true;
+    });
+
+    return deduped;
   }, [users, searchTerm, roleFilter, statusFilter]);
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(filteredUsers.length / pageSize)), [filteredUsers.length, pageSize]);
@@ -680,7 +700,7 @@ export default function UsuariosPage() {
                                   <tbody className="divide-y divide-slate-100">
                   {pagedUsers.map((user, index) => (
                                       <tr 
-                    key={`${user.id}-${animationKey}`}
+                    key={user.id}
                     className={`hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-300 ease-out group ${flashUserId === user.id ? 'animate-[pulse_1.2s_ease-in-out_2] bg-green-50/70' : ''}`}
                                         style={{
                                           animationDelay: `${index * 50}ms`,
@@ -762,7 +782,7 @@ export default function UsuariosPage() {
                             <div className="lg:hidden space-y-3 md:space-y-4">
                 {pagedUsers.map((user, index) => (
                                 <div
-                  key={`${user.id}-${animationKey}`}
+                  key={user.id}
                   onClick={() => handleOpenEdit(user)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleOpenEdit(user); } }}
                   role="button"
