@@ -514,7 +514,7 @@
   "max7DigitsHint": "(max 7 digits)",
         "summaryTitle": "Order Summary",
         "almostReady": "Almost ready!",
-        "reviewMessage": "Your request will be reviewed by our team and you will receive a quote within the next 24 hours.",
+        "reviewMessage": "Your request will be reviewed by our team and you will receive a quote within the next 48 hours.",
         "transitioning": "Transitioning...",
         "previous": "Previous",
         "next": "Next",

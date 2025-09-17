@@ -800,259 +800,294 @@ export default function MisPedidosPage() {
   const yyyy = fechaObj.getFullYear();
   const fechaPedidoLegible = `${dd}-${mm}-${yyyy}`;
   const numeroPedido = Date.now();
-  const nombrePDF = `${newOrderData.productName}_${fechaPedidoLegible}_${numeroPedido}_${newOrderData.client_id}_${newOrderData.deliveryVenezuela}.pdf`;
+  // Variable antigua nombrePDF eliminada (se generará una versión sanitizada más adelante)
 
     // PDF profesional con layout corporativo y SSR compatible
     (async () => {
-      const { jsPDF } = await import('jspdf');
-      const autoTable = (await import('jspdf-autotable')).default;
-      const doc = new jsPDF();
+      try {
+        const { jsPDF } = await import('jspdf');
+        const autoTable = (await import('jspdf-autotable')).default;
+        const doc = new jsPDF();
 
-      // Layout y colores
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.height;
-      const margin = 15;
-      const colors = {
-        primary: [22, 120, 187] as [number, number, number],
-        secondary: [44, 62, 80] as [number, number, number],
-        light: [245, 248, 255] as [number, number, number],
-        border: [180, 200, 220] as [number, number, number],
-        text: [33, 37, 41] as [number, number, number]
-      };
+        // Helper para sanitizar valores usados en el nombre del archivo / carpeta
+        const sanitizeForFile = (val: string | undefined | null) => {
+          return (val || 'x')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '') // eliminar acentos
+            .replace(/[^a-zA-Z0-9-_]+/g, '-') // caracteres no permitidos -> '-'
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '')
+            .toLowerCase()
+            .slice(0, 60);
+        };
 
-      // Datos para la tabla
-      const pedidoTable = [
-        ['ID Pedido', `${numeroPedido}`],
-        ['Cliente ID', `${newOrderData.client_id}`],
-        ['Nombre de Usuario', `${newOrderData.client_name || '-'}`],
-        ['Fecha', `${fechaPedidoLegible}`],
-        ['Tipo de Envío', `${newOrderData.deliveryType}`],
-        ['Entrega en Venezuela', `${newOrderData.deliveryVenezuela}`],
-        ['Producto', `${newOrderData.productName}`],
-        ['Cantidad', `${newOrderData.quantity}`],
-        ['Presupuesto Estimado', `$${newOrderData.estimatedBudget}`],
-        ['Descripción', newOrderData.description || '-'],
-        ['Especificaciones', newOrderData.specifications || '-'],
-      ];
-      if (newOrderData.requestType === 'link') {
-        pedidoTable.push(['URL', newOrderData.productUrl || '-']);
-      }
+        // Layout y colores
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.height;
+        const margin = 15;
+        const colors = {
+          primary: [22, 120, 187] as [number, number, number],
+          secondary: [44, 62, 80] as [number, number, number],
+          light: [245, 248, 255] as [number, number, number],
+          border: [180, 200, 220] as [number, number, number],
+          text: [33, 37, 41] as [number, number, number]
+        };
 
-      // === ENCABEZADO PROFESIONAL ===
-  doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.rect(0, 0, pageWidth, 35, 'F');
-  doc.setFontSize(12);
-  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.setFont('helvetica', 'bold');
-  doc.setFillColor(255, 255, 255);
-  doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
-  doc.text('PITA', margin + 10, 20, { align: 'center' });
-  doc.setFontSize(24);
-  doc.setTextColor(255, 255, 255);
-  doc.text('RESUMEN DE PEDIDO', pageWidth / 2, 22, { align: 'center' });
-  doc.setFontSize(10);
-  doc.setTextColor(255, 255, 255);
-  doc.text(`Pedido: #${numeroPedido}`, pageWidth - margin, 15, { align: 'right' });
-  doc.text(`Fecha: ${fechaPedidoLegible}`, pageWidth - margin, 21, { align: 'right' });
-
-      let currentY = 50;
-
-      // === MANEJO POR TIPO DE PEDIDO ===
-      if (newOrderData.requestType === 'photo' && newOrderData.productImage) {
-        // Imagen y tabla lado a lado
-        const imgWidth = 80;
-        const imgHeight = 80;
-        const imgX = margin;
-  doc.setFillColor(240, 240, 240);
-  doc.roundedRect(imgX - 2, currentY - 2, imgWidth + 4, imgHeight + 4, 3, 3, 'F');
-  doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
-  doc.setLineWidth(1);
-  doc.roundedRect(imgX, currentY, imgWidth, imgHeight, 2, 2, 'D');
-        const imgData = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (e) => resolve(e.target?.result as string);
-          reader.readAsDataURL(newOrderData.productImage as Blob);
-        });
-        doc.addImage(imgData, 'JPEG', imgX, currentY, imgWidth, imgHeight);
-  // Se elimina el texto "Imagen del Producto" para un diseño más limpio
-        const tableStartX = imgX + imgWidth + 15;
-        const tableWidth = pageWidth - tableStartX - margin;
-        autoTable(doc, {
-          head: [['Campo', 'Valor']],
-          body: pedidoTable,
-          startY: currentY,
-          margin: { left: tableStartX, right: margin },
-          tableWidth: tableWidth,
-          theme: 'grid',
-          headStyles: {
-            fillColor: colors.primary,
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            fontSize: 12,
-            halign: 'center',
-            cellPadding: 3
-          },
-          bodyStyles: {
-            fontSize: 10,
-            cellPadding: 3,
-            textColor: colors.text
-          },
-          alternateRowStyles: {
-            fillColor: colors.light
-          },
-          columnStyles: {
-            0: { cellWidth: 50, fontStyle: 'bold', textColor: colors.secondary },
-            1: { cellWidth: tableWidth - 50 }
-          }
-        });
-      } else if (newOrderData.requestType === 'link') {
-        // Tabla ocupando todo el ancho
-        doc.setFillColor(...colors.light);
-  doc.setFillColor(colors.light[0], colors.light[1], colors.light[2]);
-  doc.rect(margin, currentY, pageWidth - (margin * 2), 12, 'F');
-  doc.setFontSize(14);
-  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-        doc.text('DETALLES DEL PEDIDO', margin + 5, currentY + 8);
-        currentY += 20;
-        autoTable(doc, {
-          head: [['Campo', 'Información']],
-          body: pedidoTable,
-          startY: currentY,
-          margin: { left: margin, right: margin },
-          theme: 'striped',
-          headStyles: {
-            fillColor: colors.primary,
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            fontSize: 12,
-            halign: 'center',
-            cellPadding: 4
-          },
-          bodyStyles: {
-            fontSize: 11,
-            cellPadding: 4,
-            textColor: colors.text
-          },
-          alternateRowStyles: {
-            fillColor: colors.light
-          },
-          columnStyles: {
-            0: { cellWidth: 60, fontStyle: 'bold', textColor: colors.secondary },
-            1: { cellWidth: pageWidth - (margin * 2) - 60 }
-          }
-        });
-        // Destacar la URL si existe
-        if (newOrderData.productUrl) {
-          // Mejorar la sección de URL para que se vea integrada y profesional
-          // @ts-ignore
-          const finalY = (doc as any).lastAutoTable?.finalY + 12;
-          doc.setFontSize(10);
-          doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-          doc.text('URL del Producto:', margin, finalY + 6);
-          doc.setFontSize(10);
-          doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-          const urlText = doc.splitTextToSize(newOrderData.productUrl, pageWidth - (margin * 2));
-          doc.text(urlText, margin, finalY + 14);
+        // Datos para la tabla
+        const pedidoTable = [
+          ['ID Pedido', `${numeroPedido}`],
+          ['Cliente ID', `${newOrderData.client_id}`],
+          ['Nombre de Usuario', `${newOrderData.client_name || '-'}`],
+          ['Fecha', `${fechaPedidoLegible}`],
+          ['Tipo de Envío', `${newOrderData.deliveryType}`],
+          ['Entrega en Venezuela', `${newOrderData.deliveryVenezuela}`],
+          ['Producto', `${newOrderData.productName}`],
+          ['Cantidad', `${newOrderData.quantity}`],
+          ['Presupuesto Estimado', `$${newOrderData.estimatedBudget}`],
+          ['Descripción', newOrderData.description || '-'],
+          ['Especificaciones', newOrderData.specifications || '-'],
+        ];
+        if (newOrderData.requestType === 'link') {
+          // @ts-ignore (productUrl podría existir en el tipo extendido)
+          pedidoTable.push(['URL', newOrderData.productUrl || '-']);
         }
-      }
 
-      // === FOOTER PROFESIONAL ===
-      const footerY = pageHeight - 25;
-  // Footer profesional, compacto y alineado
-  doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
-  doc.setLineWidth(0.5);
-  doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
-  doc.setFontSize(9);
-  doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-  doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
-  doc.setFontSize(8);
-  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
-  doc.setFontSize(7);
-  doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-  doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
-  doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+        // === ENCABEZADO PROFESIONAL ===
+        doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.rect(0, 0, pageWidth, 35, 'F');
+        doc.setFontSize(12);
+        doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.setFont('helvetica', 'bold');
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
+        doc.text('PITA', margin + 10, 20, { align: 'center' });
+        doc.setFontSize(24);
+        doc.setTextColor(255, 255, 255);
+        doc.text('RESUMEN DE PEDIDO', pageWidth / 2, 22, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setTextColor(255, 255, 255);
+        doc.text(`Pedido: #${numeroPedido}`, pageWidth - margin, 15, { align: 'right' });
+        doc.text(`Fecha: ${fechaPedidoLegible}`, pageWidth - margin, 21, { align: 'right' });
 
-      // Subir PDF a Supabase Storage
-      const pdfBlob = doc.output('blob');
-      let folder: string = String(newOrderData.deliveryType);
-      // Usar el client_id actual (autenticado) para el PDF y pedido
-  const nombrePDFCorr = `${newOrderData.productName}_${fechaPedidoLegible}_${numeroPedido}_${clientId || ''}_${newOrderData.deliveryVenezuela}.pdf`;
-      supabase.storage
-        .from('orders')
-        .upload(`${folder}/${nombrePDFCorr}`, pdfBlob, {
-          cacheControl: '3600',
-          upsert: true,
-          contentType: 'application/pdf',
-        })
-        .then(async (result: any) => {
-          const { error } = result;
-          if (error) {
-            alert(`Error al subir el PDF al bucket: ${error.message || JSON.stringify(error)}`);
-            console.error('Supabase Storage upload error:', error);
-          } else {
-            // Log del resultado de la subida
-            console.log('Resultado de upload:', result);
-            // Construir el URL público manualmente
-            const pdfUrl = `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${folder}/${nombrePDFCorr}`;
-            console.log('pdfUrl:', pdfUrl);
+        let currentY = 50;
 
-            // Preparar payload para creación vía API (service role) evitando problemas RLS / constraints
-            const payload = {
-              client_id: clientId || '',
-              productName: newOrderData.productName,
-              description: newOrderData.description,
-              quantity: newOrderData.quantity,
-              estimatedBudget: Number(newOrderData.estimatedBudget),
-              deliveryType: newOrderData.deliveryVenezuela,
-              shippingType: newOrderData.deliveryType,
-              imgs: pdfUrl ? [pdfUrl] : [],
-              links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
-              pdfRoutes: pdfUrl,
-              state: 1,
-              order_origin: 'vzla'
-            };
-            console.log('Creando pedido vía API /api/admin/orders:', payload);
-            const apiRes = await fetch('/api/admin/orders', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            if (!apiRes.ok) {
-              let errMsg = `Status ${apiRes.status}`;
-              try {
-                const j = await apiRes.json();
-                if (j?.error) errMsg += ` - ${j.error}`;
-                if (j?.details) errMsg += ` | ${Array.isArray(j.details) ? j.details.join(', ') : j.details}`;
-              } catch { /* ignore */ }
-              console.error('Error creando pedido (cliente) vía API:', errMsg, payload);
-              alert('Error al guardar el pedido en la base de datos.\n' + errMsg);
-              return;
+        // === MANEJO POR TIPO DE PEDIDO ===
+        if (newOrderData.requestType === 'photo' && newOrderData.productImage) {
+          // Imagen y tabla lado a lado
+          const imgWidth = 80;
+          const imgHeight = 80;
+          const imgX = margin;
+          doc.setFillColor(240, 240, 240);
+          doc.roundedRect(imgX - 2, currentY - 2, imgWidth + 4, imgHeight + 4, 3, 3, 'F');
+          doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+            doc.setLineWidth(1);
+            doc.roundedRect(imgX, currentY, imgWidth, imgHeight, 2, 2, 'D');
+          const imgData = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.readAsDataURL(newOrderData.productImage as Blob);
+          });
+          doc.addImage(imgData, 'JPEG', imgX, currentY, imgWidth, imgHeight);
+          const tableStartX = imgX + imgWidth + 15;
+          const tableWidth = pageWidth - tableStartX - margin;
+          autoTable(doc, {
+            head: [['Campo', 'Valor']],
+            body: pedidoTable,
+            startY: currentY,
+            margin: { left: tableStartX, right: margin },
+            tableWidth: tableWidth,
+            theme: 'grid',
+            headStyles: {
+              fillColor: colors.primary,
+              textColor: [255, 255, 255],
+              fontStyle: 'bold',
+              fontSize: 12,
+              halign: 'center',
+              cellPadding: 3
+            },
+            bodyStyles: {
+              fontSize: 10,
+              cellPadding: 3,
+              textColor: colors.text
+            },
+            alternateRowStyles: {
+              fillColor: colors.light
+            },
+            columnStyles: {
+              0: { cellWidth: 50, fontStyle: 'bold', textColor: colors.secondary },
+              1: { cellWidth: tableWidth - 50 }
             }
-            const json = await apiRes.json().catch(() => null);
-            if (json?.warning === 'links_removed_due_to_constraint') {
-              console.warn('El link fue removido por constraint en la BD.');
+          });
+        } else if (newOrderData.requestType === 'link') {
+          // Tabla ocupando todo el ancho
+          doc.setFillColor(colors.light[0], colors.light[1], colors.light[2]);
+          doc.rect(margin, currentY, pageWidth - (margin * 2), 12, 'F');
+          doc.setFontSize(14);
+          doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+          doc.text('DETALLES DEL PEDIDO', margin + 5, currentY + 8);
+          currentY += 20;
+          autoTable(doc, {
+            head: [['Campo', 'Información']],
+            body: pedidoTable,
+            startY: currentY,
+            margin: { left: margin, right: margin },
+            theme: 'striped',
+            headStyles: {
+              fillColor: colors.primary,
+              textColor: [255, 255, 255],
+              fontStyle: 'bold',
+              fontSize: 12,
+              halign: 'center',
+              cellPadding: 4
+            },
+            bodyStyles: {
+              fontSize: 11,
+              cellPadding: 4,
+              textColor: colors.text
+            },
+            alternateRowStyles: {
+              fillColor: colors.light
+            },
+            columnStyles: {
+              0: { cellWidth: 60, fontStyle: 'bold', textColor: colors.secondary },
+              1: { cellWidth: pageWidth - (margin * 2) - 60 }
             }
-            setShowSuccessAnimation(true);
-            setTimeout(() => {
-              setIsNewOrderModalOpen(false);
-              setCurrentStep(1);
-              setNewOrderData({
-                productName: '',
-                description: '',
-                quantity: 1,
-                specifications: '',
-                requestType: 'link',
-                deliveryType: '',
-                deliveryVenezuela: '',
-                estimatedBudget: '',
-                client_id: ''
-              });
-            }, 1500);
-            // Refrescar desde BD para mostrar el pedido real
-            fetchOrders();
+          });
+          // Destacar la URL si existe
+          // @ts-ignore
+          if (newOrderData.productUrl) {
+            const finalY = (doc as any).lastAutoTable?.finalY + 12;
+            doc.setFontSize(10);
+            doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+            doc.text('URL del Producto:', margin, finalY + 6);
+            doc.setFontSize(10);
+            doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+            // @ts-ignore
+            const urlText = doc.splitTextToSize(newOrderData.productUrl, pageWidth - (margin * 2));
+            doc.text(urlText, margin, finalY + 14);
           }
+        }
+
+        // === FOOTER PROFESIONAL ===
+        const footerY = pageHeight - 25;
+        doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+        doc.setLineWidth(0.5);
+        doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+        doc.setFontSize(9);
+        doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+        doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
+        doc.setFontSize(8);
+        doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
+        doc.setFontSize(7);
+        doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+        doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+        doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+
+        // Subir PDF a Supabase Storage con nombre sanitizado
+        const pdfBlob = doc.output('blob');
+        const safeProduct = sanitizeForFile(newOrderData.productName);
+        const safeClient = sanitizeForFile(clientId || newOrderData.client_id);
+        const safeDeliveryVzla = sanitizeForFile(newOrderData.deliveryVenezuela);
+        const safeDeliveryType = sanitizeForFile(newOrderData.deliveryType);
+        const nombrePDFCorr = `${safeProduct}_${fechaPedidoLegible}_${numeroPedido}_${safeClient}_${safeDeliveryVzla}.pdf`;
+        const folder = safeDeliveryType || 'otros';
+        const uploadKey = `${folder}/${nombrePDFCorr}`;
+
+        const doUpload = async (key: string) => {
+          return await supabase.storage
+            .from('orders')
+            .upload(key, pdfBlob, {
+              cacheControl: '3600',
+              upsert: true,
+              contentType: 'application/pdf'
+            });
+        };
+
+        let uploadResult = await doUpload(uploadKey);
+        if (uploadResult.error && /Invalid key/i.test(uploadResult.error.message || '')) {
+          console.warn('Upload falló por Invalid key, aplicando sanitización extra y reintentando.');
+          const ultraKey = uploadKey
+            .replace(/[^a-zA-Z0-9/_\-.]/g, '')
+            .replace(/--+/g, '-');
+          uploadResult = await doUpload(ultraKey);
+          if (!uploadResult.error) {
+            console.log('Upload exitoso tras retry con key:', ultraKey);
+          }
+        }
+
+        if (uploadResult.error) {
+          console.error('Supabase Storage upload error:', uploadResult.error);
+          toast({ title: 'Error subiendo PDF', description: uploadResult.error.message || 'No se pudo subir el archivo.', variant: 'destructive', duration: 5000 });
+          alert(`Error al subir el PDF al bucket: ${uploadResult.error.message}`);
+          return;
+        }
+
+        const finalKey = uploadResult.data?.path || uploadKey;
+        const pdfUrl = `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${finalKey}`;
+        console.log('pdfUrl:', pdfUrl);
+
+        // Preparar payload para creación vía API (service role)
+        const payload = {
+          client_id: clientId || '',
+          productName: newOrderData.productName,
+          description: newOrderData.description,
+          quantity: newOrderData.quantity,
+          estimatedBudget: Number(newOrderData.estimatedBudget),
+          deliveryType: newOrderData.deliveryVenezuela,
+          shippingType: newOrderData.deliveryType,
+          // @ts-ignore
+          imgs: pdfUrl ? [pdfUrl] : [],
+          // @ts-ignore
+          links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
+          pdfRoutes: pdfUrl,
+          state: 1,
+          order_origin: 'vzla'
+        };
+        console.log('Creando pedido vía API /api/admin/orders:', payload);
+        const apiRes = await fetch('/api/admin/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
+        if (!apiRes.ok) {
+          let errMsg = `Status ${apiRes.status}`;
+          try {
+            const j = await apiRes.json();
+            if (j?.error) errMsg += ` - ${j.error}`;
+            if (j?.details) errMsg += ` | ${Array.isArray(j.details) ? j.details.join(', ') : j.details}`;
+          } catch {/* ignore */}
+          console.error('Error creando pedido (cliente) vía API:', errMsg, payload);
+          toast({ title: 'Error creando pedido', description: errMsg, variant: 'destructive', duration: 6000 });
+          alert('Error al guardar el pedido en la base de datos.\n' + errMsg);
+          return;
+        }
+        const json = await apiRes.json().catch(() => null);
+        if (json?.warning === 'links_removed_due_to_constraint') {
+          console.warn('El link fue removido por constraint en la BD.');
+        }
+        setShowSuccessAnimation(true);
+        setTimeout(() => {
+          setIsNewOrderModalOpen(false);
+          setCurrentStep(1);
+          setNewOrderData({
+            productName: '',
+            description: '',
+            quantity: 1,
+            specifications: '',
+            requestType: 'link',
+            deliveryType: '',
+            deliveryVenezuela: '',
+            estimatedBudget: '',
+            client_id: ''
+          });
+        }, 1500);
+        fetchOrders();
+      } catch (err: any) {
+        console.error('Error general generando / subiendo PDF o creando pedido:', err);
+        toast({ title: 'Error generando pedido', description: err?.message || 'Fallo inesperado al generar PDF.', variant: 'destructive', duration: 6000 });
+        alert('No se pudo generar o subir el PDF. Intenta nuevamente.');
+      }
     })();
   };
 

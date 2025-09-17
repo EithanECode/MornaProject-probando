@@ -515,7 +515,7 @@
   "max7DigitsHint": "（最多 7 位整数）",
         "summaryTitle": "订单摘要",
         "almostReady": "快完成了！",
-        "reviewMessage": "你的请求将由我们的团队审核，你将在接下来的 24 小时内收到报价。",
+        "reviewMessage": "你的请求将由我们的团队审核，你将在接下来的 48 小时内收到报价。",
         "transitioning": "转换中...",
         "previous": "上一步",
         "next": "下一步",
