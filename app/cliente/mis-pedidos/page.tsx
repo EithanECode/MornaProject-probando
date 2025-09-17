@@ -28,34 +28,30 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Package, 
-  Truck, 
-  CheckCircle, 
-  Clock, 
-  DollarSign, 
-  MapPin, 
-  MessageSquare, 
-  Eye, 
-  Search, 
-  Plus,
-  ArrowLeft,
-  ArrowRight,
-  Plane,
-  Ship,
-  Camera,
+import {
+  Package,
   Link,
   Upload,
   Check,
   FileText,
   Hash,
   Settings,
-  Image,
+  Image as ImageIcon,
   Target,
   X,
-  Filter
-  ,Download
-  ,QrCode
+  Filter,
+  Download,
+  QrCode,
+  CheckCircle,
+  ArrowLeft,
+  ArrowRight,
+  Clock,
+  Truck,
+  MapPin,
+  DollarSign,
+  Search,
+  Eye,
+  Plus
 } from 'lucide-react';
 
 // Rutas de animaciones Lottie (desde /public)
@@ -103,7 +99,8 @@ interface NewOrderData {
   requestType: 'link' | 'photo';
   productUrl?: string;
   productImage?: File;
-  deliveryType: 'doorToDoor' | 'air' | 'maritime';
+  // deliveryType ya no autoselecciona doorToDoor; se limita a 'air' | 'maritime'. Vacío indica no seleccionado.
+  deliveryType: '' | 'air' | 'maritime';
   deliveryVenezuela: string;
   estimatedBudget: string;
   client_id: string;
@@ -246,12 +243,14 @@ export default function MisPedidosPage() {
     quantity: 1,
     specifications: '',
     requestType: 'link',
-    deliveryType: 'doorToDoor',
+  deliveryType: '',
     deliveryVenezuela: '',
     estimatedBudget: '',
     client_id: '',
     client_name: ''
   });
+  // Marca si el usuario intentó avanzar el Paso 1 con datos inválidos
+  const [attemptedStep1, setAttemptedStep1] = useState(false);
 
   // Obtener el user_id del usuario autenticado
   useEffect(() => {
@@ -741,22 +740,29 @@ export default function MisPedidosPage() {
   };
 
   const handleNextStep = () => {
-    if (currentStep < 3 && !isTransitioning) {
+    if (isTransitioning) return;
+    // Validar manualmente Paso 1 antes de avanzar
+    if (currentStep === 1) {
+      const valid = canProceedToNext();
+      if (!valid) {
+        if (!attemptedStep1) setAttemptedStep1(true);
+        // Scroll al inicio para que vea los campos marcados
+        if (modalRef.current) {
+          modalRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        return; // no avanzar
+      }
+    }
+    if (currentStep < 3) {
       setStepDirection('next');
       setIsTransitioning(true);
-      
-      // Scroll suave hacia arriba del modal con delay para mejor UX
       setTimeout(() => {
         if (modalRef.current) {
-          modalRef.current.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
+          modalRef.current.scrollTo({ top: 0, behavior: 'smooth' });
         }
-      }, 150);
-      
+      }, 120);
       setTimeout(() => {
-        setCurrentStep(currentStep + 1);
+        setCurrentStep(prev => prev + 1);
         setIsTransitioning(false);
       }, 300);
     }
@@ -970,7 +976,6 @@ export default function MisPedidosPage() {
       // Subir PDF a Supabase Storage
       const pdfBlob = doc.output('blob');
       let folder: string = String(newOrderData.deliveryType);
-      if (folder === 'doorToDoor') folder = 'door-to-door';
       // Usar el client_id actual (autenticado) para el PDF y pedido
   const nombrePDFCorr = `${newOrderData.productName}_${fechaPedidoLegible}_${numeroPedido}_${clientId || ''}_${newOrderData.deliveryVenezuela}.pdf`;
       supabase.storage
@@ -1038,7 +1043,7 @@ export default function MisPedidosPage() {
                 quantity: 1,
                 specifications: '',
                 requestType: 'link',
-                deliveryType: 'doorToDoor',
+                deliveryType: '',
                 deliveryVenezuela: '',
                 estimatedBudget: '',
                 client_id: ''
@@ -1132,17 +1137,18 @@ export default function MisPedidosPage() {
   const canProceedToNext = () => {
     switch (currentStep) {
       case 1:
-  if (!newOrderData.productName || !newOrderData.description) return false;
-  if (newOrderData.productName.length > NAME_MAX) return false;
-  if (newOrderData.description.length > DESCRIPTION_MAX) return false;
+        if (!newOrderData.productName || !newOrderData.description) return false;
+        if (newOrderData.productName.length > NAME_MAX) return false;
+        if (newOrderData.description.length > DESCRIPTION_MAX) return false;
         if (!isValidQuantity(newOrderData.quantity)) return false;
+        if (newOrderData.requestType === 'photo' && !newOrderData.specifications.trim()) return false;
         if (newOrderData.requestType === 'link') {
           if (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) return false;
         }
         return true;
       case 2:
+        // Ahora sólo requerimos tipo de envío y modalidad/pickup (deliveryVenezuela). El presupuesto estimado es opcional.
         if (!newOrderData.deliveryType || !newOrderData.deliveryVenezuela) return false;
-        if (!isValidBudget(newOrderData.estimatedBudget)) return false;
         return true;
       case 3:
         return true;
@@ -1331,7 +1337,7 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="productName" className="text-sm font-semibold text-slate-700 flex items-center">
                           <Package className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.productName')}
+                          {t('client.recentOrders.newOrder.productName')}<span className="text-red-500 ml-1">*</span>
                         </Label>
                         <div className="relative group">
                           <Input
@@ -1340,7 +1346,7 @@ export default function MisPedidosPage() {
                             onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value.slice(0, NAME_MAX) })}
                             placeholder={t('client.recentOrders.newOrder.productNamePlaceholder')}
                             maxLength={NAME_MAX}
-                            className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
+                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300 ${attemptedStep1 && !newOrderData.productName.trim() ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                           />
                           <p className="text-xs text-slate-500 mt-1">{newOrderData.productName.length}/{NAME_MAX}</p>
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -1350,7 +1356,7 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="description" className="text-sm font-semibold text-slate-700 flex items-center">
                           <FileText className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.productDescription')}
+                          {t('client.recentOrders.newOrder.productDescription')}<span className="text-red-500 ml-1">*</span>
                         </Label>
                         <div className="relative group">
                           <Textarea
@@ -1360,7 +1366,7 @@ export default function MisPedidosPage() {
                             placeholder={t('client.recentOrders.newOrder.productDescriptionPlaceholder')}
                             rows={4}
                             maxLength={DESCRIPTION_MAX}
-                            className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
+                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300 ${attemptedStep1 && !newOrderData.description.trim() ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                           />
                           <p className="text-xs text-slate-500 mt-1">{newOrderData.description.length}/{DESCRIPTION_MAX}</p>
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -1370,7 +1376,7 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="quantity" className="text-sm font-semibold text-slate-700 flex items-center">
                           <Hash className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.quantity')}
+                          {t('client.recentOrders.newOrder.quantity')}<span className="text-red-500 ml-1">*</span>
                         </Label>
                         <div className="relative group">
                           <Input
@@ -1388,7 +1394,7 @@ export default function MisPedidosPage() {
                                 setNewOrderData({ ...newOrderData, quantity: next });
                               }
                             }}
-                            className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
+                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300 ${attemptedStep1 && (!isValidQuantity(newOrderData.quantity) || newOrderData.quantity <= 0) ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                           />
                           {(!isValidQuantity(newOrderData.quantity) || newOrderData.quantity <= 0) && (
                             <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidQuantity')} ({QTY_MIN}–{QTY_MAX})</p>
@@ -1400,7 +1406,7 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="specifications" className="text-sm font-semibold text-slate-700 flex items-center">
                           <Settings className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.specifications')}
+                          {t('client.recentOrders.newOrder.specifications')}{newOrderData.requestType === 'photo' && <span className="text-red-500 ml-1">*</span>}
                         </Label>
                         <div className="relative group">
                           <Textarea
@@ -1409,8 +1415,11 @@ export default function MisPedidosPage() {
                             onChange={(e) => setNewOrderData({ ...newOrderData, specifications: e.target.value })}
                             placeholder={t('client.recentOrders.newOrder.specificationsPlaceholder')}
                             rows={3}
-                            className="transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300"
+                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300 ${attemptedStep1 && newOrderData.requestType === 'photo' && !newOrderData.specifications.trim() ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                           />
+                          {attemptedStep1 && newOrderData.requestType === 'photo' && !newOrderData.specifications.trim() && (
+                            <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.requiredField') || 'Campo requerido'}</p>
+                          )}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
@@ -1419,7 +1428,7 @@ export default function MisPedidosPage() {
                       <div className="space-y-4">
                         <Label className="text-sm font-semibold text-slate-700 flex items-center">
                           <Target className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.requestType')}
+                          {t('client.recentOrders.newOrder.requestType')}<span className="text-red-500 ml-1">*</span>
                         </Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div
@@ -1478,20 +1487,20 @@ export default function MisPedidosPage() {
 
                         {newOrderData.requestType === 'link' && (
                           <div className="space-y-2">
-                            <Label htmlFor="productUrl">{t('client.recentOrders.newOrder.productUrl')}</Label>
+                            <Label htmlFor="productUrl" className="flex items-center gap-1">{t('client.recentOrders.newOrder.productUrl')}<span className="text-red-500">*</span></Label>
                             <Input
                               id="productUrl"
                               type="url"
                               value={newOrderData.productUrl || ''}
                               onChange={(e) => setNewOrderData({ ...newOrderData, productUrl: e.target.value })}
                               placeholder={t('client.recentOrders.newOrder.productUrlPlaceholder')}
-                              className={`transition-all duration-200 focus:ring-2 focus:ring-blue-500 ${
-                                newOrderData.requestType === 'link' && !newOrderData.productUrl ? 'border-red-300 focus:ring-red-500' : ''
-                              }`}
+                              className={`transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 ${attemptedStep1 && (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                             />
-
                             {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (
                               <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidUrl')}</p>
+                            )}
+                            {attemptedStep1 && !newOrderData.productUrl && (
+                              <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.requiredField') || 'Campo requerido'}</p>
                             )}
                           </div>
                         )}
@@ -1499,8 +1508,8 @@ export default function MisPedidosPage() {
                         {newOrderData.requestType === 'photo' && (
                           <div className="space-y-3">
                             <Label className="text-sm font-semibold text-slate-700 flex items-center">
-                              <Image className="w-4 h-4 mr-2 text-blue-600" />
-                              {t('client.recentOrders.newOrder.productImage')}
+                              <ImageIcon className="w-4 h-4 mr-2 text-blue-600" />
+                              {t('client.recentOrders.newOrder.productImage')}<span className="text-red-500 ml-1">*</span>
                             </Label>
                             {newOrderData.productImage ? (
                               <div className="relative">
@@ -1551,31 +1560,7 @@ export default function MisPedidosPage() {
                     <div className="space-y-6">
                       <div className="space-y-4">
                         <Label>{t('client.recentOrders.newOrder.deliveryType')}</Label>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div
-                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                              newOrderData.deliveryType === 'doorToDoor'
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-slate-200 hover:border-slate-300'
-                            }`}
-                            onClick={() => setNewOrderData({ ...newOrderData, deliveryType: 'doorToDoor' })}
-                            onMouseEnter={() => setHoveredDeliveryOption('doorToDoor')}
-                            onMouseLeave={() => setHoveredDeliveryOption(null)}
-                          >
-                            <div className="text-center space-y-2">
-                              <div className="w-8 h-8 mx-auto">
-                                <Player
-                                  key={hoveredDeliveryOption === 'doorToDoor' ? 'truck-active' : 'truck-inactive'}
-                                  src={truckLottie}
-                                  className="w-full h-full"
-                                  loop={false}
-                                  autoplay={hoveredDeliveryOption === 'doorToDoor'}
-                                />
-                              </div>
-                              <p className="font-medium">{t('client.recentOrders.newOrder.doorToDoor')}</p>
-                              <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.doorToDoorDesc')}</p>
-                            </div>
-                          </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div
                             className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
                               newOrderData.deliveryType === 'air'
@@ -1636,33 +1621,8 @@ export default function MisPedidosPage() {
                           <SelectContent>
                             <SelectItem value="pickup">{t('client.recentOrders.newOrder.pickup')}</SelectItem>
                             <SelectItem value="delivery">{t('client.recentOrders.newOrder.delivery')}</SelectItem>
-                            <SelectItem value="express">{t('client.recentOrders.newOrder.express')}</SelectItem>
                           </SelectContent>
                         </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="estimatedBudget">{t('client.recentOrders.newOrder.estimatedBudget')}</Label>
-                        <Input
-                          id="estimatedBudget"
-                          type="text"
-                          inputMode="decimal"
-                          value={newOrderData.estimatedBudget}
-                          onChange={(e) => {
-                            let val = e.target.value.replace(/,/g, '');
-                            if (!/^\d*(?:\.\d{0,2})?$/.test(val)) return;
-                            const [intPart = ''] = val.split('.');
-                            if (intPart.length > 7) return;
-                            const num = Number(val || '0');
-                            if (num > BUDGET_MAX) return;
-                            setNewOrderData({ ...newOrderData, estimatedBudget: val });
-                          }}
-                          placeholder={t('client.recentOrders.newOrder.estimatedBudgetPlaceholder')}
-                          className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
-                        />
-                        {newOrderData.estimatedBudget && !isValidBudget(newOrderData.estimatedBudget) && (
-                          <p className="text-xs text-red-500">{t('client.recentOrders.newOrder.invalidBudget')} {t('client.recentOrders.newOrder.max7DigitsHint')}</p>
-                        )}
                       </div>
                     </div>
                   )}
@@ -1685,14 +1645,10 @@ export default function MisPedidosPage() {
                           <div className="space-y-2">
                             <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.deliveryType')}</p>
                             <p className="font-medium">
-                              {newOrderData.deliveryType === 'doorToDoor' && t('client.recentOrders.newOrder.doorToDoor')}
+                              {/* doorToDoor deprecated: removed */}
                               {newOrderData.deliveryType === 'air' && t('client.recentOrders.newOrder.air')}
                               {newOrderData.deliveryType === 'maritime' && t('client.recentOrders.newOrder.maritime')}
                             </p>
-                          </div>
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.estimatedBudget')}</p>
-                            <p className="font-medium">${newOrderData.estimatedBudget}</p>
                           </div>
                         </div>
 
