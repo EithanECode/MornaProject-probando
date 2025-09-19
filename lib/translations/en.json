@@ -1869,7 +1869,8 @@
         "view": "View",
         "approve": "Approve",
         "reject": "Reject",
-        "undo": "Undo"
+        "undo": "Undo",
+        "send": "Send"
       },
       "table": {
         "pendingApprovalTitle": "Payments Pending Approval",
@@ -1934,12 +1935,16 @@
         "approvedTitle": "Payment approved",
         "approvedDesc": "Payment {{id}} has been approved successfully.",
         "rejectedTitle": "Payment rejected",
-        "rejectedDesc": "Payment {{id}} has been rejected."
+        "rejectedDesc": "Payment {{id}} has been rejected.",
+        "sentTitle": "Shipment registered",
+        "sentDesc": "Order {{id}} marked as sent to China"
       },
       "status": {
         "completado": "Completed",
         "pendiente": "Pending",
-        "rechazado": "Rejected"
+        "rechazado": "Rejected",
+        "sendChina": "Sent to China",
+        "sentChina": "Sent to China"
       },
       "export": {
         "sheetName": "Payments",
