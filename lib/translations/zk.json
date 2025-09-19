@@ -1838,7 +1838,7 @@
         "retry": "重试"
       },
       "stats": {
-        "totalSpent": "总支出",
+        "totalSpent": "总计",
         "totalPayments": "总支付",
         "completed": "已完成",
         "pending": "待处理"

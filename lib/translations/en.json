@@ -1844,7 +1844,7 @@
         "retry": "Retry"
       },
       "stats": {
-        "totalSpent": "Total Spent",
+        "totalSpent": "Total",
         "totalPayments": "Total Payments",
         "completed": "Completed",
         "pending": "Pending"

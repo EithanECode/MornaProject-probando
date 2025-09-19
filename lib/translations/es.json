@@ -2190,7 +2190,7 @@
         "retry": "Reintentar"
       },
       "stats": {
-        "totalSpent": "Total Gastado",
+        "totalSpent": "Total",
         "totalPayments": "Total Pagos",
         "completed": "Completados",
         "pending": "Pendientes"
