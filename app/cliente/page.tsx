@@ -81,11 +81,11 @@ const QUICK_ACTIONS = (t: TFunction) => ([
     title: t('client.quickActions.trackOrder'),
     description: t('client.quickActions.trackOrderDesc'),
     icon: Truck,
-    color: 'bg-green-500',
-    bgColor: 'bg-green-100',
-    textColor: 'text-green-600',
-    hoverBg: 'hover:bg-green-50',
-    hoverBorder: 'hover:border-green-300',
+    color: 'bg-orange-500',
+    bgColor: 'bg-orange-100',
+    textColor: 'text-orange-600',
+    hoverBg: 'hover:bg-orange-50',
+    hoverBorder: 'hover:border-orange-300',
     href: '/cliente/tracking'
   },
   {
@@ -93,11 +93,11 @@ const QUICK_ACTIONS = (t: TFunction) => ([
     title: t('client.quickActions.support'),
     description: t('client.quickActions.supportDesc'),
     icon: MessageSquare,
-    color: 'bg-purple-500',
-    bgColor: 'bg-purple-100',
-    textColor: 'text-purple-600',
-    hoverBg: 'hover:bg-purple-50',
-    hoverBorder: 'hover:border-purple-300',
+    color: 'bg-blue-500',
+    bgColor: 'bg-blue-100',
+    textColor: 'text-blue-600',
+    hoverBg: 'hover:bg-blue-50',
+    hoverBorder: 'hover:border-blue-300',
     href: '/cliente/soporte'
   },
   {
@@ -258,7 +258,7 @@ export default function DashboardPage() {
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
           {/* Header del Dashboard con Bienvenida */}
-          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-500 via-blue-600 to-orange-500 rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
@@ -281,7 +281,7 @@ export default function DashboardPage() {
           <div className="space-y-6 md:space-y-6 lg:space-y-8">
             {/* Estadísticas Principales */}
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
-              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-blue-800">{t('client.dashboard.totalOrders')}</CardTitle>
                   <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
@@ -297,39 +297,39 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className="bg-orange-50 border-orange-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-yellow-800">{t('client.dashboard.pending')}</CardTitle>
-                  <div className="p-2 bg-yellow-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <CardTitle className="text-sm font-medium text-orange-800">{t('client.dashboard.pending')}</CardTitle>
+                  <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Clock className="h-4 w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-900">{pedidosPendientes}</div>
-                  <p className="text-xs text-yellow-700">{t('client.dashboard.ordersInProcess')}</p>
-                  <div className="mt-2 w-full bg-yellow-200 rounded-full h-2">
-                    <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / totalPedidos) * 100}%`}}></div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{pedidosPendientes}</div>
+                  <p className="text-xs text-orange-700">{t('client.dashboard.ordersInProcess')}</p>
+                  <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
+                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / totalPedidos) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-green-800">{t('client.dashboard.inTransit')}</CardTitle>
-                  <div className="p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <CardTitle className="text-sm font-medium text-blue-800">{t('client.dashboard.inTransit')}</CardTitle>
+                  <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Truck className="h-4 w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{pedidosEnTransito}</div>
-                  <p className="text-xs text-green-700">{t('client.dashboard.activeShipmentsShort')}</p>
-                  <div className="mt-2 w-full bg-green-200 rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full" style={{width: `${(pedidosEnTransito / totalPedidos) * 100}%`}}></div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{pedidosEnTransito}</div>
+                  <p className="text-xs text-blue-700">{t('client.dashboard.activeShipmentsShort')}</p>
+                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosEnTransito / totalPedidos) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className="bg-orange-50 border-orange-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-orange-800">{t('client.dashboard.completed')}</CardTitle>
                   <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
@@ -345,18 +345,18 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-purple-800">{t('client.dashboard.totalSpent')}</CardTitle>
-                  <div className="p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <CardTitle className="text-sm font-medium text-blue-800">{t('client.dashboard.totalSpent')}</CardTitle>
+                  <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                     <DollarSign className="h-4 w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">${totalGastado}</div>
-                  <p className="text-xs text-purple-700">{t('client.dashboard.totalInvestment')}</p>
-                  <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
-                    <div className="bg-purple-500 h-2 rounded-full" style={{width: `100%`}}></div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">${totalGastado}</div>
+                  <p className="text-xs text-blue-700">{t('client.dashboard.totalInvestment')}</p>
+                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `100%`}}></div>
                   </div>
                 </CardContent>
               </Card>

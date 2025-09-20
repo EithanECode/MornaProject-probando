@@ -80,7 +80,7 @@ const CLIENT_MENU_ITEMS = [
     id: 'dashboard',
     icon: LayoutDashboard,
     badge: null,
-    color: 'text-blue-500',
+    color: 'text-orange-500',
     path: '/cliente'
   },
   {
@@ -94,14 +94,14 @@ const CLIENT_MENU_ITEMS = [
     id: 'payments',
     icon: CreditCard,
   badge: null,
-    color: 'text-red-500',
+    color: 'text-orange-500',
     path: '/cliente/pagos'
   },
   {
     id: 'support',
     icon: MessageCircle,
     badge: null,
-    color: 'text-green-500',
+    color: 'text-orange-500',
     path: '/cliente/soporte'
   }
 ];
@@ -111,7 +111,7 @@ const VENEZUELA_MENU_ITEMS = [
     id: 'dashboard',
     icon: LayoutDashboard,
     badge: null,
-    color: 'text-blue-500',
+    color: 'text-orange-500',
     path: '/venezuela'
   },
   {
@@ -125,21 +125,21 @@ const VENEZUELA_MENU_ITEMS = [
     id: 'support',
     icon: MessageCircle,
   badge: null,
-    color: 'text-green-500',
+    color: 'text-orange-500',
     path: '/venezuela/soporte'
   },
   {
     id: 'payments-validation',
     icon: BadgeDollarSign,
     badge: null,
-    color: 'text-emerald-500',
+    color: 'text-orange-500',
     path: '/venezuela/validacion-pagos'
   },
   {
     id: 'reports',
     icon: BarChart3,
     badge: null,
-    color: 'text-indigo-500',
+    color: 'text-orange-500',
     path: '/venezuela/reportes'
   }
 ];
@@ -149,7 +149,7 @@ const CHINA_MENU_ITEMS = [
     id: 'dashboard',
     icon: LayoutDashboard,
     badge: null,
-    color: 'text-blue-500',
+    color: 'text-orange-500',
     path: '/china'
   },
   {
@@ -166,21 +166,21 @@ const PAGOS_MENU_ITEMS = [
     id: 'dashboard',
     icon: LayoutDashboard,
     badge: null,
-    color: 'text-blue-500',
+    color: 'text-orange-500',
     path: '/pagos'
   },
   {
     id: 'payments-validation',
     icon: Shield,
     badge: 15,
-    color: 'text-green-500',
+    color: 'text-orange-500',
     path: '/validacion-pagos'
   },
   {
     id: 'transactions',
     icon: CreditCard,
     badge: null,
-    color: 'text-purple-500',
+    color: 'text-orange-500',
     path: '/pagos/transacciones'
   },
   {
@@ -198,7 +198,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
     label: t && typeof t === 'function' ? t('sidebar.dashboard') : 'Dashboard',
     icon: LayoutDashboard,
     badge: null,
-    color: 'text-blue-500',
+    color: 'text-orange-500',
     path: '/admin'
   },
   {
@@ -206,7 +206,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
     label: t && typeof t === 'function' ? t('sidebar.users') : 'Usuarios',
     icon: Users,
     badge: null,
-    color: 'text-green-500',
+    color: 'text-orange-500',
     path: '/admin/usuarios'
   },
   {
@@ -222,7 +222,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
     label: t && typeof t === 'function' ? t('sidebar.payments-validation') : 'Validación de pagos',
     icon: BadgeDollarSign,
     badge: null,
-    color: 'text-emerald-500',
+    color: 'text-orange-500',
     path: '/admin/validacion-pagos'
   },
   {
@@ -230,7 +230,7 @@ const getAdminMenuItems = (t: (key: string) => string) => [
     label: t && typeof t === 'function' ? t('sidebar.management') : 'Gestión',
     icon: Settings,
     badge: null,
-    color: 'text-gray-500',
+    color: 'text-orange-500',
     path: '/admin/gestion'
   }
 ];
@@ -247,7 +247,7 @@ const getBottomItemsByRole = (role?: string) => {
     {
       id: 'settings',
       icon: Settings,
-      color: 'text-gray-500',
+      color: 'text-orange-500',
       path: `${basePath}/configuracion`
     }
   ];

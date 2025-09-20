@@ -178,6 +178,69 @@ body, html, * {
     background: linear-gradient(#1e3a8a, #1e3a8a) padding-box,
                 linear-gradient(135deg, #3b82f6, #f97316) border-box;
   }
+
+  /* Estilos específicos para el contenido principal (no sidebar) */
+  .content-card {
+    background: linear-gradient(135deg, #dbeafe, #fed7aa);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+
+  .content-button-primary {
+    background: linear-gradient(135deg, #3b82f6, #f97316);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .content-button-primary:hover {
+    background: linear-gradient(135deg, #2563eb, #ea580c);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .content-button-secondary {
+    background: linear-gradient(135deg, #60a5fa, #fb923c);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .content-button-secondary:hover {
+    background: linear-gradient(135deg, #3b82f6, #f97316);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  }
+
+  .content-input {
+    background: rgba(219, 234, 254, 0.5);
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .content-input:focus {
+    border-color: #3b82f6;
+    background: rgba(219, 234, 254, 0.8);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .content-badge {
+    background: linear-gradient(135deg, #3b82f6, #f97316);
+    color: white;
+  }
+
+  .content-alert {
+    background: linear-gradient(135deg, #dbeafe, #fed7aa);
+    border-left: 4px solid #3b82f6;
+  }
+
+  .content-table-header {
+    background: linear-gradient(135deg, #3b82f6, #f97316);
+    color: white;
+  }
+
+  .content-table-row:hover {
+    background: rgba(219, 234, 254, 0.3);
+  }
 }
 
 :root {
@@ -200,9 +263,9 @@ body, html, * {
   :root {
     --background: 0 0% 100%;
     --foreground: 221 83% 15%;
-    --card: 0 0% 100%;
+    --card: 217 91% 98%;
     --card-foreground: 221 83% 15%;
-    --popover: 0 0% 100%;
+    --popover: 217 91% 98%;
     --popover-foreground: 221 83% 15%;
     --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
@@ -227,9 +290,9 @@ body, html, * {
   .dark {
     --background: 221 83% 8%;
     --foreground: 217 32% 95%;
-    --card: 221 83% 12%;
+    --card: 221 83% 15%;
     --card-foreground: 217 32% 95%;
-    --popover: 221 83% 12%;
+    --popover: 221 83% 15%;
     --popover-foreground: 217 32% 95%;
     --primary: 217 91% 65%;
     --primary-foreground: 221 83% 8%;

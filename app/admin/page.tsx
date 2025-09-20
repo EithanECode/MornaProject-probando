@@ -142,7 +142,7 @@ export default function AdminDashboard() {
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
           {/* Header del Dashboard con Bienvenida */}
-          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-500 via-blue-600 to-orange-500 rounded-2xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
           <div className="space-y-8">
             {/* Estadísticas Principales */}
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs md:text-sm font-medium text-blue-800">{t('admin.dashboard.stats.totalUsers')}</CardTitle>
                   <div className="p-1.5 md:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
@@ -181,33 +181,33 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className="bg-orange-50 border-orange-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-green-800">{t('admin.dashboard.stats.activeOrders')}</CardTitle>
-                  <div className="p-1.5 md:p-2 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <CardTitle className="text-xs md:text-sm font-medium text-orange-800">{t('admin.dashboard.stats.activeOrders')}</CardTitle>
+                  <div className="p-1.5 md:p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Package className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-green-900">{totalPedidos}</div>
-                  <p className="text-xs text-green-700">{t('admin.dashboard.stats.inProcess')}</p>
-                  <div className="mt-2 w-full bg-green-200 rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full" style={{width: `${(stats.activeOrders / 200) * 100}%`}}></div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{totalPedidos}</div>
+                  <p className="text-xs text-orange-700">{t('admin.dashboard.stats.inProcess')}</p>
+                  <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
+                    <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(stats.activeOrders / 200) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-purple-800">{t('admin.dashboard.stats.totalRevenue')}</CardTitle>
-                  <div className="p-1.5 md:p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                  <CardTitle className="text-xs md:text-sm font-medium text-blue-800">{t('admin.dashboard.stats.totalRevenue')}</CardTitle>
+                  <div className="p-1.5 md:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                     <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{totalIngresos}$</div>
-                  <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
-                    <div className="bg-purple-500 h-2 rounded-full" style={{width: '85%'}}></div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{totalIngresos}$</div>
+                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: '85%'}}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -232,17 +232,17 @@ export default function AdminDashboard() {
                     </Button>
                   </Link>
                   <Link href="/admin/configuracion">
-                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-green-50 hover:border-green-300 transition-all duration-300 group w-full">
-                      <div className="p-2 md:p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
-                        <Settings className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
+                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-orange-50 hover:border-orange-300 transition-all duration-300 group w-full">
+                      <div className="p-2 md:p-3 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors">
+                        <Settings className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
                       </div>
                       <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.configuration')}</span>
                     </Button>
                   </Link>
                   <Link href="/admin/pedidos">
-                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-orange-50 hover:border-orange-300 transition-all duration-300 group w-full">
-                      <div className="p-2 md:p-3 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors">
-                        <Package className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
+                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
+                      <div className="p-2 md:p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                        <Package className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
                       </div>
                       <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.orders')}</span>
                     </Button>
