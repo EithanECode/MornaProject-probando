@@ -1521,6 +1521,7 @@
   },
   "common": {
     "save": "保存更改",
+    "saving": "保存中...",
     "cancel": "取消",
     "edit": "编辑",
     "delete": "删除",
@@ -1788,6 +1789,21 @@
         "exportPdf": "导出为 PDF",
         "exportPdfShort": "PDF",
         "send": "发送"
+      },
+      "edit": {
+        "title": "编辑订单",
+        "fields": {
+          "title": "资质",
+          "quantity": "数量",
+          "description": "描述",
+          "specifications": "规格",
+          "url":"产品网址"
+        },
+        "placeholders": {
+          "title": "订单标题",
+          "description": "订单说明",
+          "specifications": "订购规格"
+        }
       }
     },
     "soporte": {
