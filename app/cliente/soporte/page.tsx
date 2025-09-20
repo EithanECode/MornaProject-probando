@@ -250,8 +250,8 @@ export default function ClienteSoporte() {
           
           <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
             {/* Header de la página con animación */}
-            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-4 md:p-6 text-white relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 animate-pulse"></div>
+            <div className="bg-gradient-to-r from-blue-500 via-blue-600 to-orange-500 rounded-xl p-4 md:p-6 text-white relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-orange-500/20 animate-pulse"></div>
               <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
                 <div className="space-y-2">
                   <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">{t('client.support.headerTitle')}</h1>
@@ -282,34 +282,34 @@ export default function ClienteSoporte() {
 
                         {/* Canales de Soporte con animaciones */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer" onClick={openChat}>
+              <Card className="group bg-blue-50 border-blue-200 hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer" onClick={openChat}>
                 <CardHeader className="text-center">
-                  <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                  <div className="mx-auto p-3 md:p-4 bg-blue-500 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-green-600 transition-colors">{t('client.support.channels.chatTitle')}</CardTitle>
+                  <CardTitle className="text-blue-800 group-hover:text-blue-900 transition-colors">{t('client.support.channels.chatTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.chatDesc')}</p>
-                  <Badge className="bg-green-100 text-green-800 transition-colors hover:bg-green-50 hover:ring-1 hover:ring-green-200">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                  <p className="text-xs md:text-sm text-blue-700 mb-4">{t('client.support.channels.chatDesc')}</p>
+                  <Badge className="bg-blue-100 text-blue-800 transition-colors hover:bg-blue-50 hover:ring-1 hover:ring-blue-200">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></div>
                     {t('client.support.channels.available')}
                   </Badge>
                 </CardContent>
               </Card>
 
-              <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <Card className="group bg-orange-50 border-orange-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
-                  <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                  <div className="mx-auto p-3 md:p-4 bg-orange-500 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <Phone className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-blue-600 transition-colors">{t('client.support.channels.phoneTitle')}</CardTitle>
+                  <CardTitle className="text-orange-800 group-hover:text-orange-900 transition-colors">{t('client.support.channels.phoneTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.phoneDesc')}</p>
+                  <p className="text-xs md:text-sm text-orange-700 mb-4">{t('client.support.channels.phoneDesc')}</p>
                   <Button 
                     variant="outline" 
-                    className="w-full group-hover:border-blue-300 group-hover:text-blue-600 transition-colors"
+                    className="w-full group-hover:border-orange-300 group-hover:text-orange-600 transition-colors"
                     onClick={() => window.open('https://wa.me/584121234567', '_blank')}
                   >
                     <Phone className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
@@ -318,18 +318,18 @@ export default function ClienteSoporte() {
                 </CardContent>
               </Card>
 
-              <Card className="group bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <Card className="group bg-blue-50 border-blue-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
-                  <div className="mx-auto p-3 md:p-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
+                  <div className="mx-auto p-3 md:p-4 bg-blue-500 rounded-full w-fit group-hover:scale-110 transition-transform duration-300">
                     <Mail className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="group-hover:text-purple-600 transition-colors">{t('client.support.channels.emailTitle')}</CardTitle>
+                  <CardTitle className="text-blue-800 group-hover:text-blue-900 transition-colors">{t('client.support.channels.emailTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-xs md:text-sm text-slate-600 mb-4">{t('client.support.channels.emailDesc')}</p>
+                  <p className="text-xs md:text-sm text-blue-700 mb-4">{t('client.support.channels.emailDesc')}</p>
                   <Button 
                     variant="outline" 
-                    className="w-full group-hover:border-purple-300 group-hover:text-purple-600 transition-colors"
+                    className="w-full group-hover:border-blue-300 group-hover:text-blue-600 transition-colors"
                     onClick={() => window.open('mailto:soporte@morna.com?subject=Soporte Morna&body=Hola, necesito ayuda con...', '_blank')}
                   >
                     <Mail className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
@@ -510,7 +510,7 @@ export default function ClienteSoporte() {
               : 'animate-in slide-in-from-bottom-4 duration-500 ease-out scale-in-95'
           }`}>
             {/* Header del chat */}
-            <div className="p-3 md:p-4 border-b bg-gradient-to-r from-green-500 to-green-600 rounded-t-2xl text-white">
+            <div className="p-3 md:p-4 border-b bg-gradient-to-r from-blue-500 to-orange-500 rounded-t-2xl text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2 md:space-x-3">
                   <div className="w-8 h-8 md:w-10 md:h-10 bg-white/20 rounded-full flex items-center justify-center">

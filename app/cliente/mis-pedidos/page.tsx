@@ -501,7 +501,7 @@ export default function MisPedidosPage() {
     switch (status) {
   case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200 transition-colors hover:bg-yellow-50 hover:ring-1 hover:ring-yellow-200';
   case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200 transition-colors hover:bg-blue-50 hover:ring-1 hover:ring-blue-200';
-  case 'shipped': return 'bg-purple-100 text-purple-800 border-purple-200 transition-colors hover:bg-purple-50 hover:ring-1 hover:ring-purple-200';
+  case 'shipped': return 'bg-orange-100 text-orange-800 border-orange-200 transition-colors hover:bg-orange-50 hover:ring-1 hover:ring-orange-200';
   case 'in-transit': return 'bg-orange-100 text-orange-800 border-orange-200 transition-colors hover:bg-orange-50 hover:ring-1 hover:ring-orange-200';
   case 'delivered': return 'bg-green-100 text-green-800 border-green-200 transition-colors hover:bg-green-50 hover:ring-1 hover:ring-green-200';
   case 'cancelled': return 'bg-red-100 text-red-800 border-red-200 transition-colors hover:bg-red-50 hover:ring-1 hover:ring-red-200';
@@ -603,7 +603,7 @@ export default function MisPedidosPage() {
       case 'pending': return 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm';
       case 'quoted': return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm';
       case 'processing': return 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm';
-      case 'shipped': return 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border-purple-300 shadow-sm';
+      case 'shipped': return 'bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800 border-orange-300 shadow-sm';
       case 'delivered': return 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-sm';
       case 'cancelled': return 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm';
       default: return 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-sm';
@@ -1295,7 +1295,7 @@ export default function MisPedidosPage() {
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
           {/* Header de la página */}
-          <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-500 via-blue-600 to-orange-500 rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
@@ -1324,16 +1324,16 @@ export default function MisPedidosPage() {
           <div className="flex justify-end">
             <Dialog open={isNewOrderModalOpen} onOpenChange={setIsNewOrderModalOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <Button className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                   <Plus className="w-4 h-4 mr-2" />
                   {t('client.quickActions.newOrder')}
                 </Button>
               </DialogTrigger>
-              <DialogContent ref={modalRef} className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+              <DialogContent ref={modalRef} className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-orange-50">
                 <DialogHeader className="text-center pb-6">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-xl opacity-20 animate-pulse"></div>
-                    <DialogTitle className="relative text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent animate-fade-in-up">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
+                    <DialogTitle className="relative text-3xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent animate-fade-in-up">
                       ✨ {t('client.quickActions.newOrder')}
                     </DialogTitle>
                   </div>
@@ -1353,7 +1353,7 @@ export default function MisPedidosPage() {
                   <div className="relative">
                     <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
                       <div 
-                        className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500 ease-out relative"
+                        className="h-full bg-gradient-to-r from-blue-500 to-orange-500 rounded-full transition-all duration-500 ease-out relative"
                         style={{ width: `${(currentStep / 3) * 100}%` }}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
@@ -1365,7 +1365,7 @@ export default function MisPedidosPage() {
                         <div key={step} className="flex flex-col items-center">
                           <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                             step <= currentStep 
-                              ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg scale-110' 
+                              ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg scale-110' 
                               : 'bg-slate-300 text-slate-600'
                           }`}>
                             {step < currentStep ? '✓' : step}
@@ -1403,7 +1403,7 @@ export default function MisPedidosPage() {
                           <p className="text-slate-600 text-lg">{t('client.recentOrders.newOrder.success.message')}</p>
                           <Button
                             onClick={() => setShowSuccessAnimation(false)}
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all duration-300 transform hover:scale-105 shadow-lg mt-4"
+                            className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white transition-all duration-300 transform hover:scale-105 shadow-lg mt-4"
                           >
                             {t('client.recentOrders.newOrder.success.button')}
                           </Button>
@@ -1417,9 +1417,9 @@ export default function MisPedidosPage() {
                     isTransitioning ? 'opacity-50 scale-95' : 'opacity-100 scale-100'
                   }`}>
                     <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg blur-lg opacity-10 animate-pulse"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-orange-500 rounded-lg blur-lg opacity-10 animate-pulse"></div>
                       <div className="relative bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-slate-200/50">
-                        <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                        <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2">
                           {getStepTitle(currentStep)}
                         </h3>
                         <p className="text-slate-600">{getStepDescription(currentStep)}</p>
@@ -1445,7 +1445,7 @@ export default function MisPedidosPage() {
                             className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300 ${attemptedStep1 && !newOrderData.productName.trim() ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                           />
                           <p className="text-xs text-slate-500 mt-1">{newOrderData.productName.length}/{NAME_MAX}</p>
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-orange-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
 
@@ -1465,7 +1465,7 @@ export default function MisPedidosPage() {
                             className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300 ${attemptedStep1 && !newOrderData.description.trim() ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                           />
                           <p className="text-xs text-slate-500 mt-1">{newOrderData.description.length}/{DESCRIPTION_MAX}</p>
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-orange-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
 
@@ -1495,7 +1495,7 @@ export default function MisPedidosPage() {
                           {(!isValidQuantity(newOrderData.quantity) || newOrderData.quantity <= 0) && (
                             <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidQuantity')} ({QTY_MIN}–{QTY_MAX})</p>
                           )}
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-orange-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
 
@@ -1516,7 +1516,7 @@ export default function MisPedidosPage() {
                           {attemptedStep1 && newOrderData.requestType === 'photo' && !newOrderData.specifications.trim() && (
                             <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.requiredField') || 'Campo requerido'}</p>
                           )}
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-orange-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
 
@@ -1530,7 +1530,7 @@ export default function MisPedidosPage() {
                           <div
                             className={`p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
                               newOrderData.requestType === 'link'
-                                ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg'
+                                ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-orange-50 shadow-lg'
                                 : 'border-slate-200 hover:border-blue-300 bg-white/80 backdrop-blur-sm hover:shadow-md'
                             }`}
                             onClick={() => setNewOrderData({ ...newOrderData, requestType: 'link' })}
@@ -1538,7 +1538,7 @@ export default function MisPedidosPage() {
                             onMouseLeave={() => setIsLinkHovered(false)}
                           >
                             <div className="flex items-center space-x-4">
-                              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-orange-500 rounded-lg flex items-center justify-center">
                                 <Player
                                   key={isLinkHovered ? 'link-active' : 'link-inactive'}
                                   src={linkLottie}
@@ -1556,7 +1556,7 @@ export default function MisPedidosPage() {
                           <div
                             className={`p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
                               newOrderData.requestType === 'photo'
-                                ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg'
+                                ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-orange-50 shadow-lg'
                                 : 'border-slate-200 hover:border-blue-300 bg-white/80 backdrop-blur-sm hover:shadow-md'
                             }`}
                             onClick={() => setNewOrderData({ ...newOrderData, requestType: 'photo' })}
@@ -1564,7 +1564,7 @@ export default function MisPedidosPage() {
                             onMouseLeave={() => setIsCameraHovered(false)}
                           >
                             <div className="flex items-center space-x-4">
-                              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-orange-500 rounded-lg flex items-center justify-center">
                                 <Player
                                   key={isCameraHovered ? 'camera-active' : 'camera-inactive'}
                                   src={cameraLottie}
@@ -1802,7 +1802,7 @@ export default function MisPedidosPage() {
                       <Button
                         onClick={handleNextStep}
                         disabled={!canProceedToNext() || isTransitioning}
-                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isTransitioning ? (
                           <div className="flex items-center">
@@ -1819,7 +1819,7 @@ export default function MisPedidosPage() {
                     ) : (
                       <Button
                         onClick={handleSubmitOrder}
-                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         <Check className="w-4 h-4 mr-2" />
                         {t('client.recentOrders.newOrder.createOrder')}
@@ -1833,7 +1833,7 @@ export default function MisPedidosPage() {
 
           {/* Estadísticas */}
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+            <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-blue-800">{t('client.dashboard.totalOrders')}</CardTitle>
                 <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
@@ -1849,23 +1849,23 @@ export default function MisPedidosPage() {
               </CardContent>
             </Card>
             
-            <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:shadow-lg transition-all duration-300 group">
+            <Card className="bg-orange-50 border-orange-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-yellow-800">{t('client.recentOrders.statuses.pending')}</CardTitle>
-                <div className="p-2 bg-yellow-500 rounded-lg group-hover:scale-110 transition-transform">
+                <CardTitle className="text-sm font-medium text-orange-800">{t('client.recentOrders.statuses.pending')}</CardTitle>
+                <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
                   <Clock className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-yellow-900">{stats.pending}</div>
-                <p className="text-xs text-yellow-700">{t('client.recentOrders.statuses.pending')}</p>
-                <div className="mt-2 w-full bg-yellow-200 rounded-full h-2">
-                  <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(stats.pending / stats.total) * 100}%`}}></div>
+                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{stats.pending}</div>
+                <p className="text-xs text-orange-700">{t('client.recentOrders.statuses.pending')}</p>
+                <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
+                  <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(stats.pending / stats.total) * 100}%`}}></div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+            <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-blue-800">{t('client.recentOrders.statuses.processing')}</CardTitle>
                 <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
@@ -1881,34 +1881,34 @@ export default function MisPedidosPage() {
               </CardContent>
             </Card>
             
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 group">
+            <Card className="bg-orange-50 border-orange-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-purple-800">{t('client.recentOrders.statuses.shipped')}</CardTitle>
-                <div className="p-2 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                <CardTitle className="text-sm font-medium text-orange-800">{t('client.recentOrders.statuses.shipped')}</CardTitle>
+                <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
                   <MapPin className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900">{stats.shipped}</div>
-                <p className="text-xs text-purple-700">{t('client.recentOrders.statuses.shipped')}</p>
-                <div className="mt-2 w-full bg-purple-200 rounded-full h-2">
-                  <div className="bg-purple-500 h-2 rounded-full" style={{width: `${(stats.shipped / stats.total) * 100}%`}}></div>
+                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{stats.shipped}</div>
+                <p className="text-xs text-orange-700">{t('client.recentOrders.statuses.shipped')}</p>
+                <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
+                  <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(stats.shipped / stats.total) * 100}%`}}></div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:shadow-lg transition-all duration-300 group">
+            <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-emerald-800">{t('client.dashboard.totalSpent')}</CardTitle>
-                <div className="p-2 bg-emerald-500 rounded-lg group-hover:scale-110 transition-transform">
+                <CardTitle className="text-sm font-medium text-blue-800">{t('client.dashboard.totalSpent')}</CardTitle>
+                <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                   <DollarSign className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-emerald-900">${stats.totalSpent.toLocaleString()}</div>
-                <p className="text-xs text-emerald-700">{t('client.dashboard.totalInvestment')}</p>
-                <div className="mt-2 w-full bg-emerald-200 rounded-full h-2">
-                  <div className="bg-emerald-500 h-2 rounded-full" style={{width: '100%'}}></div>
+                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">${stats.totalSpent.toLocaleString()}</div>
+                <p className="text-xs text-blue-700">{t('client.dashboard.totalInvestment')}</p>
+                <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                  <div className="bg-blue-500 h-2 rounded-full" style={{width: '100%'}}></div>
                 </div>
               </CardContent>
             </Card>
@@ -2036,7 +2036,7 @@ export default function MisPedidosPage() {
                           {order.status === 'quoted' && (
                             <Button 
                               size="sm" 
-                              className="h-7 md:h-8 px-3 md:px-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-xs font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                              className="h-7 md:h-8 px-3 md:px-4 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white text-xs font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                               onClick={() => handlePaymentClick(order)}
                             >
                               <DollarSign className="h-3 w-3 mr-1" />
@@ -2055,7 +2055,7 @@ export default function MisPedidosPage() {
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="h-7 md:h-8 px-3 md:px-4 text-xs font-semibold border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300"
+                            className="h-7 md:h-8 px-3 md:px-4 text-xs font-semibold border-orange-200 text-orange-700 hover:bg-orange-50 hover:border-orange-300 transition-all duration-300"
                             onClick={() => openTrackingModal(order)}
                           >
                             <MapPin className="h-3 w-3 mr-1" />
@@ -2379,7 +2379,7 @@ export default function MisPedidosPage() {
             {selectedOrderForPayment && (
               <div className="space-y-6">
                 {/* Información del pedido */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl border border-blue-200">
+                <div className="bg-gradient-to-r from-blue-50 to-orange-50 p-4 rounded-xl border border-blue-200">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-semibold text-lg">{selectedOrderForPayment.product}</h3>
@@ -2470,7 +2470,7 @@ export default function MisPedidosPage() {
                           </div>
                           <div className="p-4 bg-slate-50 rounded-lg">
                             <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.reference')}</p>
-                            <p className="text-lg font-mono font-bold text-purple-600">{selectedPaymentMethod.details?.reference}</p>
+                            <p className="text-lg font-mono font-bold text-orange-600">{selectedPaymentMethod.details?.reference}</p>
                           </div>
                         </div>
                       )}

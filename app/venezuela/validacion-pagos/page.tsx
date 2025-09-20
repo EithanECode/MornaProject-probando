@@ -218,29 +218,29 @@ const StatsCards: React.FC<{ stats: PaymentStats }> = ({ stats }) => {
       title: t('venezuela.pagos.stats.totalSpent'),
       value: `$${stats.totalGastado.toLocaleString()}`,
       icon: <TrendingUp size={24} />,
-      bgColor: 'bg-gradient-to-r from-blue-500 to-blue-600',
-      textColor: 'text-blue-100'
+      bgColor: 'bg-blue-500',
+      textColor: 'text-white'
     },
     {
       title: t('venezuela.pagos.stats.totalPayments'),
       value: stats.pagosTotales,
       icon: <CreditCard size={24} />,
-      bgColor: 'bg-gradient-to-r from-orange-500 to-orange-600',
-      textColor: 'text-orange-100'
+      bgColor: 'bg-orange-500',
+      textColor: 'text-white'
     },
     {
       title: t('venezuela.pagos.stats.completed'),
       value: stats.completados,
   icon: <AnimatedIcon animation={["pulse","bounce"]}><CheckCircle size={24} /></AnimatedIcon>,
-      bgColor: 'bg-gradient-to-r from-green-500 to-green-600',
-      textColor: 'text-green-100'
+      bgColor: 'bg-blue-500',
+      textColor: 'text-white'
     },
     {
       title: t('venezuela.pagos.stats.pending'),
       value: stats.pendientes,
   icon: <AnimatedIcon animation={["pulse","spin"]}><Clock size={24} /></AnimatedIcon>,
-      bgColor: 'bg-gradient-to-r from-purple-500 to-purple-600',
-      textColor: 'text-purple-100'
+      bgColor: 'bg-orange-500',
+      textColor: 'text-white'
     }
   ];
 

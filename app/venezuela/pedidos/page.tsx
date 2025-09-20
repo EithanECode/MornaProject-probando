@@ -752,23 +752,71 @@ export default function VenezuelaPedidosPage() {
             
             {/* Tarjetas de estadísticas */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200 dark:from-yellow-900/20 dark:to-orange-900/20 dark:border-yellow-700">
+              <Card className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-700">
                 <CardContent className="p-4 md:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm md:text-base font-medium text-yellow-700 dark:text-yellow-300">{t('venezuela.pedidos.stats.pending')}</p>
-                      <p className="text-2xl md:text-3xl font-bold text-yellow-800 dark:text-yellow-200">
+                      <p className="text-sm md:text-base font-medium text-blue-700 dark:text-blue-300">{t('venezuela.pedidos.stats.pending')}</p>
+                      <p className="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200">
                         {orders.filter(o => o.state === 1).length}
                       </p>
                     </div>
-                    <div className="w-10 h-10 md:w-12 md:h-12 bg-yellow-100 dark:bg-yellow-800/30 rounded-lg flex items-center justify-center">
-                      <Clock className="w-5 h-5 md:w-6 md:h-6 text-yellow-600 dark:text-yellow-400" />
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-800/30 rounded-lg flex items-center justify-center">
+                      <Clock className="w-5 h-5 md:w-6 md:h-6 text-blue-600 dark:text-blue-400" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 dark:from-green-900/20 dark:to-emerald-900/20 dark:border-green-700">
+              <Card className="bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-700">
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm md:text-base font-medium text-orange-700 dark:text-orange-300">{t('venezuela.pedidos.stats.reviewing')}</p>
+                      <p className="text-2xl md:text-3xl font-bold text-orange-800 dark:text-orange-200">
+                        {orders.filter(o => o.state === 2).length}
+                      </p>
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 dark:bg-orange-800/30 rounded-lg flex items-center justify-center">
+                      <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-orange-600 dark:text-orange-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-700">
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm md:text-base font-medium text-blue-700 dark:text-blue-300">{t('venezuela.pedidos.stats.quoted')}</p>
+                      <p className="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200">
+                        {orders.filter(o => o.state === 3).length}
+                      </p>
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-800/30 rounded-lg flex items-center justify-center">
+                      <Package className="w-5 h-5 md:w-6 md:h-6 text-blue-600 dark:text-blue-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-700">
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm md:text-base font-medium text-orange-700 dark:text-orange-300">{t('venezuela.pedidos.stats.processing')}</p>
+                      <p className="text-2xl md:text-3xl font-bold text-orange-800 dark:text-orange-200">
+                        {orders.filter(o => o.state === 4).length}
+                      </p>
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 dark:bg-orange-800/30 rounded-lg flex items-center justify-center">
+                      <Send className="w-5 h-5 md:w-6 md:h-6 text-orange-600 dark:text-orange-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
             {/* Modal Aviso (reutilizable) */}
             {modalAviso.open && (
               <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={closeModalAviso}>
@@ -793,54 +841,7 @@ export default function VenezuelaPedidosPage() {
                 </div>
               </div>
             )}
-
-                <CardContent className="p-4 md:p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm md:text-base font-medium text-green-700 dark:text-green-300">{t('venezuela.pedidos.stats.reviewing')}</p>
-                      <p className="text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200">
-                        {orders.filter(o => o.state === 2).length}
-                      </p>
-                    </div>
-                    <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-800/30 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-green-600 dark:text-green-400" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border-purple-200 dark:from-purple-900/20 dark:to-violet-900/20 dark:border-purple-700">
-                <CardContent className="p-4 md:p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm md:text-base font-medium text-purple-700 dark:text-purple-300">{t('venezuela.pedidos.stats.quoted')}</p>
-                      <p className="text-2xl md:text-3xl font-bold text-purple-800 dark:text-purple-200">
-                        {orders.filter(o => o.state === 3).length}
-                      </p>
-                    </div>
-                    <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 dark:bg-purple-800/30 rounded-lg flex items-center justify-center">
-                      <Package className="w-5 h-5 md:w-6 md:h-6 text-purple-600 dark:text-purple-400" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 dark:from-blue-900/20 dark:to-indigo-900/20 dark:border-blue-700">
-                <CardContent className="p-4 md:p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm md:text-base font-medium text-blue-700 dark:text-blue-300">{t('venezuela.pedidos.stats.processing')}</p>
-                      <p className="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200">
-                        {orders.filter(o => o.state === 4).length}
-                      </p>
-                    </div>
-                    <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 dark:bg-blue-800/30 rounded-lg flex items-center justify-center">
-                      <Send className="w-5 h-5 md:w-6 md:h-6 text-blue-600 dark:text-blue-400" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            
             {/* Tabs: Pedidos | Cajas | Contenedores (con indicador deslizante) */}
             <div className="pt-2">
               <div className="relative flex w-full gap-2 rounded-lg border border-slate-200 bg-white/70 dark:border-slate-700 dark:bg-slate-800/60 backdrop-blur px-1 py-1 shadow-sm overflow-hidden">
