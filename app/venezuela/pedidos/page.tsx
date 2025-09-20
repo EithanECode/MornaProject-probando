@@ -83,6 +83,7 @@ export default function VenezuelaPedidosPage() {
   const [boxesLoading, setBoxesLoading] = useState(false);
   const [filtroCaja, setFiltroCaja] = useState('');
   const [orderCountsByBoxMain, setOrderCountsByBoxMain] = useState<Record<string | number, number>>({});
+  const [boxesWithAirShipping, setBoxesWithAirShipping] = useState<Record<string | number, boolean>>({});
   const [ordersByBox, setOrdersByBox] = useState<Order[]>([]);
   const [ordersByBoxLoading, setOrdersByBoxLoading] = useState(false);
   // Modal para ver pedidos de una caja
@@ -566,10 +567,25 @@ export default function VenezuelaPedidosPage() {
             counts[key] = (counts[key] || 0) + 1;
           });
           setOrderCountsByBoxMain(counts);
+          // Check for air shipping
+          const { data: airData, error: airError } = await supabase.from('orders').select('box_id').eq('shippingType', 'air').in('box_id', ids as any);
+          if (!airError) {
+            const airBoxes: Record<string | number, boolean> = {};
+            (airData || []).forEach((row: any) => {
+              airBoxes[row.box_id] = true;
+            });
+            setBoxesWithAirShipping(airBoxes);
+          } else {
+            setBoxesWithAirShipping({});
+          }
         } else {
           setOrderCountsByBoxMain({});
+          setBoxesWithAirShipping({});
         }
-      } else setOrderCountsByBoxMain({});
+      } else {
+        setOrderCountsByBoxMain({});
+        setBoxesWithAirShipping({});
+      }
     } catch (e) {
       console.error('Error fetchBoxes:', e);
     } finally {
@@ -649,8 +665,32 @@ export default function VenezuelaPedidosPage() {
             counts[key] = (counts[key] || 0) + 1;
           });
           setOrderCountsByBox(counts);
-        } else setOrderCountsByBox({});
-      } else setOrderCountsByBox({});
+          // Check for air shipping
+          const { data: airData, error: airError } = await supabase.from('orders').select('box_id').eq('shippingType', 'air').in('box_id', ids as any);
+          if (!airError) {
+            const airBoxes: Record<string | number, boolean> = {};
+            (airData || []).forEach((row: any) => {
+              airBoxes[row.box_id] = true;
+            });
+            // Merge with existing
+            setBoxesWithAirShipping(prev => ({ ...prev, ...airBoxes }));
+          }
+        } else {
+          setOrderCountsByBox({});
+          setBoxesWithAirShipping(prev => {
+            const newState = { ...prev };
+            ids.forEach(id => delete newState[id]);
+            return newState;
+          });
+        }
+      } else {
+        setOrderCountsByBox({});
+        setBoxesWithAirShipping(prev => {
+          const newState = { ...prev };
+          // No ids to clean, but perhaps clean all if needed, but for now leave
+          return newState;
+        });
+      }
     } catch (e) {
       console.error('Error fetchBoxesByContainerId:', e);
     } finally {
@@ -1150,21 +1190,34 @@ export default function VenezuelaPedidosPage() {
                             }`}>
                               {stateNum === 1 ? t('venezuela.pedidos.boxesBadges.new') : stateNum === 2 ? t('venezuela.pedidos.boxesBadges.ready') : stateNum === 3 ? t('venezuela.pedidos.boxesBadges.inContainer') : stateNum === 4 ? t('venezuela.pedidos.boxesBadges.traveling') : stateNum === 5 ? t('venezuela.pedidos.boxesBadges.received') : stateNum === 6 ? t('venezuela.pedidos.boxesBadges.completed') : t('venezuela.pedidos.boxesBadges.state', { num: stateNum })}
                             </Badge>
-                            {/* Botón Recibido: visible solo cuando boxes.state === 5 */}
-                            {stateNum === 5 && (
+                            {/* Botón Recibido: visible cuando boxes.state === 5 o (state === 4 y tiene pedidos air) */}
+                            {(stateNum === 5 || (stateNum === 4 && boxesWithAirShipping[countKey])) && (
                               <Button
                                 variant="outline"
                                 size="icon"
                                 onClick={async () => {
+                                  const nextState = 6;
                                   try {
                                     const res = await fetch('/venezuela/pedidos/api/advance-box', {
                                       method: 'PATCH',
                                       headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 })
+                                      body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState })
                                     });
                                     if (!res.ok) {
                                       const err = await res.json().catch(() => ({}));
                                       throw new Error(err.error || t('venezuela.pedidos.errors.updateBox'));
+                                    }
+                                    // Actualizar pedidos asociados a estado 11
+                                    const supabase = getSupabaseBrowserClient();
+                                    const { data: ordersData } = await supabase.from('orders').select('id').eq('box_id', box.box_id ?? box.boxes_id ?? box.id ?? id);
+                                    if (ordersData) {
+                                      for (const order of ordersData) {
+                                        await fetch(`/api/admin/orders/${order.id}`, {
+                                          method: 'PATCH',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ state: 11 })
+                                        });
+                                      }
                                     }
                                     await Promise.all([fetchBoxes(), fetchOrders()]);
                                   } catch (e) {
@@ -1172,7 +1225,7 @@ export default function VenezuelaPedidosPage() {
                                   }
                                 }}
                                 className="text-emerald-700 border-emerald-300 hover:bg-emerald-50"
-                                title={t('venezuela.pedidos.tooltips.markBoxReceived')}
+                                title={stateNum === 4 ? t('venezuela.pedidos.tooltips.markBoxReceivedAir') : t('venezuela.pedidos.tooltips.markBoxReceived')}
                               >
                                 <CheckCircle className="h-4 w-4" />
                               </Button>
@@ -1546,21 +1599,34 @@ export default function VenezuelaPedidosPage() {
                             }`}>
                               {stateNum === 1 ? t('venezuela.pedidos.boxesBadges.new') : stateNum === 2 ? t('venezuela.pedidos.boxesBadges.ready') : stateNum === 5 ? t('venezuela.pedidos.boxesBadges.received') : stateNum === 6 ? t('venezuela.pedidos.boxesBadges.completed') : t('venezuela.pedidos.boxesBadges.state', { num: stateNum })}
                             </Badge>
-                            {/* Botón Recibido en modal: visible solo cuando boxes.state === 5 */}
-                            {stateNum === 5 && (
+                            {/* Botón Recibido en modal: visible cuando boxes.state === 5 o (state === 4 y tiene pedidos air) */}
+                            {(stateNum === 5 || (stateNum === 4 && boxesWithAirShipping[id as any])) && (
                               <Button
                                 variant="outline"
                                 size="icon"
                                 onClick={async () => {
+                                  const nextState = 6;
                                   try {
                                     const res = await fetch('/venezuela/pedidos/api/advance-box', {
                                       method: 'PATCH',
                                       headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 })
+                                      body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState })
                                     });
                                     if (!res.ok) {
                                       const err = await res.json().catch(() => ({}));
                                       throw new Error(err.error || t('venezuela.pedidos.errors.updateBox'));
+                                    }
+                                    // Actualizar pedidos asociados a estado 11
+                                    const supabase = getSupabaseBrowserClient();
+                                    const { data: ordersData } = await supabase.from('orders').select('id').eq('box_id', box.box_id ?? box.boxes_id ?? box.id ?? id);
+                                    if (ordersData) {
+                                      for (const order of ordersData) {
+                                        await fetch(`/api/admin/orders/${order.id}`, {
+                                          method: 'PATCH',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ state: 11 })
+                                        });
+                                      }
                                     }
                                     await Promise.all([
                                       modalVerCajas.containerId ? fetchBoxesByContainerId(modalVerCajas.containerId) : Promise.resolve(),
@@ -1571,7 +1637,7 @@ export default function VenezuelaPedidosPage() {
                                   }
                                 }}
                                 className="text-emerald-700 border-emerald-300 hover:bg-emerald-50"
-                                title={t('venezuela.pedidos.tooltips.markBoxReceived')}
+                                title={stateNum === 4 ? t('venezuela.pedidos.tooltips.markBoxReceivedAir') : t('venezuela.pedidos.tooltips.markBoxReceived')}
                               >
                                 <CheckCircle className="h-4 w-4" />
                               </Button>

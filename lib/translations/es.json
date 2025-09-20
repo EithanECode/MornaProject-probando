@@ -2091,6 +2091,7 @@
       "modalBoxesEmptyDesc": "Cuando asignes cajas a este contenedor, aparecerán aquí.",
       "tooltips": {
         "markBoxReceived": "Marcar caja como recibida",
+        "markBoxReceivedAir": "Marcar caja como recibida (envío aéreo)",
         "markContainerReceived": "Marcar contenedor como recibido"
       },
       "pdf": {

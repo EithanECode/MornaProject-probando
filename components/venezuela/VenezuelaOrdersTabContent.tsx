@@ -49,6 +49,7 @@ export default function VenezuelaOrdersTabContent() {
   const [boxesLoading, setBoxesLoading] = useState(false);
   const [filtroCaja, setFiltroCaja] = useState('');
   const [orderCountsByBoxMain, setOrderCountsByBoxMain] = useState<Record<string | number, number>>({});
+  const [boxesWithAirShipping, setBoxesWithAirShipping] = useState<Record<string | number, boolean>>({});
   const [ordersByBox, setOrdersByBox] = useState<Order[]>([]);
   const [ordersByBoxLoading, setOrdersByBoxLoading] = useState(false);
   const [modalVerPedidos, setModalVerPedidos] = useState<{ open: boolean; boxId?: number | string }>({ open: false });
@@ -149,8 +150,25 @@ export default function VenezuelaOrdersTabContent() {
           const counts: Record<string | number, number> = {};
           (ordersData || []).forEach((row: any) => { const key = row.box_id as string | number; counts[key] = (counts[key] || 0) + 1; });
           setOrderCountsByBoxMain(counts);
-        } else setOrderCountsByBoxMain({});
-      } else setOrderCountsByBoxMain({});
+          // Check for air shipping
+          const { data: airData, error: airError } = await supabase.from('orders').select('box_id').eq('shippingType', 'air').in('box_id', ids as any);
+          if (!airError) {
+            const airBoxes: Record<string | number, boolean> = {};
+            (airData || []).forEach((row: any) => {
+              airBoxes[row.box_id] = true;
+            });
+            setBoxesWithAirShipping(airBoxes);
+          } else {
+            setBoxesWithAirShipping({});
+          }
+        } else {
+          setOrderCountsByBoxMain({});
+          setBoxesWithAirShipping({});
+        }
+      } else {
+        setOrderCountsByBoxMain({});
+        setBoxesWithAirShipping({});
+      }
     } catch (e) {
       console.error('Error fetchBoxes:', e);
     } finally { setBoxesLoading(false); }
@@ -627,8 +645,36 @@ export default function VenezuelaOrdersTabContent() {
                       </div>
                       <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
                         <Badge className={`${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
-                        {stateNum === 5 && (
-                          <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-box', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'Error'); } await Promise.all([fetchBoxes(), fetchOrders()]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />RECEIVED</Button>
+                        {(stateNum === 5 || (stateNum === 4 && boxesWithAirShipping[countKey])) && (
+                          <Button variant="outline" size="sm" onClick={async () => {
+                            const nextState = 6;
+                            try {
+                              const res = await fetch('/venezuela/pedidos/api/advance-box', {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState })
+                              });
+                              if (!res.ok) {
+                                const err = await res.json().catch(() => ({}));
+                                throw new Error(err.error || 'Error');
+                              }
+                              // Actualizar pedidos asociados a estado 11
+                              const supabase = getSupabaseBrowserClient();
+                              const { data: ordersData } = await supabase.from('orders').select('id').eq('box_id', box.box_id ?? box.boxes_id ?? box.id ?? id);
+                              if (ordersData) {
+                                for (const order of ordersData) {
+                                  await fetch(`/api/admin/orders/${order.id}`, {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ state: 11 })
+                                  });
+                                }
+                              }
+                              await Promise.all([fetchBoxes(), fetchOrders()]);
+                            } catch (e) {
+                              alert((e as Error).message);
+                            }
+                          }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />Recibido</Button>
                         )}
                         <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={() => { const boxId = box.box_id ?? box.boxes_id ?? box.id; setModalVerPedidos({ open: true, boxId }); if (boxId !== undefined) fetchOrdersByBoxId(boxId as any); }}><List className="h-4 w-4" />{t('venezuela.pedidos.actions.viewOrders')}</Button>
                       </div>
@@ -802,8 +848,39 @@ export default function VenezuelaOrdersTabContent() {
                       </div>
                       <div className="flex items-center gap-3">
                         <Badge className={`${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
-                        {stateNum === 5 && (
-                          <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-box', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState: 6 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'No se pudo actualizar la caja'); } await Promise.all([ modalVerCajas.containerId ? fetchBoxesByContainerId(modalVerCajas.containerId) : Promise.resolve(), fetchOrders() ]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />Recibido</Button>
+                        {(stateNum === 5 || (stateNum === 4 && boxesWithAirShipping[id as any])) && (
+                          <Button variant="outline" size="sm" onClick={async () => {
+                            const nextState = 6;
+                            try {
+                              const res = await fetch('/venezuela/pedidos/api/advance-box', {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ boxId: box.box_id ?? box.boxes_id ?? box.id ?? id, nextState })
+                              });
+                              if (!res.ok) {
+                                const err = await res.json().catch(() => ({}));
+                                throw new Error(err.error || 'No se pudo actualizar la caja');
+                              }
+                              // Actualizar pedidos asociados a estado 11
+                              const supabase = getSupabaseBrowserClient();
+                              const { data: ordersData } = await supabase.from('orders').select('id').eq('box_id', box.box_id ?? box.boxes_id ?? box.id ?? id);
+                              if (ordersData) {
+                                for (const order of ordersData) {
+                                  await fetch(`/api/admin/orders/${order.id}`, {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ state: 11 })
+                                  });
+                                }
+                              }
+                              await Promise.all([
+                                modalVerCajas.containerId ? fetchBoxesByContainerId(modalVerCajas.containerId) : Promise.resolve(),
+                                fetchOrders()
+                              ]);
+                            } catch (e) {
+                              alert((e as Error).message);
+                            }
+                          }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />Recibido</Button>
                         )}
                       </div>
                     </div>
