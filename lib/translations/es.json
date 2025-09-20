@@ -2190,7 +2190,7 @@
         "retry": "Reintentar"
       },
       "stats": {
-        "totalSpent": "Total Gastado",
+        "totalSpent": "Total",
         "totalPayments": "Total Pagos",
         "completed": "Completados",
         "pending": "Pendientes"
@@ -2215,7 +2215,8 @@
         "view": "Ver",
         "approve": "Aprobar",
         "reject": "Rechazar",
-        "undo": "Deshacer"
+        "undo": "Deshacer",
+        "send": "Enviar"
       },
       "table": {
         "pendingApprovalTitle": "Pagos Pendientes de Aprobación",
@@ -2280,12 +2281,16 @@
         "approvedTitle": "Pago aprobado",
         "approvedDesc": "Pago {{id}} ha sido aprobado exitosamente.",
         "rejectedTitle": "Pago rechazado",
-        "rejectedDesc": "Pago {{id}} ha sido rechazado."
+        "rejectedDesc": "Pago {{id}} ha sido rechazado.",
+        "sentTitle": "Envío registrado",
+        "sentDesc": "Pedido {{id}} marcado como enviado a China"
       },
       "status": {
         "completado": "Completado",
         "pendiente": "Pendiente",
-        "rechazado": "Rechazado"
+        "rechazado": "Rechazado",
+        "sendChina": "Enviado a China",
+        "sentChina": "Enviado a China"
       },
       "export": {
         "sheetName": "Pagos",
