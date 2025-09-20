@@ -1692,6 +1692,7 @@
           "notFoundSubtitle": "Intenta ajustar la búsqueda por ID.",
           "ordersCount": "Pedidos:",
           "pack": "Empaquetar",
+          "send": "Enviar",
           "unpack": "Desempaquetar",
           "viewOrders": "Ver pedidos",
           "delete": "Eliminar",
@@ -1852,7 +1853,16 @@
           "orderPdfMissingDesc": "No hay PDF disponible para este pedido.",
           "boxDeleteIdInvalidTitle": "No se pudo eliminar",
           "boxDeleteIdInvalidDesc": "ID de caja inválido.",
-          "containerDeleteIdInvalidDesc": "ID de contenedor inválido."
+          "containerDeleteIdInvalidDesc": "ID de contenedor inválido.",
+          "orderNotFoundTitle": "Pedido no encontrado",
+          "orderNotFoundDesc": "El pedido especificado no se pudo encontrar.",
+          "fetchErrorTitle": "Error al obtener datos",
+          "shippingTypeMismatchTitle": "Tipo de envío incompatible",
+          "shippingTypeMultipleDesc": "La caja contiene pedidos con diferentes tipos de envío.",
+          "shippingTypeMismatchDesc": "El tipo de envío del pedido no coincide con los pedidos existentes en la caja.",
+          "sendBoxErrorTitle": "Error al enviar caja",
+          "boxSentTitle": "Caja enviada",
+          "boxSentDesc": "La caja #BOX-{{boxId}} ha sido enviada exitosamente."
         }
       }
     },
@@ -2671,6 +2681,10 @@
         "inBox": "En caja",
         "inContainer": "En contenedor",
         "shippedVzla": "Enviado a Venezuela",
+        "inVenezuela": "En Venezuela",
+        "inBoxVzla": "En Caja",
+        "readyVzla": "Pedido Listo",
+        "delivered": "Entregado",
         "state": "Estado {{num}}"
       },
       "boxBadges": {
@@ -2731,6 +2745,7 @@
         "notFoundSubtitle": "Intenta ajustar la búsqueda por ID.",
         "ordersCount": "Pedidos:",
         "pack": "Empaquetar",
+        "send": "Enviar",
         "unpack": "Desempaquetar",
         "viewOrders": "Ver pedidos",
         "delete": "Eliminar",
@@ -2893,7 +2908,20 @@
         "boxDeleteIdInvalidTitle": "No se pudo eliminar",
         "boxDeleteIdInvalidDesc": "ID de caja inválido.",
         "containerDeleteIdInvalidDesc": "ID de contenedor inválido.",
-        "containerSentTitle": "Contenedor enviado"
+        "containerSentTitle": "Contenedor enviado",
+        "orderNotFoundTitle": "Pedido no encontrado",
+        "orderNotFoundDesc": "El pedido especificado no se pudo encontrar.",
+        "fetchErrorTitle": "Error al obtener datos",
+        "shippingTypeMismatchTitle": "Tipo de envío incompatible",
+        "shippingTypeMultipleDesc": "La caja contiene pedidos con diferentes tipos de envío.",
+        "shippingTypeMismatchDesc": "El tipo de envío del pedido no coincide con los pedidos existentes en la caja.",
+        "tryAgainLater": "Intenta de nuevo más tarde.",
+        "packEmptyBoxNotAllowed": "No puedes enviar una caja vacía.",
+        "sendBoxErrorTitle": "No se pudo enviar la caja",
+        "tryAgain": "Intenta de nuevo.",
+        "boxSentTitle": "Caja enviada",
+        "boxSentDesc": "La caja #BOX-{{boxId}} fue marcada como enviada.",
+        "orderAlreadyShipped": "Este pedido ya ha sido enviado y no puede ser cotizado."
       }
     }
   }

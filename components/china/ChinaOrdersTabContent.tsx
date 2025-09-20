@@ -42,32 +42,32 @@ function mapStateToEstado(state: number): Pedido['estado'] {
   // Cualquier otro (1 u >8) se tratará como pendiente u enviado extendido según futuras reglas, aquí fallback a pendiente
   return 'pendiente';
 }
-function getOrderBadge(stateNum?: number) {
+function getOrderBadge(t: any, stateNum?: number) {
   const s = Number(stateNum ?? 0); const base = 'border';
-  if (s <= 0 || isNaN(s)) return { label: 'unknown', className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
-  if (s === 2) return { label: 'pending', className: `${base} bg-yellow-100 text-yellow-800 border-yellow-200` };
-  if (s === 3) return { label: 'quoted', className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
-  if (s === 4) return { label: 'processing', className: `${base} bg-purple-100 text-purple-800 border-purple-200` };
-  if (s === 5) return { label: 'readyToPack', className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
-  if (s === 6) return { label: 'inBox', className: `${base} bg-indigo-100 text-indigo-800 border-indigo-200` };
-  if (s === 7) return { label: 'inContainer', className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
-  if (s >= 9) return { label: 'shippedVzla', className: `${base} bg-green-100 text-green-800 border-green-200` };
-  return { label: `state:${s}`, className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  if (s <= 0 || isNaN(s)) return { label: t('chinese.ordersPage.badges.unknown'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  if (s === 2) return { label: t('chinese.ordersPage.badges.pending'), className: `${base} bg-yellow-100 text-yellow-800 border-yellow-200` };
+  if (s === 3) return { label: t('chinese.ordersPage.badges.quoted'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+  if (s === 4) return { label: t('chinese.ordersPage.badges.processing'), className: `${base} bg-purple-100 text-purple-800 border-purple-200` };
+  if (s === 5) return { label: t('chinese.ordersPage.badges.readyToPack'), className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
+  if (s === 6) return { label: t('chinese.ordersPage.badges.inBox'), className: `${base} bg-indigo-100 text-indigo-800 border-indigo-200` };
+  if (s === 7) return { label: t('chinese.ordersPage.badges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
+  if (s >= 9) return { label: t('chinese.ordersPage.badges.shippedVzla'), className: `${base} bg-green-100 text-green-800 border-green-200` };
+  return { label: t('chinese.ordersPage.badges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
 }
-function getBoxBadge(stateNum?: number) {
+function getBoxBadge(t: any, stateNum?: number) {
   const s = Number(stateNum ?? 0); const base='border';
-  if (s <= 1) return { label: 'new', className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
-  if (s === 2) return { label: 'packed', className: `${base} bg-green-100 text-green-800 border-green-200` };
-  if (s === 3) return { label: 'inContainer', className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
-  if (s >= 4) return { label: 'shipped', className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
-  return { label: `state:${s}`, className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  if (s <= 1) return { label: t('chinese.ordersPage.boxBadges.new'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+  if (s === 2) return { label: t('chinese.ordersPage.boxBadges.packed'), className: `${base} bg-green-100 text-green-800 border-green-200` };
+  if (s === 3) return { label: t('chinese.ordersPage.boxBadges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
+  if (s >= 4) return { label: t('chinese.ordersPage.boxBadges.shipped'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  return { label: t('chinese.ordersPage.boxBadges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
 }
-function getContainerBadge(stateNum?: number) {
+function getContainerBadge(t: any, stateNum?: number) {
   const s = Number(stateNum ?? 0); const base='border';
-  if (s <= 1) return { label: 'new', className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
-  if (s === 2) return { label: 'loading', className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
-  if (s >= 3) return { label: 'shipped', className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
-  return { label: `state:${s}`, className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  if (s <= 1) return { label: t('chinese.ordersPage.containerBadges.new'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
+  if (s === 2) return { label: t('chinese.ordersPage.containerBadges.loading'), className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
+  if (s >= 3) return { label: t('chinese.ordersPage.containerBadges.shipped'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+  return { label: t('chinese.ordersPage.containerBadges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
 }
 
 export default function ChinaOrdersTabContent() {
@@ -95,6 +95,7 @@ export default function ChinaOrdersTabContent() {
   const [boxesLoading, setBoxesLoading] = useState(false);
   const [filtroCaja, setFiltroCaja] = useState('');
   const [orderCountsByBoxMain, setOrderCountsByBoxMain] = useState<Record<string | number, number>>({});
+  const [airOnlyBoxes, setAirOnlyBoxes] = useState<Set<string | number>>(new Set());
   const [ordersByBox, setOrdersByBox] = useState<Pedido[]>([]);
   const [ordersByBoxLoading, setOrdersByBoxLoading] = useState(false);
   const [modalVerPedidosCaja, setModalVerPedidosCaja] = useState<{open:boolean; boxId?: number | string}>({open:false});
@@ -377,7 +378,20 @@ export default function ChinaOrdersTabContent() {
         const { data: ordersData } = await supabase.from('orders').select('id, box_id').in('box_id', ids as any);
         const counts: Record<string|number,number>={}; (ordersData||[]).forEach(r=>{ counts[r.box_id as any]=(counts[r.box_id as any]||0)+1; });
         setOrderCountsByBoxMain(counts);
-      } else setOrderCountsByBoxMain({});
+
+        // Determinar qué cajas tienen solo pedidos aéreos
+        const airOnlySet = new Set<string | number>();
+        for (const boxId of ids) {
+          const isAirOnly = await checkIfBoxHasOnlyAirOrders(boxId);
+          if (isAirOnly) {
+            airOnlySet.add(boxId);
+          }
+        }
+        setAirOnlyBoxes(airOnlySet);
+      } else {
+        setOrderCountsByBoxMain({});
+        setAirOnlyBoxes(new Set());
+      }
     } catch(e){ console.error(e);} finally { setBoxesLoading(false);} }
 
   async function fetchOrdersByBoxId(boxId:number|string){
@@ -569,6 +583,95 @@ export default function ChinaOrdersTabContent() {
     return t('admin.orders.china.containerBadges.state', { num: s });
   };
 
+  const checkIfBoxHasOnlyAirOrders = async (boxId: number | string): Promise<boolean> => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data: orders, error } = await supabase
+        .from('orders')
+        .select('shippingType')
+        .eq('box_id', boxId);
+
+      if (error) {
+        console.error('Error obteniendo pedidos de la caja:', error);
+        return false;
+      }
+
+      if (!orders || orders.length === 0) {
+        return false; // Caja vacía
+      }
+
+      // Verificar que todos los pedidos tengan shippingType = "air"
+      return orders.every(order => order.shippingType === 'air');
+    } catch (e) {
+      console.error('Error verificando tipo de envío de pedidos:', e);
+      return false;
+    }
+  };
+
+  const handleSendBoxDirectly = async (boxId: number | string) => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+
+      // Verificar que la caja tenga pedidos
+      const { data: orders, error: countErr } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('box_id', boxId)
+        .limit(1);
+
+      if (countErr) {
+        console.error('Error verificando pedidos de la caja:', countErr);
+        toast({ title: t('chinese.ordersPage.toasts.unexpectedErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
+        return;
+      }
+
+      if (!orders || orders.length === 0) {
+        toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.packEmptyBoxNotAllowed') });
+        return;
+      }
+
+      // Cambiar estado de la caja a enviado (state = 4)
+      const { error: boxUpdateError } = await supabase
+        .from('boxes')
+        .update({ state: 4 })
+        .eq('box_id', boxId);
+
+      if (boxUpdateError) {
+        console.error('Error enviando caja:', boxUpdateError);
+        toast({ title: t('chinese.ordersPage.toasts.sendBoxErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
+        return;
+      }
+
+      // Cambiar estado de todos los pedidos a enviado (state = 9)
+      const { error: ordersUpdateError } = await supabase
+        .from('orders')
+        .update({ state: 9 })
+        .eq('box_id', boxId);
+
+      if (ordersUpdateError) {
+        console.error('Error actualizando pedidos:', ordersUpdateError);
+      }
+
+      toast({ title: t('chinese.ordersPage.toasts.boxSentTitle'), description: t('chinese.ordersPage.toasts.boxSentDesc', { boxId }) });
+
+      // Actualizar UI
+      setBoxes(prev => prev.map(b => {
+        const currentId = b.box_id ?? b.boxes_id ?? b.id;
+        if (currentId === boxId) {
+          return { ...b, state: 4 };
+        }
+        return b;
+      }));
+
+      // Refrescar datos
+      fetchBoxes();
+
+    } catch (e) {
+      console.error('Error enviando caja:', e);
+      toast({ title: t('chinese.ordersPage.toasts.unexpectedErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
+    }
+  };
+
   const stats = {
     pendientes: pedidos.filter(p=>p.estado==='pendiente').length,
     cotizados: pedidos.filter(p=>p.estado==='cotizado').length,
@@ -710,7 +813,7 @@ export default function ChinaOrdersTabContent() {
           <CardContent>
             {loadingPedidos ? (<div className="py-12 text-center text-sm">{t('common.loading')}</div>) : pedidosFiltrados.length===0 ? (<div className="py-12 text-center text-sm">{t('admin.orders.china.orders.notFoundTitle')}</div>) : (
               <div className="space-y-3">
-        {(() => { const total=pedidosFiltrados.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, pedidosPage); return pedidosFiltrados.slice(start,end).map(p=>{ const badge=getOrderBadge(p.numericState); return (
+        {(() => { const total=pedidosFiltrados.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, pedidosPage); return pedidosFiltrados.slice(start,end).map(p=>{ const badge=getOrderBadge(t, p.numericState); return (
                   <div key={p.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
                     <div className="min-w-0 flex items-center gap-4">
                       <div className="p-3 bg-blue-100 dark:bg-blue-800/40 rounded-lg"><Package className="h-5 w-5 text-blue-600 dark:text-blue-300" /></div>
@@ -778,7 +881,7 @@ export default function ChinaOrdersTabContent() {
           <CardContent>
       {boxes.length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.boxes.noneTitle')}</div>) : boxes.filter((b,idx)=>{ if(!filtroCaja) return true; const id=b.box_id ?? b.boxes_id ?? b.id ?? idx; return String(id).toLowerCase().includes(filtroCaja.toLowerCase()); }).length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.boxes.notFoundTitle')}</div>) : (
               <div className="space-y-3">
-        {(() => { const filtered = boxes.filter((b,idx)=>{ if(!filtroCaja) return true; const id=b.box_id ?? b.boxes_id ?? b.id ?? idx; return String(id).toLowerCase().includes(filtroCaja.toLowerCase()); }); const total=filtered.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, boxesPage); return filtered.slice(start,end).map((box,idx)=>{ const id=box.box_id ?? box.boxes_id ?? box.id ?? idx; const created=box.creation_date ?? box.created_at ?? ''; const stateNum=(box.state??1) as number; const countKey = box.box_id ?? box.boxes_id ?? box.id ?? id; const badge=getBoxBadge(stateNum); return (
+        {(() => { const filtered = boxes.filter((b,idx)=>{ if(!filtroCaja) return true; const id=b.box_id ?? b.boxes_id ?? b.id ?? idx; return String(id).toLowerCase().includes(filtroCaja.toLowerCase()); }); const total=filtered.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, boxesPage); return filtered.slice(start,end).map((box,idx)=>{ const id=box.box_id ?? box.boxes_id ?? box.id ?? idx; const created=box.creation_date ?? box.created_at ?? ''; const stateNum=(box.state??1) as number; const countKey = box.box_id ?? box.boxes_id ?? box.id ?? id; const badge=getBoxBadge(t, stateNum); return (
                   <div key={id as any} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
                     <div className="min-w-0 flex items-center gap-4">
                       <div className="p-3 bg-indigo-100 dark:bg-indigo-800/40 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600 dark:text-indigo-300" /></div>
@@ -796,18 +899,37 @@ export default function ChinaOrdersTabContent() {
                     <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
           <Badge className={badge.className}>{getBoxBadgeLabel(stateNum)}</Badge>
                       {stateNum===1 && (
-                        <Button
-                          size="sm"
-                          className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={(orderCountsByBoxMain[countKey as any] ?? 0) <= 0}
-                          onClick={()=>{
-                            const currentBoxId=box.box_id ?? box.boxes_id ?? box.id;
-                            setModalEmpaquetarCaja({open:true, boxId: currentBoxId});
-                            if(containers.length===0) fetchContainers();
-                          }}
-                        >
-                          {t('admin.orders.china.boxes.pack')}
-                        </Button>
+                        airOnlyBoxes.has(countKey) ? (
+                          // Botón "Enviar" para cajas con solo pedidos aéreos
+                          <Button
+                            size="sm"
+                            className="flex items-center gap-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={(orderCountsByBoxMain[countKey as any] ?? 0) <= 0}
+                            onClick={() => {
+                              const currentBoxId = box.box_id ?? box.boxes_id ?? box.id;
+                              if (currentBoxId !== undefined) {
+                                handleSendBoxDirectly(currentBoxId);
+                              }
+                            }}
+                          >
+                            <Truck className="h-4 w-4" />
+                            <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.send')}</span>
+                          </Button>
+                        ) : (
+                          // Botón "Empaquetar" para cajas normales
+                          <Button
+                            size="sm"
+                            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={(orderCountsByBoxMain[countKey as any] ?? 0) <= 0}
+                            onClick={()=>{
+                              const currentBoxId=box.box_id ?? box.boxes_id ?? box.id;
+                              setModalEmpaquetarCaja({open:true, boxId: currentBoxId});
+                              if(containers.length===0) fetchContainers();
+                            }}
+                          >
+                            {t('admin.orders.china.boxes.pack')}
+                          </Button>
+                        )
                       )}
                       {stateNum===2 && (<Button variant="outline" size="sm" onClick={()=>{ const currentBoxId=box.box_id ?? box.boxes_id ?? box.id; if(currentBoxId!==undefined) handleUnpackBox(currentBoxId as any); }}>{t('admin.orders.china.boxes.unpack')}</Button>)}
                       {stateNum>=3 && (<Button variant="outline" size="sm" disabled>{t('admin.orders.china.boxes.unpack')}</Button>)}
@@ -851,7 +973,7 @@ export default function ChinaOrdersTabContent() {
           <CardContent>
       {containers.length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.containers.noneTitle')}</div>) : containers.filter((c,idx)=>{ if(!filtroContenedor) return true; const id=c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }).length===0 ? (<div className="py-10 text-center text-sm">{t('admin.orders.china.containers.notFoundTitle')}</div>) : (
               <div className="space-y-3">
-        {(() => { const filtered = containers.filter((c,idx)=>{ if(!filtroContenedor) return true; const id=c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }); const total=filtered.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, containersPage); return filtered.slice(start,end).map((container,idx)=>{ const id=container.container_id ?? container.containers_id ?? container.id ?? idx; const created=container.creation_date ?? container.created_at ?? ''; const stateNum=(container.state??1) as number; const badge=getContainerBadge(stateNum); return (
+        {(() => { const filtered = containers.filter((c,idx)=>{ if(!filtroContenedor) return true; const id=c.container_id ?? c.containers_id ?? c.id ?? idx; return String(id).toLowerCase().includes(filtroContenedor.toLowerCase()); }); const total=filtered.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, containersPage); return filtered.slice(start,end).map((container,idx)=>{ const id=container.container_id ?? container.containers_id ?? container.id ?? idx; const created=container.creation_date ?? container.created_at ?? ''; const stateNum=(container.state??1) as number; const badge=getContainerBadge(t, stateNum); return (
                   <div key={id as any} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
                     <div className="min-w-0 flex items-center gap-4">
                       <div className="p-3 bg-indigo-100 dark:bg-indigo-800/40 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600 dark:text-indigo-300" /></div>
@@ -921,7 +1043,7 @@ export default function ChinaOrdersTabContent() {
               <div className="text-center py-12"><Package className="h-12 w-12 text-slate-400 mx-auto mb-4" /><p className="text-slate-500 dark:text-slate-400">{t('admin.orders.china.modals.boxOrders.noneTitle')}</p></div>
             ) : (
               <div className="space-y-3">
-        {ordersByBox.map(o=>{ const badge=getOrderBadge(o.numericState); return (
+        {ordersByBox.map(o=>{ const badge=getOrderBadge(t, o.numericState); return (
                   <div key={o.id} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
                     <div className="space-y-1"><p className="font-semibold text-slate-900 dark:text-white">#{o.id} {o.producto}</p><p className="text-xs text-slate-500 dark:text-slate-400">{o.cliente}</p></div>
           <Badge className={badge.className}>{getOrderBadgeLabel(o.numericState)}</Badge>
@@ -942,7 +1064,7 @@ export default function ChinaOrdersTabContent() {
               <div className="text-center py-12"><Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" /><p className="text-slate-500 dark:text-slate-400">{t('admin.orders.china.modals.containerBoxes.noneTitle')}</p></div>
             ) : (
               <div className="space-y-3">
-                {boxesByContainer.map((box,idx)=>{ const id = box.box_id ?? box.boxes_id ?? box.id ?? idx; const created = box.creation_date ?? box.created_at ?? ''; const stateNum=(box.state ?? 1) as number; const badge=getBoxBadge(stateNum); return (
+                {boxesByContainer.map((box,idx)=>{ const id = box.box_id ?? box.boxes_id ?? box.id ?? idx; const created = box.creation_date ?? box.created_at ?? ''; const stateNum=(box.state ?? 1) as number; const badge=getBoxBadge(t, stateNum); return (
                   <div key={id as any} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
                     <div className="space-y-1"><p className="font-semibold text-slate-900 dark:text-white">#BOX-{id}</p>{box.name && (<p className="text-xs text-slate-500 dark:text-slate-400">{String(box.name)}</p>)}<p className="text-xs text-slate-500 dark:text-slate-400">{created ? new Date(created).toLocaleString('es-ES') : '—'}</p></div>
                     <div className="flex items-center gap-3">
@@ -1073,7 +1195,7 @@ export default function ChinaOrdersTabContent() {
               <div className="space-y-3">{containers.map((container,idx)=>{ const id=container.container_id ?? container.containers_id ?? container.id ?? idx; const created = container.creation_date ?? container.created_at ?? ''; const stateNum=(container.state??1) as number; return (
                 <div key={id as any} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
   <div className="space-y-1"><p className="font-semibold">#CONT-{id}</p>{container.name && (<p className="text-xs text-slate-500">{String(container.name)}</p>)}<p className="text-xs text-slate-500">{created? new Date(created).toLocaleString('es-ES'):'—'}</p></div>
-  <div className="flex items-center gap-3"><Badge className={getContainerBadge(stateNum).className}>{getContainerBadgeLabel(stateNum)}</Badge><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled={stateNum>=3} onClick={()=> modalEmpaquetarCaja.boxId && handleSelectContenedorForCaja(modalEmpaquetarCaja.boxId, container)}>{t('admin.orders.china.modals.selectContainerForBox.select')}</Button></div>
+  <div className="flex items-center gap-3"><Badge className={getContainerBadge(t, stateNum).className}>{getContainerBadge(t, stateNum).label}</Badge><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled={stateNum>=3} onClick={()=> modalEmpaquetarCaja.boxId && handleSelectContenedorForCaja(modalEmpaquetarCaja.boxId, container)}>{t('admin.orders.china.modals.selectContainerForBox.select')}</Button></div>
                 </div>
               ); })}</div>
             )}

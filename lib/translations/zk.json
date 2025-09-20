@@ -1233,6 +1233,7 @@
           "notFoundSubtitle": "尝试调整 ID 搜索。",
           "ordersCount": "订单：",
           "pack": "打包",
+          "send": "发送",
           "unpack": "解包",
           "viewOrders": "查看订单",
           "delete": "删除",
@@ -1392,7 +1393,16 @@
           "orderPdfMissingDesc": "此订单无可用 PDF。",
           "boxDeleteIdInvalidTitle": "无法删除",
           "boxDeleteIdInvalidDesc": "无效箱子 ID。",
-          "containerDeleteIdInvalidDesc": "无效集装箱 ID。"
+          "containerDeleteIdInvalidDesc": "无效集装箱 ID。",
+          "orderNotFoundTitle": "未找到订单",
+          "orderNotFoundDesc": "找不到指定的订单。",
+          "fetchErrorTitle": "获取数据错误",
+          "shippingTypeMismatchTitle": "发货类型不兼容",
+          "shippingTypeMultipleDesc": "箱子包含不同发货类型的订单。",
+          "shippingTypeMismatchDesc": "订单的发货类型与箱子中的现有订单不匹配。",
+          "sendBoxErrorTitle": "发送箱子错误",
+          "boxSentTitle": "箱子已发送",
+          "boxSentDesc": "箱子 #BOX-{{boxId}} 已成功发送。"
         }
       }
     },
@@ -2320,6 +2330,10 @@
       "inBox": "在箱中",
       "inContainer": "在集装箱中",
       "shippedVzla": "发往委内瑞拉",
+      "inVenezuela": "在委内瑞拉",
+      "inBoxVzla": "在箱中",
+      "readyVzla": "订单准备就绪",
+      "delivered": "已交付",
       "state": "状态 {{num}}"
     },
     "boxBadges": {
@@ -2380,6 +2394,7 @@
       "notFoundSubtitle": "尝试调整 ID 搜索。",
       "ordersCount": "订单：",
       "pack": "打包",
+      "send": "发送",
       "unpack": "解包",
       "viewOrders": "查看订单",
       "delete": "删除",
@@ -2542,8 +2557,21 @@
       "orderPdfMissingDesc": "此订单无可用 PDF。",
       "boxDeleteIdInvalidTitle": "无法删除",
       "boxDeleteIdInvalidDesc": "无效箱子 ID。",
-  "containerDeleteIdInvalidDesc": "无效集装箱 ID。",
-  "containerSentTitle": "集装箱已发货"
+      "containerDeleteIdInvalidDesc": "无效集装箱 ID。",
+      "containerSentTitle": "集装箱已发货",
+      "orderNotFoundTitle": "未找到订单",
+      "orderNotFoundDesc": "找不到指定的订单。",
+      "fetchErrorTitle": "获取数据错误",
+      "shippingTypeMismatchTitle": "发货类型不兼容",
+      "shippingTypeMultipleDesc": "箱子包含不同发货类型的订单。",
+      "shippingTypeMismatchDesc": "订单的发货类型与箱子中的现有订单不匹配。",
+      "tryAgainLater": "稍后再试。",
+      "packEmptyBoxNotAllowed": "你不能发送空箱子。",
+      "sendBoxErrorTitle": "无法发送箱子",
+      "tryAgain": "重试。",
+      "boxSentTitle": "箱子已发送",
+      "boxSentDesc": "箱子 #BOX-{{boxId}} 已被标记为已发货。",
+      "orderAlreadyShipped": "此订单已发货，无法报价。"
     }
   }
   },
