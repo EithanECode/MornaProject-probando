@@ -1045,6 +1045,7 @@
   },
   "common": {
     "save": "Guardar cambios",
+    "saving": "Guardando...",
     "cancel": "Cancelar",
     "edit": "Editar",
     "delete": "Eliminar",
@@ -2130,6 +2131,21 @@
         "exportPdf": "Exportar a PDF",
         "exportPdfShort": "PDF",
         "send": "Enviar"
+      },
+      "edit": {
+        "title": "Editar pedido",
+        "fields": {
+          "title": "Título",
+          "quantity": "Cantidad",
+          "description": "Descripción",
+          "specifications": "Especificaciones",
+          "url":"URL del producto"
+        },
+        "placeholders": {
+          "title": "Título del pedido",
+          "description": "Descripción del pedido",
+          "specifications": "Especificaciones del pedido"
+        }
       }
     },
     "soporte": {

@@ -1510,6 +1510,7 @@
   },
   "common": {
     "save": "Save changes",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
@@ -1784,6 +1785,21 @@
         "exportPdf": "Export to PDF",
         "exportPdfShort": "PDF",
         "send": "Send"
+      },
+      "edit": {
+        "title": "Edit order",
+        "fields": {
+          "title": "Title",
+          "quantity": "Quantity",
+          "description": "Description",
+          "specifications": "Specifications",
+          "url":"Product URL"
+        },
+        "placeholders": {
+          "title": "Order title",
+          "description": "Order description",
+          "specifications": "Order specifications"
+        }
       }
     },
     "soporte": {
