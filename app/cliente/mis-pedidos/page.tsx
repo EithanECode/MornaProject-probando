@@ -799,12 +799,55 @@ export default function MisPedidosPage() {
   const mm = String(fechaObj.getMonth() + 1).padStart(2, '0');
   const yyyy = fechaObj.getFullYear();
   const fechaPedidoLegible = `${dd}-${mm}-${yyyy}`;
-  const numeroPedido = Date.now();
+  // Generaremos el PDF usando el ID real del pedido (tras crear el pedido)
+  let orderIdCreated: string | number | null = null;
   // Variable antigua nombrePDF eliminada (se generará una versión sanitizada más adelante)
 
-    // PDF profesional con layout corporativo y SSR compatible
+    // Flujo: 1) Crear pedido vía API para obtener su ID. 2) Generar PDF usando ese ID. 3) Subir PDF. 4) PATCH pedido con pdfRoutes.
     (async () => {
       try {
+        // 1) Crear pedido con datos básicos, por ahora sin pdfRoutes
+        const prePayload = {
+          client_id: clientId || '',
+          productName: newOrderData.productName,
+          description: newOrderData.description,
+          quantity: newOrderData.quantity,
+          estimatedBudget: Number(newOrderData.estimatedBudget),
+          deliveryType: newOrderData.deliveryVenezuela,
+          shippingType: newOrderData.deliveryType,
+          imgs: [],
+          // @ts-ignore
+          links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
+          pdfRoutes: null,
+          state: 1,
+          order_origin: 'vzla'
+        };
+        const createRes = await fetch('/api/admin/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(prePayload)
+        });
+        if (!createRes.ok) {
+          let errMsg = `Status ${createRes.status}`;
+          try {
+            const j = await createRes.json();
+            if (j?.error) errMsg += ` - ${j.error}`;
+            if (j?.details) errMsg += ` | ${Array.isArray(j.details) ? j.details.join(', ') : j.details}`;
+          } catch {/* ignore */}
+          console.error('Error creando pedido (pre-PDF) vía API:', errMsg, prePayload);
+          toast({ title: 'Error creando pedido', description: errMsg, variant: 'destructive', duration: 6000 });
+          alert('Error al crear el pedido antes de generar el PDF.\n' + errMsg);
+          return;
+        }
+        const createdJson = await createRes.json().catch(() => null);
+        orderIdCreated = createdJson?.data?.id ?? null;
+        if (orderIdCreated === null || orderIdCreated === undefined) {
+          console.error('No se obtuvo ID del pedido creado');
+          toast({ title: 'Error', description: 'No se obtuvo el ID del pedido creado.', variant: 'destructive', duration: 5000 });
+          return;
+        }
+
+        // 2) Generar PDF con el ID real del pedido
         const { jsPDF } = await import('jspdf');
         const autoTable = (await import('jspdf-autotable')).default;
         const doc = new jsPDF();
@@ -833,19 +876,44 @@ export default function MisPedidosPage() {
           text: [33, 37, 41] as [number, number, number]
         };
 
+        // Helper: load an SVG and rasterize to PNG data URL for jsPDF
+        const loadSvgAsPngDataUrl = async (url: string, sizePx: number = 300): Promise<string> => {
+          const res = await fetch(url);
+          const svgText = await res.text();
+          const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+          const blobUrl = URL.createObjectURL(svgBlob);
+          try {
+            const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+              const i = new Image();
+              i.onload = () => resolve(i);
+              i.onerror = () => reject(new Error('Failed to load SVG image.'));
+              i.src = blobUrl;
+            });
+            const canvas = document.createElement('canvas');
+            canvas.width = sizePx;
+            canvas.height = sizePx;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) throw new Error('Canvas 2D context not available');
+            ctx.clearRect(0, 0, sizePx, sizePx);
+            ctx.drawImage(img, 0, 0, sizePx, sizePx);
+            return canvas.toDataURL('image/png');
+          } finally {
+            URL.revokeObjectURL(blobUrl);
+          }
+        };
+
         // Datos para la tabla
         const pedidoTable = [
-          ['ID Pedido', `${numeroPedido}`],
-          ['Cliente ID', `${newOrderData.client_id}`],
-          ['Nombre de Usuario', `${newOrderData.client_name || '-'}`],
-          ['Fecha', `${fechaPedidoLegible}`],
-          ['Tipo de Envío', `${newOrderData.deliveryType}`],
-          ['Entrega en Venezuela', `${newOrderData.deliveryVenezuela}`],
-          ['Producto', `${newOrderData.productName}`],
-          ['Cantidad', `${newOrderData.quantity}`],
-          ['Presupuesto Estimado', `$${newOrderData.estimatedBudget}`],
-          ['Descripción', newOrderData.description || '-'],
-          ['Especificaciones', newOrderData.specifications || '-'],
+          ['Order ID', `${orderIdCreated}`],
+          ['Client ID', `${newOrderData.client_id}`],
+          ['Username', `${newOrderData.client_name || '-'}`],
+          ['Date', `${fechaPedidoLegible}`],
+          ['Shipping Type', `${newOrderData.deliveryType}`],
+          ['Delivery in Venezuela', `${newOrderData.deliveryVenezuela}`],
+          ['Product', `${newOrderData.productName}`],
+          ['Quantity', `${newOrderData.quantity}`],
+          ['Description', newOrderData.description || '-'],
+          ['Specifications', newOrderData.specifications || '-'],
         ];
         if (newOrderData.requestType === 'link') {
           // @ts-ignore (productUrl podría existir en el tipo extendido)
@@ -858,16 +926,27 @@ export default function MisPedidosPage() {
         doc.setFontSize(12);
         doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
         doc.setFont('helvetica', 'bold');
-        doc.setFillColor(255, 255, 255);
-        doc.roundedRect(margin, 8, 20, 20, 2, 2, 'F');
-        doc.text('PITA', margin + 10, 20, { align: 'center' });
+        // Place platform logo at the same coordinates (previously inside a 20x20 box), without background
+        try {
+          const logoDataUrl = await loadSvgAsPngDataUrl('/pita_icon.svg', 320);
+          const boxSize = 20; // mm
+          const logoW = 14;   // mm
+          const logoH = 14;   // mm
+          const logoX = margin + (boxSize - logoW) / 2; // center inside 20x20 box
+          const logoY = 8 + (boxSize - logoH) / 2;
+          doc.addImage(logoDataUrl, 'PNG', logoX, logoY, logoW, logoH, undefined, 'FAST');
+        } catch {
+          // Fallback to text if the image fails to load
+          doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+          doc.text('PITA', margin + 10, 20, { align: 'center' });
+        }
         doc.setFontSize(24);
         doc.setTextColor(255, 255, 255);
-        doc.text('RESUMEN DE PEDIDO', pageWidth / 2, 22, { align: 'center' });
+        doc.text('ORDER SUMMARY', pageWidth / 2, 22, { align: 'center' });
         doc.setFontSize(10);
         doc.setTextColor(255, 255, 255);
-        doc.text(`Pedido: #${numeroPedido}`, pageWidth - margin, 15, { align: 'right' });
-        doc.text(`Fecha: ${fechaPedidoLegible}`, pageWidth - margin, 21, { align: 'right' });
+  doc.text(`Order: #${orderIdCreated}`, pageWidth - margin, 15, { align: 'right' });
+        doc.text(`Date: ${fechaPedidoLegible}`, pageWidth - margin, 21, { align: 'right' });
 
         let currentY = 50;
 
@@ -924,10 +1003,10 @@ export default function MisPedidosPage() {
           doc.rect(margin, currentY, pageWidth - (margin * 2), 12, 'F');
           doc.setFontSize(14);
           doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-          doc.text('DETALLES DEL PEDIDO', margin + 5, currentY + 8);
+          doc.text('ORDER DETAILS', margin + 5, currentY + 8);
           currentY += 20;
           autoTable(doc, {
-            head: [['Campo', 'Información']],
+            head: [['Field', 'Information']],
             body: pedidoTable,
             startY: currentY,
             margin: { left: margin, right: margin },
@@ -959,7 +1038,7 @@ export default function MisPedidosPage() {
             const finalY = (doc as any).lastAutoTable?.finalY + 12;
             doc.setFontSize(10);
             doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-            doc.text('URL del Producto:', margin, finalY + 6);
+            doc.text('Product URL:', margin, finalY + 6);
             doc.setFontSize(10);
             doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
             // @ts-ignore
@@ -975,14 +1054,13 @@ export default function MisPedidosPage() {
         doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
         doc.setFontSize(9);
         doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-        doc.text('PITA | Sistema de Logística y Pedidos', pageWidth / 2, footerY, { align: 'center' });
+        doc.text('PITA | Logistics and Ordering system', pageWidth / 2, footerY, { align: 'center' });
         doc.setFontSize(8);
         doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-        doc.text('info@pita.com   |   +58 424-1234567   |   www.pita.com', pageWidth / 2, footerY + 7, { align: 'center' });
+        doc.text('info@pita.com   |   +58 424-1234567', pageWidth / 2, footerY + 7, { align: 'center' });
         doc.setFontSize(7);
         doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-        doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
-        doc.text(`Página 1 de 1`, pageWidth - margin, footerY + 13, { align: 'right' });
+        doc.text(`Generated: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
 
         // Subir PDF a Supabase Storage con nombre sanitizado
         const pdfBlob = doc.output('blob');
@@ -990,7 +1068,7 @@ export default function MisPedidosPage() {
         const safeClient = sanitizeForFile(clientId || newOrderData.client_id);
         const safeDeliveryVzla = sanitizeForFile(newOrderData.deliveryVenezuela);
         const safeDeliveryType = sanitizeForFile(newOrderData.deliveryType);
-        const nombrePDFCorr = `${safeProduct}_${fechaPedidoLegible}_${numeroPedido}_${safeClient}_${safeDeliveryVzla}.pdf`;
+  const nombrePDFCorr = `${safeProduct}_${fechaPedidoLegible}_${orderIdCreated}_${safeClient}_${safeDeliveryVzla}.pdf`;
         const folder = safeDeliveryType || 'otros';
         const uploadKey = `${folder}/${nombrePDFCorr}`;
 
@@ -1027,44 +1105,27 @@ export default function MisPedidosPage() {
         const pdfUrl = `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${finalKey}`;
         console.log('pdfUrl:', pdfUrl);
 
-        // Preparar payload para creación vía API (service role)
-        const payload = {
-          client_id: clientId || '',
-          productName: newOrderData.productName,
-          description: newOrderData.description,
-          quantity: newOrderData.quantity,
-          estimatedBudget: Number(newOrderData.estimatedBudget),
-          deliveryType: newOrderData.deliveryVenezuela,
-          shippingType: newOrderData.deliveryType,
-          // @ts-ignore
-          imgs: pdfUrl ? [pdfUrl] : [],
-          // @ts-ignore
-          links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
-          pdfRoutes: pdfUrl,
-          state: 1,
-          order_origin: 'vzla'
-        };
-        console.log('Creando pedido vía API /api/admin/orders:', payload);
-        const apiRes = await fetch('/api/admin/orders', {
-          method: 'POST',
+        // 4) Actualizar el pedido con la URL del PDF y opcionalmente imgs/links
+        const patchRes = await fetch(`/api/admin/orders/${orderIdCreated}`, {
+          method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({
+            pdfRoutes: pdfUrl,
+            // @ts-ignore
+            imgs: pdfUrl ? [pdfUrl] : [],
+            // @ts-ignore
+            links: newOrderData.productUrl ? [newOrderData.productUrl] : []
+          })
         });
-        if (!apiRes.ok) {
-          let errMsg = `Status ${apiRes.status}`;
+        if (!patchRes.ok) {
+          let errMsg = `Status ${patchRes.status}`;
           try {
-            const j = await apiRes.json();
+            const j = await patchRes.json();
             if (j?.error) errMsg += ` - ${j.error}`;
             if (j?.details) errMsg += ` | ${Array.isArray(j.details) ? j.details.join(', ') : j.details}`;
           } catch {/* ignore */}
-          console.error('Error creando pedido (cliente) vía API:', errMsg, payload);
-          toast({ title: 'Error creando pedido', description: errMsg, variant: 'destructive', duration: 6000 });
-          alert('Error al guardar el pedido en la base de datos.\n' + errMsg);
-          return;
-        }
-        const json = await apiRes.json().catch(() => null);
-        if (json?.warning === 'links_removed_due_to_constraint') {
-          console.warn('El link fue removido por constraint en la BD.');
+          console.error('Error actualizando pedido con PDF URL:', errMsg, { orderIdCreated, pdfUrl });
+          toast({ title: 'Advertencia', description: 'Pedido creado pero no se pudo asociar el PDF.', duration: 5000 });
         }
         setShowSuccessAnimation(true);
         setTimeout(() => {

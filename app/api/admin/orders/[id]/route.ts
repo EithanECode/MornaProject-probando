@@ -47,8 +47,12 @@ export async function PATCH(
     const body = await req.json().catch(() => ({}));
     const update: Record<string, any> = {};
 
-  if (typeof body.description === 'string') update.description = body.description;
-  if (typeof body.state === 'number' && body.state >= 1 && body.state <= 8) update.state = body.state;
+    // Allow updating select fields
+    if (typeof body.description === 'string') update.description = body.description;
+    if (typeof body.state === 'number' && body.state >= 1 && body.state <= 8) update.state = body.state;
+    if (typeof body.pdfRoutes === 'string') update.pdfRoutes = body.pdfRoutes;
+    if (Array.isArray(body.imgs)) update.imgs = body.imgs;
+    if (Array.isArray(body.links)) update.links = body.links;
   // Nota: Asignaciones se omiten por ahora hasta confirmar columnas/valores exactos
 
     if (Object.keys(update).length === 0) {
@@ -59,7 +63,7 @@ export async function PATCH(
       .from('orders')
       .update(update)
       .eq('id', id)
-  .select('id, state, description')
+  .select('id, state, description, pdfRoutes, imgs, links')
       .single();
 
     if (error) {

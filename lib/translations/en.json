@@ -1232,6 +1232,7 @@
           "notFoundSubtitle": "Try adjusting the ID search.",
           "ordersCount": "Orders:",
           "pack": "Pack",
+          "send": "Send",
           "unpack": "Unpack",
           "viewOrders": "View orders",
           "delete": "Delete",
@@ -1391,7 +1392,16 @@
           "orderPdfMissingDesc": "No PDF available for this order.",
           "boxDeleteIdInvalidTitle": "Couldn't delete",
           "boxDeleteIdInvalidDesc": "Invalid box ID.",
-          "containerDeleteIdInvalidDesc": "Invalid container ID."
+          "containerDeleteIdInvalidDesc": "Invalid container ID.",
+          "orderNotFoundTitle": "Order not found",
+          "orderNotFoundDesc": "The specified order could not be found.",
+          "fetchErrorTitle": "Error fetching data",
+          "shippingTypeMismatchTitle": "Shipping type incompatible",
+          "shippingTypeMultipleDesc": "The box contains orders with different shipping types.",
+          "shippingTypeMismatchDesc": "The order's shipping type does not match existing orders in the box.",
+          "sendBoxErrorTitle": "Error sending box",
+          "boxSentTitle": "Box sent",
+          "boxSentDesc": "Box #BOX-{{boxId}} has been sent successfully."
         }
       }
     },
@@ -1510,6 +1520,7 @@
   },
   "common": {
     "save": "Save changes",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
@@ -1784,6 +1795,21 @@
         "exportPdf": "Export to PDF",
         "exportPdfShort": "PDF",
         "send": "Send"
+      },
+      "edit": {
+        "title": "Edit order",
+        "fields": {
+          "title": "Title",
+          "quantity": "Quantity",
+          "description": "Description",
+          "specifications": "Specifications",
+          "url":"Product URL"
+        },
+        "placeholders": {
+          "title": "Order title",
+          "description": "Order description",
+          "specifications": "Order specifications"
+        }
       }
     },
     "soporte": {
@@ -2326,6 +2352,10 @@
       "inBox": "In box",
       "inContainer": "In container",
       "shippedVzla": "Shipped to Venezuela",
+      "inVenezuela": "In Venezuela",
+      "inBoxVzla": "In Box",
+      "readyVzla": "Order Ready",
+      "delivered": "Delivered",
       "state": "State {{num}}"
     },
     "boxBadges": {
@@ -2386,6 +2416,7 @@
       "notFoundSubtitle": "Try adjusting the ID search.",
       "ordersCount": "Orders:",
       "pack": "Pack",
+      "send": "Send",
       "unpack": "Unpack",
       "viewOrders": "View orders",
       "delete": "Delete",
@@ -2547,8 +2578,20 @@
       "orderPdfMissingDesc": "No PDF available for this order.",
       "boxDeleteIdInvalidTitle": "Couldn't delete",
       "boxDeleteIdInvalidDesc": "Invalid box ID.",
-      "containerDeleteIdInvalidDesc": "Invalid container ID.",
-      "containerSentTitle": "Container sent"
+      "containerSentTitle": "Container sent",
+      "orderNotFoundTitle": "Order not found",
+      "orderNotFoundDesc": "The specified order could not be found.",
+      "fetchErrorTitle": "Error fetching data",
+      "shippingTypeMismatchTitle": "Shipping type incompatible",
+      "shippingTypeMultipleDesc": "The box contains orders with different shipping types.",
+      "shippingTypeMismatchDesc": "The order's shipping type does not match existing orders in the box.",
+      "tryAgainLater": "Try again later.",
+      "packEmptyBoxNotAllowed": "You can't send an empty box.",
+      "sendBoxErrorTitle": "Couldn't send box",
+      "tryAgain": "Try again.",
+      "boxSentTitle": "Box sent",
+      "boxSentDesc": "Box #BOX-{{boxId}} was marked as shipped.",
+      "orderAlreadyShipped": "This order has already been shipped and cannot be quoted."
     }
   }
   }

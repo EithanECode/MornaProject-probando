@@ -10,8 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertTriangle, Boxes, Calendar, CheckCircle, Clock, Eye, Filter, List, Package, Search, Send } from 'lucide-react';
+import { AlertTriangle, Boxes, Calendar, CheckCircle, Clock, Eye, Filter, List, Package, Search, Send, Pencil } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRealtimeVzla } from '@/hooks/use-realtime-vzla';
 import { useRealtimeVzlaBoxesContainers } from '@/hooks/use-realtime-vzla-boxes-containers';
@@ -95,6 +97,340 @@ export default function VenezuelaPedidosPage() {
   const [boxesByContainerLoading, setBoxesByContainerLoading] = useState(false);
   const [orderCountsByBox, setOrderCountsByBox] = useState<Record<string | number, number>>({});
   const [modalVerCajas, setModalVerCajas] = useState<{ open: boolean; containerId?: number | string }>({ open: false });
+
+  // Modal de edición de pedido
+  const [modalEditOrder, setModalEditOrder] = useState<{ open: boolean; order?: Order | null }>({ open: false, order: null });
+  const [editTitle, setEditTitle] = useState('');
+  const [editQuantity, setEditQuantity] = useState<number | ''>('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editSpecifications, setEditSpecifications] = useState('');
+  const [editUrl, setEditUrl] = useState('');
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  const openEditModal = (order: Order) => {
+    setEditError(null);
+    setModalEditOrder({ open: true, order });
+    setEditTitle((order as any).title || order.productName || '');
+    setEditQuantity(Number(order.quantity) || 1);
+    setEditDescription((order as any).description || '');
+    setEditSpecifications((order as any).specifications || '');
+    setEditUrl((order as any).url || (order as any).pdfRoutes || '');
+  };
+
+  const closeEditModal = () => {
+    if (editSaving) return; // evita cerrar mientras "guarda"
+    setModalEditOrder({ open: false, order: null });
+  };
+
+  const handleSaveEdit = async () => {
+    setEditError(null);
+    // Validaciones mínimas
+    if (!editTitle?.trim()) {
+      setEditError(t('venezuela.pedidos.validation.titleRequired', { defaultValue: 'El título es obligatorio.' }));
+      return;
+    }
+    const qty = Number(editQuantity);
+    if (!Number.isFinite(qty) || qty <= 0) {
+      setEditError(t('venezuela.pedidos.validation.quantityPositive', { defaultValue: 'La cantidad debe ser un número positivo.' }));
+      return;
+    }
+    if (!modalEditOrder.order?.id) {
+      setEditError(t('venezuela.pedidos.errors.invalidOrder', { defaultValue: 'Pedido inválido. Intenta de nuevo.' }));
+      return;
+    }
+    setEditSaving(true);
+    try {
+      const payload = {
+        id: Number.isFinite(Number(modalEditOrder.order?.id)) ? Number(modalEditOrder.order?.id) : modalEditOrder.order?.id,
+        title: editTitle.trim(),
+        quantity: qty,
+        description: editDescription.trim(),
+        specifications: editSpecifications.trim(),
+        url: editUrl.trim(),
+      };
+      const res = await fetch('/venezuela/pedidos/api/update-order', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || t('venezuela.pedidos.errors.updateOrder', { defaultValue: 'No se pudo actualizar el pedido' }));
+      }
+      // Tras actualizar, regenerar PDF con los datos editados y reemplazar la ruta previa si existe
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const orderIdCreated = payload.id as string | number;
+
+        // Construir fecha legible segura para nombre de archivo
+        const now = new Date();
+        const fechaPedidoLegible = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+
+        // 2) Generar PDF con el ID real del pedido (misma lógica que en cliente)
+        const { jsPDF } = await import('jspdf');
+        const autoTable = (await import('jspdf-autotable')).default;
+        const doc = new jsPDF();
+
+        // Helper para sanitizar valores usados en el nombre del archivo / carpeta
+        const sanitizeForFile = (val: string | undefined | null) => {
+          return (val || 'x')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-zA-Z0-9-_]+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '')
+            .toLowerCase()
+            .slice(0, 60);
+        };
+
+        // Layout y colores
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = (doc.internal.pageSize as any).height;
+        const margin = 15;
+        const colors = {
+          primary: [22, 120, 187] as [number, number, number],
+          secondary: [44, 62, 80] as [number, number, number],
+          light: [245, 248, 255] as [number, number, number],
+          border: [180, 200, 220] as [number, number, number],
+          text: [33, 37, 41] as [number, number, number]
+        };
+
+        // Helper: load an SVG and rasterize to PNG data URL for jsPDF
+        const loadSvgAsPngDataUrl = async (url: string, sizePx: number = 300): Promise<string> => {
+          const res = await fetch(url);
+          const svgText = await res.text();
+          const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+          const blobUrl = URL.createObjectURL(svgBlob);
+          try {
+            const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+              const i = new Image();
+              i.onload = () => resolve(i);
+              i.onerror = () => reject(new Error('Failed to load SVG image.'));
+              i.src = blobUrl;
+            });
+            const canvas = document.createElement('canvas');
+            canvas.width = sizePx;
+            canvas.height = sizePx;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) throw new Error('Canvas 2D context not available');
+            ctx.clearRect(0, 0, sizePx, sizePx);
+            ctx.drawImage(img, 0, 0, sizePx, sizePx);
+            return canvas.toDataURL('image/png');
+          } finally {
+            URL.revokeObjectURL(blobUrl);
+          }
+        };
+
+        // Datos para la tabla (reutilizando estructura del cliente)
+        const orderForPdf = modalEditOrder.order as Order;
+        const pedidoTable: any[] = [
+          ['Order ID', `${orderIdCreated}`],
+          ['Client ID', `${orderForPdf?.client_id ?? ''}`],
+          ['Username', `${orderForPdf?.clientName || '-'}`],
+          ['Date', `${fechaPedidoLegible}`],
+          ['Shipping Type', `${orderForPdf?.deliveryType ?? ''}`],
+          ['Delivery in Venezuela', `${'venezuela'}`],
+          ['Product', `${payload.title}`],
+          ['Quantity', `${payload.quantity}`],
+          ['Description', payload.description || '-'],
+          ['Specifications', payload.specifications || '-'],
+        ];
+        if (payload.url) {
+          pedidoTable.push(['URL', payload.url]);
+        }
+
+        // === ENCABEZADO PROFESIONAL ===
+        doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.rect(0, 0, pageWidth, 35, 'F');
+        doc.setFontSize(12);
+        doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.setFont('helvetica', 'bold');
+        try {
+          const logoDataUrl = await loadSvgAsPngDataUrl('/pita_icon.svg', 320);
+          const boxSize = 20; // mm
+          const logoW = 14;   // mm
+          const logoH = 14;   // mm
+          const logoX = margin + (boxSize - logoW) / 2;
+          const logoY = 8 + (boxSize - logoH) / 2;
+          // @ts-ignore
+          doc.addImage(logoDataUrl, 'PNG', logoX, logoY, logoW, logoH, undefined, 'FAST');
+        } catch {
+          doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+          doc.text('PITA', margin + 10, 20, { align: 'center' });
+        }
+        doc.setFontSize(24);
+        doc.setTextColor(255, 255, 255);
+        doc.text('ORDER SUMMARY', pageWidth / 2, 22, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setTextColor(255, 255, 255);
+        // @ts-ignore
+        doc.text(`Order: #${orderIdCreated}`, pageWidth - margin, 15, { align: 'right' });
+        doc.text(`Date: ${fechaPedidoLegible}`, pageWidth - margin, 21, { align: 'right' });
+
+        let currentY = 50;
+
+        // Para edición, tratamos el pedido como tipo 'link' si hay URL
+        doc.setFillColor(colors.light[0], colors.light[1], colors.light[2]);
+        doc.rect(margin, currentY, pageWidth - (margin * 2), 12, 'F');
+        doc.setFontSize(14);
+        doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.text('ORDER DETAILS', margin + 5, currentY + 8);
+        currentY += 20;
+        autoTable(doc, {
+          head: [['Field', 'Information']],
+          body: pedidoTable,
+          startY: currentY,
+          margin: { left: margin, right: margin },
+          theme: 'striped',
+          headStyles: {
+            fillColor: colors.primary,
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 12,
+            halign: 'center',
+            cellPadding: 4
+          },
+          bodyStyles: {
+            fontSize: 11,
+            cellPadding: 4,
+            textColor: colors.text
+          },
+          alternateRowStyles: {
+            fillColor: colors.light
+          },
+          columnStyles: {
+            0: { cellWidth: 60, fontStyle: 'bold', textColor: colors.secondary },
+            1: { cellWidth: pageWidth - (margin * 2) - 60 }
+          }
+        });
+        if (payload.url) {
+          const finalY = (doc as any).lastAutoTable?.finalY + 12;
+          doc.setFontSize(10);
+          doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+          doc.text('Product URL:', margin, finalY + 6);
+          doc.setFontSize(10);
+          doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+          const urlText = (doc as any).splitTextToSize(payload.url, pageWidth - (margin * 2));
+          doc.text(urlText, margin, finalY + 14);
+        }
+
+        // === FOOTER PROFESIONAL ===
+        const footerY = pageHeight - 25;
+        doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+        doc.setLineWidth(0.5);
+        doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+        doc.setFontSize(9);
+        doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+        doc.text('PITA | Logistics and Ordering system', pageWidth / 2, footerY, { align: 'center' });
+        doc.setFontSize(8);
+        doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.text('info@pita.com   |   +58 424-1234567', pageWidth / 2, footerY + 7, { align: 'center' });
+        doc.setFontSize(7);
+        doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+        doc.text(`Generated: ${new Date().toLocaleString('es-ES')}`, margin, footerY + 13);
+
+        // Subir PDF a Supabase Storage con nombre sanitizado (misma lógica que en clientes)
+        const pdfBlob = doc.output('blob');
+        const safeProduct = sanitizeForFile(payload.title);
+        const safeClient = sanitizeForFile(orderForPdf?.client_id);
+        const safeDeliveryVzla = sanitizeForFile('venezuela');
+        const safeDeliveryType = sanitizeForFile(orderForPdf?.deliveryType);
+        const nombrePDFCorr = `${safeProduct}_${fechaPedidoLegible}_${orderIdCreated}_${safeClient}_${safeDeliveryVzla}.pdf`;
+        const folder = safeDeliveryType || 'otros';
+  let uploadKey = `${folder}/${nombrePDFCorr}`;
+
+        const doUpload = async (key: string) => {
+          return await supabase.storage
+            .from('orders')
+            .upload(key, pdfBlob, {
+              cacheControl: '3600',
+              upsert: true,
+              contentType: 'application/pdf'
+            });
+        };
+
+        let uploadResult = await doUpload(uploadKey);
+        if (uploadResult.error && /Invalid key/i.test(uploadResult.error.message || '')) {
+          console.warn('Upload falló por Invalid key, aplicando sanitización extra y reintentando.');
+          const ultraKey = (uploadKey || '')
+            .replace(/[^a-zA-Z0-9/_\-.]/g, '')
+            .replace(/--+/g, '-');
+          uploadResult = await doUpload(ultraKey);
+          if (!uploadResult.error) {
+            console.log('Upload exitoso tras retry con key:', ultraKey);
+            uploadKey = ultraKey;
+          }
+        }
+
+        if (uploadResult.error) {
+          console.error('Supabase Storage upload error:', uploadResult.error);
+          setModalAviso({ open: true, title: 'Error subiendo PDF', description: uploadResult.error.message || 'No se pudo subir el archivo.' });
+        } else {
+          const finalKey = uploadResult.data?.path || uploadKey!;
+          const pdfUrl = `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${finalKey}`;
+
+          // Actualizar el pedido con la nueva URL del PDF
+          const patchRes = await fetch(`/api/admin/orders/${orderIdCreated}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              pdfRoutes: pdfUrl,
+              // @ts-ignore
+              imgs: pdfUrl ? [pdfUrl] : [],
+              // @ts-ignore
+              links: payload.url ? [payload.url] : []
+            })
+          });
+          if (!patchRes.ok) {
+            let errMsg = `Status ${patchRes.status}`;
+            try {
+              const j = await patchRes.json();
+              if ((j as any)?.error) errMsg += ` - ${(j as any).error}`;
+              if ((j as any)?.details) errMsg += ` | ${Array.isArray((j as any).details) ? (j as any).details.join(', ') : (j as any).details}`;
+            } catch {/* ignore */}
+            console.error('Error actualizando pedido con PDF URL:', errMsg, { orderIdCreated, pdfUrl });
+
+            // Fallback: actualizar directamente via Supabase
+            let fallbackSucceeded = false;
+            let descriptionMsg = `Pedido actualizado pero no se pudo asociar el nuevo PDF. URL generado: ${pdfUrl}`;
+            try {
+              const { error: directUpdateError } = await supabase
+                .from('orders')
+                .update({ pdfRoutes: pdfUrl })
+                .eq('id', orderIdCreated as any);
+              if (!directUpdateError) {
+                // Si el fallback directo funcionó, no mostramos modal de error
+                fallbackSucceeded = true;
+              } else {
+                descriptionMsg += `\nIntento directo también falló: ${directUpdateError.message}`;
+              }
+            } catch (directErr: any) {
+              descriptionMsg += `\nIntento directo también falló con excepción: ${directErr?.message || String(directErr)}`;
+            }
+
+            if (!fallbackSucceeded) {
+              setModalAviso({ open: true, title: 'Advertencia', description: descriptionMsg });
+            }
+          }
+        }
+      } catch (pdfErr) {
+        console.error('Error al regenerar/subir PDF tras edición:', pdfErr);
+        setModalAviso({ open: true, title: 'Error generando PDF', description: (pdfErr as any)?.message || 'No se pudo generar o subir el PDF editado.' });
+      }
+
+      // Actualizar listado y cerrar modal
+      await fetchOrders();
+      setModalEditOrder({ open: false, order: null });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('[EDIT ORDER ERROR]', e);
+      const message = (e as Error)?.message || t('venezuela.pedidos.errors.editUnknown', { defaultValue: 'Ocurrió un error al guardar.' });
+      setEditError(message);
+    } finally {
+      setEditSaving(false);
+    }
+  };
 
   // (Scroll lock centralizado en Sidebar)
 
@@ -588,6 +924,16 @@ export default function VenezuelaPedidosPage() {
                               <Eye className="w-4 h-4" /> {t('admin.orders.actions.view')}
                             </Button>
                             <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center gap-1 uppercase"
+                              disabled={stateNum !== 1}
+                              onClick={() => openEditModal(order)}
+                              title={stateNum !== 1 ? t('venezuela.pedidos.edit.disabledTooltip', { defaultValue: 'Solo disponible para pedidos en estado Pendiente (1)' }) : t('venezuela.pedidos.edit.cta', { defaultValue: 'Editar pedido' })}
+                            >
+                              <Pencil className="w-4 h-4" /> {t('admin.orders.actions.edit', { defaultValue: 'Editar' })}
+                            </Button>
+                            <Button
                               size="icon"
                               disabled={loading || ![1,8,11,12].includes(stateNum)}
                               onClick={async () => {
@@ -1042,6 +1388,65 @@ export default function VenezuelaPedidosPage() {
           )}
           
           {/* Modales */}
+          {/* Modal Editar Pedido */}
+          {modalEditOrder.open && (
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+              onClick={closeEditModal}
+            >
+              <div
+                className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-xl mx-4 w-full max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    {t('venezuela.pedidos.edit.title', { defaultValue: 'Editar pedido' })} {modalEditOrder.order ? `#ORD-${modalEditOrder.order.id}` : ''}
+                  </h3>
+                  <Button variant="ghost" size="sm" onClick={closeEditModal} className="h-8 w-8 p-0">✕</Button>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="edit-title">{t('venezuela.pedidos.edit.fields.title', { defaultValue: 'Título del pedido' })}</Label>
+                    <Input id="edit-title" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder={t('venezuela.pedidos.edit.placeholders.title', { defaultValue: 'Ej. Funda de almohada' }) || ''} />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="edit-quantity">{t('venezuela.pedidos.edit.fields.quantity', { defaultValue: 'Cantidad' })}</Label>
+                    <Input id="edit-quantity" type="number" min={1} value={editQuantity} onChange={(e) => setEditQuantity(e.target.value === '' ? '' : Number(e.target.value))} placeholder="1" />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="edit-description">{t('venezuela.pedidos.edit.fields.description', { defaultValue: 'Descripción' })}</Label>
+                    <Textarea id="edit-description" value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={3} placeholder={t('venezuela.pedidos.edit.placeholders.description', { defaultValue: 'Descripción general del pedido' }) || ''} />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="edit-specs">{t('venezuela.pedidos.edit.fields.specifications', { defaultValue: 'Especificaciones' })}</Label>
+                    <Textarea id="edit-specs" value={editSpecifications} onChange={(e) => setEditSpecifications(e.target.value)} rows={3} placeholder={t('venezuela.pedidos.edit.placeholders.specifications', { defaultValue: 'Detalles técnicos, colores, tallas, etc.' }) || ''} />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="edit-url">{t('venezuela.pedidos.edit.fields.url', { defaultValue: 'URL del pedido' })}</Label>
+                    <Input id="edit-url" type="url" value={editUrl} onChange={(e) => setEditUrl(e.target.value)} placeholder="https://..." />
+                  </div>
+
+                  {editError && (
+                    <p className="text-sm text-red-600">{editError}</p>
+                  )}
+
+                  <div className="pt-2 flex items-center justify-end gap-2">
+                    <Button variant="outline" onClick={closeEditModal} disabled={editSaving}>
+                      {t('common.cancel', { defaultValue: 'Cancelar' })}
+                    </Button>
+                    <Button onClick={handleSaveEdit} disabled={editSaving}>
+                      {editSaving ? t('common.saving', { defaultValue: 'Guardando…' }) : t('common.save', { defaultValue: 'Guardar' })}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           {modalVerPedidos.open && (
             <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setModalVerPedidos({ open: false })}>
               <div className="bg-white rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>

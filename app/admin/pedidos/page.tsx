@@ -92,6 +92,8 @@ interface Order {
   priority: 'alta' | 'media' | 'baja';
   documents?: { type: 'link' | 'image'; url: string; label: string }[];
   createdAt?: string;
+  // Public URL to the generated order PDF (from Supabase storage)
+  pdfUrl?: string | null;
 }
 
 interface NewOrderData {
@@ -451,6 +453,7 @@ export default function PedidosPage() {
         description: o.description || o.productName || '',
         priority: 'media',
   createdAt: o.created_at || undefined,
+        pdfUrl: o.pdfRoutes ?? null,
       };
     });
     setOrders(mapped);
@@ -706,6 +709,7 @@ export default function PedidosPage() {
         doc.setTextColor(44, 62, 80);
         doc.text(`${t('admin.orders.pdf.generatedAt')}: ${new Date().toLocaleString()}`, 15, footerY + 13);
 
+        
         // Subir PDF a Supabase Storage
         const pdfBlob = doc.output('blob');
         let folder: string = String(newOrderData.deliveryType);
@@ -1208,14 +1212,6 @@ export default function PedidosPage() {
                             <SelectItem value="cancelado">{t('admin.orders.status.cancelado')}</SelectItem>
                           </SelectContent>
                         </Select>
-                        <Button
-                          size="sm"
-                          className={`h-10 bg-blue-600 text-white hover:bg-blue-700 ${mounted && theme === 'dark' ? '' : ''}`}
-                          onClick={() => setIsNewOrderModalOpen(true)}
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          {t('admin.orders.actions.newOrder')}
-                        </Button>
                       </div>
                     </div>
                   
@@ -1797,7 +1793,14 @@ export default function PedidosPage() {
                   </Button>
                   <Button
                     className={mounted && theme === 'dark' ? 'w-full bg-slate-700 text-slate-200 hover:bg-slate-600' : 'w-full bg-gray-200 text-gray-700 hover:bg-gray-300'}
-                    onClick={() => setIsDocumentsModalOpen(true)}
+                    onClick={() => {
+                      const url = selectedOrder?.pdfUrl || '';
+                      if (url && isValidUrl(url)) {
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                      } else {
+                        setIsDocumentsModalOpen(true);
+                      }
+                    }}
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     {t('admin.orders.modal.buttons.viewDocuments')}

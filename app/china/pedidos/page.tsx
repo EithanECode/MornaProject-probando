@@ -122,7 +122,12 @@ export default function PedidosChina() {
     if (s === 5) return { label: t('chinese.ordersPage.badges.readyToPack'), className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
     if (s === 6) return { label: t('chinese.ordersPage.badges.inBox'), className: `${base} bg-indigo-100 text-indigo-800 border-indigo-200` };
   if (s === 7 || s === 8) return { label: t('chinese.ordersPage.badges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
-  if (s >= 9) return { label: t('chinese.ordersPage.badges.shippedVzla'), className: `${base} bg-green-100 text-green-800 border-green-200` };
+  if (s === 9) return { label: t('chinese.ordersPage.badges.shippedVzla'), className: `${base} bg-green-100 text-green-800 border-green-200` };
+  if (s === 10) return { label: t('chinese.ordersPage.badges.inVenezuela'), className: `${base} bg-yellow-100 text-yellow-800 border-yellow-200` };
+  if (s === 11) return { label: t('chinese.ordersPage.badges.inBoxVzla'), className: `${base} bg-orange-100 text-orange-800 border-orange-200` };
+  if (s === 12) return { label: t('chinese.ordersPage.badges.readyVzla'), className: `${base} bg-lime-100 text-lime-800 border-lime-200` };
+  if (s === 13) return { label: t('chinese.ordersPage.badges.delivered'), className: `${base} bg-emerald-100 text-emerald-800 border-emerald-200` };
+  if (s > 13) return { label: t('chinese.ordersPage.badges.shippedVzla'), className: `${base} bg-green-100 text-green-800 border-green-200` };
     return { label: t('chinese.ordersPage.badges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
   }
 
@@ -203,6 +208,7 @@ export default function PedidosChina() {
   const [boxes, setBoxes] = useState<BoxItem[]>([]);
   const [boxesLoading, setBoxesLoading] = useState(false);
   const [orderCountsByBoxMain, setOrderCountsByBoxMain] = useState<Record<string | number, number>>({});
+  const [airOnlyBoxes, setAirOnlyBoxes] = useState<Set<string | number>>(new Set()); // Cajas que solo tienen pedidos aéreos
   const [deletingBox, setDeletingBox] = useState(false);
   const [ordersByBox, setOrdersByBox] = useState<Pedido[]>([]);
   const [ordersByBoxLoading, setOrdersByBoxLoading] = useState(false);
@@ -693,8 +699,19 @@ export default function PedidosChina() {
           console.error('Error al obtener conteo de pedidos por caja (lista):', ordersErr);
           setOrderCountsByBoxMain({});
         }
+
+        // Determinar qué cajas tienen solo pedidos aéreos
+        const airOnlySet = new Set<string | number>();
+        for (const boxId of ids) {
+          const isAirOnly = await checkIfBoxHasOnlyAirOrders(boxId);
+          if (isAirOnly) {
+            airOnlySet.add(boxId);
+          }
+        }
+        setAirOnlyBoxes(airOnlySet);
       } else {
         setOrderCountsByBoxMain({});
+        setAirOnlyBoxes(new Set());
       }
     } finally {
       setBoxesLoading(false);
@@ -841,6 +858,97 @@ export default function PedidosChina() {
       setOrdersByBoxLoading(false);
     }
   }
+
+  // Verificar si todos los pedidos en una caja son de tipo "air"
+  const checkIfBoxHasOnlyAirOrders = async (boxId: number | string): Promise<boolean> => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data: orders, error } = await supabase
+        .from('orders')
+        .select('shippingType')
+        .eq('box_id', boxId);
+
+      if (error) {
+        console.error('Error obteniendo pedidos de la caja:', error);
+        return false;
+      }
+
+      if (!orders || orders.length === 0) {
+        return false; // Caja vacía
+      }
+
+      // Verificar que todos los pedidos tengan shippingType = "air"
+      return orders.every(order => order.shippingType === 'air');
+    } catch (e) {
+      console.error('Error verificando tipo de envío de pedidos:', e);
+      return false;
+    }
+  };
+
+  // Enviar caja directamente (para pedidos aéreos)
+  const handleSendBoxDirectly = async (boxId: number | string) => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+
+      // Verificar que la caja tenga pedidos
+      const { data: orders, error: countErr } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('box_id', boxId)
+        .limit(1);
+
+      if (countErr) {
+        console.error('Error verificando pedidos de la caja:', countErr);
+        toast({ title: t('chinese.ordersPage.toasts.unexpectedErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
+        return;
+      }
+
+      if (!orders || orders.length === 0) {
+        toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.packEmptyBoxNotAllowed') });
+        return;
+      }
+
+      // Cambiar estado de la caja a enviado (state = 4)
+      const { error: boxUpdateError } = await supabase
+        .from('boxes')
+        .update({ state: 4 })
+        .eq('box_id', boxId);
+
+      if (boxUpdateError) {
+        console.error('Error enviando caja:', boxUpdateError);
+        toast({ title: t('chinese.ordersPage.toasts.sendBoxErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
+        return;
+      }
+
+      // Cambiar estado de todos los pedidos a enviado (state = 9)
+      const { error: ordersUpdateError } = await supabase
+        .from('orders')
+        .update({ state: 9 })
+        .eq('box_id', boxId);
+
+      if (ordersUpdateError) {
+        console.error('Error actualizando pedidos:', ordersUpdateError);
+      }
+
+      toast({ title: t('chinese.ordersPage.toasts.boxSentTitle'), description: t('chinese.ordersPage.toasts.boxSentDesc', { boxId }) });
+
+      // Actualizar UI
+      setBoxes(prev => prev.map(b => {
+        const currentId = b.box_id ?? b.boxes_id ?? b.id;
+        if (currentId === boxId) {
+          return { ...b, state: 4 };
+        }
+        return b;
+      }));
+
+      // Refrescar datos
+      fetchBoxes();
+
+    } catch (e) {
+      console.error('Error enviando caja:', e);
+      toast({ title: t('chinese.ordersPage.toasts.unexpectedErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgainLater') });
+    }
+  };
 
   // Asignar caja a contenedor
   const handleSelectContenedorForCaja = async (boxId: number | string, container: ContainerItem) => {
@@ -1067,7 +1175,7 @@ export default function PedidosChina() {
     cotizados: pedidos.filter(p => p.estado === 'cotizado').length,
     procesando: pedidos.filter(p => p.estado === 'procesando').length,
     enviados: pedidos.filter(p => p.estado === 'enviado').length,
-    totalCotizado: pedidos.filter(p => p.precio).reduce((acc, p) => acc + (p.precio || 0), 0),
+    totalCotizado: pedidos.filter(p => p.precio && (!p.numericState || p.numericState < 9)).reduce((acc, p) => acc + (p.precio || 0), 0),
     esteMes: pedidos.length
   };
 
@@ -1086,6 +1194,14 @@ export default function PedidosChina() {
 
   // Cotizar pedido
   const cotizarPedido = async (pedido: Pedido, precioUnitario: number) => {
+    // Validar que el pedido no esté ya enviado (state >= 9)
+    if (pedido.numericState && pedido.numericState >= 9) {
+      toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.orderAlreadyShipped') });
+      setModalCotizar({ open: false });
+      setIsModalCotizarClosing(false);
+      return;
+    }
+
     const supabase = getSupabaseBrowserClient();
     const total = Number(precioUnitario) * Number(pedido.cantidad || 0);
 
@@ -1116,6 +1232,43 @@ export default function PedidosChina() {
     }
     try {
       const supabase = getSupabaseBrowserClient();
+      
+      // Encontrar el pedido actual para obtener su shippingType
+      const pedidoActual = pedidos.find(p => p.id === pedidoId);
+      if (!pedidoActual) {
+        toast({ title: t('chinese.ordersPage.toasts.orderNotFoundTitle'), description: t('chinese.ordersPage.toasts.orderNotFoundDesc') });
+        return;
+      }
+      
+      // Verificar shippingType de pedidos existentes en la caja
+      const { data: existingOrders, error: fetchError } = await supabase
+        .from('orders')
+        .select('shippingType')
+        .eq('box_id', boxId);
+      
+      if (fetchError) {
+        console.error('Error obteniendo pedidos existentes:', fetchError);
+        toast({ title: t('chinese.ordersPage.toasts.fetchErrorTitle'), description: t('chinese.ordersPage.toasts.tryAgain') });
+        return;
+      }
+      
+      // Obtener tipos de envío únicos de pedidos existentes
+      const existingShippingTypes = existingOrders?.map(o => o.shippingType).filter(st => st && st.trim() !== '') || [];
+      const uniqueShippingTypes = Array.from(new Set(existingShippingTypes));
+      
+      // Verificar reglas de shippingType
+      if (uniqueShippingTypes.length > 1) {
+        // Hay diferentes shippingTypes en la caja
+        toast({ title: t('chinese.ordersPage.toasts.shippingTypeMismatchTitle'), description: t('chinese.ordersPage.toasts.shippingTypeMultipleDesc') });
+        return;
+      }
+      
+      if (uniqueShippingTypes.length === 1 && uniqueShippingTypes[0] !== pedidoActual.shippingType) {
+        // El shippingType del pedido no coincide con el de la caja
+        toast({ title: t('chinese.ordersPage.toasts.shippingTypeMismatchTitle'), description: t('chinese.ordersPage.toasts.shippingTypeMismatchDesc') });
+        return;
+      }
+      
       // No permitir empaquetar en cajas enviadas o contenedores enviados
       const boxStateNumCheck = (box.state ?? 1) as number;
       if (boxStateNumCheck >= 3) {
@@ -1567,7 +1720,7 @@ export default function PedidosChina() {
                             <Eye className="h-4 w-4" />
                             <span className="hidden sm:inline">{t('chinese.ordersPage.orders.view')}</span>
                           </Button>
-                          {pedido.estado === 'pendiente' ? (
+                          {pedido.estado === 'pendiente' && (!pedido.numericState || pedido.numericState < 9) ? (
                             <Button
                               onClick={() => setModalCotizar({ open: true, pedido })}
                               size="sm"
@@ -1576,7 +1729,7 @@ export default function PedidosChina() {
                               <Calculator className="h-4 w-4" />
                               <span className="hidden sm:inline">{t('chinese.ordersPage.orders.quote')}</span>
                             </Button>
-                          ) : (
+                          ) : pedido.estado !== 'pendiente' && (!pedido.numericState || pedido.numericState < 9) ? (
                             <Button
                               variant="outline"
                               size="sm"
@@ -1586,7 +1739,7 @@ export default function PedidosChina() {
                               <Pencil className="h-4 w-4" />
                               <span className="hidden sm:inline">{t('chinese.ordersPage.orders.editQuote')}</span>
                             </Button>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -1652,19 +1805,38 @@ export default function PedidosChina() {
                             <Badge className={`${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
                           </div>
               {stateNum === 1 && (
-                            <Button
-                              size="sm"
-                className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={(orderCountsByBoxMain[boxKey as any] ?? 0) <= 0}
-                              onClick={() => {
-                                const currentBoxId = box.box_id ?? box.boxes_id ?? box.id;
-                                setModalEmpaquetarCaja({ open: true, boxId: currentBoxId });
-                                if (containers.length === 0) fetchContainers();
-                              }}
-                            >
-                              <Boxes className="h-4 w-4" />
-                              <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.pack')}</span>
-                            </Button>
+                            airOnlyBoxes.has(boxKey) ? (
+                              // Botón "Enviar" para cajas con solo pedidos aéreos
+                              <Button
+                                size="sm"
+                                className="flex items-center gap-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={(orderCountsByBoxMain[boxKey as any] ?? 0) <= 0}
+                                onClick={() => {
+                                  const currentBoxId = box.box_id ?? box.boxes_id ?? box.id;
+                                  if (currentBoxId !== undefined) {
+                                    handleSendBoxDirectly(currentBoxId);
+                                  }
+                                }}
+                              >
+                                <Truck className="h-4 w-4" />
+                                <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.send')}</span>
+                              </Button>
+                            ) : (
+                              // Botón "Empaquetar" para cajas normales
+                              <Button
+                                size="sm"
+                                className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={(orderCountsByBoxMain[boxKey as any] ?? 0) <= 0}
+                                onClick={() => {
+                                  const currentBoxId = box.box_id ?? box.boxes_id ?? box.id;
+                                  setModalEmpaquetarCaja({ open: true, boxId: currentBoxId });
+                                  if (containers.length === 0) fetchContainers();
+                                }}
+                              >
+                                <Boxes className="h-4 w-4" />
+                                <span className="hidden sm:inline">{t('chinese.ordersPage.boxes.pack')}</span>
+                              </Button>
+                            )
                           )}
                           {stateNum === 2 && (
                             <Button
