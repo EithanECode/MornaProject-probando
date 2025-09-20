@@ -1059,7 +1059,8 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           : 'w-20';
     
     const iconSize = 'w-4 h-4';
-  const logoSize: 'sm' | 'md' | 'lg' | 'xl' = isExpanded ? (screenWidth < 1440 ? 'sm' : 'md') : 'md';
+    // Aumentar ligeramente el tamaño del logo en pantallas <1440px cuando está expandido
+    const logoSize: 'sm' | 'md' | 'lg' | 'xl' = isExpanded ? (screenWidth < 1440 ? 'md' : 'md') : 'md';
     const padding = isExpanded ? 'p-4' : 'p-2';
     const buttonPadding = isExpanded ? 'px-4 py-3' : 'p-2';
     

@@ -35,7 +35,8 @@ import {
   TrendingUp,
   Bell,
   Menu,
-  RotateCcw
+  RotateCcw,
+  Send
 } from 'lucide-react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useRealtimeAdmin } from '@/hooks/use-realtime-admin';
@@ -55,6 +56,7 @@ interface Payment {
   metodo: string;
   destino?: string;
   descripcion?: string;
+  sendChina?: boolean;
 }
 
 interface PaymentStats {
@@ -74,6 +76,7 @@ interface DbOrder {
   estimatedBudget: number | null;
   created_at: string | null;
   state: number;
+  sendChina?: boolean | null;
 }
 
 // ================================
@@ -173,9 +176,17 @@ const StatsCards: React.FC<{ stats: PaymentStats }> = ({ stats }) => {
 // ================================
 // COMPONENTE: STATUS BADGE
 // ================================
-const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
+const StatusBadge: React.FC<{ status: string; sendChina?: boolean }> = ({ status, sendChina }) => {
   const { t } = useTranslation();
-  const getStatusConfig = (estado: string) => {
+  const getStatusConfig = (estado: string, sent?: boolean) => {
+    // Si está completado y marcado para China, mostrar estado especial
+    if (estado === 'completado' && sent) {
+      return {
+        className: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+        text: t('venezuela.pagos.status.sentChina') || 'Enviado a China',
+        icon: <AnimatedIcon animation={["pulse","float"]}><Send size={12} /></AnimatedIcon>
+      };
+    }
     const configs = {
       completado: {
         className: 'bg-green-100 text-green-800 border-green-200',
@@ -196,7 +207,7 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
     return configs[estado as keyof typeof configs] || configs.pendiente;
   };
 
-  const config = getStatusConfig(status);
+  const config = getStatusConfig(status, sendChina);
 
   return (
     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border gap-1 transition-all duration-300 hover:scale-105 ${config.className}`}>
@@ -292,11 +303,13 @@ const PaymentDetailsModal: React.FC<{
 // ================================
 // COMPONENTE: CARD DE PAGO PARA MOBILE
 // ================================
-const PaymentCard: React.FC<{ payment: Payment; onApprove: (id: string) => void; onReject: (id: string) => void; onViewDetails: (payment: Payment) => void }> = ({
+const PaymentCard: React.FC<{ payment: Payment; onApprove: (id: string) => void; onReject: (id: string) => void; onViewDetails: (payment: Payment) => void; onSend: (id: string) => void; isSending?: boolean }> = ({
   payment,
   onApprove,
   onReject,
-  onViewDetails
+  onViewDetails,
+  onSend,
+  isSending
 }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -330,7 +343,7 @@ const PaymentCard: React.FC<{ payment: Payment; onApprove: (id: string) => void;
             <p className="text-xs text-gray-500">{payment.idProducto}</p>
           </div>
         </div>
-        <StatusBadge status={payment.estado} />
+  <StatusBadge status={payment.estado} sendChina={payment.sendChina} />
       </div>
 
       {/* Detalles */}
@@ -364,6 +377,17 @@ const PaymentCard: React.FC<{ payment: Payment; onApprove: (id: string) => void;
           <Eye className="w-4 h-4 inline mr-1" />
           {t('venezuela.pagos.actions.view')}
         </button>
+        {payment.estado === 'completado' && (
+          <button
+            onClick={() => onSend(payment.id)}
+            disabled={payment.sendChina || isSending}
+            className={`flex-1 px-3 py-2 rounded-lg text-sm transition-colors ${payment.sendChina || isSending ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+            title={payment.sendChina ? (t('venezuela.pagos.status.sentChina') || 'Enviado a China') : (t('venezuela.pagos.actions.send') || 'Enviar')}
+          >
+            <Send className="w-4 h-4 inline mr-1" />
+            {payment.sendChina ? (t('venezuela.pagos.status.sentChina') || 'Enviado a China') : (isSending ? (t('venezuela.pagos.actions.sending') || 'Enviando...') : (t('venezuela.pagos.actions.send') || 'Enviar'))}
+          </button>
+        )}
         {payment.estado === 'pendiente' && (
           <>
             <button
@@ -457,6 +481,7 @@ const PaymentValidationDashboard: React.FC = () => {
   } | null>(null);
   const [mounted, setMounted] = useState(false);
   const [lastRealtimeUpdate, setLastRealtimeUpdate] = useState<number | null>(null);
+  const [sendingChina, setSendingChina] = useState<Record<string, boolean>>({});
   const supabase = useMemo(() => getSupabaseBrowserClient(), []);
   useEffect(() => { setMounted(true); }, []);
 
@@ -515,7 +540,7 @@ const PaymentValidationDashboard: React.FC = () => {
       };
       startTimeout();
       try {
-        const selectCols = 'id, client_id, productName, description, totalQuote, estimatedBudget, created_at, state';
+        const selectCols = 'id, client_id, productName, description, totalQuote, estimatedBudget, created_at, state, sendChina';
         const { data, error } = await supabase
           .from('orders')
           .select(selectCols)
@@ -544,7 +569,8 @@ const PaymentValidationDashboard: React.FC = () => {
             estado,
             metodo: 'Transferencia',
             destino: 'Venezuela',
-            descripcion: o.description || 'Pedido en proceso de pago'
+            descripcion: o.description || 'Pedido en proceso de pago',
+            sendChina: Boolean((o as any).sendChina)
           };
         }) || [];
         setPayments(mapped);
@@ -585,7 +611,13 @@ const PaymentValidationDashboard: React.FC = () => {
     }
 
     if (filterStatus !== 'todos') {
-      filtered = filtered.filter(p => p.estado === filterStatus);
+      if (filterStatus === 'enviadoChina') {
+        filtered = filtered.filter(p => p.estado === 'completado' && !!p.sendChina);
+      } else if (filterStatus === 'completado') {
+        filtered = filtered.filter(p => p.estado === 'completado' && !p.sendChina);
+      } else {
+        filtered = filtered.filter(p => p.estado === filterStatus);
+      }
     }
 
     return filtered;
@@ -774,6 +806,40 @@ const PaymentValidationDashboard: React.FC = () => {
     setDetailsModal({ isOpen: false, payment: null });
   };
 
+  // Acción de enviar (solo UI por ahora)
+  const handleSend = async (id: string) => {
+    // Evitar doble click
+    if (sendingChina[id]) return;
+    setSendingChina(prev => ({ ...prev, [id]: true }));
+    try {
+      const idFilter: any = isNaN(Number(id)) ? id : Number(id);
+      const { error } = await supabase
+        .from('orders')
+        .update({ sendChina: true })
+        .eq('id', idFilter);
+      if (error) throw error;
+
+      // Actualizar estado local
+      setPayments(prev => prev.map(p => p.id === id ? { ...p, sendChina: true } : p));
+
+      toast({
+        title: t('venezuela.pagos.toasts.sentTitle') || 'Envío registrado',
+        description: t('venezuela.pagos.toasts.sentDesc', { id }) || `Pedido ${id} marcado como enviado a China`,
+        variant: 'default',
+        duration: 3000,
+      });
+    } catch (e: any) {
+      toast({
+        title: t('venezuela.pagos.toasts.sendErrorTitle') || 'Error al enviar',
+        description: e?.message || (t('venezuela.pagos.toasts.sendErrorDesc') || 'No se pudo completar la acción de envío.'),
+        variant: 'destructive',
+        duration: 4000,
+      });
+    } finally {
+      setSendingChina(prev => ({ ...prev, [id]: false }));
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
       year: 'numeric',
@@ -793,7 +859,7 @@ const PaymentValidationDashboard: React.FC = () => {
     const data = filteredPayments.map(payment => ({
       [t('venezuela.pagos.export.columns.orderId')]: payment.id,
       [t('venezuela.pagos.export.columns.client')]: payment.usuario,
-      [t('venezuela.pagos.export.columns.status')]: payment.estado,
+      [t('venezuela.pagos.export.columns.status')]: (payment.estado === 'completado' && payment.sendChina) ? (t('venezuela.pagos.status.sentChina') || 'Enviado a China') : payment.estado,
       [t('venezuela.pagos.export.columns.date')]: payment.fecha,
       [t('venezuela.pagos.export.columns.amount')]: payment.monto,
       [t('venezuela.pagos.export.columns.reference')]: payment.referencia,
@@ -898,6 +964,7 @@ const PaymentValidationDashboard: React.FC = () => {
                         <SelectContent>
                           <SelectItem value="todos">{t('venezuela.pagos.filters.allStatuses')}</SelectItem>
                           <SelectItem value="completado">{t('venezuela.pagos.filters.completed')}</SelectItem>
+                          <SelectItem value="enviadoChina">{t('venezuela.pagos.status.sendChina')}</SelectItem>
                           <SelectItem value="pendiente">{t('venezuela.pagos.filters.pending')}</SelectItem>
                           <SelectItem value="rechazado">{t('venezuela.pagos.filters.rejected')}</SelectItem>
                         </SelectContent>
@@ -941,6 +1008,8 @@ const PaymentValidationDashboard: React.FC = () => {
                     onApprove={handleApprove}
                     onReject={openRejectionConfirmation}
                     onViewDetails={openDetailsModal}
+                    onSend={handleSend}
+                    isSending={!!sendingChina[payment.id]}
                   />
                 ))}
               </div>
@@ -999,7 +1068,7 @@ const PaymentValidationDashboard: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-2 py-3">
-                          <StatusBadge status={payment.estado} />
+                          <StatusBadge status={payment.estado} sendChina={payment.sendChina} />
                         </td>
                         <td className={`px-2 py-3 text-sm ${mounted && theme === 'dark' ? 'text-slate-200' : 'text-gray-900'}`}>
                           <span className="truncate block">{formatDate(payment.fecha)}</span>
@@ -1036,6 +1105,8 @@ const PaymentValidationDashboard: React.FC = () => {
                             onApprove={handleApprove}
                             onReject={openRejectionConfirmation}
                             onViewDetails={openDetailsModal}
+                            onSend={handleSend}
+                            isSending={!!sendingChina[payment.id]}
                           />
                         </td>
                       </tr>
@@ -1075,44 +1146,51 @@ const PaymentActions: React.FC<{
   onApprove: (id: string) => void; 
   onReject: (id: string) => void;
   onViewDetails: (payment: Payment) => void;
+  onSend: (id: string) => void;
+  isSending?: boolean;
 }> = ({ 
   payment, 
   onApprove, 
   onReject,
-  onViewDetails
+  onViewDetails,
+  onSend,
+  isSending
 }) => {
   const { t } = useTranslation();
-  if (payment.estado !== 'pendiente') {
-    return (
-      <button 
-        onClick={() => onViewDetails(payment)}
-        className="flex items-center gap-1 px-2 py-1 text-xs text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-200"
-      >
-        <AnimatedIcon animation="float">
-          <Eye size={10} />
-        </AnimatedIcon>
-        <span className="truncate">{t('venezuela.pagos.actions.view')}</span>
-      </button>
-    );
-  }
-
   return (
     <div className="flex items-center gap-2">
-      <button 
-        onClick={() => onApprove(payment.id)}
-        className="flex items-center p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 transform hover:scale-110 shadow-sm hover:shadow-md"
-      >
-        <Check size={14} />
-      </button>
-      <button 
-        onClick={() => onReject(payment.id)}
-        className="flex items-center p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 transform hover:scale-110 shadow-sm hover:shadow-md"
-      >
-        <X size={14} />
-      </button>
+      {payment.estado === 'pendiente' && (
+        <>
+          <button 
+            onClick={() => onApprove(payment.id)}
+            className="flex items-center p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 transform hover:scale-110 shadow-sm hover:shadow-md"
+          >
+            <Check size={14} />
+          </button>
+          <button 
+            onClick={() => onReject(payment.id)}
+            className="flex items-center p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 transform hover:scale-110 shadow-sm hover:shadow-md"
+          >
+            <X size={14} />
+          </button>
+        </>
+      )}
+
+      {payment.estado === 'completado' && (
+        <button 
+          onClick={() => onSend(payment.id)}
+          disabled={payment.sendChina || isSending}
+          className={`flex items-center p-2 rounded-lg transition-all duration-200 transform hover:scale-110 shadow-sm hover:shadow-md ${payment.sendChina || isSending ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+          title={payment.sendChina ? (t('venezuela.pagos.status.sentChina') || 'Enviado a China') : (t('venezuela.pagos.actions.send') || 'Enviar')}
+        >
+          <Send size={14} />
+        </button>
+      )}
+
       <button 
         onClick={() => onViewDetails(payment)}
         className="flex items-center p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 transform hover:scale-110 shadow-sm hover:shadow-md"
+        title={t('venezuela.pagos.actions.view')}
       >
         <Eye size={14} />
       </button>
