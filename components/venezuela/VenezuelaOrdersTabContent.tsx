@@ -528,54 +528,61 @@ export default function VenezuelaOrdersTabContent() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-                          {stateNum === 13 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('admin.orders.status.entregado')}</Badge>)}
-                          {stateNum === 12 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">{t('venezuela.pedidos.statusExtended.readyToDeliver')}</Badge>)}
-                          {stateNum === 11 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('venezuela.pedidos.statusExtended.received')}</Badge>)}
-                          {stateNum === 10 && (<Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 hover:ring-1 hover:ring-indigo-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-indigo-700/50">{t('venezuela.pedidos.statusExtended.customs')}</Badge>)}
-                          {stateNum === 9 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('venezuela.pedidos.statusExtended.arrivedVzla')}</Badge>)}
-                          {stateNum === 8 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('venezuela.pedidos.statusExtended.inTransit')}</Badge>)}
-                          {stateNum === 1 && (<Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-yellow-700/50">{t('venezuela.pedidos.statusExtended.pending')}</Badge>)}
-                          {stateNum === 2 && (<Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50">{t('venezuela.pedidos.statusExtended.reviewing')}</Badge>)}
-                          {stateNum === 3 && (<Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-50 hover:border-purple-300 hover:ring-1 hover:ring-purple-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-purple-700/50">{t('venezuela.pedidos.statusExtended.quoted')}</Badge>)}
-                          {stateNum === 4 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">{t('venezuela.pedidos.statusExtended.processing')}</Badge>)}
-                          {(stateNum >= 5 && stateNum <= 7) && (<Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50">{t('venezuela.pedidos.statusExtended.inProcess')}</Badge>)}
+                        <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3">
+                          {/* Badges: agrupar en una fila envolvente en móvil */}
+                          <div className="flex flex-wrap gap-2 sm:gap-3 justify-start sm:justify-end">
+                            {stateNum === 13 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('admin.orders.status.entregado')}</Badge>)}
+                            {stateNum === 12 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">{t('venezuela.pedidos.statusExtended.readyToDeliver')}</Badge>)}
+                            {stateNum === 11 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('venezuela.pedidos.statusExtended.received')}</Badge>)}
+                            {stateNum === 10 && (<Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 hover:ring-1 hover:ring-indigo-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-indigo-700/50">{t('venezuela.pedidos.statusExtended.customs')}</Badge>)}
+                            {stateNum === 9 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('venezuela.pedidos.statusExtended.arrivedVzla')}</Badge>)}
+                            {stateNum === 8 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50">{t('venezuela.pedidos.statusExtended.inTransit')}</Badge>)}
+                            {stateNum === 1 && (<Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-yellow-700/50">{t('venezuela.pedidos.statusExtended.pending')}</Badge>)}
+                            {stateNum === 2 && (<Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50">{t('venezuela.pedidos.statusExtended.reviewing')}</Badge>)}
+                            {stateNum === 3 && (<Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-50 hover:border-purple-300 hover:ring-1 hover:ring-purple-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-purple-700/50">{t('venezuela.pedidos.statusExtended.quoted')}</Badge>)}
+                            {stateNum === 4 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50">{t('venezuela.pedidos.statusExtended.processing')}</Badge>)}
+                            {(stateNum >= 5 && stateNum <= 7) && (<Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50">{t('venezuela.pedidos.statusExtended.inProcess')}</Badge>)}
+                          </div>
 
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex items-center gap-1"
-                            onClick={() => {
-                              if (order.pdfRoutes) {
-                                const win = window.open(order.pdfRoutes, '_blank');
-                                if (!win) setModalAviso({ open: true, title: t('venezuela.pedidos.pdf.openError') || 'No se pudo abrir el PDF', description: t('venezuela.pedidos.pdf.notAvailableOrder') || 'Intenta nuevamente o verifica más tarde.' });
-                              } else {
-                                setModalAviso({ open: true, title: 'Sin PDF', description: t('venezuela.pedidos.pdf.notAvailable') || 'No hay PDF disponible para este pedido.' });
-                              }
-                            }}
-                          >
-                            <Eye className="h-4 w-4" /> {t('admin.orders.actions.view')}
-                          </Button>
-                          <Button
-                            size="sm"
-                            disabled={loading || ![1,8,11,12].includes(stateNum)}
-                            onClick={async () => {
-                              const advance = async (url: string, body: any) => {
-                                const res = await fetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                                if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'Error'); }
-                                await fetchOrders();
-                              };
-                              try {
-                                if (stateNum === 1) return advance('/venezuela/pedidos/api/send-to-china', { orderId: order.id });
-                                if (stateNum === 8) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 9 });
-                                if (stateNum === 9) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 10 });
-                                if (stateNum === 11) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 12 });
-                                if (stateNum === 12) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 13 });
-                              } catch (e:any) { alert(e.message || 'Error'); }
-                            }}
-                          >
-                            {stateNum >= 13 ? (<><CheckCircle className="w-4 h-4 mr-2" />{t('admin.orders.status.entregado')}</>) : stateNum === 12 ? (<><CheckCircle className="w-4 h-4 mr-2" />{t('admin.orders.status.entregado')}</>) : stateNum === 11 ? (<><Package className="w-4 h-4 mr-2" />RECEIVED</>) : stateNum === 9 ? (<><Package className="w-4 h-4 mr-2" />RECEIVED</>) : stateNum === 8 ? (<><Package className="w-4 h-4 mr-2" />IN TRANSIT</>) : stateNum === 10 ? (<><Clock className="w-4 h-4 mr-2" />CUSTOMS</>) : (stateNum >= 2 && stateNum <= 7) ? (<><Clock className="w-4 h-4 mr-2" />WAITING</>) : (<><Send className="w-4 h-4 mr-2" />{t('venezuela.pedidos.actions.send')}</>)}
-                          </Button>
+                          {/* Acciones – en móvil apiladas y de ancho completo */}
+                          <div className="w-full sm:w-auto grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-none sm:flex">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full sm:w-auto flex items-center gap-1"
+                              onClick={() => {
+                                if (order.pdfRoutes) {
+                                  const win = window.open(order.pdfRoutes, '_blank');
+                                  if (!win) setModalAviso({ open: true, title: t('venezuela.pedidos.pdf.openError') || 'No se pudo abrir el PDF', description: t('venezuela.pedidos.pdf.notAvailableOrder') || 'Intenta nuevamente o verifica más tarde.' });
+                                } else {
+                                  setModalAviso({ open: true, title: 'Sin PDF', description: t('venezuela.pedidos.pdf.notAvailable') || 'No hay PDF disponible para este pedido.' });
+                                }
+                              }}
+                            >
+                              <Eye className="h-4 w-4" /> {t('admin.orders.actions.view')}
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="w-full sm:w-auto"
+                              disabled={loading || ![1,8,11,12].includes(stateNum)}
+                              onClick={async () => {
+                                const advance = async (url: string, body: any) => {
+                                  const res = await fetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                                  if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'Error'); }
+                                  await fetchOrders();
+                                };
+                                try {
+                                  if (stateNum === 1) return advance('/venezuela/pedidos/api/send-to-china', { orderId: order.id });
+                                  if (stateNum === 8) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 9 });
+                                  if (stateNum === 9) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 10 });
+                                  if (stateNum === 11) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 12 });
+                                  if (stateNum === 12) return advance('/venezuela/pedidos/api/advance-state', { orderId: order.id, nextState: 13 });
+                                } catch (e:any) { alert(e.message || 'Error'); }
+                              }}
+                            >
+                              {stateNum >= 13 ? (<><CheckCircle className="w-4 h-4 mr-2" />{t('admin.orders.status.entregado')}</>) : stateNum === 12 ? (<><CheckCircle className="w-4 h-4 mr-2" />{t('admin.orders.status.entregado')}</>) : stateNum === 11 ? (<><Package className="w-4 h-4 mr-2" />RECEIVED</>) : stateNum === 9 ? (<><Package className="w-4 h-4 mr-2" />RECEIVED</>) : stateNum === 8 ? (<><Package className="w-4 h-4 mr-2" />IN TRANSIT</>) : stateNum === 10 ? (<><Clock className="w-4 h-4 mr-2" />CUSTOMS</>) : (stateNum >= 2 && stateNum <= 7) ? (<><Clock className="w-4 h-4 mr-2" />WAITING</>) : (<><Send className="w-4 h-4 mr-2" />{t('venezuela.pedidos.actions.send')}</>)}
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -643,10 +650,13 @@ export default function VenezuelaOrdersTabContent() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-                        <Badge className={`${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
-                        {(stateNum === 5 || (stateNum === 4 && boxesWithAirShipping[countKey])) && (
-                          <Button variant="outline" size="sm" onClick={async () => {
+                      <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3">
+                        <div className="flex flex-wrap gap-2 sm:gap-3 justify-start sm:justify-end">
+                          <Badge className={`${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
+                        </div>
+                        <div className="w-full sm:w-auto grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-none sm:flex">
+                          {(stateNum === 5 || (stateNum === 4 && boxesWithAirShipping[countKey])) && (
+                          <Button variant="outline" size="sm" className="w-full sm:w-auto flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50" onClick={async () => {
                             const nextState = 6;
                             try {
                               const res = await fetch('/venezuela/pedidos/api/advance-box', {
@@ -674,9 +684,10 @@ export default function VenezuelaOrdersTabContent() {
                             } catch (e) {
                               alert((e as Error).message);
                             }
-                          }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />Recibido</Button>
+                          }}><CheckCircle className="h-4 w-4" />Recibido</Button>
                         )}
-                        <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={() => { const boxId = box.box_id ?? box.boxes_id ?? box.id; setModalVerPedidos({ open: true, boxId }); if (boxId !== undefined) fetchOrdersByBoxId(boxId as any); }}><List className="h-4 w-4" />{t('venezuela.pedidos.actions.viewOrders')}</Button>
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto flex items-center gap-1" onClick={() => { const boxId = box.box_id ?? box.boxes_id ?? box.id; setModalVerPedidos({ open: true, boxId }); if (boxId !== undefined) fetchOrdersByBoxId(boxId as any); }}><List className="h-4 w-4" />{t('venezuela.pedidos.actions.viewOrders')}</Button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -734,12 +745,16 @@ export default function VenezuelaOrdersTabContent() {
                           </div>
                         </div>
                       </div>
-            <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-                        <Badge className={getContainerBadge(stateNum).className}>{getContainerBadge(stateNum).label}</Badge>
-                        {stateNum === 3 && (
-                          <Button variant="outline" size="sm" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-container', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ containerId: container.container_id ?? container.containers_id ?? container.id ?? id, nextState: 4 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'No se pudo actualizar el contenedor'); } await Promise.all([fetchContainers(), fetchBoxes(), fetchOrders()]); } catch (e) { alert((e as Error).message); } }} className="flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50"><CheckCircle className="h-4 w-4" />Recibido</Button>
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3">
+                        <div className="flex flex-wrap gap-2 sm:gap-3 justify-start sm:justify-end">
+                          <Badge className={getContainerBadge(stateNum).className}>{getContainerBadge(stateNum).label}</Badge>
+                        </div>
+                        <div className="w-full sm:w-auto grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-none sm:flex">
+                          {stateNum === 3 && (
+                          <Button variant="outline" size="sm" className="w-full sm:w-auto flex items-center gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50" onClick={async () => { try { const res = await fetch('/venezuela/pedidos/api/advance-container', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ containerId: container.container_id ?? container.containers_id ?? container.id ?? id, nextState: 4 }) }); if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.error || 'No se pudo actualizar el contenedor'); } await Promise.all([fetchContainers(), fetchBoxes(), fetchOrders()]); } catch (e) { alert((e as Error).message); } }}><CheckCircle className="h-4 w-4" />Recibido</Button>
                         )}
-                        <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={() => { const containerId = container.container_id ?? container.containers_id ?? container.id; setModalVerCajas({ open: true, containerId }); if (containerId !== undefined) fetchBoxesByContainerId(containerId as any); }}><List className="h-4 w-4" />{t('venezuela.pedidos.actions.viewBoxes')}</Button>
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto flex items-center gap-1" onClick={() => { const containerId = container.container_id ?? container.containers_id ?? container.id; setModalVerCajas({ open: true, containerId }); if (containerId !== undefined) fetchBoxesByContainerId(containerId as any); }}><List className="h-4 w-4" />{t('venezuela.pedidos.actions.viewBoxes')}</Button>
+                        </div>
                       </div>
                     </div>
                   );

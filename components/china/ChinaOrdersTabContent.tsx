@@ -849,21 +849,28 @@ export default function ChinaOrdersTabContent() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-          <Badge className={badge.className}>{getOrderBadgeLabel(p.numericState)}</Badge>
-                      {p.precio && (<div className="text-right"><p className="text-sm font-semibold text-green-600 dark:text-green-400">${p.precio.toLocaleString()}</p><p className="text-[10px] text-slate-500">Total ${(p.precio*p.cantidad).toLocaleString()}</p></div>)}
-                      <div className="flex items-center gap-2">
+                    <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3">
+                      <div className="flex flex-wrap gap-2 sm:gap-3 justify-start sm:justify-end">
+                        <Badge className={badge.className}>{getOrderBadgeLabel(p.numericState)}</Badge>
+                        {p.precio && (
+                          <div className="text-left sm:text-right">
+                            <p className="text-sm font-semibold text-green-600 dark:text-green-400">${p.precio.toLocaleString()}</p>
+                            <p className="text-[10px] text-slate-500">Total {(p.precio*p.cantidad).toLocaleString()}</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="w-full sm:w-auto grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-none sm:flex">
                         {p.estado==='enviado' && (p.numericState??0) < 6 && (
-                          <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" onClick={()=>{ setModalEmpaquetarPedido({open:true, pedidoId: p.id}); if(boxes.length===0) fetchBoxes(); }}>{t('admin.orders.china.orders.pack')}</Button>
+                          <Button size="sm" className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700" onClick={()=>{ setModalEmpaquetarPedido({open:true, pedidoId: p.id}); if(boxes.length===0) fetchBoxes(); }}>{t('admin.orders.china.orders.pack')}</Button>
                         )}
                         {p.estado==='enviado' && (p.numericState??0) >=6 && (
-                          <Button variant="outline" size="sm" disabled={(p.numericState??0)>=9} onClick={()=>{ if((p.numericState??0)<9) handleUnpackOrder(p.id); }}>{t('admin.orders.china.orders.unpack')}</Button>
+                          <Button variant="outline" size="sm" className="w-full sm:w-auto" disabled={(p.numericState??0)>=9} onClick={()=>{ if((p.numericState??0)<9) handleUnpackOrder(p.id); }}>{t('admin.orders.china.orders.unpack')}</Button>
                         )}
-                        <Button variant="outline" size="sm" onClick={()=>{ if(p.pdfRoutes){ const bust=p.pdfRoutes.includes('?')?`&t=${Date.now()}`:`?t=${Date.now()}`; window.open(p.pdfRoutes+bust,'_blank','noopener,noreferrer'); } else toast({ title: t('admin.orders.china.orders.pdfMissingToastTitle') }); }}><Eye className="h-4 w-4" /></Button>
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={()=>{ if(p.pdfRoutes){ const bust=p.pdfRoutes.includes('?')?`&t=${Date.now()}`:`?t=${Date.now()}`; window.open(p.pdfRoutes+bust,'_blank','noopener,noreferrer'); } else toast({ title: t('admin.orders.china.orders.pdfMissingToastTitle') }); }}><Eye className="h-4 w-4" /></Button>
                         {p.estado==='pendiente' ? (
-                          <Button size="sm" className="bg-orange-600 hover:bg-orange-700" onClick={()=>setModalCotizar({open:true, pedido:p, precioUnitario:p.precio||0, precioEnvio:0, altura:0, anchura:0, largo:0, peso:0})}><Calculator className="h-4 w-4" /></Button>
+                          <Button size="sm" className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700" onClick={()=>setModalCotizar({open:true, pedido:p, precioUnitario:p.precio||0, precioEnvio:0, altura:0, anchura:0, largo:0, peso:0})}><Calculator className="h-4 w-4" /></Button>
                         ) : (
-                          <Button variant="outline" size="sm" onClick={()=>setModalCotizar({open:true, pedido:p, precioUnitario:p.precio||0, precioEnvio:0, altura:0, anchura:0, largo:0, peso:0})}><Pencil className="h-4 w-4" /></Button>
+                          <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={()=>setModalCotizar({open:true, pedido:p, precioUnitario:p.precio||0, precioEnvio:0, altura:0, anchura:0, largo:0, peso:0})}><Pencil className="h-4 w-4" /></Button>
                         )}
                       </div>
                     </div>
@@ -918,14 +925,17 @@ export default function ChinaOrdersTabContent() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-          <Badge className={badge.className}>{getBoxBadgeLabel(stateNum)}</Badge>
-                      {stateNum===1 && (
+                    <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3">
+                      <div className="flex flex-wrap gap-2 sm:gap-3 justify-start sm:justify-end">
+                        <Badge className={badge.className}>{getBoxBadgeLabel(stateNum)}</Badge>
+                      </div>
+                      <div className="w-full sm:w-auto grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-none sm:flex">
+                        {stateNum===1 && (
                         airOnlyBoxes.has(countKey) ? (
                           // Botón "Enviar" para cajas con solo pedidos aéreos
                           <Button
                             size="sm"
-                            className="flex items-center gap-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full sm:w-auto flex items-center gap-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={(orderCountsByBoxMain[countKey as any] ?? 0) <= 0}
                             onClick={() => {
                               const currentBoxId = box.box_id ?? box.boxes_id ?? box.id;
@@ -941,7 +951,7 @@ export default function ChinaOrdersTabContent() {
                           // Botón "Empaquetar" para cajas normales
                           <Button
                             size="sm"
-                            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={(orderCountsByBoxMain[countKey as any] ?? 0) <= 0}
                             onClick={()=>{
                               const currentBoxId=box.box_id ?? box.boxes_id ?? box.id;
@@ -953,10 +963,11 @@ export default function ChinaOrdersTabContent() {
                           </Button>
                         )
                       )}
-                      {stateNum===2 && (<Button variant="outline" size="sm" onClick={()=>{ const currentBoxId=box.box_id ?? box.boxes_id ?? box.id; if(currentBoxId!==undefined) handleUnpackBox(currentBoxId as any); }}>{t('admin.orders.china.boxes.unpack')}</Button>)}
-                      {stateNum>=3 && (<Button variant="outline" size="sm" disabled>{t('admin.orders.china.boxes.unpack')}</Button>)}
-                      <Button variant="outline" size="sm" onClick={()=>{ const boxId=box.box_id ?? box.boxes_id ?? box.id; setModalVerPedidosCaja({open:true, boxId}); if(boxId!==undefined) fetchOrdersByBoxId(boxId); }}>{t('admin.orders.china.boxes.viewOrders')}</Button>
-                      <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50" disabled={(box.state??1)>=3} onClick={()=>{ if((box.state??1)>=3){ toast({ title: t('admin.orders.china.toasts.notAllowedTitle'), description: t('admin.orders.china.toasts.boxUnpackNotAllowedDesc') }); return;} setModalEliminarCaja({open:true, box}); }}><Trash2 className="h-4 w-4" /></Button>
+                      {stateNum===2 && (<Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={()=>{ const currentBoxId=box.box_id ?? box.boxes_id ?? box.id; if(currentBoxId!==undefined) handleUnpackBox(currentBoxId as any); }}>{t('admin.orders.china.boxes.unpack')}</Button>)}
+                      {stateNum>=3 && (<Button variant="outline" size="sm" className="w-full sm:w-auto" disabled>{t('admin.orders.china.boxes.unpack')}</Button>)}
+                      <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={()=>{ const boxId=box.box_id ?? box.boxes_id ?? box.id; setModalVerPedidosCaja({open:true, boxId}); if(boxId!==undefined) fetchOrdersByBoxId(boxId); }}>{t('admin.orders.china.boxes.viewOrders')}</Button>
+                      <Button variant="outline" size="sm" className="w-full sm:w-auto text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50" disabled={(box.state??1)>=3} onClick={()=>{ if((box.state??1)>=3){ toast({ title: t('admin.orders.china.toasts.notAllowedTitle'), description: t('admin.orders.china.toasts.boxUnpackNotAllowedDesc') }); return;} setModalEliminarCaja({open:true, box}); }}><Trash2 className="h-4 w-4" /></Button>
+                      </div>
                     </div>
                   </div>
                 ); }); })()}
@@ -1007,13 +1018,16 @@ export default function ChinaOrdersTabContent() {
                         <div className="flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400"><span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created? new Date(created).toLocaleString('es-ES'):'—'}</span></div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-          <Badge className={badge.className}>{getContainerBadgeLabel(stateNum)}</Badge>
-                      <Button
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                        disabled={stateNum!==2}
-                        onClick={()=>{
+                    <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3">
+                      <div className="flex flex-wrap gap-2 sm:gap-3 justify-start sm:justify-end">
+                        <Badge className={badge.className}>{getContainerBadgeLabel(stateNum)}</Badge>
+                      </div>
+                      <div className="w-full sm:w-auto grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-none sm:flex">
+                        <Button
+                          size="sm"
+                          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+                          disabled={stateNum!==2}
+                          onClick={()=>{
                           // Abrir modal de envío y precargar info si existe
                           const id = container.container_id ?? container.containers_id ?? container.id;
                           if (id !== undefined && (containerSendInfo as any)[id]) {
@@ -1029,11 +1043,12 @@ export default function ChinaOrdersTabContent() {
                           }
                           setModalEnviarContenedor({ open: true, container });
                         }}
-                      >
-                        <Truck className="h-4 w-4" />{t('admin.orders.china.containers.send')}
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={()=>{ const containerId = container.container_id ?? container.containers_id ?? container.id; setModalVerCajasCont({open:true, containerId}); if(containerId!==undefined) fetchBoxesByContainerId(containerId); }}>{t('admin.orders.china.containers.viewBoxes')}</Button>
-                      <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50" disabled={(container.state??1)>=3} onClick={()=>{ if((container.state??1)>=3){ toast({ title: t('admin.orders.china.toasts.notAllowedTitle'), description: t('admin.orders.china.toasts.containerSendNotAllowedDesc') }); return;} setModalEliminarContenedor({open:true, container}); }}><Trash2 className="h-4 w-4" /></Button>
+                        >
+                          <Truck className="h-4 w-4" />{t('admin.orders.china.containers.send')}
+                        </Button>
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={()=>{ const containerId = container.container_id ?? container.containers_id ?? container.id; setModalVerCajasCont({open:true, containerId}); if(containerId!==undefined) fetchBoxesByContainerId(containerId); }}>{t('admin.orders.china.containers.viewBoxes')}</Button>
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50" disabled={(container.state??1)>=3} onClick={()=>{ if((container.state??1)>=3){ toast({ title: t('admin.orders.china.toasts.notAllowedTitle'), description: t('admin.orders.china.toasts.containerSendNotAllowedDesc') }); return;} setModalEliminarContenedor({open:true, container}); }}><Trash2 className="h-4 w-4" /></Button>
+                      </div>
                     </div>
                   </div>
                 ); }); })()}
