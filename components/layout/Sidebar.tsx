@@ -1051,7 +1051,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
     // Cálculos específicos por breakpoint
     const sidebarWidth = isMobile 
-      ? (isMobileMenuOpen ? 'w-80' : 'w-16')
+      ? (isMobileMenuOpen ? 'w-[min(18rem,calc(100vw-16px))]' : 'w-16')
       : isTablet
         ? (isExpanded ? 'w-64' : 'w-20')
         : isExpanded 
@@ -1158,8 +1158,19 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   return (
     <>
       
-      {/* Overlay para móviles */}
-              {(responsiveConfig.isMobile || responsiveConfig.isTablet) && isMobileMenuOpen && (
+      {/* Overlay para móviles: sólo cubre el espacio visible a la derecha para dejar un borde clicable */}
+      {responsiveConfig.isMobile && isMobileMenuOpen && (
+        <div 
+          className="fixed top-0 right-0 h-full z-40"
+          style={{
+            // El sidebar en móvil ocupa min(288px, 100vw-16px). El overlay ocupa el resto.
+            width: 'max(0px, calc(100vw - min(18rem, 100vw - 16px)))',
+            backgroundColor: 'rgba(0,0,0,0.5)'
+          }}
+          onClick={onMobileMenuClose}
+        />
+      )}
+      {responsiveConfig.isTablet && isMobileMenuOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-40"
           onClick={onMobileMenuClose}
@@ -1171,9 +1182,9 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 
           border-r border-slate-700/50 shadow-2xl backdrop-blur-sm z-50
           transition-all duration-200 ease-out flex flex-col
-          ${(responsiveConfig.isMobile || responsiveConfig.isTablet)
-            ? 'w-80' 
-            : responsiveConfig.sidebarWidth
+          ${responsiveConfig.isMobile
+            ? 'w-[min(18rem,calc(100vw-16px))]'
+            : (responsiveConfig.isTablet ? 'w-80' : responsiveConfig.sidebarWidth)
           }
         `}
         style={{
