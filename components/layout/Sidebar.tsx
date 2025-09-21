@@ -1159,9 +1159,9 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     <>
       
       {/* Overlay para móviles: sólo cubre el espacio visible a la derecha para dejar un borde clicable */}
-      {responsiveConfig.isMobile && isMobileMenuOpen && (
-        <div 
-          className="fixed top-0 right-0 h-full z-40"
+    {responsiveConfig.isMobile && isMobileMenuOpen && (
+  <div 
+      className="fixed top-0 right-0 h-full z-[45]"
           style={{
             // El sidebar en móvil ocupa min(288px, 100vw-16px). El overlay ocupa el resto.
             width: 'max(0px, calc(100vw - min(18rem, 100vw - 16px)))',
@@ -1172,7 +1172,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       )}
       {responsiveConfig.isTablet && isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40"
+          className="fixed inset-0 bg-black/50 z-[45] pointer-events-auto"
           onClick={onMobileMenuClose}
         />
       )}
