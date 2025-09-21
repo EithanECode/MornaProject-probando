@@ -6,12 +6,14 @@ export type ClientContextType = {
   clientId?: string;
   clientName?: string;
   clientEmail?: string;
+  clientPhone?: string;
   clientRole?: string;
   userImage?: string;
   setClient: (data: {
     clientId?: string;
     clientName?: string;
     clientEmail?: string;
+    clientPhone?: string;
     clientRole?: string;
     userImage?: string;
   }) => void;
@@ -30,6 +32,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [clientId, setClientId] = useState<string | undefined>(undefined);
   const [clientName, setClientName] = useState<string | undefined>(undefined);
   const [clientEmail, setClientEmail] = useState<string | undefined>(undefined);
+  const [clientPhone, setClientPhone] = useState<string | undefined>(undefined);
   const [clientRole, setClientRole] = useState<string | undefined>(undefined);
   const [userImage, setUserImage] = useState<string | undefined>(undefined);
 
@@ -37,12 +40,14 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     clientId?: string;
     clientName?: string;
     clientEmail?: string;
+    clientPhone?: string;
     clientRole?: string;
     userImage?: string;
   }) => {
     if (data.clientId !== undefined) setClientId(data.clientId);
     if (data.clientName !== undefined) setClientName(data.clientName);
     if (data.clientEmail !== undefined) setClientEmail(data.clientEmail);
+    if (data.clientPhone !== undefined) setClientPhone(data.clientPhone);
     if (data.clientRole !== undefined) setClientRole(data.clientRole);
     if (data.userImage !== undefined) setUserImage(data.userImage);
   };
@@ -52,6 +57,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       clientId,
       clientName,
       clientEmail,
+      clientPhone,
       clientRole,
       userImage,
       setClient

@@ -13,6 +13,7 @@ export default function ClientContextInitializer() {
       if (error || !data?.user) return;
       const userId = data.user.id;
       const userEmail = data.user.email || "";
+      const userPhone = data.user.user_metadata?.phone || "";
       let clientName = "";
       let clientRole = "";
       let userImage = "";
@@ -31,7 +32,7 @@ export default function ClientContextInitializer() {
         clientRole = levelData?.user_level || "";
         userImage = levelData?.user_image || "";
       } catch {}
-      setClient({ clientId: userId, clientName, clientEmail: userEmail, clientRole, userImage });
+      setClient({ clientId: userId, clientName, clientEmail: userEmail, clientPhone: userPhone, clientRole, userImage });
     };
     fetchUserData();
   }, [setClient]);
