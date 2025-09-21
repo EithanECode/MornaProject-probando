@@ -28,7 +28,7 @@ export default function Header({
   };
 
   return (
-    <header className="bg-white/90 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+  <header className="bg-white/90 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40 shadow-sm">
       <div className="px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Left Section */}

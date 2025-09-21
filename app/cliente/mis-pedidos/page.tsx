@@ -2084,7 +2084,7 @@ export default function MisPedidosPage() {
         {/* Modal de detalles del pedido */}
         <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
           {selectedOrder && (
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="w-[95vw] sm:w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{t('client.recentOrders.modal.detailsTitle')}: {selectedOrder.id}</DialogTitle>
                 <DialogDescription>
