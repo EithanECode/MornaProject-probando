@@ -66,6 +66,12 @@ interface Pedido {
   shippingType?: string;
   totalQuote?: number | null;
   numericState?: number;
+  // Nuevos campos para cotización completa
+  shippingPrice?: number | null;
+  height?: number | null;
+  width?: number | null;
+  long?: number | null;
+  weight?: number | null;
 }
 
 interface BoxItem {
@@ -198,7 +204,7 @@ export default function PedidosChina() {
       setLoading(false);
     }
   }
-  const [modalCotizar, setModalCotizar] = useState<{open: boolean, pedido?: Pedido, precioCotizacion?: number}>({open: false, precioCotizacion: 0});
+  const [modalCotizar, setModalCotizar] = useState<{open: boolean, pedido?: Pedido, precioUnitario?: number, precioEnvio?: number, altura?: number, anchura?: number, largo?: number, peso?: number}>({open: false, precioUnitario: 0, precioEnvio: 0, altura: 0, anchura: 0, largo: 0, peso: 0});
   const [modalDetalle, setModalDetalle] = useState<{open: boolean, pedido?: Pedido}>({open: false});
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -1193,7 +1199,7 @@ export default function PedidosChina() {
   });
 
   // Cotizar pedido
-  const cotizarPedido = async (pedido: Pedido, precioUnitario: number) => {
+  const cotizarPedido = async (pedido: Pedido, precioUnitario: number, precioEnvio: number, altura: number, anchura: number, largo: number, peso: number) => {
     // Validar que el pedido no esté ya enviado (state >= 9)
     if (pedido.numericState && pedido.numericState >= 9) {
       toast({ title: t('chinese.ordersPage.toasts.notAllowedTitle'), description: t('chinese.ordersPage.toasts.orderAlreadyShipped') });
@@ -1203,25 +1209,33 @@ export default function PedidosChina() {
     }
 
     const supabase = getSupabaseBrowserClient();
-    const total = Number(precioUnitario) * Number(pedido.cantidad || 0);
+    const totalProductos = Number(precioUnitario) * Number(pedido.cantidad || 0);
+    const total = totalProductos + Number(precioEnvio);
 
     // 1) Actualizar totalQuote en la tabla orders
     const { error: updateError } = await supabase
       .from('orders')
-      .update({ totalQuote: total, state: 3 })
+      .update({ 
+        totalQuote: total, 
+        state: 3,
+        unitQuote: precioUnitario,
+        shippingPrice: precioEnvio,
+        height: altura,
+        width: anchura,
+        long: largo,
+        weight: peso
+      })
       .eq('id', pedido.id);
     if (updateError) {
       alert('Error al actualizar la cotización en la base de datos.');
       console.error('Error update totalQuote:', updateError);
       return;
     }
-  // Actualizar estado local y cerrar modal (sin PDF)
-  setPedidos(prev => prev.map(p => p.id === pedido.id ? { ...p, cotizado: true, estado: 'cotizado', precio: precioUnitario, totalQuote: total, numericState: 3 } : p));
-  setModalCotizar({ open: false });
-  setIsModalCotizarClosing(false);
-  };
-
-  // getStatusColor/Text ya no se usan; sustituido por getOrderBadge basado en estado numérico
+    // Actualizar estado local y cerrar modal (sin PDF)
+    setPedidos(prev => prev.map(p => p.id === pedido.id ? { ...p, cotizado: true, estado: 'cotizado', precio: precioUnitario, totalQuote: total, numericState: 3 } : p));
+    setModalCotizar({ open: false });
+    setIsModalCotizarClosing(false);
+  };  // getStatusColor/Text ya no se usan; sustituido por getOrderBadge basado en estado numérico
 
   // Asignar pedido a caja (empaquetar)
   const handleSelectCajaForPedido = async (pedidoId: number, box: BoxItem) => {
@@ -1722,7 +1736,16 @@ export default function PedidosChina() {
                           </Button>
                           {pedido.estado === 'pendiente' && (!pedido.numericState || pedido.numericState < 9) ? (
                             <Button
-                              onClick={() => setModalCotizar({ open: true, pedido })}
+                              onClick={() => setModalCotizar({ 
+                                open: true, 
+                                pedido,
+                                precioUnitario: pedido.precio || 0,
+                                precioEnvio: pedido.shippingPrice || 0,
+                                altura: pedido.height || 0,
+                                anchura: pedido.width || 0,
+                                largo: pedido.long || 0,
+                                peso: pedido.weight || 0
+                              })}
                               size="sm"
                               className="flex items-center gap-1 bg-orange-600 hover:bg-orange-700"
                             >
@@ -1733,7 +1756,16 @@ export default function PedidosChina() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => setModalCotizar({ open: true, pedido })}
+                              onClick={() => setModalCotizar({ 
+                                open: true, 
+                                pedido,
+                                precioUnitario: pedido.precio || 0,
+                                precioEnvio: pedido.shippingPrice || 0,
+                                altura: pedido.height || 0,
+                                anchura: pedido.width || 0,
+                                largo: pedido.long || 0,
+                                peso: pedido.weight || 0
+                              })}
                               className="flex items-center gap-1"
                             >
                               <Pencil className="h-4 w-4" />
@@ -2162,8 +2194,13 @@ export default function PedidosChina() {
               <form onSubmit={e => {
                 e.preventDefault();
                 const precio = Number((e.target as any).precio.value);
+                const precioEnvio = Number((e.target as any).precioEnvio.value);
+                const altura = Number((e.target as any).altura.value);
+                const anchura = Number((e.target as any).anchura.value);
+                const largo = Number((e.target as any).largo.value);
+                const peso = Number((e.target as any).peso.value);
                 if (precio > 0 && modalCotizar.pedido) {
-                  cotizarPedido(modalCotizar.pedido, precio);
+                  cotizarPedido(modalCotizar.pedido, precio, precioEnvio, altura, anchura, largo, peso);
                 }
               }} className="space-y-6">
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
@@ -2194,32 +2231,170 @@ export default function PedidosChina() {
                   <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.unitPriceLabel')}</label>
                                      <div className="relative">
                      <span className="absolute left-3 top-3 text-slate-500">$</span>
-                     <input
-                       type="text"
-                       name="precio"
-                       inputMode="decimal"
-                       required
-                       className={`w-full pl-8 pr-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
-                       placeholder={t('chinese.ordersPage.modals.quote.unitPricePlaceholder')}
-                       onChange={e => {
-                         let raw = e.target.value.replace(/,/g,'').replace(/[^0-9.]/g,'');
-                         const parts = raw.split('.');
-                         let intPart = parts[0] || '';
-                         let decPart = (parts[1] || '').slice(0,2);
-                         if (intPart.length > 7) intPart = intPart.slice(0,7);
-                         const cleaned = decPart ? `${intPart}.${decPart}` : intPart;
-                         e.target.value = cleaned;
-                         const numero = Number(cleaned || 0);
-                         setModalCotizar(prev => ({...prev, precioCotizacion: numero}));
-                       }}
-                     />
-                     <p className={`mt-1 text-xs ${modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 ? 'Máx 7 dígitos enteros' : 'Ingresa un precio mayor a 0'}</p>
+                      <input
+                        type="number"
+                        name="precio"
+                        inputMode="decimal"
+                        required
+                        value={modalCotizar.precioUnitario || ''}
+                        className={`w-full pl-8 pr-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.precioUnitario && modalCotizar.precioUnitario>0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                        placeholder={t('chinese.ordersPage.modals.quote.unitPricePlaceholder')}
+                        onChange={e => {
+                          let raw = e.target.value.replace(/,/g,'').replace(/[^0-9.]/g,'');
+                          const parts = raw.split('.');
+                          let intPart = parts[0] || '';
+                          let decPart = (parts[1] || '').slice(0,2);
+                          if (intPart.length > 7) intPart = intPart.slice(0,7);
+                          const cleaned = decPart ? `${intPart}.${decPart}` : intPart;
+                          e.target.value = cleaned;
+                          const numero = Number(cleaned || 0);
+                          setModalCotizar(prev => ({...prev, precioUnitario: numero}));
+                        }}
+                      />
+                     <p className={`mt-1 text-xs ${modalCotizar.precioUnitario && modalCotizar.precioUnitario>0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.precioUnitario && modalCotizar.precioUnitario>0 ? 'Máx 7 dígitos enteros' : 'Ingresa un precio mayor a 0'}</p>
                    </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.shippingPriceLabel')}</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-3 text-slate-500">$</span>
+                    <input
+                      type="number"
+                      name="precioEnvio"
+                      inputMode="decimal"
+                      required
+                      value={modalCotizar.precioEnvio || ''}
+                      className={`w-full pl-8 pr-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.precioEnvio !== undefined && modalCotizar.precioEnvio >= 0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                      placeholder={t('chinese.ordersPage.modals.quote.shippingPricePlaceholder')}
+                      onChange={e => {
+                        let raw = e.target.value.replace(/,/g,'').replace(/[^0-9.]/g,'');
+                        const parts = raw.split('.');
+                        let intPart = parts[0] || '';
+                        let decPart = (parts[1] || '').slice(0,2);
+                        if (intPart.length > 7) intPart = intPart.slice(0,7);
+                        const cleaned = decPart ? `${intPart}.${decPart}` : intPart;
+                        e.target.value = cleaned;
+                        const numero = Number(cleaned || 0);
+                        setModalCotizar(prev => ({...prev, precioEnvio: numero}));
+                      }}
+                    />
+                    <p className={`mt-1 text-xs ${modalCotizar.precioEnvio !== undefined && modalCotizar.precioEnvio >= 0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.precioEnvio !== undefined && modalCotizar.precioEnvio >= 0 ? 'Máx 7 dígitos enteros' : 'Ingresa un precio válido'}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.heightLabel')}</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        name="altura"
+                        inputMode="decimal"
+                        required
+                        value={modalCotizar.altura || ''}
+                        className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.altura && modalCotizar.altura > 0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                        placeholder={t('chinese.ordersPage.modals.quote.heightPlaceholder')}
+                        onChange={e => {
+                          let raw = e.target.value.replace(/,/g,'').replace(/[^0-9.]/g,'');
+                          const parts = raw.split('.');
+                          let intPart = parts[0] || '';
+                          let decPart = (parts[1] || '').slice(0,1);
+                          if (intPart.length > 7) intPart = intPart.slice(0,7);
+                          const cleaned = decPart ? `${intPart}.${decPart}` : intPart;
+                          e.target.value = cleaned;
+                          const numero = Number(cleaned || 0);
+                          setModalCotizar(prev => ({...prev, altura: numero}));
+                        }}
+                      />
+                      <span className="absolute right-3 top-3 text-slate-500 text-sm">cm</span>
+                      <p className={`mt-1 text-xs ${modalCotizar.altura && modalCotizar.altura > 0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.altura && modalCotizar.altura > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa una altura mayor a 0'}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.widthLabel')}</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        name="anchura"
+                        inputMode="decimal"
+                        required
+                        value={modalCotizar.anchura || ''}
+                        className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.anchura && modalCotizar.anchura > 0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                        placeholder={t('chinese.ordersPage.modals.quote.widthPlaceholder')}
+                        onChange={e => {
+                          let raw = e.target.value.replace(/,/g,'').replace(/[^0-9.]/g,'');
+                          const parts = raw.split('.');
+                          let intPart = parts[0] || '';
+                          let decPart = (parts[1] || '').slice(0,1);
+                          if (intPart.length > 7) intPart = intPart.slice(0,7);
+                          const cleaned = decPart ? `${intPart}.${decPart}` : intPart;
+                          e.target.value = cleaned;
+                          const numero = Number(cleaned || 0);
+                          setModalCotizar(prev => ({...prev, anchura: numero}));
+                        }}
+                      />
+                      <span className="absolute right-3 top-3 text-slate-500 text-sm">cm</span>
+                      <p className={`mt-1 text-xs ${modalCotizar.anchura && modalCotizar.anchura > 0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.anchura && modalCotizar.anchura > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa una anchura mayor a 0'}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.lengthLabel')}</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        name="largo"
+                        inputMode="decimal"
+                        required
+                        value={modalCotizar.largo || ''}
+                        className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.largo && modalCotizar.largo > 0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                        placeholder={t('chinese.ordersPage.modals.quote.lengthPlaceholder')}
+                        onChange={e => {
+                          let raw = e.target.value.replace(/,/g,'').replace(/[^0-9.]/g,'');
+                          const parts = raw.split('.');
+                          let intPart = parts[0] || '';
+                          let decPart = (parts[1] || '').slice(0,1);
+                          if (intPart.length > 7) intPart = intPart.slice(0,7);
+                          const cleaned = decPart ? `${intPart}.${decPart}` : intPart;
+                          e.target.value = cleaned;
+                          const numero = Number(cleaned || 0);
+                          setModalCotizar(prev => ({...prev, largo: numero}));
+                        }}
+                      />
+                      <span className="absolute right-3 top-3 text-slate-500 text-sm">cm</span>
+                      <p className={`mt-1 text-xs ${modalCotizar.largo && modalCotizar.largo > 0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.largo && modalCotizar.largo > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa un largo mayor a 0'}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.weightLabel')}</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      name="peso"
+                      inputMode="decimal"
+                      required
+                      value={modalCotizar.peso || ''}
+                      className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.peso && modalCotizar.peso > 0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                      placeholder={t('chinese.ordersPage.modals.quote.weightPlaceholder')}
+                      onChange={e => {
+                        let raw = e.target.value.replace(/,/g,'').replace(/[^0-9.]/g,'');
+                        const parts = raw.split('.');
+                        let intPart = parts[0] || '';
+                        let decPart = (parts[1] || '').slice(0,1);
+                        if (intPart.length > 7) intPart = intPart.slice(0,7);
+                        const cleaned = decPart ? `${intPart}.${decPart}` : intPart;
+                        e.target.value = cleaned;
+                        const numero = Number(cleaned || 0);
+                        setModalCotizar(prev => ({...prev, peso: numero}));
+                      }}
+                    />
+                    <span className="absolute right-3 top-3 text-slate-500 text-sm">kg</span>
+                    <p className={`mt-1 text-xs ${modalCotizar.peso && modalCotizar.peso > 0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.peso && modalCotizar.peso > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa un peso mayor a 0'}</p>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.totalToPay')}</label>
                   <div className="px-4 py-3 border border-slate-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 text-lg font-bold text-green-600">
-                    ${((modalCotizar.precioCotizacion || 0) * (modalCotizar.pedido?.cantidad || 0)).toLocaleString()}
+                    ${(((modalCotizar.precioUnitario || 0) * (modalCotizar.pedido?.cantidad || 0)) + (modalCotizar.precioEnvio || 0)).toLocaleString()}
                   </div>
                 </div>
                 <div className="flex justify-end space-x-3 pt-4">
@@ -2232,7 +2407,12 @@ export default function PedidosChina() {
                    </Button>
                   <Button
                     type="submit"
-                    disabled={!(modalCotizar.precioCotizacion && modalCotizar.precioCotizacion>0 && String(Math.trunc(modalCotizar.precioCotizacion)).length<=7)}
+                    disabled={!(modalCotizar.precioUnitario && modalCotizar.precioUnitario > 0 && String(Math.trunc(modalCotizar.precioUnitario)).length <= 7 &&
+                               modalCotizar.precioEnvio !== undefined && modalCotizar.precioEnvio >= 0 &&
+                               modalCotizar.altura && modalCotizar.altura > 0 &&
+                               modalCotizar.anchura && modalCotizar.anchura > 0 &&
+                               modalCotizar.largo && modalCotizar.largo > 0 &&
+                               modalCotizar.peso && modalCotizar.peso > 0)}
                     className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {t('chinese.ordersPage.modals.quote.sendQuote')}
