@@ -13,6 +13,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PriceDisplay } from '@/components/shared/PriceDisplay';
 import {
   Search,
   Filter,
@@ -284,7 +285,16 @@ const PaymentDetailsModal: React.FC<{
           </div>
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="font-semibold text-gray-800 mb-2">{t('venezuela.pagos.modal.details.paymentInfo')}</h4>
-            <p><span className="font-medium">{t('venezuela.pagos.modal.details.fields.amount')}</span> ${payment.monto.toLocaleString()}</p>
+            <div className="flex items-center gap-2">
+              <span className="font-medium">{t('venezuela.pagos.modal.details.fields.amount')}</span>
+              <PriceDisplay 
+                amount={payment.monto} 
+                currency="USD"
+                variant="inline"
+                size="md"
+                emphasizeBolivars={true}
+              />
+            </div>
             <p><span className="font-medium">{t('venezuela.pagos.modal.details.fields.date')}</span> {new Date(payment.fecha).toLocaleDateString('es-ES')}</p>
             <p><span className="font-medium">{t('venezuela.pagos.modal.details.fields.reference')}</span> {payment.referencia}</p>
             <p><span className="font-medium">{t('venezuela.pagos.modal.details.fields.method')}</span> {payment.metodo}</p>
@@ -352,9 +362,16 @@ const PaymentCard: React.FC<{ payment: Payment; onApprove: (id: string) => void;
           <span className="text-gray-600">{t('venezuela.pagos.mobile.date')}</span>
           <span className="font-medium">{formatDate(payment.fecha)}</span>
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <span className="text-gray-600">{t('venezuela.pagos.mobile.amount')}</span>
-          <span className="font-semibold text-green-600">{formatCurrency(payment.monto)}</span>
+          <PriceDisplay 
+            amount={payment.monto} 
+            currency="USD"
+            variant="inline"
+            size="sm"
+            emphasizeBolivars={true}
+            className="font-semibold text-green-600"
+          />
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">{t('venezuela.pagos.mobile.method')}</span>
@@ -1074,9 +1091,15 @@ const PaymentValidationDashboard: React.FC = () => {
                           <span className="truncate block">{formatDate(payment.fecha)}</span>
                         </td>
                         <td className="px-2 py-3">
-                          <span className={`text-sm font-bold truncate block transition-colors duration-200 ${mounted && theme === 'dark' ? 'text-green-300 group-hover:text-green-400' : 'text-gray-900 group-hover:text-green-600'}`}>
-                            {formatCurrency(payment.monto)}
-                          </span>
+                          <div className={`text-sm font-bold truncate transition-colors duration-200 ${mounted && theme === 'dark' ? 'text-green-300 group-hover:text-green-400' : 'text-gray-900 group-hover:text-green-600'}`}>
+                            <PriceDisplay 
+                              amount={payment.monto} 
+                              currency="USD"
+                              variant="inline"
+                              size="sm"
+                              emphasizeBolivars={true}
+                            />
+                          </div>
                         </td>
                         <td className="px-2 py-3">
                           <span className={`text-xs font-mono px-2 py-1 rounded truncate block ${mounted && theme === 'dark' ? 'text-slate-300 bg-slate-900' : 'text-gray-600 bg-gray-50'}`}> 

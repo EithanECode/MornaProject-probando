@@ -36,6 +36,7 @@ import {
   Smartphone,
   Globe
 } from 'lucide-react';
+import { PriceDisplay } from '@/components/shared/PriceDisplay';
 
 // Tipos
 interface Payment {
@@ -463,7 +464,16 @@ export default function PagosPage() {
                   </div>
                   <div className="hidden md:block w-px h-12 md:h-16 bg-white/20"></div>
                   <div className="text-center">
-                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{formatCurrency(stats.paidAmount, 'USD')}</div>
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold">
+                      <PriceDisplay 
+                        amount={stats.paidAmount} 
+                        currency="USD"
+                        variant="inline"
+                        size="lg"
+                        emphasizeBolivars={true}
+                        className="text-white"
+                      />
+                    </div>
                     <p className="text-green-100 text-xs md:text-sm">{t('client.recentOrders.payments.totalPaid')}</p>
                   </div>
                 </div>
@@ -631,7 +641,16 @@ export default function PagosPage() {
                         <p className="text-xs md:text-sm text-slate-600">{payment.description}</p>
                         <div className="flex items-center justify-between text-xs md:text-sm">
                           <span className="text-slate-600">{t('client.recentOrders.payments.amount')}</span>
-                          <span className="font-bold text-lg md:text-xl text-slate-800">{formatCurrency(payment.amount, payment.currency)}</span>
+                          <div className="text-right">
+                            <PriceDisplay 
+                              amount={payment.amount} 
+                              currency={payment.currency === 'USD' ? 'USD' : 'VES'}
+                              variant="inline"
+                              size="lg"
+                              emphasizeBolivars={true}
+                              className="font-bold"
+                            />
+                          </div>
                         </div>
                         <div className="flex items-center justify-between text-xs md:text-sm">
                           <span className="text-slate-600">{t('client.recentOrders.payments.methodLabel')}</span>

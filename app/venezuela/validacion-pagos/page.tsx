@@ -38,6 +38,7 @@ import {
   Menu,
   RotateCcw
 } from 'lucide-react';
+import { PriceDisplay } from '@/components/shared/PriceDisplay';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useVzlaContext } from '@/lib/VzlaContext';
 import { useRealtimeVzlaPayments } from '@/hooks/use-realtime-vzla-payments';
@@ -375,7 +376,16 @@ const PaymentDetailsModal: React.FC<{
           </div>
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="font-semibold text-gray-800 mb-2">{t('venezuela.pagos.modal.details.paymentInfo')}</h4>
-            <p><span className="font-medium">{t('venezuela.pagos.modal.details.fields.amount')}</span> ${payment.monto.toLocaleString()}</p>
+            <div className="flex items-center gap-2">
+              <span className="font-medium">{t('venezuela.pagos.modal.details.fields.amount')}</span>
+              <PriceDisplay 
+                amount={payment.monto} 
+                currency="USD"
+                variant="inline"
+                size="md"
+                emphasizeBolivars={true}
+              />
+            </div>
             <p><span className="font-medium">{t('venezuela.pagos.modal.details.fields.date')}</span> {new Date(payment.fecha).toLocaleDateString('es-ES')}</p>
             <p><span className="font-medium">{t('venezuela.pagos.modal.details.fields.reference')}</span> {payment.referencia}</p>
             <p><span className="font-medium">{t('venezuela.pagos.modal.details.fields.method')}</span> {payment.metodo}</p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { 
@@ -20,7 +20,10 @@ import {
   Users,
   Bell,
   Sun,
-  Moon
+  Moon,
+  Loader2,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,6 +37,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useExchangeRate } from '@/hooks/useExchangeRate';
 
 interface BusinessConfig {
   // Parámetros de envío
@@ -61,6 +65,9 @@ interface BusinessConfig {
   // Configuración de accesos
   sessionTimeout: number;
   requireTwoFactor: boolean;
+  
+  // Configuración de tasa de cambio
+  autoUpdateExchangeRate: boolean;
 }
 
 export default function ConfiguracionPage() {
@@ -85,7 +92,8 @@ export default function ConfiguracionPage() {
     whatsappNotifications: true,
     alertsAfterDays: 2,
     sessionTimeout: 60,
-    requireTwoFactor: false
+    requireTwoFactor: false,
+    autoUpdateExchangeRate: false
   });
   // Referencia al estado base para detectar cambios
   const baseConfigRef = useRef<BusinessConfig | null>(null);
@@ -95,16 +103,78 @@ export default function ConfiguracionPage() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const { toast } = useToast();
 
+  // Callback estable para actualizar la tasa
+  const handleRateUpdate = useCallback((newRate: number) => {
+    setConfig(prev => ({ ...prev, usdRate: newRate }));
+  }, []);
+
+  // Hook para manejo de tasa de cambio
+  const {
+    rate: currentExchangeRate,
+    loading: exchangeRateLoading,
+    error: exchangeRateError,
+    lastUpdated: exchangeRateLastUpdated,
+    source: exchangeRateSource,
+    refreshRate,
+    getTimeSinceUpdate,
+    isAutoUpdating
+  } = useExchangeRate({
+    autoUpdate: config.autoUpdateExchangeRate,
+    interval: 30 * 60 * 1000, // 30 minutos
+    onRateUpdate: handleRateUpdate
+  });
+
   useEffect(() => {
-    const savedDate = localStorage.getItem('lastConfigSaved');
-    if (savedDate) {
-      setLastSaved(new Date(savedDate));
-    }
-    // Inicializar base solo una vez
-    if (!baseConfigRef.current) {
-      baseConfigRef.current = { ...config };
-    }
-    setMounted(true);
+    const loadConfig = async () => {
+      try {
+        // 1. Cargar configuración desde localStorage (más confiable)
+        const savedConfig = localStorage.getItem('businessConfig');
+        let mergedConfig = { ...config };
+
+        if (savedConfig) {
+          try {
+            const parsedConfig = JSON.parse(savedConfig);
+            mergedConfig = { ...mergedConfig, ...parsedConfig };
+          } catch (e) {
+            console.error('Error parsing saved config:', e);
+          }
+        }
+
+        // 2. Intentar cargar desde la API y hacer merge
+        try {
+          const response = await fetch('/api/config');
+          const data = await response.json();
+          
+          if (data.success && data.config) {
+            // Priorizar localStorage para autoUpdateExchangeRate
+            mergedConfig = { 
+              ...mergedConfig, 
+              ...data.config,
+              autoUpdateExchangeRate: mergedConfig.autoUpdateExchangeRate // Mantener valor de localStorage
+            };
+          }
+        } catch (apiError) {
+          console.error('Error loading config from API, using localStorage only:', apiError);
+        }
+
+        // 3. Aplicar configuración final
+        setConfig(mergedConfig);
+        baseConfigRef.current = { ...mergedConfig };
+        
+      } catch (error) {
+        console.error('Error loading config:', error);
+      }
+      
+      // Recuperar última fecha de guardado
+      const savedDate = localStorage.getItem('lastConfigSaved');
+      if (savedDate) {
+        setLastSaved(new Date(savedDate));
+      }
+      
+      setMounted(true);
+    };
+
+    loadConfig();
   }, []);
 
   const handleMobileMenuToggle = () => {
@@ -118,22 +188,48 @@ export default function ConfiguracionPage() {
   const handleSave = async () => {
     setIsLoading(true);
     
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    const now = new Date();
-    setLastSaved(now);
-    localStorage.setItem('lastConfigSaved', now.toISOString());
-    
-    setIsLoading(false);
-    
-    toast({
-      title: t('admin.management.messages.configSaved'),
-      description: t('admin.management.messages.configSavedDesc'),
-    });
+    try {
+      // Guardar configuración en base de datos a través de la API
+      const response = await fetch('/api/config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(config)
+      });
 
-  // Actualizar baseline para futuras comparaciones
-  baseConfigRef.current = { ...config };
-  setBaselineVersion(v => v + 1); // forzar recomputo de hasChanges
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Error saving configuration');
+      }
+      
+      const now = new Date();
+      setLastSaved(now);
+      localStorage.setItem('lastConfigSaved', now.toISOString());
+      
+      // *** CLAVE: Guardar configuración en localStorage para persistencia ***
+      localStorage.setItem('businessConfig', JSON.stringify(config));
+      
+      toast({
+        title: t('admin.management.messages.configSaved'),
+        description: "Configuración guardada globalmente. Los cambios estarán disponibles para todos los usuarios.",
+      });
+
+      // Actualizar baseline para futuras comparaciones
+      baseConfigRef.current = { ...config };
+      setBaselineVersion(v => v + 1); // forzar recomputo de hasChanges
+      
+    } catch (error: any) {
+      console.error('Error saving config:', error);
+      toast({
+        title: "Error al guardar",
+        description: error.message || "No se pudieron guardar los cambios en la base de datos",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const updateConfig = (field: keyof BusinessConfig, value: any) => {
@@ -441,19 +537,86 @@ export default function ConfiguracionPage() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="usdRate" className="text-sm md:text-base">{t('admin.management.financial.usdRate')}</Label>
-                      <Input
-                        id="usdRate"
-                        type="number"
-                        step="0.01"
-                        min={0}
-                        value={config.usdRate}
-                        onChange={(e) => applyCost('usdRate', e.target.value)}
+                      <div className="flex gap-2">
+                        <Input
+                          id="usdRate"
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          value={config.usdRate}
+                          onChange={(e) => applyCost('usdRate', e.target.value)}
+                          className={exchangeRateError ? 'border-red-300' : ''}
+                          disabled={exchangeRateLoading}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={refreshRate}
+                          disabled={exchangeRateLoading}
+                          className="shrink-0"
+                        >
+                          {exchangeRateLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <RefreshCw className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Switch para auto-actualización */}
+                    <div className="flex items-center justify-between space-x-2">
+                      <div className="flex items-center space-x-2">
+                        {isAutoUpdating ? (
+                          <Wifi className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <WifiOff className="h-4 w-4 text-gray-400" />
+                        )}
+                        <Label htmlFor="autoUpdate" className="text-sm cursor-pointer">
+                          Actualizar automáticamente según tasa oficial BCV
+                        </Label>
+                      </div>
+                      <Switch
+                        id="autoUpdate"
+                        checked={config.autoUpdateExchangeRate}
+                        onCheckedChange={(checked) => 
+                          setConfig(prev => ({ ...prev, autoUpdateExchangeRate: checked }))
+                        }
                       />
                     </div>
-                    <Alert>
-                      <CheckCircle className="h-4 w-4" />
-                      <AlertDescription>
-                        {t('admin.management.financial.updateDaily')}
+
+                    {/* Información de estado */}
+                    {exchangeRateLastUpdated && (
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span>Última actualización:</span>
+                          <Badge variant="secondary" className="text-xs">
+                            {getTimeSinceUpdate()}
+                          </Badge>
+                        </div>
+                        {exchangeRateSource && (
+                          <div className="flex items-center justify-between">
+                            <span>Fuente:</span>
+                            <span className="font-medium">{exchangeRateSource}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Alert de estado */}
+                    <Alert className={exchangeRateError ? 'border-red-200 bg-red-50' : 'border-green-200 bg-green-50'}>
+                      {exchangeRateError ? (
+                        <AlertTriangle className="h-4 w-4 text-red-600" />
+                      ) : (
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                      )}
+                      <AlertDescription className={exchangeRateError ? 'text-red-700' : 'text-green-700'}>
+                        {exchangeRateError || (
+                          config.autoUpdateExchangeRate 
+                            ? 'Actualización automática activada cada 30 minutos desde BCV'
+                            : 'Actualización manual. Active la sincronización automática para obtener la tasa oficial del BCV.'
+                        )}
                       </AlertDescription>
                     </Alert>
                   </CardContent>

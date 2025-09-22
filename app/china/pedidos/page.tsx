@@ -7,6 +7,7 @@ import '../../animations/animations.css';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PriceDisplay } from '@/components/shared/PriceDisplay';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -1655,7 +1656,23 @@ export default function PedidosChina() {
                           </div>
                           {pedido.precio && (
                             <div className="sm:hidden mt-1 text-[11px] text-green-700 font-medium">
-                              ${pedido.precio.toLocaleString()} · Total ${(pedido.precio * pedido.cantidad).toLocaleString()}
+                              <PriceDisplay 
+                                amount={pedido.precio} 
+                                currency="USD"
+                                variant="inline"
+                                size="sm"
+                                showBoth={false}
+                                className="inline mr-2"
+                              />
+                              · Total: 
+                              <PriceDisplay 
+                                amount={pedido.precio * pedido.cantidad} 
+                                currency="USD"
+                                variant="inline"
+                                size="sm"
+                                emphasizeBolivars={true}
+                                className="inline ml-1"
+                              />
                             </div>
                           )}
                         </div>
@@ -2218,8 +2235,16 @@ export default function PedidosChina() {
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.totalToPay')}</label>
-                  <div className="px-4 py-3 border border-slate-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 text-lg font-bold text-green-600">
-                    ${((modalCotizar.precioCotizacion || 0) * (modalCotizar.pedido?.cantidad || 0)).toLocaleString()}
+                  <div className="px-4 py-3 border border-slate-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50">
+                    <PriceDisplay 
+                      amount={(modalCotizar.precioCotizacion || 0) * (modalCotizar.pedido?.cantidad || 0)} 
+                      currency="USD"
+                      variant="card"
+                      size="lg"
+                      emphasizeBolivars={true}
+                      showRefresh={true}
+                      className="border-green-200 text-green-600 font-bold"
+                    />
                   </div>
                 </div>
                 <div className="flex justify-end space-x-3 pt-4">

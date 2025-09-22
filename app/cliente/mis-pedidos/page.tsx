@@ -16,6 +16,7 @@ const Player = dynamicImport(
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PriceDisplay } from '@/components/shared/PriceDisplay';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -2008,13 +2009,29 @@ export default function MisPedidosPage() {
                           {order.status === 'quoted' && t('client.recentOrders.statuses.quoted')}
                           {order.status !== 'pending' && order.status !== 'quoted' && t('client.recentOrders.table.amount')}
                         </p>
-                        <p className="font-bold text-lg md:text-xl text-slate-800">
-                          {order.status === 'pending' && typeof order.estimatedBudget !== 'undefined' && order.estimatedBudget !== null
-                            ? `$${Number(order.estimatedBudget).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
-                            : order.status === 'quoted' && typeof order.totalQuote !== 'undefined' && order.totalQuote !== null
-                              ? `$${Number(order.totalQuote).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
-                              : order.amount}
-                        </p>
+                        <div className="font-bold text-lg md:text-xl">
+                          {order.status === 'pending' && typeof order.estimatedBudget !== 'undefined' && order.estimatedBudget !== null ? (
+                            <PriceDisplay 
+                              amount={Number(order.estimatedBudget)} 
+                              currency="USD"
+                              variant="inline"
+                              size="lg"
+                              emphasizeBolivars={true}
+                              className="text-slate-800"
+                            />
+                          ) : order.status === 'quoted' && typeof order.totalQuote !== 'undefined' && order.totalQuote !== null ? (
+                            <PriceDisplay 
+                              amount={Number(order.totalQuote)} 
+                              currency="USD"
+                              variant="inline"
+                              size="lg"
+                              emphasizeBolivars={true}
+                              className="text-slate-800"
+                            />
+                          ) : (
+                            <span className="text-slate-800">{order.amount}</span>
+                          )}
+                        </div>
                         <p className="text-xs text-slate-600 font-medium">Tracking: {order.tracking || '-'}</p>
                       </div>
                     </div>
@@ -2104,13 +2121,31 @@ export default function MisPedidosPage() {
                       {selectedOrder.status === 'quoted' && t('client.recentOrders.statuses.quoted')}
                       {selectedOrder.status !== 'pending' && selectedOrder.status !== 'quoted' && t('client.recentOrders.modal.amount')}
                     </p>
-                    <p className="text-lg font-bold text-green-600">
-                      {selectedOrder.status === 'pending' && typeof selectedOrder.estimatedBudget !== 'undefined' && selectedOrder.estimatedBudget !== null
-                        ? `$${Number(selectedOrder.estimatedBudget).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
-                        : selectedOrder.status === 'quoted' && typeof selectedOrder.totalQuote !== 'undefined' && selectedOrder.totalQuote !== null
-                          ? `$${Number(selectedOrder.totalQuote).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
-                          : selectedOrder.amount}
-                    </p>
+                    <div className="text-lg font-bold">
+                      {selectedOrder.status === 'pending' && typeof selectedOrder.estimatedBudget !== 'undefined' && selectedOrder.estimatedBudget !== null ? (
+                        <PriceDisplay 
+                          amount={Number(selectedOrder.estimatedBudget)} 
+                          currency="USD"
+                          variant="card"
+                          size="lg"
+                          emphasizeBolivars={true}
+                          showRefresh={true}
+                          className="border-green-200"
+                        />
+                      ) : selectedOrder.status === 'quoted' && typeof selectedOrder.totalQuote !== 'undefined' && selectedOrder.totalQuote !== null ? (
+                        <PriceDisplay 
+                          amount={Number(selectedOrder.totalQuote)} 
+                          currency="USD"
+                          variant="card"
+                          size="lg"
+                          emphasizeBolivars={true}
+                          showRefresh={true}
+                          className="border-green-200"
+                        />
+                      ) : (
+                        <span className="text-green-600">{selectedOrder.amount}</span>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.modal.status')}</p>
