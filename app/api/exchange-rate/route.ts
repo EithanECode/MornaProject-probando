@@ -107,6 +107,7 @@ async function fetchExchangeRate(): Promise<number> {
 // GET: Obtener tasa de cambio actual
 export async function GET(request: NextRequest) {
   try {
+    // Intentar obtener de APIs externas primero
     const rate = await fetchExchangeRate();
     
     return NextResponse.json({
@@ -119,11 +120,14 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Exchange rate API error:', error);
     
+    // Fallback: usar tasa por defecto si las APIs fallan
     return NextResponse.json({
-      success: false,
-      error: error.message || 'Failed to fetch exchange rate',
-      timestamp: new Date().toISOString()
-    }, { status: 500 });
+      success: true,
+      rate: 166.58,
+      timestamp: new Date().toISOString(),
+      source: 'Tasa por Defecto',
+      warning: 'Usando tasa por defecto debido a errores en las APIs externas'
+    });
   }
 }
 

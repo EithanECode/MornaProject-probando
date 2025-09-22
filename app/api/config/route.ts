@@ -18,7 +18,7 @@ const defaultConfig = {
   alertsAfterDays: 2,
   sessionTimeout: 60,
   requireTwoFactor: false,
-  autoUpdateExchangeRate: false,
+  autoUpdateExchangeRate: true,
   lastUpdated: '2025-09-22T01:30:00.000Z'
 };
 
