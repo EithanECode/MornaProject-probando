@@ -2091,6 +2091,7 @@
       "modalBoxesEmptyDesc": "Cuando asignes cajas a este contenedor, aparecerán aquí.",
       "tooltips": {
         "markBoxReceived": "Marcar caja como recibida",
+        "markBoxReceivedAir": "Marcar caja como recibida (envío aéreo)",
         "markContainerReceived": "Marcar contenedor como recibido"
       },
       "pdf": {
@@ -2794,6 +2795,16 @@
           "specificationsNA": "N/A",
           "unitPriceLabel": "Precio de cotización unitario *",
           "unitPricePlaceholder": "Ingresa el precio unitario",
+          "shippingPriceLabel": "Precio de envío *",
+          "shippingPricePlaceholder": "Ingresa el precio de envío",
+          "weightLabel": "Peso *",
+          "weightPlaceholder": "Ingresa el peso",
+          "heightLabel": "Altura *",
+          "heightPlaceholder": "Ingresa la altura",
+          "widthLabel": "Anchura *",
+          "widthPlaceholder": "Ingresa la anchura",
+          "lengthLabel": "Largo *",
+          "lengthPlaceholder": "Ingresa el largo",
           "totalToPay": "Total a Pagar",
           "cancel": "Cancelar",
           "sendQuote": "Enviar Cotización"

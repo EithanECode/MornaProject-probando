@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/lib/LanguageContext';
+import { useClientContext } from '@/lib/ClientContext';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useTranslation } from '@/hooks/useTranslation';
 import {
@@ -56,6 +57,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const { language, committedLanguage, previewLanguage, commitLanguage, revertLanguage } = useLanguage();
+  const { clientName, clientEmail, clientPhone, setClient } = useClientContext();
   // Flag para saber si se guardó y evitar revert posterior accidental
   const didSaveRef = React.useRef(false);
   const { t } = useTranslation();
@@ -135,6 +137,24 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
 
     loadUserImage();
   }, []);
+
+  // Cargar datos del cliente si es rol cliente
+  useEffect(() => {
+    if (role === 'client' && clientName && clientEmail) {
+      setFormData(prev => ({
+        ...prev,
+        nombre: clientName,
+        email: clientEmail,
+        telefono: clientPhone || ''
+      }));
+      setProfileBaseline(prev => ({
+        ...prev,
+        nombre: clientName,
+        email: clientEmail,
+        telefono: clientPhone || ''
+      }));
+    }
+  }, [role, clientName, clientEmail, clientPhone]);
 
   // Inicializar idioma sólo al montar; no cambiar hasta guardar.
   useEffect(() => {
@@ -358,7 +378,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     }
   };
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     // Validaciones de longitud solo al guardar (el input ya está limitado, esto es por seguridad extra)
     if (formData.nombre.length > MAX_FIELD_LENGTH || formData.email.length > MAX_FIELD_LENGTH) {
   toast({ title: t('common.error'), description: `Nombre y correo no pueden exceder ${MAX_FIELD_LENGTH} caracteres.`, variant: 'destructive', duration: 5000 });
@@ -366,24 +386,44 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     }
     if (!hasProfileChanges) return; // Nada que guardar
 
-    if (formData.idioma && ['es', 'en', 'zh'].includes(formData.idioma) && formData.idioma !== committedLanguage) {
-      console.log('[config][saveProfile] committing language USING formData.idioma', {
-        formDataIdioma: formData.idioma,
-        visibleBefore: language,
-        committedBefore: committedLanguage
+    try {
+      // Guardar teléfono en user_metadata si es cliente y cambió
+      if (role === 'client' && formData.telefono !== profileBaseline.telefono) {
+        const supabase = getSupabaseBrowserClient();
+        const { error } = await supabase.auth.updateUser({
+          data: { phone: formData.telefono }
+        });
+        if (error) {
+          console.error('Error updating phone:', error);
+          toast({ title: t('common.error'), description: 'Error al guardar el teléfono', variant: 'destructive', duration: 5000 });
+          return;
+        }
+        // Actualizar contexto
+        setClient({ clientPhone: formData.telefono });
+      }
+
+      if (formData.idioma && ['es', 'en', 'zh'].includes(formData.idioma) && formData.idioma !== committedLanguage) {
+        console.log('[config][saveProfile] committing language USING formData.idioma', {
+          formDataIdioma: formData.idioma,
+          visibleBefore: language,
+          committedBefore: committedLanguage
+        });
+        commitLanguage(formData.idioma as any);
+        console.log('[config][saveProfile] committed language', { committedLanguageAfter: formData.idioma });
+      }
+      toast({ title: t('admin.configuration.messages.profileUpdated'), description: t('admin.configuration.messages.profileUpdatedDesc'), variant: 'default', duration: 5000 });
+      // Actualizar baseline tras guardar
+      setProfileBaseline({
+        nombre: formData.nombre,
+        email: formData.email,
+        telefono: formData.telefono,
+        idioma: language as string
       });
-      commitLanguage(formData.idioma as any);
-      console.log('[config][saveProfile] committed language', { committedLanguageAfter: formData.idioma });
+      didSaveRef.current = true;
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast({ title: t('common.error'), description: 'Error al guardar el perfil', variant: 'destructive', duration: 5000 });
     }
-    toast({ title: t('admin.configuration.messages.profileUpdated'), description: t('admin.configuration.messages.profileUpdatedDesc'), variant: 'default', duration: 5000 });
-    // Actualizar baseline tras guardar
-    setProfileBaseline({
-      nombre: formData.nombre,
-      email: formData.email,
-      telefono: formData.telefono,
-      idioma: language as string
-    });
-    didSaveRef.current = true;
   };
 
   // Derivados para habilitar/deshabilitar botones
@@ -556,7 +596,7 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                             value={formData.telefono}
                             onChange={(e) => handleInputChange('telefono', e.target.value)}
                             maxLength={20}
-                            placeholder={t('admin.configuration.profile.placeholders.phone')}
+                            placeholder="+58 412-123-4567"
                           />
                         </div>
                         <div className="space-y-2">
