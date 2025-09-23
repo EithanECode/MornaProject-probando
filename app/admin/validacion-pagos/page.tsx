@@ -884,11 +884,18 @@ const PaymentValidationDashboard: React.FC = () => {
       [t('venezuela.pagos.export.columns.description')]: payment.descripcion
     }));
 
-    const XLSX = await import('xlsx');
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, t('venezuela.pagos.export.sheetName'));
-    XLSX.writeFile(workbook, t('venezuela.pagos.export.fileName'));
+    const writeXlsx = (await import('write-excel-file')).default;
+    const keys = Object.keys(data[0] || {});
+    const headerRow = keys;
+    const bodyRows = data.map((obj) => keys.map((k) => {
+      const v = (obj as any)[k];
+      if (v === null || v === undefined) return '';
+      return typeof v === 'object' ? JSON.stringify(v) : v;
+    }));
+  await (writeXlsx as any)([headerRow, ...bodyRows], {
+      fileName: (t('venezuela.pagos.export.fileName') as string) || 'export.xlsx',
+      sheet: (t('venezuela.pagos.export.sheetName') as string) || 'Hoja 1'
+    });
   };
 
   return (
