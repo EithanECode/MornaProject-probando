@@ -288,21 +288,21 @@ export default function RegisterForm() {
   }, [passwordMatchError, confirmPassword.length]);
 
   return (
-    <form className="auth-form register-form" onSubmit={handleSubmit}>
+    <form className="auth-form register-form w-full max-w-lg py-2 px-2" onSubmit={handleSubmit}>
       <div className="register-lottie-icon">
         {defaultRegisterOptions && !registerAnimError && (
-          <Lottie options={defaultRegisterOptions} height={70} width={70} />
+          <Lottie options={defaultRegisterOptions} height={50} width={50} />
         )}
         {registerAnimError && (
-          <div style={{ color: 'red', fontSize: 14, textAlign: 'center' }}>
-            <span style={{ fontSize: 24 }}>⚠️</span>
+          <div style={{ color: 'red', fontSize: 12, textAlign: 'center' }}>
+            <span style={{ fontSize: 20 }}>⚠️</span>
             <div>No se pudo cargar la animación de registro</div>
           </div>
         )}
       </div>
-  <h2>{t('auth.register.title')}</h2>
+  <h2 className="text-lg">{t('auth.register.title')}</h2>
 
-      <label htmlFor="register-fullname">{t('auth.common.fullName')}</label>
+      <label htmlFor="register-fullname" className="text-sm">{t('auth.common.fullName')}</label>
       <input
         type="text"
         id="register-fullname"
@@ -311,17 +311,17 @@ export default function RegisterForm() {
         maxLength={MAX_NAME}
         onChange={(e) => setFullName(e.target.value.slice(0, MAX_NAME))}
         required
-        className={nameError ? 'invalid' : ''}
+        className={`py-1 px-2 ${nameError ? 'invalid' : ''}`}
         aria-invalid={!!nameError}
       />
       {fullName.length > 0 && fullName.length === MAX_NAME && (
         <p className="text-xs text-slate-500">{fullName.length}/{MAX_NAME}</p>
       )}
       {nameError && (
-        <p className="text-red-500 text-sm mt-1" role="alert">{nameError}</p>
+        <p className="text-red-500 text-xs mt-1" role="alert">{nameError}</p>
       )}
 
-      <label htmlFor="register-email">{t('auth.common.email')}</label>
+      <label htmlFor="register-email" className="text-sm">{t('auth.common.email')}</label>
       <input
         type="email"
         id="register-email"
@@ -330,17 +330,17 @@ export default function RegisterForm() {
         maxLength={MAX_EMAIL}
         onChange={(e) => setEmail(e.target.value.slice(0, MAX_EMAIL))}
         required
-        className={emailError ? 'invalid' : ''}
+        className={`py-1 px-2 ${emailError ? 'invalid' : ''}`}
         aria-invalid={!!emailError}
       />
       {email.length > 0 && email.length === MAX_EMAIL && (
         <p className="text-xs text-slate-500">{email.length}/{MAX_EMAIL}</p>
       )}
       {emailError && (
-        <p className="text-red-500 text-sm mt-1" role="alert">{emailError}</p>
+        <p className="text-red-500 text-xs mt-1" role="alert">{emailError}</p>
       )}
 
-    <label htmlFor="register-password">{t('auth.common.password')}</label>
+    <label htmlFor="register-password" className="text-sm">{t('auth.common.password')}</label>
       <div className="password-input-container">
         <input
           type={showPassword ? "text" : "password"}
@@ -352,7 +352,7 @@ export default function RegisterForm() {
           onFocus={handlePasswordFocus}
           onBlur={handlePasswordBlur}
           required
-          className={`password-input ${
+          className={`password-input py-1 px-2 ${
             currentStrengthInfo.level !== "none"
               ? `password-strength-border-${currentStrengthInfo.level}`
               : ""
@@ -362,12 +362,12 @@ export default function RegisterForm() {
           <span className="absolute -bottom-5 right-1 text-[10px] text-slate-500">{password.length}/{MAX_PASSWORD}</span>
         )}
         <span className="password-toggle-icon" onClick={toggleShowPassword}>
-          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
         </span>
         {showFeedbackDiv && (
           <div className={`password-strength-feedback ${animateFeedback ? "active" : ""}`}>
             <div
-              className={`password-strength-text password-strength-text-${currentStrengthInfo.level}`}
+              className={`password-strength-text password-strength-text-${currentStrengthInfo.level} text-xs`}
             >
               {currentStrengthInfo.text}
             </div>
@@ -380,7 +380,7 @@ export default function RegisterForm() {
         )}
       </div>
 
-    <label htmlFor="register-confirm-password">{t('auth.common.confirmPassword')}</label>
+    <label htmlFor="register-confirm-password" className="text-sm">{t('auth.common.confirmPassword')}</label>
       <div className="password-input-container">
         <input
           type={showConfirmPassword ? "text" : "password"}
@@ -390,36 +390,37 @@ export default function RegisterForm() {
           maxLength={MAX_PASSWORD}
           onChange={handleConfirmPasswordChange}
           required
-          className={passwordMatchError ? 'invalid' : ''}
+          className={`py-1 px-2 ${passwordMatchError ? 'invalid' : ''}`}
           aria-invalid={passwordMatchError}
         />
         <span
           className={`password-toggle-icon ${showCheckmark ? "hidden" : ""}`}
           onClick={toggleShowConfirmPassword}
         >
-          {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
         </span>
         {showMatchErrorDiv && (
-          <p className={`password-error-message ${animateMatchError ? "active" : ""}`}>
+          <p className={`password-error-message text-xs ${animateMatchError ? "active" : ""}`}>
             {t('auth.common.passwordsNoMatch')}
           </p>
         )}
         {showCheckmark && defaultCheckmarkOptions && (
           <div className="checkmark-icon-container">
-            <Lottie options={defaultCheckmarkOptions} height={25} width={25} />
+            <Lottie options={defaultCheckmarkOptions} height={20} width={20} />
           </div>
         )}
       </div>
 
       {errorMsg && (
-        <p className="text-red-500 text-sm mt-2" role="alert">{errorMsg}</p>
+        <p className="text-red-500 text-xs mt-2" role="alert">{errorMsg}</p>
       )}
       {successMsg && (
-        <p className="text-green-600 text-sm mt-2" role="status">{successMsg}</p>
+        <p className="text-green-600 text-xs mt-2" role="status">{successMsg}</p>
       )}
       <button
         type="submit"
         disabled={loading || !fullName || !email || !password || !confirmPassword || password !== confirmPassword || fullName.length > MAX_NAME || email.length > MAX_EMAIL || password.length > MAX_PASSWORD || confirmPassword.length > MAX_PASSWORD}
+        className="py-1 px-3 text-sm"
       >
         {loading ? t('auth.common.loadingRegister') : t('auth.common.register')}
       </button>

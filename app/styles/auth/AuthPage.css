@@ -193,7 +193,7 @@ html, body, #root, .App {
   
   .auth-container {
     width: 900px;
-    min-height: 550px;
+    min-height: 600px;
     display: block !important; /* Forzar display block en desktop */
   }
   
@@ -353,7 +353,7 @@ html, body, #root, .App {
 /* Estilos para los inputs (todos los inputs, incluyendo contraseña por defecto) */
 .auth-form input {
   width: 100%;
-  padding: 0.65rem;
+  padding: 0.35rem;
   margin-bottom: 0.65rem; /* Margen estándar para los inputs */
   border-radius: 8px;
   border: 1px solid #ccc;
