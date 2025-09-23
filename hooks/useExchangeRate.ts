@@ -7,6 +7,9 @@ interface ExchangeRateResponse {
   timestamp?: string;
   source?: string;
   error?: string;
+  from_database?: boolean;
+  age_minutes?: number;
+  warning?: string;
 }
 
 interface UseExchangeRateOptions {
@@ -27,6 +30,9 @@ export function useExchangeRate(options: UseExchangeRateOptions = {}) {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [source, setSource] = useState<string>('');
+  const [fromDatabase, setFromDatabase] = useState<boolean>(false);
+  const [ageMinutes, setAgeMinutes] = useState<number | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
 
   const { toast } = useToast();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -64,8 +70,11 @@ export function useExchangeRate(options: UseExchangeRateOptions = {}) {
 
       if (data.success && data.rate) {
         setRate(data.rate);
-        setLastUpdated(new Date());
+        setLastUpdated(new Date(data.timestamp || new Date().toISOString()));
         setSource(data.source || 'API');
+        setFromDatabase(data.from_database || false);
+        setAgeMinutes(data.age_minutes || null);
+        setWarning(data.warning || null);
         
         // Callback para actualizar el componente padre
         if (onRateUpdateRef.current) {
@@ -73,11 +82,28 @@ export function useExchangeRate(options: UseExchangeRateOptions = {}) {
         }
 
         if (showToast && toastRef.current) {
+          const sourceInfo = data.from_database 
+            ? `(desde BD${data.age_minutes ? `, ${data.age_minutes} min` : ''})`
+            : '(API en vivo)';
+          
           toastRef.current({
-            title: "Tasa actualizada",
-            description: `Nuevo valor: ${data.rate.toFixed(2)} Bs/USD`,
-            duration: 3000,
+            title: data.from_database ? "Tasa recuperada" : "Tasa actualizada",
+            description: `${data.rate.toFixed(2)} Bs/USD ${sourceInfo}`,
+            variant: data.warning ? "destructive" : "default",
+            duration: data.warning ? 5000 : 3000,
           });
+
+          // Mostrar warning adicional si existe
+          if (data.warning && showToast) {
+            setTimeout(() => {
+              toastRef.current?.({
+                title: "Advertencia",
+                description: data.warning,
+                variant: "destructive",
+                duration: 6000,
+              });
+            }, 1000);
+          }
         }
       } else {
         throw new Error(data.error || 'Error al obtener tasa de cambio');
@@ -213,6 +239,9 @@ export function useExchangeRate(options: UseExchangeRateOptions = {}) {
     error,
     lastUpdated,
     source,
+    fromDatabase,
+    ageMinutes,
+    warning,
     refreshRate,
     startAutoUpdate,
     stopAutoUpdate,

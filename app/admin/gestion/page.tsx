@@ -108,6 +108,45 @@ export default function ConfiguracionPage() {
     setConfig(prev => ({ ...prev, usdRate: newRate }));
   }, []);
 
+  // Ref para el debounce de la tasa manual
+  const manualRateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Función para guardar tasa manual en la base de datos
+  const saveManualRate = useCallback(async (manualRate: number) => {
+    if (!manualRate || isNaN(manualRate) || manualRate <= 0) return;
+    
+    try {
+      const response = await fetch('/api/exchange-rate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ manualRate })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast({
+          title: "Tasa manual guardada",
+          description: `${manualRate.toFixed(2)} Bs/USD guardada exitosamente`,
+          variant: "default",
+          duration: 3000,
+        });
+      } else {
+        throw new Error(data.error || 'Error al guardar tasa manual');
+      }
+    } catch (error: any) {
+      console.error('Error saving manual rate:', error);
+      toast({
+        title: "Error al guardar tasa",
+        description: error.message || "No se pudo guardar la tasa manual",
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
+  }, [toast]);
+
   // Hook para manejo de tasa de cambio
   const {
     rate: currentExchangeRate,
@@ -175,6 +214,15 @@ export default function ConfiguracionPage() {
     };
 
     loadConfig();
+  }, []);
+
+  // Cleanup effect para el timeout de tasa manual
+  useEffect(() => {
+    return () => {
+      if (manualRateTimeoutRef.current) {
+        clearTimeout(manualRateTimeoutRef.current);
+      }
+    };
   }, []);
 
   const handleMobileMenuToggle = () => {
@@ -264,7 +312,22 @@ export default function ConfiguracionPage() {
   const applyCost = (field: keyof BusinessConfig, raw: string) => {
     const cleaned = sanitizeCost(raw);
     const num = cleaned === '' ? 0 : parseFloat(cleaned);
-    updateConfig(field, isNaN(num) ? 0 : num);
+    const finalValue = isNaN(num) ? 0 : num;
+    
+    updateConfig(field, finalValue);
+    
+    // Si es tasa USD y la actualización automática está desactivada, guardar en BD
+    if (field === 'usdRate' && !config.autoUpdateExchangeRate && finalValue > 0) {
+      // Limpiar timeout anterior
+      if (manualRateTimeoutRef.current) {
+        clearTimeout(manualRateTimeoutRef.current);
+      }
+      
+      // Configurar nuevo timeout con debounce
+      manualRateTimeoutRef.current = setTimeout(() => {
+        saveManualRate(finalValue);
+      }, 1500); // 1.5 segundos después de que el usuario deje de escribir
+    }
   };
 
   const applyDayValue = (group: 'airDeliveryDays' | 'seaDeliveryDays', sub: 'min' | 'max', raw: string) => {
@@ -548,20 +611,35 @@ export default function ConfiguracionPage() {
                           className={exchangeRateError ? 'border-red-300' : ''}
                           disabled={exchangeRateLoading}
                         />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={refreshRate}
-                          disabled={exchangeRateLoading}
-                          className="shrink-0"
-                        >
-                          {exchangeRateLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <RefreshCw className="h-4 w-4" />
-                          )}
-                        </Button>
+                        {config.autoUpdateExchangeRate ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={refreshRate}
+                            disabled={exchangeRateLoading}
+                            className="shrink-0"
+                            title="Actualizar tasa desde BCV"
+                          >
+                            {exchangeRateLoading ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <RefreshCw className="h-4 w-4" />
+                            )}
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => saveManualRate(config.usdRate)}
+                            disabled={!config.usdRate || config.usdRate <= 0}
+                            className="shrink-0"
+                            title="Guardar tasa manual"
+                          >
+                            <Save className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </div>
 
@@ -614,8 +692,8 @@ export default function ConfiguracionPage() {
                       <AlertDescription className={exchangeRateError ? 'text-red-700' : 'text-green-700'}>
                         {exchangeRateError || (
                           config.autoUpdateExchangeRate 
-                            ? 'Actualización automática activada cada 30 minutos desde BCV'
-                            : 'Actualización manual. Active la sincronización automática para obtener la tasa oficial del BCV.'
+                            ? 'Actualización automática activada cada 30 minutos desde BCV. Recuerde guardar los cambios en "Guardar Configuración" para aplicar todas las modificaciones.'
+                            : 'Modo manual activo. Recuerde guardar los cambios en "Guardar Configuración" para aplicar todas las modificaciones.'
                         )}
                       </AlertDescription>
                     </Alert>

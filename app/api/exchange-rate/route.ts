@@ -1,4 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { 
+  saveExchangeRate, 
+  getLatestValidExchangeRate, 
+  getLatestExchangeRate,
+  isValidExchangeRate,
+  cleanupOldExchangeRates 
+} from '@/lib/supabase/exchange-rates';
 
 // Función para obtener la tasa de cambio oficial del BCV
 async function fetchExchangeRate(): Promise<number> {
@@ -36,8 +43,8 @@ async function fetchExchangeRate(): Promise<number> {
 
     const rate = parseFloat(bcvRate.value);
     
-    // Validar que la tasa sea razonable (BCV suele estar entre 30-200 Bs)
-    if (isNaN(rate) || rate < 10 || rate > 500) {
+    // Validar que la tasa sea razonable usando la función utilitaria
+    if (!isValidExchangeRate(rate)) {
       throw new Error(`Invalid BCV exchange rate value: ${rate}`);
     }
 
@@ -66,7 +73,7 @@ async function fetchExchangeRate(): Promise<number> {
           
           if (bcvMonitor && bcvMonitor.price) {
             const fallbackRate = parseFloat(bcvMonitor.price);
-            if (!isNaN(fallbackRate) && fallbackRate > 10 && fallbackRate < 500) {
+            if (isValidExchangeRate(fallbackRate)) {
               return fallbackRate;
             }
           }
@@ -91,7 +98,7 @@ async function fetchExchangeRate(): Promise<number> {
         const altData = await altResponse.json();
         if (altData && altData.rates && altData.rates.VES) {
           const vesRate = parseFloat(altData.rates.VES);
-          if (!isNaN(vesRate) && vesRate > 10 && vesRate < 500) {
+          if (isValidExchangeRate(vesRate)) {
             return vesRate;
           }
         }
@@ -107,27 +114,110 @@ async function fetchExchangeRate(): Promise<number> {
 // GET: Obtener tasa de cambio actual
 export async function GET(request: NextRequest) {
   try {
-    // Intentar obtener de APIs externas primero
-    const rate = await fetchExchangeRate();
+    // 1. Intentar obtener de APIs externas primero
+    let apiRate: number | null = null;
+    let apiSource = 'BCV Oficial';
+    let apiError: any = null;
+
+    try {
+      apiRate = await fetchExchangeRate();
+      console.log(`[ExchangeRate] API success: ${apiRate} Bs/USD`);
+    } catch (error) {
+      apiError = error;
+      console.error('[ExchangeRate] All APIs failed:', error);
+    }
+
+    // 2. Si obtuvimos tasa de API, guardarla y retornarla
+    if (apiRate && isValidExchangeRate(apiRate)) {
+      // Guardar tasa exitosa en BD
+      await saveExchangeRate(apiRate, apiSource, false, {
+        success: true,
+        apis_used: ['dollarvzla', 'pydolarvenezuela', 'exchangerate-api']
+      });
+
+      // Limpiar registros antiguos ocasionalmente (1 de cada 50 requests)
+      if (Math.random() < 0.02) {
+        cleanupOldExchangeRates().catch(console.error);
+      }
+
+      return NextResponse.json({
+        success: true,
+        rate: apiRate,
+        timestamp: new Date().toISOString(),
+        source: apiSource,
+        from_database: false
+      });
+    }
+
+    // 3. APIs fallaron, intentar usar última tasa válida de BD
+    console.log('[ExchangeRate] APIs failed, checking database for last valid rate...');
+    const lastValidRate = await getLatestValidExchangeRate();
+
+    if (lastValidRate) {
+      console.log(`[ExchangeRate] Using last valid rate from DB: ${lastValidRate.rate} Bs/USD (${lastValidRate.age_minutes} min ago)`);
+      
+      // Guardar registro de que usamos fallback
+      await saveExchangeRate(lastValidRate.rate, lastValidRate.source, true, {
+        fallback_reason: 'APIs failed',
+        original_error: apiError?.message,
+        age_minutes: lastValidRate.age_minutes
+      });
+
+      return NextResponse.json({
+        success: true,
+        rate: lastValidRate.rate,
+        timestamp: lastValidRate.timestamp,
+        source: lastValidRate.source,
+        from_database: true,
+        age_minutes: lastValidRate.age_minutes,
+        warning: `Usando última tasa conocida de ${lastValidRate.source} (${lastValidRate.age_minutes} minutos de antigüedad) debido a errores en las APIs`
+      });
+    }
+
+    // 4. No hay tasa válida en BD, usar cualquier tasa (incluso fallback anterior)
+    console.log('[ExchangeRate] No valid rates in DB, checking for any rate...');
+    const anyLastRate = await getLatestExchangeRate();
+
+    if (anyLastRate) {
+      console.log(`[ExchangeRate] Using any last rate from DB: ${anyLastRate.rate} Bs/USD`);
+      
+      return NextResponse.json({
+        success: true,
+        rate: anyLastRate.rate,
+        timestamp: anyLastRate.timestamp || new Date().toISOString(),
+        source: anyLastRate.source || 'Base de Datos',
+        from_database: true,
+        warning: 'Usando tasa de respaldo de la base de datos debido a errores en todas las APIs'
+      });
+    }
+
+    // 5. Último recurso: tasa por defecto y guardarla
+    console.error('[ExchangeRate] No rates available anywhere, using hardcoded default');
+    const defaultRate = 166.58;
     
+    await saveExchangeRate(defaultRate, 'Hardcoded Default', true, {
+      fallback_reason: 'No rates available in APIs or database',
+      api_error: apiError?.message
+    });
+
     return NextResponse.json({
       success: true,
-      rate: rate,
+      rate: defaultRate,
       timestamp: new Date().toISOString(),
-      source: 'BCV Oficial'
+      source: 'Tasa por Defecto',
+      from_database: false,
+      warning: 'Usando tasa por defecto debido a errores en todas las APIs y ausencia de datos históricos'
     });
 
   } catch (error: any) {
-    console.error('Exchange rate API error:', error);
+    console.error('Critical error in exchange rate endpoint:', error);
     
-    // Fallback: usar tasa por defecto si las APIs fallan
     return NextResponse.json({
-      success: true,
-      rate: 166.58,
-      timestamp: new Date().toISOString(),
-      source: 'Tasa por Defecto',
-      warning: 'Usando tasa por defecto debido a errores en las APIs externas'
-    });
+      success: false,
+      error: 'Error crítico al obtener tasa de cambio',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    }, { status: 500 });
   }
 }
 
@@ -135,28 +225,67 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { manualRate } = body;
+    const { manualRate, forceRefresh } = body;
 
-    if (manualRate && !isNaN(parseFloat(manualRate))) {
+    // Si hay tasa manual, guardarla y usarla
+    if (manualRate && isValidExchangeRate(parseFloat(manualRate))) {
+      const rate = parseFloat(manualRate);
+      
+      // Guardar tasa manual en BD
+      await saveExchangeRate(rate, 'Manual', false, {
+        manual_update: true,
+        updated_by: 'admin_user'
+      });
+
       return NextResponse.json({
         success: true,
-        rate: parseFloat(manualRate),
+        rate: rate,
         timestamp: new Date().toISOString(),
-        source: 'manual'
+        source: 'Manual',
+        from_database: true
       });
     }
 
-    // Si no hay tasa manual, obtener de API
-    const rate = await fetchExchangeRate();
-    
-    return NextResponse.json({
-      success: true,
-      rate: rate,
-      timestamp: new Date().toISOString(),
-      source: 'BCV Oficial'
-    });
+    // Si no hay tasa manual, obtener de API y guardar
+    try {
+      const apiRate = await fetchExchangeRate();
+      
+      // Guardar tasa de API en BD
+      await saveExchangeRate(apiRate, 'BCV Oficial (Manual Refresh)', false, {
+        manual_refresh: true,
+        force_refresh: forceRefresh || false
+      });
+
+      return NextResponse.json({
+        success: true,
+        rate: apiRate,
+        timestamp: new Date().toISOString(),
+        source: 'BCV Oficial (Manual Refresh)',
+        from_database: false
+      });
+    } catch (apiError: any) {
+      // Si falla API, usar última tasa válida de BD
+      const lastValidRate = await getLatestValidExchangeRate();
+      
+      if (lastValidRate) {
+        return NextResponse.json({
+          success: true,
+          rate: lastValidRate.rate,
+          timestamp: lastValidRate.timestamp,
+          source: lastValidRate.source,
+          from_database: true,
+          age_minutes: lastValidRate.age_minutes,
+          warning: `API falló durante actualización manual. Usando última tasa válida de ${lastValidRate.source}`
+        });
+      }
+
+      // Si no hay nada en BD, retornar error
+      throw new Error(`Failed to fetch from API and no valid rates in database: ${apiError.message}`);
+    }
 
   } catch (error: any) {
+    console.error('Error in POST exchange rate:', error);
+    
     return NextResponse.json({
       success: false,
       error: error.message || 'Failed to update exchange rate',
