@@ -25,10 +25,11 @@ interface StateHistoryRecord {
 // GET /api/orders/[id]/timeline - Obtener timeline del pedido
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const orderId = parseInt(params.id);
+    const { id } = await params;
+    const orderId = parseInt(id);
     
     if (isNaN(orderId)) {
       return NextResponse.json(

@@ -6,11 +6,11 @@ export const revalidate = 0;
 
 export async function DELETE(
   req: Request,
-  { params }: any
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = getSupabaseServiceRoleClient();
-    const id = params.id;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
@@ -35,11 +35,11 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  { params }: any
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = getSupabaseServiceRoleClient();
-    const id = params.id;
+    const { id } = await params;
     if (!id) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
     }
