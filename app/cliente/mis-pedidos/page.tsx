@@ -3,7 +3,7 @@
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 // import { Player } from '@lottiefiles/react-lottie-player';
 import { default as dynamicImport } from 'next/dynamic';
@@ -285,11 +285,102 @@ export default function MisPedidosPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
   const [selectedOrderForPayment, setSelectedOrderForPayment] = useState<Order | null>(null);
   const [isConfirmingPayment, setIsConfirmingPayment] = useState(false);
+  
+  // Estado para tasa de cambio
+  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
+  const [exchangeRateLoading, setExchangeRateLoading] = useState(false);
+
+  // Función para obtener tasa de cambio
+  const fetchExchangeRate = useCallback(async () => {
+    if (exchangeRate) return; // usar caché si existe
+    
+    setExchangeRateLoading(true);
+    try {
+      const response = await fetch('/api/exchange-rate');
+      const data = await response.json();
+      
+      if (data.success && data.rate) {
+        setExchangeRate(data.rate);
+      } else {
+        console.error('Error fetching exchange rate:', data.error);
+        setExchangeRate(168.42); // fallback rate
+      }
+    } catch (error) {
+      console.error('Network error fetching exchange rate:', error);
+      setExchangeRate(168.42); // fallback rate
+    } finally {
+      setExchangeRateLoading(false);
+    }
+  }, [exchangeRate]);
+
+  // Función para formatear precio con conversión a Bs
+  const formatPriceWithConversion = useCallback((priceStr: string, paymentMethod: PaymentMethod | null) => {
+    // Debug: ver valores que llegan
+    console.log('🔍 Debug conversion:', {
+      priceStr,
+      paymentMethod: paymentMethod?.currency,
+      exchangeRate
+    });
+    
+    // Extraer número del string del precio manejando diferentes formatos
+    // Formato 1: "$7,049.99" (formato US)
+    // Formato 2: "$7.049,99" (formato EU)
+    let cleanPrice = priceStr.replace(/[$\s]/g, ''); // quitar $ y espacios
+    
+    // Detectar formato: si tiene punto seguido de 2 dígitos al final, es formato US
+    // Si tiene coma seguida de 2 dígitos al final, es formato EU
+    let usdAmount;
+    
+    if (/\.\d{2}$/.test(cleanPrice)) {
+      // Formato US: "$7,049.99" -> "7,049.99"
+      cleanPrice = cleanPrice.replace(/,/g, ''); // quitar comas de miles
+      usdAmount = parseFloat(cleanPrice);
+    } else if (/,\d{2}$/.test(cleanPrice)) {
+      // Formato EU: "$7.049,99" -> "7.049,99"
+      cleanPrice = cleanPrice.replace(/\./g, ''); // quitar puntos de miles
+      cleanPrice = cleanPrice.replace(',', '.'); // cambiar coma decimal por punto
+      usdAmount = parseFloat(cleanPrice);
+    } else {
+      // Formato simple sin decimales: "$7049"
+      cleanPrice = cleanPrice.replace(/[,.]/g, '');
+      usdAmount = parseFloat(cleanPrice);
+    }
+    
+    console.log('💰 Price parsing:', {
+      original: priceStr,
+      cleaned: cleanPrice,
+      usdAmount,
+      isNaN: isNaN(usdAmount)
+    });
+    
+    if (isNaN(usdAmount)) return priceStr;
+    
+    // Si es método en Bs y tenemos tasa de cambio, mostrar conversión
+    if (paymentMethod?.currency === 'BS' && exchangeRate) {
+      const bsAmount = usdAmount * exchangeRate;
+      const formattedBs = bsAmount.toLocaleString('es-ES', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      
+      console.log('🔄 Conversion calculation:', {
+        usdAmount,
+        exchangeRate,
+        bsAmount,
+        formattedBs
+      });
+      
+      return `${priceStr} [${formattedBs} Bs]`;
+    }
+    
+    return priceStr;
+  }, [exchangeRate]);
 
   // Inicialización
   useEffect(() => {
     setMounted(true);
-  }, []);
+    fetchExchangeRate(); // obtener tasa de cambio al cargar
+  }, [fetchExchangeRate]);
 
   // Mapeos de estado numérico de la BD a estados de UI y progreso
   const mapStateToStatus = (state?: number | null): Order['status'] => {
@@ -522,8 +613,85 @@ export default function MisPedidosPage() {
     }
   };
 
+  // Estado para el timeline con datos reales (CACHÉ DESACTIVADO)
+  // const [timelineData, setTimelineData] = useState<{ [orderId: string]: TrackingOrder['timeline'] }>({});
+  // const [timelineLoading, setTimelineLoading] = useState<{ [orderId: string]: boolean }>({});
+
+  // Función para obtener timeline real desde la API
+  const fetchOrderTimeline = async (orderId: string): Promise<TrackingOrder['timeline']> => {
+    console.log('🔍 fetchOrderTimeline llamado para order:', orderId);
+    
+    // DESACTIVAR CACHÉ TEMPORALMENTE PARA DEBUG
+    // if (timelineData[orderId]) {
+    //   console.log('📱 Usando timeline desde caché para order:', orderId);
+    //   return timelineData[orderId]; // usar caché si existe
+    // }
+
+    // DESACTIVAR LOADING CHECK TEMPORALMENTE
+    // if (timelineLoading[orderId]) {
+    //   console.log('⏳ Timeline ya está cargando para order:', orderId);
+    //   return generateFallbackTimeline(); // evitar múltiples requests
+    // }
+
+    // setTimelineLoading(prev => ({ ...prev, [orderId]: true })); // CACHÉ DESACTIVADO
+
+    try {
+      console.log('🌐 Haciendo fetch a /api/orders/' + orderId + '/timeline');
+      const response = await fetch(`/api/orders/${orderId}/timeline`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      console.log('📦 Respuesta del timeline API:', data);
+      console.log('🎯 TIMELINE EN RESPUESTA:', data.timeline);
+
+      if (data.success && data.timeline) {
+        const timeline = data.timeline;
+        console.log('✅ Timeline obtenido exitosamente:', timeline);
+        // setTimelineData(prev => ({ ...prev, [orderId]: timeline })); // CACHÉ DESACTIVADO
+        return timeline;
+      } else {
+        console.error('❌ Error fetching timeline:', data.error);
+        console.log('🔄 Usando fallback timeline');
+        return generateFallbackTimeline();
+      }
+    } catch (error) {
+      console.error('🚨 Network error fetching timeline:', error);
+      console.log('🔄 Usando fallback timeline por error de red');
+      return generateFallbackTimeline();
+    } finally {
+      // setTimelineLoading(prev => ({ ...prev, [orderId]: false })); // CACHÉ DESACTIVADO
+    }
+  };
+
+  // Función fallback para generar timeline básico
+  const generateFallbackTimeline = (): TrackingOrder['timeline'] => {
+    const steps = [
+      { id: '1', key: 'created', name: 'Pedido creado' },
+      { id: '2', key: 'processing', name: 'En procesamiento' },
+      { id: '3', key: 'shipped', name: 'Enviado' },
+      { id: '4', key: 'in-transit', name: 'En tránsito' },
+      { id: '5', key: 'customs', name: 'En aduana' },
+      { id: '6', key: 'delivered', name: 'Entregado' },
+    ];
+
+    return steps.map((step, index) => ({
+      id: step.id,
+      status: step.key,
+      description: step.name,
+      location: '—',
+      timestamp: '—',
+      completed: index === 0, // solo el primer paso marcado como completado
+    }));
+  };
+
   // Construir objeto de tracking a partir de un pedido
-  const buildTrackingFromOrder = (order: Order): TrackingOrder => {
+  const buildTrackingFromOrder = async (order: Order): Promise<TrackingOrder> => {
+    console.log('🏗️ buildTrackingFromOrder llamado para order:', order);
+    
     const mapStatus = (s: Order['status']): TrackingOrder['status'] => {
       if (s === 'shipped') return 'in-transit';
       if (s === 'delivered') return 'delivered';
@@ -533,34 +701,14 @@ export default function MisPedidosPage() {
     };
 
     const status = mapStatus(order.status);
-    const steps = [
-      { id: '1', key: 'created' },
-      { id: '2', key: 'processing' },
-      { id: '3', key: 'shipped' },
-      { id: '4', key: 'in-transit' },
-      { id: '5', key: 'customs' },
-      { id: '6', key: 'delivered' },
-    ];
-    const statusIndexMap: Record<TrackingOrder['status'], number> = {
-      pending: 0,
-      processing: 1,
-      shipped: 2,
-      'in-transit': 3,
-      delivered: 5,
-      cancelled: 0,
-    };
-    const idx = statusIndexMap[status] ?? 0;
+    console.log('📊 Status mapeado:', order.status, '->', status);
+    
+    // Obtener timeline real desde la API
+    console.log('🕐 Obteniendo timeline para order ID:', order.id);
+    const timeline = await fetchOrderTimeline(order.id);
+    console.log('📅 Timeline recibido:', timeline);
 
-    const timeline: TrackingOrder['timeline'] = steps.map((s, i) => ({
-      id: s.id,
-      status: s.key,
-      description: s.key,
-      location: i <= idx ? (i === 3 ? 'En ruta' : '—') : '—',
-      timestamp: '—',
-      completed: i <= idx && status !== 'cancelled',
-    }));
-
-    return {
+    const trackingOrder = {
       id: order.id,
       product: order.product,
       trackingNumber: order.tracking || 'N/A',
@@ -568,16 +716,41 @@ export default function MisPedidosPage() {
       progress: order.progress ?? 0,
       estimatedDelivery: order.estimatedDelivery || '—',
       currentLocation: status === 'in-transit' || status === 'delivered' ? 'En tránsito' : '—',
-      lastUpdate: '—',
+      lastUpdate: timeline.find(t => t.completed)?.timestamp || '—',
       carrier: '—',
       timeline,
     };
+    
+    console.log('🎯 TrackingOrder final construido:', trackingOrder);
+    return trackingOrder;
   };
 
-  const openTrackingModal = (order: Order) => {
-    const t = buildTrackingFromOrder(order);
-    setSelectedTrackingOrder(t);
-    setTimeout(() => setIsTrackingModalOpen(true), 10);
+  const openTrackingModal = async (order: Order) => {
+    // Mostrar modal con datos básicos primero
+    const basicTrackingOrder: TrackingOrder = {
+      id: order.id,
+      product: order.product,
+      trackingNumber: order.tracking || 'N/A',
+      status: 'pending',
+      progress: order.progress ?? 0,
+      estimatedDelivery: order.estimatedDelivery || '—',
+      currentLocation: '—',
+      lastUpdate: '—',
+      carrier: '—',
+      timeline: generateFallbackTimeline(),
+    };
+    
+    setSelectedTrackingOrder(basicTrackingOrder);
+    setIsTrackingModalOpen(true);
+    
+    // Cargar datos reales en background
+    try {
+      const realTrackingOrder = await buildTrackingFromOrder(order);
+      setSelectedTrackingOrder(realTrackingOrder);
+    } catch (error) {
+      console.error('Error loading real tracking data:', error);
+      // Mantener datos básicos si falla la carga
+    }
   };
 
   const closeTrackingModal = () => {
@@ -688,6 +861,9 @@ export default function MisPedidosPage() {
     setPaymentStep(1);
     setSelectedPaymentMethod(null);
     setIsPaymentModalOpen(true);
+    
+    // Obtener tasa de cambio actualizada cuando se abre el modal
+    fetchExchangeRate();
   };
 
   const handlePaymentMethodSelect = (method: PaymentMethod) => {
@@ -715,19 +891,31 @@ export default function MisPedidosPage() {
     try {
       const rawId = selectedOrderForPayment.id;
       const orderId = isNaN(Number(rawId)) ? rawId : Number(rawId);
-      const { error } = await supabase
-        .from('orders')
-        .update({ state: 4 })
-        .eq('id', orderId as any)
-        .eq('client_id', clientId);
-      if (error) {
-        console.error('Error actualizando estado del pedido:', error);
-        toast({ title: 'Error al confirmar pago', description: error.message || 'Intenta nuevamente.', variant: 'destructive', duration: 5000 });
+      
+      // Usar la API del servidor para que se active el trigger y se registre en el historial
+      const response = await fetch(`/api/orders/${orderId}/state`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          state: 4,
+          changed_by: `client:${clientId}`,
+          notes: 'Pago confirmado por el cliente'
+        })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        console.error('Error actualizando estado del pedido:', data.error);
+        toast({ title: 'Error al confirmar pago', description: data.error || 'Intenta nuevamente.', variant: 'destructive', duration: 5000 });
         return;
       }
+      
       // Refrescar pedidos y cerrar modal
       await fetchOrders();
-  toast({ title: 'Pago confirmado', description: 'Tu pedido ha sido marcado como pagado. Estado actualizado a 4.', duration: 4000 });
+      toast({ title: 'Pago confirmado', description: 'Tu pedido ha sido marcado como pagado y registrado en el historial.', duration: 4000 });
       setIsPaymentModalOpen(false);
       setSelectedOrderForPayment(null);
       setSelectedPaymentMethod(null);
@@ -2421,8 +2609,13 @@ export default function MisPedidosPage() {
                       <p className="text-sm text-slate-600">{selectedOrderForPayment.id}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-green-600">{selectedOrderForPayment.amount}</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        {formatPriceWithConversion(selectedOrderForPayment.amount, selectedPaymentMethod)}
+                      </p>
                       <p className="text-xs text-slate-500 mt-1">{t('client.recentOrders.paymentModal.quoteValidUntil', { date: '25/01/2024' })}</p>
+                      {selectedPaymentMethod?.currency === 'BS' && exchangeRateLoading && (
+                        <p className="text-xs text-blue-500 mt-1">Calculando conversión...</p>
+                      )}
                     </div>
                   </div>
                 </div>

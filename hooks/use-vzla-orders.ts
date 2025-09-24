@@ -6,6 +6,10 @@ export function useVzlaOrders() {
   const { vzlaId } = useVzlaContext();
   const queryKey = `orders-vzla-${vzlaId}`;
   const queryFn = async () => {
+    // No ejecutar la query si vzlaId no está definido
+    if (!vzlaId) {
+      return [];
+    }
     const supabase = getSupabaseBrowserClient();
     const { data, error } = await supabase
       .from('orders')

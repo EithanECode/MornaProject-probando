@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     if (containerIds.length > 0) {
       const { data: containersRows, error: containersErr } = await supabase
         .from('containers')
-        .select('container_id, tracking_number, tracking_company, arrive_date, "arrive-data"')
+        .select('container_id, tracking_number, tracking_company, arrive_date')
         .in('container_id', containerIds as any);
       if (containersErr) throw containersErr;
       (containersRows || []).forEach((c: any) => {
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
     (orders || []).forEach((row: any) => {
       const containerId = row.box_id != null ? (boxToContainer[row.box_id] ?? null) : null;
       const cInfo = containerId != null ? containerInfo[containerId] : undefined;
-      const arrive = cInfo?.arrive_date ?? (cInfo as any)?.['arrive-data'] ?? null;
+      const arrive = cInfo?.arrive_date ?? null;
       const oid = String(row.id);
       tnMap[oid] = cInfo?.tracking_number ?? null;
       tcMap[oid] = cInfo?.tracking_company ?? null;
