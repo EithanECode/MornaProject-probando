@@ -179,8 +179,13 @@ export function useCurrencyConverter(): UseCurrencyConverterReturn {
 
     return () => {
       clearInterval(interval);
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+      try {
+        if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
+          abortControllerRef.current.abort();
+        }
+      } catch (error) {
+        // Ignorar errores de abort si ya está abortado
+        console.warn('Error aborting controller:', error);
       }
     };
   }, [fetchCurrentRate]);

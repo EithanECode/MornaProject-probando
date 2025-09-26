@@ -8,6 +8,7 @@ import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PriceDisplay } from '@/components/shared/PriceDisplay';
+import { PriceDisplayWithCNY } from '@/components/shared/PriceDisplayWithCNY';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -1670,21 +1671,17 @@ export default function PedidosChina() {
                           </div>
                           {pedido.precio && (
                             <div className="sm:hidden mt-1 text-[11px] text-green-700 font-medium">
-                              <PriceDisplay 
+                              <PriceDisplayWithCNY 
                                 amount={pedido.precio} 
                                 currency="USD"
                                 variant="inline"
-                                size="sm"
-                                showBoth={false}
                                 className="inline mr-2"
                               />
                               · Total: 
-                              <PriceDisplay 
+                              <PriceDisplayWithCNY 
                                 amount={pedido.precio * pedido.cantidad} 
                                 currency="USD"
                                 variant="inline"
-                                size="sm"
-                                emphasizeBolivars={true}
                                 className="inline ml-1"
                               />
                             </div>
@@ -1701,9 +1698,21 @@ export default function PedidosChina() {
                           )}
                         </div>
                         {pedido.precio && (
-                          <div className="hidden sm:block text-right">
-                            <p className="text-sm font-semibold text-green-600 leading-tight">${pedido.precio.toLocaleString()}</p>
-                            <p className="text-xs text-slate-500 leading-tight">Total: {(pedido.precio * pedido.cantidad).toLocaleString()}</p>
+                          <div className="hidden sm:block text-right space-y-1">
+                            <PriceDisplayWithCNY 
+                              amount={pedido.precio} 
+                              currency="USD"
+                              variant="inline"
+                              className="text-sm font-semibold text-green-600"
+                            />
+                            <div className="text-xs text-slate-500">
+                              Total: <PriceDisplayWithCNY 
+                                amount={pedido.precio * pedido.cantidad} 
+                                currency="USD"
+                                variant="inline"
+                                className="text-xs"
+                              />
+                            </div>
                           </div>
                         )}
                         <div className="flex w-full sm:w-auto flex-wrap items-center gap-2 justify-end sm:justify-end">
@@ -2411,12 +2420,10 @@ export default function PedidosChina() {
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.totalToPay')}</label>
                   <div className="px-4 py-3 border border-slate-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50">
-                    <PriceDisplay 
+                    <PriceDisplayWithCNY 
                       amount={((modalCotizar.precioUnitario || 0) * (modalCotizar.pedido?.cantidad || 0)) + (modalCotizar.precioEnvio || 0)} 
                       currency="USD"
                       variant="card"
-                      size="lg"
-                      emphasizeBolivars={true}
                       showRefresh={true}
                       className="border-green-200 text-green-600 font-bold"
                     />

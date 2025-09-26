@@ -38,6 +38,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useExchangeRate } from '@/hooks/useExchangeRate';
+import ExchangeRateManager from '@/components/admin/ExchangeRateManager';
 
 interface BusinessConfig {
   // Parámetros de envío
@@ -48,6 +49,7 @@ interface BusinessConfig {
   
   // Parámetros financieros
   usdRate: number;
+  cnyRate: number;
   profitMargin: number;
   usdDiscountPercent: number;
   
@@ -68,9 +70,18 @@ interface BusinessConfig {
   
   // Configuración de tasa de cambio
   autoUpdateExchangeRate: boolean;
+  autoUpdateExchangeRateCNY: boolean;
 }
 
 export default function ConfiguracionPage() {
+  // Log cuando el componente se monta
+  useEffect(() => {
+    console.log('[Admin] Component MOUNTED');
+    return () => {
+      console.log('[Admin] Component UNMOUNTED');
+    };
+  }, []);
+  
   const { t } = useTranslation();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -82,6 +93,7 @@ export default function ConfiguracionPage() {
     airDeliveryDays: { min: 15, max: 20 },
     seaDeliveryDays: { min: 35, max: 45 },
     usdRate: 36.25,
+    cnyRate: 7.25,
     profitMargin: 25,
     usdDiscountPercent: 5,
     maxQuotationsPerMonth: 5,
@@ -93,23 +105,48 @@ export default function ConfiguracionPage() {
     alertsAfterDays: 2,
     sessionTimeout: 60,
     requireTwoFactor: false,
-    autoUpdateExchangeRate: false
+    autoUpdateExchangeRate: false,
+    autoUpdateExchangeRateCNY: true // CRÍTICO: true desde el inicio
   });
+  
   // Referencia al estado base para detectar cambios
   const baseConfigRef = useRef<BusinessConfig | null>(null);
   const [baselineVersion, setBaselineVersion] = useState(0);
+  
+  // Bandera para evitar que loadConfig se ejecute múltiples veces
+  const configLoadedRef = useRef(false);
   
   const [isLoading, setIsLoading] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const { toast } = useToast();
 
-  // Callback estable para actualizar la tasa
+  // Callback estable para actualizar la tasa USD
   const handleRateUpdate = useCallback((newRate: number) => {
-    setConfig(prev => ({ ...prev, usdRate: newRate }));
+    setConfig(prev => {
+      // Evitar actualización si el valor no ha cambiado
+      if (prev.usdRate === newRate) {
+        return prev;
+      }
+      return { ...prev, usdRate: newRate };
+    });
   }, []);
 
-  // Ref para el debounce de la tasa manual
+  // Callback estable para actualizar la tasa CNY - SIMPLIFICADO
+  const handleRateUpdateCNY = useCallback((newRate: number) => {
+    console.log('[Admin] handleRateUpdateCNY called with:', newRate);
+    // SIMPLIFICADO: Solo actualizar si es diferente
+    setConfig(prev => {
+      if (prev.cnyRate === newRate) return prev;
+      return { ...prev, cnyRate: newRate };
+    });
+    
+    // Forzar detección de cambios para activar el botón de guardar
+    setBaselineVersion(v => v + 1);
+  }, []);
+
+  // Ref para el debounce de la tasa manual USD y CNY
   const manualRateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const manualRateTimeoutRefCNY = useRef<NodeJS.Timeout | null>(null);
 
   // Función para guardar tasa manual en la base de datos
   const saveManualRate = useCallback(async (manualRate: number) => {
@@ -147,6 +184,87 @@ export default function ConfiguracionPage() {
     }
   }, [toast]);
 
+  // Función para guardar tasa manual CNY en la base de datos
+  const saveManualRateCNY = useCallback(async (manualRate: number) => {
+    if (!manualRate || isNaN(manualRate) || manualRate <= 0) return;
+    
+    try {
+      const response = await fetch('/api/exchange-rate/cny', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ manualRate })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast({
+          title: "Tasa CNY manual guardada",
+          description: `${manualRate.toFixed(4)} CNY/USD guardada exitosamente`,
+          variant: "default",
+          duration: 3000,
+        });
+      } else {
+        throw new Error(data.error || 'Error al guardar tasa manual CNY');
+      }
+    } catch (error: any) {
+      console.error('Error saving manual CNY rate:', error);
+      toast({
+        title: "Error al guardar tasa CNY",
+        description: error.message || "No se pudo guardar la tasa manual CNY",
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
+  }, [toast]);
+
+  // Función para aplicar cambios en la configuración
+  const applyCost = useCallback((field: keyof BusinessConfig, raw: string) => {
+    const cleaned = sanitizeCost(raw);
+    const num = cleaned === '' ? 0 : parseFloat(cleaned);
+    const finalValue = isNaN(num) ? 0 : num;
+    
+    setConfig(prev => {
+      const newConfig = { ...prev, [field]: finalValue };
+      
+      // Guardar inmediatamente en localStorage para persistencia
+      localStorage.setItem('businessConfig', JSON.stringify(newConfig));
+      
+      return newConfig;
+    });
+    
+    // Forzar detección de cambios para activar el botón de guardar
+    setBaselineVersion(v => {
+      console.log('[Admin] Incrementing baselineVersion from', v, 'to', v + 1, 'for field:', field);
+      return v + 1;
+    });
+
+    // Si es tasa CNY y la actualización automática está desactivada, guardar en BD
+    if (field === 'cnyRate' && !config.autoUpdateExchangeRateCNY && finalValue > 0) {
+      if (manualRateTimeoutRefCNY.current) {
+        clearTimeout(manualRateTimeoutRefCNY.current);
+      }
+      manualRateTimeoutRefCNY.current = setTimeout(() => {
+        saveManualRateCNY(finalValue);
+      }, 1500);
+    }
+
+    // Si es tasa USD y la actualización automática está desactivada, guardar en BD
+    if (field === 'usdRate' && !config.autoUpdateExchangeRate && finalValue > 0) {
+      if (manualRateTimeoutRef.current) {
+        clearTimeout(manualRateTimeoutRef.current);
+      }
+      manualRateTimeoutRef.current = setTimeout(() => {
+        saveManualRate(finalValue);
+      }, 1500);
+    }
+  }, [config.autoUpdateExchangeRateCNY, config.autoUpdateExchangeRate, saveManualRateCNY, saveManualRate]);
+
+  // Memoizar el valor de autoUpdate USD para evitar loops infinitos
+  const autoUpdateUSD = useMemo(() => config.autoUpdateExchangeRate, [config.autoUpdateExchangeRate]);
+
   // Hook para manejo de tasa de cambio
   const {
     rate: currentExchangeRate,
@@ -158,22 +276,104 @@ export default function ConfiguracionPage() {
     getTimeSinceUpdate,
     isAutoUpdating
   } = useExchangeRate({
-    autoUpdate: config.autoUpdateExchangeRate,
+    autoUpdate: autoUpdateUSD,
     interval: 30 * 60 * 1000, // 30 minutos
     onRateUpdate: handleRateUpdate
   });
 
+  // Estado para la tasa CNY (manejado por ExchangeRateManager)
+  const [currentExchangeRateCNY, setCurrentExchangeRateCNY] = useState<number | null>(null);
+  const [exchangeRateLoadingCNY, setExchangeRateLoadingCNY] = useState(false);
+  const [exchangeRateErrorCNY, setExchangeRateErrorCNY] = useState<string | null>(null);
+  const [exchangeRateLastUpdatedCNY, setExchangeRateLastUpdatedCNY] = useState<Date | null>(null);
+  const [exchangeRateSourceCNY, setExchangeRateSourceCNY] = useState<string>('');
+  const [isAutoUpdatingCNY, setIsAutoUpdatingCNY] = useState(true);
+
+  // Callback para recibir actualizaciones del ExchangeRateManager
+  const handleExchangeRateUpdate = useCallback((newRate: number) => {
+    console.log('[Admin] Received rate update from ExchangeRateManager:', newRate);
+    setCurrentExchangeRateCNY(newRate);
+    setExchangeRateLastUpdatedCNY(new Date());
+    setExchangeRateSourceCNY('Oficial PBOC');
+    setExchangeRateLoadingCNY(false);
+    setExchangeRateErrorCNY(null);
+    
+    // También actualizar el config pero NO forzar detección de cambios
+    // porque es una actualización automática, no un cambio manual del usuario
+    setConfig(prev => {
+      if (prev.cnyRate === newRate) return prev;
+      return { ...prev, cnyRate: newRate };
+    });
+  }, []);
+
+  // Funciones para el ExchangeRateManager (simuladas)
+  const refreshRateCNY = useCallback(() => {
+    console.log('[Admin] Manual refresh CNY requested');
+    // El ExchangeRateManager manejará esto internamente
+  }, []);
+
+  const getTimeSinceUpdateCNY = useCallback(() => {
+    if (!exchangeRateLastUpdatedCNY) return 'Nunca';
+    const now = new Date();
+    const diffMs = now.getTime() - exchangeRateLastUpdatedCNY.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    
+    if (diffMins < 1) return 'Hace menos de 1 minuto';
+    if (diffMins === 1) return 'Hace 1 minuto';
+    if (diffMins < 60) return `Hace ${diffMins} minutos`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours === 1) return 'Hace 1 hora';
+    return `Hace ${diffHours} horas`;
+  }, [exchangeRateLastUpdatedCNY]);
+
   useEffect(() => {
+    console.log('[Admin] loadConfig useEffect triggered, configLoaded:', configLoadedRef.current);
+    
+    // Evitar que se ejecute múltiples veces
+    if (configLoadedRef.current) {
+      console.log('[Admin] loadConfig already executed, skipping...');
+      return;
+    }
+    
+    configLoadedRef.current = true;
+    console.log('[Admin] loadConfig started...');
+    
     const loadConfig = async () => {
       try {
         // 1. Cargar configuración desde localStorage (más confiable)
         const savedConfig = localStorage.getItem('businessConfig');
-        let mergedConfig = { ...config };
+        console.log('[Admin] Raw localStorage savedConfig:', savedConfig);
+        
+        let mergedConfig = {
+          airShippingRate: 8.50,
+          seaShippingRate: 180.00,
+          airDeliveryDays: { min: 15, max: 20 },
+          seaDeliveryDays: { min: 35, max: 45 },
+          usdRate: 36.25,
+          cnyRate: 7.25,
+          profitMargin: 25,
+          usdDiscountPercent: 5,
+          maxQuotationsPerMonth: 5,
+          maxModificationsPerOrder: 2,
+          quotationValidityDays: 7,
+          paymentDeadlineDays: 3,
+          emailNotifications: true,
+          whatsappNotifications: true,
+          alertsAfterDays: 2,
+          sessionTimeout: 60,
+          requireTwoFactor: false,
+          autoUpdateExchangeRate: false,
+          autoUpdateExchangeRateCNY: true // Forzar a true por defecto
+        };
 
         if (savedConfig) {
           try {
             const parsedConfig = JSON.parse(savedConfig);
+            console.log('[Admin] Parsed localStorage config:', parsedConfig);
+            console.log('[Admin] Parsed autoUpdateExchangeRateCNY:', parsedConfig.autoUpdateExchangeRateCNY);
             mergedConfig = { ...mergedConfig, ...parsedConfig };
+            console.log('[Admin] After merge with localStorage:', mergedConfig.autoUpdateExchangeRateCNY);
           } catch (e) {
             console.error('Error parsing saved config:', e);
           }
@@ -185,20 +385,55 @@ export default function ConfiguracionPage() {
           const data = await response.json();
           
           if (data.success && data.config) {
-            // Priorizar localStorage para autoUpdateExchangeRate
+            console.log('[Admin] API config received:', data.config);
+            console.log('[Admin] localStorage autoUpdateExchangeRateCNY:', mergedConfig.autoUpdateExchangeRateCNY);
+            console.log('[Admin] API autoUpdateExchangeRateCNY:', data.config.autoUpdateExchangeRateCNY);
+            
+            // Priorizar localStorage para configuraciones de exchange rate
             mergedConfig = { 
               ...mergedConfig, 
               ...data.config,
-              autoUpdateExchangeRate: mergedConfig.autoUpdateExchangeRate // Mantener valor de localStorage
+              autoUpdateExchangeRate: mergedConfig.autoUpdateExchangeRate, // Mantener valor de localStorage
+              autoUpdateExchangeRateCNY: mergedConfig.autoUpdateExchangeRateCNY, // Mantener valor de localStorage
+              cnyRate: mergedConfig.cnyRate // Mantener valor de localStorage
             };
+            
+            console.log('[Admin] Final mergedConfig autoUpdateExchangeRateCNY:', mergedConfig.autoUpdateExchangeRateCNY);
           }
         } catch (apiError) {
           console.error('Error loading config from API, using localStorage only:', apiError);
         }
 
+        // FORZAR autoUpdateExchangeRateCNY a true para evitar loops infinitos
+        mergedConfig.autoUpdateExchangeRateCNY = true;
+        console.log('[Admin] Forced autoUpdateExchangeRateCNY to true');
+        
+        // LIMPIAR localStorage para eliminar el valor incorrecto
+        const currentSavedConfig = localStorage.getItem('businessConfig');
+        if (currentSavedConfig) {
+          try {
+            const parsedSavedConfig = JSON.parse(currentSavedConfig);
+            if (parsedSavedConfig.autoUpdateExchangeRateCNY === false) {
+              parsedSavedConfig.autoUpdateExchangeRateCNY = true;
+              localStorage.setItem('businessConfig', JSON.stringify(parsedSavedConfig));
+              console.log('[Admin] Fixed localStorage autoUpdateExchangeRateCNY to true');
+            }
+          } catch (e) {
+            console.error('Error fixing localStorage:', e);
+          }
+        }
+
         // 3. Aplicar configuración final
-        setConfig(mergedConfig);
-        baseConfigRef.current = { ...mergedConfig };
+        console.log('[Admin] loadConfig completed, mergedConfig:', mergedConfig);
+        console.log('[Admin] Setting config from loadConfig:', mergedConfig);
+        
+        try {
+          setConfig(mergedConfig);
+          baseConfigRef.current = { ...mergedConfig };
+          console.log('[Admin] setConfig completed successfully');
+        } catch (error) {
+          console.error('[Admin] Error in setConfig:', error);
+        }
         
       } catch (error) {
         console.error('Error loading config:', error);
@@ -221,6 +456,9 @@ export default function ConfiguracionPage() {
     return () => {
       if (manualRateTimeoutRef.current) {
         clearTimeout(manualRateTimeoutRef.current);
+      }
+      if (manualRateTimeoutRefCNY.current) {
+        clearTimeout(manualRateTimeoutRefCNY.current);
       }
     };
   }, []);
@@ -284,11 +522,26 @@ export default function ConfiguracionPage() {
     setConfig(prev => ({ ...prev, [field]: value }));
   };
 
-  // Comparar configuraciones (stringify simple dado el tamaño pequeño)
+  // Comparar configuraciones usando ref para evitar loops infinitos
+  const configRef = useRef(config);
+  configRef.current = config;
+  
   const hasChanges = useMemo(() => {
-    if (!baseConfigRef.current) return false;
-    return JSON.stringify(baseConfigRef.current) !== JSON.stringify(config);
-  }, [config, baselineVersion]);
+    if (!baseConfigRef.current) {
+      console.log('[Admin] hasChanges: baseConfigRef.current is null');
+      return false;
+    }
+    
+    const hasChangesResult = JSON.stringify(baseConfigRef.current) !== JSON.stringify(configRef.current);
+    console.log('[Admin] hasChanges calculation:', {
+      baselineVersion,
+      hasChanges: hasChangesResult,
+      baseConfig: baseConfigRef.current,
+      currentConfig: configRef.current
+    });
+    
+    return hasChangesResult;
+  }, [baselineVersion]); // Solo depende de baselineVersion, no de config
 
   // =============================
   // Sanitizadores / Validaciones
@@ -309,26 +562,6 @@ export default function ConfiguracionPage() {
     return decPart ? `${intPart}.${decPart}` : intPart;
   };
 
-  const applyCost = (field: keyof BusinessConfig, raw: string) => {
-    const cleaned = sanitizeCost(raw);
-    const num = cleaned === '' ? 0 : parseFloat(cleaned);
-    const finalValue = isNaN(num) ? 0 : num;
-    
-    updateConfig(field, finalValue);
-    
-    // Si es tasa USD y la actualización automática está desactivada, guardar en BD
-    if (field === 'usdRate' && !config.autoUpdateExchangeRate && finalValue > 0) {
-      // Limpiar timeout anterior
-      if (manualRateTimeoutRef.current) {
-        clearTimeout(manualRateTimeoutRef.current);
-      }
-      
-      // Configurar nuevo timeout con debounce
-      manualRateTimeoutRef.current = setTimeout(() => {
-        saveManualRate(finalValue);
-      }, 1500); // 1.5 segundos después de que el usuario deje de escribir
-    }
-  };
 
   const applyDayValue = (group: 'airDeliveryDays' | 'seaDeliveryDays', sub: 'min' | 'max', raw: string) => {
     let onlyDigits = raw.replace(/\D/g, '');
@@ -374,6 +607,9 @@ export default function ConfiguracionPage() {
           : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50')
       }
     >
+      {/* ExchangeRateManager independiente */}
+      <ExchangeRateManager onRateUpdate={handleExchangeRateUpdate} />
+      
       <Sidebar 
         isExpanded={sidebarExpanded} 
         setIsExpanded={setSidebarExpanded}
@@ -414,7 +650,10 @@ export default function ConfiguracionPage() {
                   </div>
                 )}
                 <Button 
-                  onClick={handleSave}
+                  onClick={() => {
+                    console.log('[Admin] Save button clicked, hasChanges:', hasChanges, 'isLoading:', isLoading);
+                    handleSave();
+                  }}
                   disabled={isLoading || !hasChanges}
                   className={`w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg transition-all duration-300 ${(!hasChanges || isLoading) ? 'opacity-50 cursor-not-allowed hover:shadow-lg' : 'hover:shadow-xl'}`}
                 >
@@ -591,25 +830,31 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Globe className="w-5 h-5 mr-2 text-green-600" />
-{t('admin.management.financial.exchangeRate')}
+                      Tasas de Cambio
                     </CardTitle>
                     <CardDescription className="text-black text-sm">
-                      {t('admin.management.financial.usdValue')}
+                      Valores de cambio USD → Bs y USD → CNY
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="usdRate" className="text-sm md:text-base">{t('admin.management.financial.usdRate')}</Label>
+                  <CardContent className="space-y-6">
+                    {/* 🇻🇪 TASA USD → BS */}
+                    <div className="space-y-3 p-4 border border-green-200 rounded-lg bg-green-50/50">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🇻🇪</span>
+                        <Label className="text-sm font-semibold text-green-800">1 USD = X Bs</Label>
+                      </div>
+                      
                       <div className="flex gap-2">
                         <Input
                           id="usdRate"
                           type="number"
                           step="0.01"
                           min={0}
-                          value={config.usdRate}
+                          value={config.autoUpdateExchangeRate ? (currentExchangeRate || config.usdRate) : config.usdRate}
                           onChange={(e) => applyCost('usdRate', e.target.value)}
                           className={exchangeRateError ? 'border-red-300' : ''}
                           disabled={exchangeRateLoading}
+                          placeholder="36.25"
                         />
                         {config.autoUpdateExchangeRate ? (
                           <Button
@@ -641,60 +886,140 @@ export default function ConfiguracionPage() {
                           </Button>
                         )}
                       </div>
-                    </div>
 
-                    {/* Switch para auto-actualización */}
-                    <div className="flex items-center justify-between space-x-2">
-                      <div className="flex items-center space-x-2">
-                        {isAutoUpdating ? (
-                          <Wifi className="h-4 w-4 text-green-600" />
-                        ) : (
-                          <WifiOff className="h-4 w-4 text-gray-400" />
-                        )}
-                        <Label htmlFor="autoUpdate" className="text-sm cursor-pointer">
-                          Actualizar automáticamente según tasa oficial BCV
-                        </Label>
-                      </div>
-                      <Switch
-                        id="autoUpdate"
-                        checked={config.autoUpdateExchangeRate}
-                        onCheckedChange={(checked) => 
-                          setConfig(prev => ({ ...prev, autoUpdateExchangeRate: checked }))
-                        }
-                      />
-                    </div>
-
-                    {/* Información de estado */}
-                    {exchangeRateLastUpdated && (
-                      <div className="text-xs text-gray-600 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span>Última actualización:</span>
-                          <Badge variant="secondary" className="text-xs">
-                            {getTimeSinceUpdate()}
-                          </Badge>
+                      <div className="flex items-center justify-between space-x-2">
+                        <div className="flex items-center space-x-2">
+                          {isAutoUpdating ? (
+                            <Wifi className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <WifiOff className="h-4 w-4 text-gray-400" />
+                          )}
+                          <Label htmlFor="autoUpdate" className="text-xs cursor-pointer">
+                            Auto-actualización BCV
+                          </Label>
                         </div>
-                        {exchangeRateSource && (
+                        <Switch
+                          id="autoUpdate"
+                          checked={config.autoUpdateExchangeRate}
+                          onCheckedChange={(checked) => 
+                            setConfig(prev => ({ ...prev, autoUpdateExchangeRate: checked }))
+                          }
+                        />
+                      </div>
+
+                      {exchangeRateLastUpdated && (
+                        <div className="text-xs text-gray-600">
                           <div className="flex items-center justify-between">
-                            <span>Fuente:</span>
-                            <span className="font-medium">{exchangeRateSource}</span>
+                            <span>Actualizado:</span>
+                            <Badge variant="secondary" className="text-xs">
+                              {getTimeSinceUpdate()}
+                            </Badge>
                           </div>
+                          {exchangeRateSource && (
+                            <div className="flex items-center justify-between mt-1">
+                              <span>Fuente:</span>
+                              <span className="font-medium">{exchangeRateSource}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 🇨🇳 TASA USD → CNY */}
+                    <div className="space-y-3 p-4 border border-red-200 rounded-lg bg-red-50/50">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🇨🇳</span>
+                        <Label className="text-sm font-semibold text-red-800">1 USD = X CNY</Label>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Input
+                          id="cnyRate"
+                          type="number"
+                          step="0.0001"
+                          min={0}
+                          value={config.autoUpdateExchangeRateCNY ? 
+                            (currentExchangeRateCNY !== null ? currentExchangeRateCNY : '') : 
+                            config.cnyRate}
+                          onChange={(e) => applyCost('cnyRate', e.target.value)}
+                          className={exchangeRateErrorCNY ? 'border-red-300' : ''}
+                          disabled={exchangeRateLoadingCNY}
+                          placeholder="7.2500"
+                        />
+                        {config.autoUpdateExchangeRateCNY ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={refreshRateCNY}
+                            disabled={exchangeRateLoadingCNY}
+                            className="shrink-0"
+                            title="Actualizar tasa CNY desde API"
+                          >
+                            {exchangeRateLoadingCNY ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <RefreshCw className="h-4 w-4" />
+                            )}
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => saveManualRateCNY(config.cnyRate)}
+                            disabled={!config.cnyRate || config.cnyRate <= 0}
+                            className="shrink-0"
+                            title="Guardar tasa CNY manual"
+                          >
+                            <Save className="h-4 w-4" />
+                          </Button>
                         )}
                       </div>
-                    )}
 
-                    {/* Alert de estado */}
-                    <Alert className={exchangeRateError ? 'border-red-200 bg-red-50' : 'border-green-200 bg-green-50'}>
-                      {exchangeRateError ? (
-                        <AlertTriangle className="h-4 w-4 text-red-600" />
-                      ) : (
-                        <CheckCircle className="h-4 w-4 text-green-600" />
+                      <div className="flex items-center justify-between space-x-2">
+                        <div className="flex items-center space-x-2">
+                          {isAutoUpdatingCNY ? (
+                            <Wifi className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <WifiOff className="h-4 w-4 text-gray-400" />
+                          )}
+                          <Label htmlFor="autoUpdateCNY" className="text-xs cursor-pointer">
+                            Auto-actualización API
+                          </Label>
+                        </div>
+                        <Switch
+                          id="autoUpdateCNY"
+                          checked={config.autoUpdateExchangeRateCNY}
+                          onCheckedChange={(checked) => 
+                            setConfig(prev => ({ ...prev, autoUpdateExchangeRateCNY: checked }))
+                          }
+                        />
+                      </div>
+
+                      {exchangeRateLastUpdatedCNY && (
+                        <div className="text-xs text-gray-600">
+                          <div className="flex items-center justify-between">
+                            <span>Actualizado:</span>
+                            <Badge variant="secondary" className="text-xs">
+                              {getTimeSinceUpdateCNY()}
+                            </Badge>
+                          </div>
+                          {exchangeRateSourceCNY && (
+                            <div className="flex items-center justify-between mt-1">
+                              <span>Fuente:</span>
+                              <span className="font-medium">{exchangeRateSourceCNY}</span>
+                            </div>
+                          )}
+                        </div>
                       )}
-                      <AlertDescription className={exchangeRateError ? 'text-red-700' : 'text-green-700'}>
-                        {exchangeRateError || (
-                          config.autoUpdateExchangeRate 
-                            ? 'Actualización automática activada cada 30 minutos desde BCV. Recuerde guardar los cambios en "Guardar Configuración" para aplicar todas las modificaciones.'
-                            : 'Modo manual activo. Recuerde guardar los cambios en "Guardar Configuración" para aplicar todas las modificaciones.'
-                        )}
+                    </div>
+
+                    {/* Alert general de estado */}
+                    <Alert className="border-blue-200 bg-blue-50">
+                      <CheckCircle className="h-4 w-4 text-blue-600" />
+                      <AlertDescription className="text-blue-700">
+                        <strong>Tasas de cambio configuradas.</strong> Recuerde guardar los cambios en "Guardar Configuración" para aplicar todas las modificaciones.
                       </AlertDescription>
                     </Alert>
                   </CardContent>
@@ -825,8 +1150,12 @@ export default function ConfiguracionPage() {
                   <p className="font-bold text-teal-600">{formatCurrency(config.seaShippingRate)}/m³</p>
                 </div>
                 <div className="text-center p-3 bg-white rounded-lg">
-                  <p className="text-slate-600">{t('admin.management.summary.usdRate')}</p>
-                  <p className="font-bold text-green-600">{config.usdRate} Bs</p>
+                  <p className="text-slate-600">🇻🇪 USD → Bs</p>
+                  <p className="font-bold text-green-600">{config.autoUpdateExchangeRate ? (currentExchangeRate || config.usdRate) : config.usdRate} Bs</p>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg">
+                  <p className="text-slate-600">🇨🇳 USD → CNY</p>
+                  <p className="font-bold text-red-600">{config.autoUpdateExchangeRateCNY ? (currentExchangeRateCNY || config.cnyRate) : config.cnyRate} CNY</p>
                 </div>
                 <div className="text-center p-3 bg-white rounded-lg">
                   <p className="text-slate-600">{t('admin.management.summary.margin')}</p>
