@@ -58,13 +58,12 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
   const { toast } = useToast();
   const { language, committedLanguage, previewLanguage, commitLanguage, revertLanguage } = useLanguage();
   // Solo usar contexto de cliente si el rol es 'client'
-  const clientContext = role === 'client' ? (() => {
-    try {
-      return useClientContext();
-    } catch {
-      return { clientName: undefined, clientEmail: undefined, clientPhone: undefined, setClient: () => {} };
-    }
-  })() : { clientName: undefined, clientEmail: undefined, clientPhone: undefined, setClient: () => {} };
+  let clientContext;
+  try {
+    clientContext = role === 'client' ? useClientContext() : { clientName: undefined, clientEmail: undefined, clientPhone: undefined, setClient: () => {} };
+  } catch {
+    clientContext = { clientName: undefined, clientEmail: undefined, clientPhone: undefined, setClient: () => {} };
+  }
   
   const { clientName, clientEmail, clientPhone, setClient } = clientContext;
   // Flag para saber si se guardó y evitar revert posterior accidental
