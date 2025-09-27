@@ -44,8 +44,7 @@ interface BusinessConfig {
   // Parámetros de envío
   airShippingRate: number;
   seaShippingRate: number;
-  airDeliveryDays: { min: number; max: number };
-  seaDeliveryDays: { min: number; max: number };
+  // Eliminados días de entrega
   
   // Parámetros financieros
   usdRate: number;
@@ -90,8 +89,7 @@ export default function ConfiguracionPage() {
   const [config, setConfig] = useState<BusinessConfig>({
     airShippingRate: 8.50,
     seaShippingRate: 180.00,
-    airDeliveryDays: { min: 15, max: 20 },
-    seaDeliveryDays: { min: 35, max: 45 },
+  // Eliminados días de entrega
     usdRate: 36.25,
     cnyRate: 7.25,
     profitMargin: 25,
@@ -348,8 +346,7 @@ export default function ConfiguracionPage() {
         let mergedConfig = {
           airShippingRate: 8.50,
           seaShippingRate: 180.00,
-          airDeliveryDays: { min: 15, max: 20 },
-          seaDeliveryDays: { min: 35, max: 45 },
+          // Eliminados días de entrega
           usdRate: 36.25,
           cnyRate: 7.25,
           profitMargin: 25,
@@ -373,6 +370,7 @@ export default function ConfiguracionPage() {
             console.log('[Admin] Parsed localStorage config:', parsedConfig);
             console.log('[Admin] Parsed autoUpdateExchangeRateCNY:', parsedConfig.autoUpdateExchangeRateCNY);
             mergedConfig = { ...mergedConfig, ...parsedConfig };
+            // Eliminar campos de días de entrega si existen en localStorage
             console.log('[Admin] After merge with localStorage:', mergedConfig.autoUpdateExchangeRateCNY);
           } catch (e) {
             console.error('Error parsing saved config:', e);
@@ -392,12 +390,8 @@ export default function ConfiguracionPage() {
             // Priorizar localStorage para configuraciones de exchange rate
             mergedConfig = { 
               ...mergedConfig, 
-              ...data.config,
-              autoUpdateExchangeRate: mergedConfig.autoUpdateExchangeRate, // Mantener valor de localStorage
-              autoUpdateExchangeRateCNY: mergedConfig.autoUpdateExchangeRateCNY, // Mantener valor de localStorage
-              cnyRate: mergedConfig.cnyRate // Mantener valor de localStorage
+              ...data.config
             };
-            
             console.log('[Admin] Final mergedConfig autoUpdateExchangeRateCNY:', mergedConfig.autoUpdateExchangeRateCNY);
           }
         } catch (apiError) {
@@ -425,8 +419,6 @@ export default function ConfiguracionPage() {
 
         // 3. Aplicar configuración final
         console.log('[Admin] loadConfig completed, mergedConfig:', mergedConfig);
-        console.log('[Admin] Setting config from loadConfig:', mergedConfig);
-        
         try {
           setConfig(mergedConfig);
           baseConfigRef.current = { ...mergedConfig };
@@ -563,13 +555,7 @@ export default function ConfiguracionPage() {
   };
 
 
-  const applyDayValue = (group: 'airDeliveryDays' | 'seaDeliveryDays', sub: 'min' | 'max', raw: string) => {
-    let onlyDigits = raw.replace(/\D/g, '');
-    if (onlyDigits.length > 4) onlyDigits = onlyDigits.slice(0,4);
-    let num = onlyDigits === '' ? 0 : parseInt(onlyDigits, 10);
-    if (num > MAX_DAY_VALUE) num = MAX_DAY_VALUE;
-    updateConfig(group, { ...config[group], [sub]: num });
-  };
+  // Eliminada función para días de entrega
 
   const applySingleDay = (field: keyof BusinessConfig, raw: string) => {
     let onlyDigits = raw.replace(/\D/g, '');
@@ -728,34 +714,7 @@ export default function ConfiguracionPage() {
                     
                     <Separator />
                     
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="airMin" className="text-sm">{t('admin.management.shipping.minDays')}</Label>
-                        <Input
-                          id="airMin"
-                          type="number"
-                          min={0}
-                          max={365}
-                          value={config.airDeliveryDays.min}
-                          onChange={(e) => applyDayValue('airDeliveryDays','min', e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="airMax" className="text-sm">{t('admin.management.shipping.maxDays')}</Label>
-                        <Input
-                          id="airMax"
-                          type="number"
-                          min={0}
-                          max={365}
-                          value={config.airDeliveryDays.max}
-                          onChange={(e) => applyDayValue('airDeliveryDays','max', e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    
-                    <Badge variant="outline" className="w-full justify-center">
-                      {t('common.eta')}: {config.airDeliveryDays.min}-{config.airDeliveryDays.max} {t('common.dias')}
-                    </Badge>
+                    {/* Eliminados campos de días de entrega para envío aéreo */}
                   </CardContent>
                 </Card>
 
@@ -790,34 +749,7 @@ export default function ConfiguracionPage() {
                     
                     <Separator />
                     
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="seaMin" className="text-sm">{t('admin.management.shipping.minDays')}</Label>
-                        <Input
-                          id="seaMin"
-                          type="number"
-                          min={0}
-                          max={365}
-                          value={config.seaDeliveryDays.min}
-                          onChange={(e) => applyDayValue('seaDeliveryDays','min', e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="seaMax" className="text-sm">{t('admin.management.shipping.maxDays')}</Label>
-                        <Input
-                          id="seaMax"
-                          type="number"
-                          min={0}
-                          max={365}
-                          value={config.seaDeliveryDays.max}
-                          onChange={(e) => applyDayValue('seaDeliveryDays','max', e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    
-                    <Badge variant="outline" className="w-full justify-center">
-                      {t('common.eta')}: {config.seaDeliveryDays.min}-{config.seaDeliveryDays.max} {t('common.dias')}
-                    </Badge>
+                    {/* Eliminados campos de días de entrega para envío marítimo */}
                   </CardContent>
                 </Card>
               </div>
