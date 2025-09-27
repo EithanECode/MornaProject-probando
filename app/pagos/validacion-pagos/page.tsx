@@ -564,6 +564,7 @@ const PaymentValidationDashboard: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
+  const mobileListRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState<'todos' | 'pendientes'>('todos');
   const [rejectionConfirmation, setRejectionConfirmation] = useState<{ isOpen: boolean; paymentId: string | null }>({ isOpen: false, paymentId: null });
   const [detailsModal, setDetailsModal] = useState<{ isOpen: boolean; payment: Payment | null }>({ isOpen: false, payment: null });
@@ -1082,7 +1083,7 @@ const PaymentValidationDashboard: React.FC = () => {
             </div>
 
             {/* Vista Mobile - Cards */}
-            <div className="block lg:hidden p-4 space-y-4">
+            <div ref={mobileListRef} className="block lg:hidden p-4 space-y-4 relative transition-opacity duration-300" style={{opacity: loading ? 0.15 : 1}}>
               {!loading && filteredPayments.map((payment) => (
                 <PaymentCard
                   key={payment.id}
@@ -1092,6 +1093,14 @@ const PaymentValidationDashboard: React.FC = () => {
                   onViewDetails={openDetailsModal}
                 />
               ))}
+              {loading && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/85 dark:bg-slate-900/80 shadow-md border border-gray-200 dark:border-slate-700 backdrop-blur-sm">
+                    <Package className="w-5 h-5 text-blue-600 animate-spin" />
+                    <span className="text-sm font-medium text-gray-700 dark:text-slate-200">Cargando...</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Vista Desktop - Tabla */}
@@ -1235,7 +1244,10 @@ const PaymentValidationDashboard: React.FC = () => {
               <button
                 onClick={() => {
                   if (page === 1 || loading) return; 
-                  tableContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  (tableContainerRef.current || mobileListRef.current)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  if (!tableContainerRef.current && !mobileListRef.current) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
                   setPage(p => Math.max(1, p - 1));
                 }}
                 disabled={page === 1 || loading}
@@ -1247,7 +1259,10 @@ const PaymentValidationDashboard: React.FC = () => {
               <button
                 onClick={() => {
                   if (loading || page >= Math.ceil(totalCount / PAGE_SIZE)) return; 
-                  tableContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  (tableContainerRef.current || mobileListRef.current)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  if (!tableContainerRef.current && !mobileListRef.current) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
                   setPage(p => p + 1);
                 }}
                 disabled={loading || page >= Math.ceil(totalCount / PAGE_SIZE)}
