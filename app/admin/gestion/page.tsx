@@ -1019,7 +1019,7 @@ export default function ConfiguracionPage() {
                     <Alert className="border-blue-200 bg-blue-50">
                       <CheckCircle className="h-4 w-4 text-blue-600" />
                       <AlertDescription className="text-blue-700">
-                        <strong>Tasas de cambio configuradas.</strong> Recuerde guardar los cambios en &quot;Guardar Configuración&quot; para aplicar todas las modificaciones.
+                        <strong>Tasas de cambio configuradas.</strong> Recuerde guardar los cambios en &quot;<strong>Guardar Configuración</strong>&quot; para aplicar todas las modificaciones.
                       </AlertDescription>
                     </Alert>
                   </CardContent>

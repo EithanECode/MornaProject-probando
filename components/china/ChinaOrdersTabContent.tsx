@@ -8,12 +8,30 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import {
-  Search, Filter, Boxes, Package, List, CheckCircle, Calendar, Eye, Calculator, Pencil, Tag, User, Plus, Truck, Trash2, AlertTriangle, DollarSign
+  Search, Filter, Boxes, Package, List, CheckCircle, Calendar, Eye, Calculator, Pencil, Tag, User, Plus, Truck, Trash2, AlertTriangle, DollarSign, Download
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Toaster } from '@/components/ui/toaster';
 import { useRealtimeChina } from '@/hooks/use-realtime-china';
+import jsPDF from 'jspdf';
+
+// Utilidad para convertir un SVG público a PNG DataURL para incrustar en PDF (cliente)
+async function svgToPngDataUrl(path: string, size=120): Promise<string>{
+  const resp = await fetch(path);
+  const svgText = await resp.text();
+  const blob = new Blob([svgText], { type: 'image/svg+xml' });
+  const blobUrl = URL.createObjectURL(blob);
+  try {
+    const img = await new Promise<HTMLImageElement>((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=blobUrl; });
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d'); if(!ctx) throw new Error('Canvas no soportado');
+    ctx.clearRect(0,0,size,size);
+    ctx.drawImage(img,0,0,size,size);
+    return canvas.toDataURL('image/png');
+  } finally { URL.revokeObjectURL(blobUrl); }
+}
 
 // Componente embebido (sin Sidebar/Header) replicando funcionalidades clave de la página China.
 
@@ -81,7 +99,7 @@ export default function ChinaOrdersTabContent() {
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [filtroCliente, setFiltroCliente] = useState('');
 
-  // Modales pedidos
+  // Modales pedidosn
   const [modalCotizar, setModalCotizar] = useState<{open:boolean; pedido?: Pedido; precioUnitario?: number; precioEnvio?: number; altura?: number; anchura?: number; largo?: number; peso?: number}>({open:false, precioUnitario:0, precioEnvio:0, altura:0, anchura:0, largo:0, peso:0});
   const [modalEmpaquetarPedido, setModalEmpaquetarPedido] = useState<{open:boolean; pedidoId?: number}>({open:false});
   const [isClosingModalCotizar, setIsClosingModalCotizar] = useState(false);
@@ -89,6 +107,76 @@ export default function ChinaOrdersTabContent() {
   const [isClosingModalEmpaquetarPedido, setIsClosingModalEmpaquetarPedido] = useState(false);
   const modalCotizarRef = useRef<HTMLDivElement>(null);
   const modalEmpaquetarPedidoRef = useRef<HTMLDivElement>(null);
+  // Modal aviso: pedir poner etiqueta al producto antes de empaquetar
+  const [modalAvisoEtiqueta, setModalAvisoEtiqueta] = useState<{open:boolean; pedidoId?: number; box?: BoxItem}>({open:false});
+
+  // Generar etiqueta PDF 5 x 3.5 cm (convertido a mm -> 50mm x 35mm)
+  async function handleGenerateOrderLabelPdf(pedidoId?: number){
+    if(!pedidoId){
+      toast({ title: t('admin.orders.china.modals.labelWarning.toastTitleError', { defaultValue: 'Error generando' }), description: t('admin.orders.china.modals.labelWarning.noId', { defaultValue: 'ID de pedido no disponible' }) });
+      return;
+    }
+    try {
+      // Dimensiones (mm) 50 x 35 (horizontal). Creamos base clean.
+      const labelW = 50;
+      const labelH = 35;
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [labelH, labelW] });
+      const padding = 3;
+      // Fondo suave
+      doc.setFillColor(255,255,255);
+      doc.rect(0,0,labelW,labelH,'F');
+      // Borde redondeado
+      doc.setDrawColor(40,40,45);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(0.7,0.7,labelW-1.4,labelH-1.4,2,2);
+
+      // Cargar logo SVG -> PNG dataURL (mini util inline)
+
+      let logoData: string | undefined;
+      try { logoData = await svgToPngDataUrl('/pita_icon.svg', 256); } catch { /* fallback más abajo */ }
+
+      // Encabezado con banda de color
+      doc.setFillColor(15,76,129); // azul profundo corporativo
+      doc.rect(0,0,labelW,9,'F');
+
+      if(logoData){
+        // Insertar logo pequeño a la izquierda
+        const logoW = 8; const logoH = 8; const logoX = padding; const logoY = 0.5;
+        doc.addImage(logoData,'PNG',logoX,logoY,logoW,logoH, undefined,'FAST');
+      } else {
+        // Fallback: no logo, solo mantenemos la banda de color
+      }
+
+      // Título marca centrado (siempre)
+      doc.setFont('helvetica','bold');
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(7.5);
+      doc.text('PITA EXPRESS', labelW/2,5.2,{align:'center'});
+
+      // Código del pedido (principal)
+      const code = `#PED-${String(pedidoId).padStart(3,'0')}`;
+      doc.setFont('helvetica','bold');
+      doc.setTextColor(20,20,25);
+      doc.setFontSize(16);
+      doc.text(code, labelW/2, 20, { align: 'center' });
+
+      // Subtexto / instrucción
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(5.2);
+      doc.setTextColor(60,60,65);
+      const desc = t('admin.orders.china.modals.labelWarning.description', { defaultValue: 'Asegúrate de poner la etiqueta al producto antes de empaquetar.' });
+      doc.text(doc.splitTextToSize(desc, labelW-8), labelW/2, 26.5, { align: 'center' });
+
+    // (Footer eliminado a petición del usuario)
+
+    const blobUrl = doc.output('bloburl');
+  window.open(blobUrl, '_blank','noopener,noreferrer');
+  toast({ title: t('admin.orders.china.modals.labelWarning.toastTitleSuccess', { defaultValue: 'Etiqueta lista' }), description: t('admin.orders.china.modals.labelWarning.downloaded', { defaultValue: 'Etiqueta generada' }) });
+    } catch(e){
+      console.error(e);
+  toast({ title: t('admin.orders.china.modals.labelWarning.toastTitleError', { defaultValue: 'Error generando' }), description: t('admin.orders.china.modals.labelWarning.downloadError', { defaultValue: 'No se pudo generar la etiqueta' }) });
+    }
+  }
 
   // Cajas
   const [boxes, setBoxes] = useState<BoxItem[]>([]);
@@ -554,9 +642,28 @@ export default function ChinaOrdersTabContent() {
     }
   }
 
+  // Intentar descargar etiqueta/pdf asociada a la caja: buscar pedidos de la caja y abrir el primer pdfRoutes encontrado
+  async function handleDownloadLabelForBox(boxId:number|string|undefined){
+    if(boxId===undefined) return;
+    try{
+      const supabase = getSupabaseBrowserClient();
+      const { data, error } = await supabase.from('orders').select('id, pdfRoutes').eq('box_id', boxId).limit(10);
+      if(error) throw error;
+      const list = (data||[] as any[]);
+      for(const row of list){
+        const pdf = row.pdfRoutes;
+        if(pdf && typeof pdf === 'string' && pdf.trim()){ try{ window.open(pdf, '_blank'); return; } catch(e){ console.error('open pdf error', e); } }
+        if(Array.isArray(pdf) && pdf.length>0){ try{ window.open(pdf[0], '_blank'); return; } catch(e){ console.error(e); } }
+      }
+      // Si no hay pdf, mostrar aviso
+      toast({ title: t('admin.orders.china.modals.selectBoxForOrder.noPdfTitle', { defaultValue: 'Sin PDF' }), description: t('admin.orders.china.modals.selectBoxForOrder.noPdfDesc', { defaultValue: 'No se encontró etiqueta asociada a esta caja.' }) });
+    } catch(e){ console.error(e); toast({ title: 'Error', description: 'No se pudo descargar etiqueta.' }); }
+  }
+
   // ================== MODALES CLOSE HELPERS ==================
   function closeModalCotizar(){ setIsClosingModalCotizar(true); setTimeout(()=>{ setModalCotizar({open:false}); setIsClosingModalCotizar(false); },200);} 
   function closeModalEmpaquetarPedido(){ setIsClosingModalEmpaquetarPedido(true); setTimeout(()=>{ setModalEmpaquetarPedido({open:false}); setIsClosingModalEmpaquetarPedido(false); },200);} 
+  function closeModalAvisoEtiqueta(){ setModalAvisoEtiqueta({open:false}); }
   function closeModalCrearCaja(){ setIsClosingModalCrearCaja(true); setTimeout(()=>{ setModalCrearCaja({open:false}); setIsClosingModalCrearCaja(false); setNewBoxName(''); },200);} 
   function closeModalEliminarCaja(){ setIsClosingModalEliminarCaja(true); setTimeout(()=>{ setModalEliminarCaja({open:false}); setIsClosingModalEliminarCaja(false); },200);} 
   function closeModalEmpaquetarCaja(){ setIsClosingModalEmpaquetarCaja(true); setTimeout(()=>{ setModalEmpaquetarCaja({open:false}); setIsClosingModalEmpaquetarCaja(false); },200);} 
@@ -1288,6 +1395,26 @@ export default function ChinaOrdersTabContent() {
       )}
 
       {/* Modal seleccionar caja para pedido */}
+      {/* Modal aviso: pedir poner etiqueta antes de empaquetar */}
+      {modalAvisoEtiqueta.open && (
+        // z-[60] para asegurar que este modal quede por encima del modal de seleccionar caja (que usa z-50)
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-md mx-4 w-full transition-all scale-100 opacity-100 duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('admin.orders.china.modals.labelWarning.title', { defaultValue: 'Antes de empaquetar' })}</h3>
+              <Button variant="ghost" size="sm" onClick={()=>setModalAvisoEtiqueta({open:false})} className="h-8 w-8 p-0">✕</Button>
+            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">{t('admin.orders.china.modals.labelWarning.description', { defaultValue: 'Asegúrate de poner la etiqueta al producto antes de empaquetar.' })}</p>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={()=>{ handleGenerateOrderLabelPdf(modalAvisoEtiqueta.pedidoId); }}>
+                <Download className="h-4 w-4 mr-1" />{t('admin.orders.china.modals.labelWarning.download')}
+              </Button>
+              <Button variant="outline" onClick={()=>setModalAvisoEtiqueta({open:false})}>{t('common.cancel')}</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700" onClick={()=>{ if(modalAvisoEtiqueta.pedidoId && modalAvisoEtiqueta.box){ handleSelectCajaForPedido(modalAvisoEtiqueta.pedidoId, modalAvisoEtiqueta.box); setModalAvisoEtiqueta({open:false}); } }}>{t('common.accept')}</Button>
+            </div>
+          </div>
+        </div>
+      )}
       {modalEmpaquetarPedido.open && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div ref={modalEmpaquetarPedidoRef} className={`bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[85vh] overflow-y-auto transition-all ${isClosingModalEmpaquetarPedido? 'scale-95 opacity-0' : 'scale-100 opacity-100'} duration-200`}>
@@ -1296,7 +1423,13 @@ export default function ChinaOrdersTabContent() {
         <div className="space-y-3">{boxes.map((box,idx)=>{ const id=box.box_id ?? box.boxes_id ?? box.id ?? idx; const created=box.creation_date ?? box.created_at ?? ''; const stateNum=(box.state??1) as number; return (
                 <div key={id as any} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600">
           <div className="space-y-1"><p className="font-semibold text-slate-900 dark:text-white">#BOX-{id}</p>{box.name && (<p className="text-xs text-slate-500 dark:text-slate-400">{String(box.name)}</p>)}<p className="text-xs text-slate-500 dark:text-slate-400">{created? new Date(created).toLocaleString('es-ES'):'—'}</p></div>
-  <div className="flex items-center gap-3"><Badge className={`border ${stateNum===1?'bg-blue-100 text-blue-800 border-blue-200': stateNum===2? 'bg-green-100 text-green-800 border-green-200':'bg-gray-100 text-gray-800 border-gray-200'}`}>{getBoxBadgeLabel(stateNum)}</Badge><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled={stateNum>=3} onClick={()=> modalEmpaquetarPedido.pedidoId && handleSelectCajaForPedido(modalEmpaquetarPedido.pedidoId, box)}>{t('admin.orders.china.modals.selectBoxForOrder.select')}</Button></div>
+  <div className="flex items-center gap-3"><Badge className={`border ${stateNum===1?'bg-blue-100 text-blue-800 border-blue-200': stateNum===2? 'bg-green-100 text-green-800 border-green-200':'bg-gray-100 text-gray-800 border-gray-200'}`}>{getBoxBadgeLabel(stateNum)}</Badge>
+    <div className="flex items-center gap-2">
+      <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled={stateNum>=3} onClick={()=>{
+        if(modalEmpaquetarPedido.pedidoId){ setModalAvisoEtiqueta({ open:true, pedidoId: modalEmpaquetarPedido.pedidoId, box }); }
+      }}>{t('admin.orders.china.modals.selectBoxForOrder.select')}</Button>
+    </div>
+  </div>
                 </div>
               ); })}</div>
             )}

@@ -57,15 +57,24 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const { language, committedLanguage, previewLanguage, commitLanguage, revertLanguage } = useLanguage();
-  // Solo usar contexto de cliente si el rol es 'client'
-  let clientContext;
-  try {
-    clientContext = role === 'client' ? useClientContext() : { clientName: undefined, clientEmail: undefined, clientPhone: undefined, setClient: () => {} };
-  } catch {
-    clientContext = { clientName: undefined, clientEmail: undefined, clientPhone: undefined, setClient: () => {} };
-  }
+  // Crear un hook personalizado que maneje el error
+  const useClientContextSafe = () => {
+    try {
+      return useClientContext();
+    } catch {
+      return { clientName: undefined, clientEmail: undefined, clientPhone: undefined, setClient: () => {} };
+    }
+  };
   
-  const { clientName, clientEmail, clientPhone, setClient } = clientContext;
+  const clientContext = useClientContextSafe();
+  
+  // Solo usar los valores si el rol es 'client'
+  const { clientName, clientEmail, clientPhone, setClient } = role === 'client' ? clientContext : { 
+    clientName: undefined, 
+    clientEmail: undefined, 
+    clientPhone: undefined, 
+    setClient: () => {} 
+  };
   // Flag para saber si se guardó y evitar revert posterior accidental
   const didSaveRef = React.useRef(false);
   const { t } = useTranslation();

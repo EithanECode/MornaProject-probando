@@ -1335,6 +1335,16 @@
             "noneSubtitle": "Create a box from the Boxes tab to pack.",
             "select": "Select"
           },
+          "labelWarning": {
+            "title": "Before packaging",
+            "description": "Make sure to place the label on the product before packaging.",
+            "download": "Download label",
+            "downloaded": "Label generated",
+            "downloadError": "Label could not be generated",
+            "noId": "Order ID not available",
+            "toastTitleSuccess": "Label ready",
+            "toastTitleError": "Generation error"
+          },
           "deleteBox": {
             "title": "Delete box",
             "question": "Are you sure you want to delete box #BOX-{{id}}? This action can't be undone.",
@@ -1525,6 +1535,7 @@
     "edit": "Edit",
     "delete": "Delete",
     "confirm": "Confirm",
+    "accept": "Accept",
     "close": "Close",
   "actionCannotBeUndone": "This action cannot be undone.",
     "loading": "Loading...",

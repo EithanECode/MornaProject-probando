@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -17,7 +17,8 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLanguage } from '@/lib/LanguageContext';
 
-export default function NotFound() {
+// Componente con la lógica principal separado para poder envolverlo en Suspense
+function NotFoundContent() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -207,4 +208,13 @@ export default function NotFound() {
       `}</style>
     </div>
   );
-} 
+}
+
+// Wrapper exportado que garantiza un Suspense boundary alrededor del contenido
+export default function NotFound() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><span className="text-slate-500 text-sm animate-pulse">Cargando…</span></div>}>
+      <NotFoundContent />
+    </Suspense>
+  );
+}

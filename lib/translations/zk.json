@@ -1336,6 +1336,16 @@
             "noneSubtitle": "在箱子标签中创建一个箱子以打包。",
             "select": "选择"
           },
+          "labelWarning": {
+            "title": "打包前",
+            "description": "请确保在打包前将标签贴在产品上。",
+            "download": "下载标签",
+            "downloaded": "标签已生成",
+            "downloadError": "无法生成标签",
+            "noId": "订单 ID 不可用",
+            "toastTitleSuccess": "标签就绪",
+            "toastTitleError": "生成错误"
+          },
           "deleteBox": {
             "title": "删除箱子",
             "question": "确定要删除箱子 #BOX-{{id}} 吗？此操作不可撤销。",
@@ -1526,6 +1536,7 @@
     "edit": "编辑",
     "delete": "删除",
     "confirm": "确认",
+    "accept": "接受",
     "close": "关闭",
   "actionCannotBeUndone": "此操作无法撤销。",
     "loading": "加载中...",

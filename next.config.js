@@ -96,7 +96,7 @@ const nextConfig = {
       {
         source: '/',
         destination: '/login-register',
-  permanent: false,
+        permanent: false,
       },
       // Temporal: si algún navegador tiene cacheado el 308 antiguo de '/' -> '/dashboard',
       // lo redirigimos aquí a '/login-register'. Quitar cuando todos los clientes hayan actualizado.

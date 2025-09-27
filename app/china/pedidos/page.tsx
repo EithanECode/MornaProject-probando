@@ -2424,7 +2424,6 @@ export default function PedidosChina() {
                       amount={((modalCotizar.precioUnitario || 0) * (modalCotizar.pedido?.cantidad || 0)) + (modalCotizar.precioEnvio || 0)} 
                       currency="USD"
                       variant="card"
-                      showRefresh={true}
                       className="border-green-200 text-green-600 font-bold"
                     />
                   </div>
