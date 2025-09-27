@@ -71,7 +71,7 @@ export function useCurrencyConverter(): UseCurrencyConverterReturn {
           autoUpdateEnabled = parsedConfig.autoUpdateExchangeRate || false;
         }
       } catch (e) {
-        console.error('Error reading localStorage config:', e);
+  console.debug('Warn reading localStorage config:', e);
       }
 
       // Si no hay localStorage, intentar API como fallback
@@ -88,7 +88,7 @@ export function useCurrencyConverter(): UseCurrencyConverterReturn {
             }
           }
         } catch (e) {
-          console.error('Error fetching config from API:', e);
+          console.debug('Warn fetching config from API:', e);
         }
       }
 
@@ -121,7 +121,7 @@ export function useCurrencyConverter(): UseCurrencyConverterReturn {
           }
         }
       } catch (e) {
-        console.error('Error using localStorage config for rate:', e);
+  console.debug('Warn using localStorage config for rate:', e);
       }
 
       // Fallback a API si localStorage no funciona
@@ -139,7 +139,7 @@ export function useCurrencyConverter(): UseCurrencyConverterReturn {
           }
         }
       } catch (e) {
-        console.error('Error fetching fallback config:', e);
+        console.debug('Warn fetching fallback config:', e);
       }
 
       throw new Error('Failed to fetch currency rate');
@@ -148,7 +148,7 @@ export function useCurrencyConverter(): UseCurrencyConverterReturn {
         return;
       }
       
-      console.error('Error fetching currency rate:', error);
+  console.debug('Error fetching currency rate (final fallback):', error);
       setError(error.message || 'Failed to fetch currency rate');
     } finally {
       setIsLoading(false);

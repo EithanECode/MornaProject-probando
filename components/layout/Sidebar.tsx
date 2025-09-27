@@ -15,7 +15,8 @@ import {
   BarChart3,
   CreditCard,
   Shield,
-  BadgeDollarSign
+  BadgeDollarSign,
+  Boxes
 } from 'lucide-react';
 import VenezuelaFlag from '@/components/ui/common/VenezuelaFlag';
 import PitaLogo from '@/components/ui/common/PitaLogo';
@@ -171,10 +172,11 @@ const PAGOS_MENU_ITEMS = [
   },
   {
     id: 'payments-validation',
-    icon: Shield,
+  // Icono más representativo: caja (Package) en vez de escudo o simple dolar
+  icon: Package,
     badge: 15,
     color: 'text-orange-500',
-    path: '/validacion-pagos'
+  path: '/pagos/validacion-pagos'
   }
 ];
 

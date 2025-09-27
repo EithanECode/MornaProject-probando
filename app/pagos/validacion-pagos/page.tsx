@@ -49,6 +49,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 // sólo modifican estado local.
 // =============================================
 const SIMULATE_VALIDATION = true;
+// Paginación: cantidad de pedidos por página
+const PAGE_SIZE = 20;
 
 // ================================
 // TIPOS DE DATOS TYPESCRIPT
@@ -437,8 +439,9 @@ const PaymentCard: React.FC<{ payment: Payment; onApprove: (id: string) => void;
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center text-xs font-semibold">
-            {payment.id.split('-')[1]}
+          {/* Icono de pedido en lugar del bloque azul con número */}
+          <div className="w-8 h-8 bg-blue-500/10 text-blue-600 rounded-lg flex items-center justify-center">
+            <Package className="w-5 h-5" />
           </div>
           <div>
             <h3 className="font-semibold text-gray-900 text-sm">{payment.usuario}</h3>
@@ -558,6 +561,8 @@ const PaymentValidationDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('todos');
+  const [page, setPage] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(0);
   const [selectedTab, setSelectedTab] = useState<'todos' | 'pendientes'>('todos');
   const [rejectionConfirmation, setRejectionConfirmation] = useState<{ isOpen: boolean; paymentId: string | null }>({ isOpen: false, paymentId: null });
   const [detailsModal, setDetailsModal] = useState<{ isOpen: boolean; payment: Payment | null }>({ isOpen: false, payment: null });
@@ -622,17 +627,23 @@ const PaymentValidationDashboard: React.FC = () => {
       startTimeout();
       try {
         const selectCols = 'id, client_id, productName, description, totalQuote, estimatedBudget, created_at, state';
-        // Rol pagos: ver TODOS los pedidos con state >=4 (pendiente pago o superior)
-        const { data, error } = await supabase
+        // Rango de paginación
+        const from = (page - 1) * PAGE_SIZE;
+        const to = from + PAGE_SIZE - 1;
+        let query = supabase
           .from('orders')
-          .select(selectCols)
-          .gte('state', 4)
-          .order('created_at', { ascending: false })
-          .limit(800);
+          .select(selectCols, { count: 'exact' })
+          .gte('state', 4);
+        // Filtro server-side por estado (pendiente = state 4, completado >4)
+        if (filterStatus === 'pendiente') query = query.eq('state', 4);
+        else if (filterStatus === 'completado') query = query.gt('state', 4);
+        const { data, error, count } = await query
+          .order('id', { ascending: true })
+          .range(from, to);
 
         if (error) throw error;
 
-        const clientIds = (data || []).map((o: any) => o.client_id);
+  const clientIds = (data || []).map((o: any) => o.client_id);
         let clientMap = new Map<string, string>();
         if (clientIds.length) {
           const { data: clients, error: cErr } = await supabase
@@ -643,7 +654,7 @@ const PaymentValidationDashboard: React.FC = () => {
           clientMap = new Map((clients || []).map((c: any) => [c.user_id, c.name || 'Cliente']));
         }
 
-  const mapped: Payment[] = (data as DbOrder[] | null)?.map((o) => {
+  let mapped: Payment[] = (data as DbOrder[] | null)?.map((o) => {
           const estado: Payment['estado'] = o.state === 4 ? 'pendiente' : 'completado';
           return {
             id: String(o.id),
@@ -659,7 +670,16 @@ const PaymentValidationDashboard: React.FC = () => {
           };
         }) || [];
 
+  // Fallback: asegurar orden ascendente numérico por si Supabase devuelve algo fuera de orden
+  mapped = mapped.sort((a, b) => {
+    const na = parseInt(a.id, 10);
+    const nb = parseInt(b.id, 10);
+    if (isNaN(na) || isNaN(nb)) return a.id.localeCompare(b.id);
+    return na - nb;
+  });
+
   setPayments(mapped);
+  if (typeof count === 'number') setTotalCount(count);
       } catch (e: any) {
   setError(e?.message || t('venezuela.pagos.error.loadErrorTitle'));
       } finally {
@@ -668,7 +688,7 @@ const PaymentValidationDashboard: React.FC = () => {
       }
     };
     load();
-  }, [refreshIndex, supabase]);
+  }, [refreshIndex, supabase, page, filterStatus]);
 
   // Calcular estadísticas
   const stats = useMemo((): PaymentStats => {
@@ -1017,7 +1037,7 @@ const PaymentValidationDashboard: React.FC = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="h-10 w-56 md:w-64 px-3"
                   />
-                  <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
                     <SelectTrigger className="h-10 w-40 md:w-48 px-3 whitespace-nowrap truncate">
                       <SelectValue placeholder={t('venezuela.pagos.filters.allStatuses')} />
                     </SelectTrigger>
@@ -1107,11 +1127,19 @@ const PaymentValidationDashboard: React.FC = () => {
                     >
                       <td className="px-2 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 bg-blue-500 text-white rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0">
-                            {payment.id.split('-')[1]}
+                          {/* Icono de paquete en lugar del número */}
+                          <div
+                            className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-200
+                              ${mounted && theme === 'dark'
+                                ? 'bg-blue-500/10 text-blue-300 group-hover:bg-blue-500/20'
+                                : 'bg-blue-500/10 text-blue-600 group-hover:bg-blue-500/20'}`}
+                          >
+                            <Package className="w-4 h-4" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className={`text-sm font-medium truncate ${mounted && theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{payment.id}</div>
+                            <div className={`flex items-center gap-1 text-sm font-semibold tracking-tight truncate ${mounted && theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                              <span className="font-mono">{payment.id}</span>
+                            </div>
                             <div className={`text-xs truncate ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-gray-500'}`}>{payment.descripcion}</div>
                           </div>
                         </div>
@@ -1183,9 +1211,28 @@ const PaymentValidationDashboard: React.FC = () => {
             )}
           </div>
 
-          {/* Footer */}
-          <div className={`mt-4 md:mt-6 text-center text-xs md:text-sm text-gray-500`}>
-            {t('venezuela.pagos.footer.showing', { shown: filteredPayments.length, total: payments.length })}
+          {/* Paginación */}
+          <div className="mt-4 md:mt-6 flex flex-col gap-2">
+            <div className="text-center text-xs md:text-sm text-gray-500">
+              {totalCount > 0
+                ? `Mostrando ${(page - 1) * PAGE_SIZE + 1}-${Math.min(page * PAGE_SIZE, totalCount)} de ${totalCount}`
+                : 'Sin resultados'}
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1 || loading}
+                className={`px-3 py-1.5 rounded-md text-xs md:text-sm border transition-colors ${(page === 1 || loading) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-50'} ${mounted && theme === 'dark' ? 'border-slate-600 text-slate-300 hover:bg-slate-700/40' : 'border-gray-300 text-gray-700'}`}
+              >Anterior</button>
+              <span className="text-xs md:text-sm font-medium">
+                Página {totalCount === 0 ? 0 : page} / {totalCount === 0 ? 0 : Math.max(1, Math.ceil(totalCount / PAGE_SIZE))}
+              </span>
+              <button
+                onClick={() => setPage(p => p + 1)}
+                disabled={loading || page >= Math.ceil(totalCount / PAGE_SIZE)}
+                className={`px-3 py-1.5 rounded-md text-xs md:text-sm border transition-colors ${(loading || page >= Math.ceil(totalCount / PAGE_SIZE)) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-50'} ${mounted && theme === 'dark' ? 'border-slate-600 text-slate-300 hover:bg-slate-700/40' : 'border-gray-300 text-gray-700'}`}
+              >Siguiente</button>
+            </div>
           </div>
         </div>
       </main>
