@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import { LanguageProvider } from '@/lib/LanguageContext';
 import { Toaster } from '@/components/ui/toaster';
 import RouteLoader from '@/components/shared/RouteLoader';
+import { Suspense } from 'react';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -37,8 +38,12 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <LanguageProvider>
-          <RouteLoader />
-          {children}
+          <Suspense fallback={null}>
+            <RouteLoader />
+          </Suspense>
+          <Suspense fallback={null}>
+            {children}
+          </Suspense>
           <Toaster />
         </LanguageProvider>
       </body>
