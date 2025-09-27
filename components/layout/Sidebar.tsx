@@ -365,7 +365,7 @@ const SidebarMenuItem = memo(function SidebarMenuItem({
           ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
         `}>
           <div className="flex items-center justify-between whitespace-nowrap">
-            <span className={`font-medium ${responsiveConfig.textSize}`}>{t('sidebar.' + item.id) ?? item.id}</span>
+            <span suppressHydrationWarning className={`font-medium ${responsiveConfig.textSize}`}>{t('sidebar.' + item.id) ?? item.id}</span>
             {typeof item.badge === 'number' && item.badge > 0 ? (
               <Badge className={`bg-red-500 text-white ${responsiveConfig.badgeSize}`}>
                 {item.badge}
@@ -1273,7 +1273,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
                     transition-all duration-150 ease-out overflow-hidden
                     ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
                   `}>
-                    <span className="font-medium whitespace-nowrap">{t('sidebar.' + item.id) ?? item.id}</span>
+                    <span suppressHydrationWarning className="font-medium whitespace-nowrap">{t('sidebar.' + item.id) ?? item.id}</span>
                   </div>
                 </Link>
               );

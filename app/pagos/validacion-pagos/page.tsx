@@ -1212,11 +1212,11 @@ const PaymentValidationDashboard: React.FC = () => {
                   ))}
                 </tbody>
               </table>
-              {loading && (
+      {loading && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-white/80 dark:bg-slate-900/80 shadow-md border border-gray-200 dark:border-slate-700 backdrop-blur-sm transition-opacity">
                     <Package className="w-5 h-5 text-blue-600 animate-spin" />
-                    <span className="text-sm font-medium text-gray-700 dark:text-slate-200">Cargando página...</span>
+        <span className="text-sm font-medium text-gray-700 dark:text-slate-200">{t('paymentsValidation.loadingPage')}</span>
                   </div>
                 </div>
               )}
@@ -1237,8 +1237,8 @@ const PaymentValidationDashboard: React.FC = () => {
           <div className="mt-4 md:mt-6 flex flex-col gap-2">
             <div className="text-center text-xs md:text-sm text-gray-500">
               {totalCount > 0
-                ? `Mostrando ${(page - 1) * PAGE_SIZE + 1}-${Math.min(page * PAGE_SIZE, totalCount)} de ${totalCount}`
-                : 'Sin resultados'}
+                ? t('paymentsValidation.pagination.showing', { from: (page - 1) * PAGE_SIZE + 1, to: Math.min(page * PAGE_SIZE, totalCount), total: totalCount })
+                : t('paymentsValidation.noResults')}
             </div>
             <div className="flex items-center justify-center gap-2">
               <button
@@ -1252,9 +1252,9 @@ const PaymentValidationDashboard: React.FC = () => {
                 }}
                 disabled={page === 1 || loading}
                 className={`px-3 py-1.5 rounded-md text-xs md:text-sm border transition-colors ${(page === 1 || loading) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-50'} ${mounted && theme === 'dark' ? 'border-slate-600 text-slate-300 hover:bg-slate-700/40' : 'border-gray-300 text-gray-700'}`}
-              >Anterior</button>
+              >{t('paymentsValidation.pagination.previous')}</button>
               <span className="text-xs md:text-sm font-medium">
-                Página {totalCount === 0 ? 0 : page} / {totalCount === 0 ? 0 : Math.max(1, Math.ceil(totalCount / PAGE_SIZE))}
+                {t('paymentsValidation.pagination.page', { current: totalCount === 0 ? 0 : page, total: totalCount === 0 ? 0 : Math.max(1, Math.ceil(totalCount / PAGE_SIZE)) })}
               </span>
               <button
                 onClick={() => {
@@ -1267,7 +1267,7 @@ const PaymentValidationDashboard: React.FC = () => {
                 }}
                 disabled={loading || page >= Math.ceil(totalCount / PAGE_SIZE)}
                 className={`px-3 py-1.5 rounded-md text-xs md:text-sm border transition-colors ${(loading || page >= Math.ceil(totalCount / PAGE_SIZE)) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-50'} ${mounted && theme === 'dark' ? 'border-slate-600 text-slate-300 hover:bg-slate-700/40' : 'border-gray-300 text-gray-700'}`}
-              >Siguiente</button>
+              >{t('paymentsValidation.pagination.next')}</button>
             </div>
           </div>
         </div>

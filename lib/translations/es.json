@@ -2962,5 +2962,15 @@
         "orderAlreadyShipped": "Este pedido ya ha sido enviado y no puede ser cotizado."
       }
     }
+  },
+  "paymentsValidation": {
+    "loadingPage": "Cargando página...",
+    "noResults": "Sin resultados",
+    "pagination": {
+      "showing": "Mostrando {{from}}-{{to}} de {{total}}",
+      "page": "Página {{current}} / {{total}}",
+      "previous": "Anterior",
+      "next": "Siguiente"
+    }
   }
 }

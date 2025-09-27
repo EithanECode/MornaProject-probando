@@ -2679,6 +2679,16 @@
       "reload": "重新加载页面",
       "contactSupport": "联系支持"
     }
+  },
+  "paymentsValidation": {
+    "loadingPage": "页面加载中...",
+    "noResults": "无结果",
+    "pagination": {
+      "showing": "显示 {{from}}-{{to}} / 共 {{total}}",
+      "page": "第 {{current}} / {{total}} 页",
+      "previous": "上一页",
+      "next": "下一页"
+    }
   }
 }
 
