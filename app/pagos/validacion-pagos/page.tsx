@@ -254,7 +254,7 @@ const StatsCards: React.FC<{ stats: PaymentStats }> = ({ stats }) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
       {cardsData.map((card, index) => (
         <div 
           key={index}
@@ -262,7 +262,7 @@ const StatsCards: React.FC<{ stats: PaymentStats }> = ({ stats }) => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className={`${card.textColor} text-xs md:text-sm font-medium mb-1`}>
+              <p className={`${card.textColor} text-xs md:text-sm font-medium mb-1`}>        
                 {card.title}
               </p>
               <p className="text-xl md:text-2xl lg:text-3xl font-bold">
@@ -1020,25 +1020,25 @@ const PaymentValidationDashboard: React.FC = () => {
           subtitle={t('venezuela.pagos.subtitle')}
         />
         <div className="p-4 md:p-5 lg:p-6">
+          {/* Tarjetas de estadísticas (restauradas) */}
+          <StatsCards stats={stats} />
           {/* Error visible */}
           {/* ================================ */}
           {/* BARRA COMPACTA DERECHA (Filtros + Export) */}
           {/* ================================ */}
           <Card className={mounted && theme === 'dark' ? 'bg-slate-800 border-slate-700 mb-4 md:mb-6' : 'bg-white border-gray-200 mb-4 md:mb-6'}>
             <CardHeader className="py-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">{t('venezuela.pagos.listCardTitle')}</CardTitle>
-                {/* i18n: list title */}
-                
-                <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                {/* Controles (sin título visible) */}
+                <div className="w-full flex items-center justify-end gap-2 md:gap-3 flex-wrap">
                   <Input
                     placeholder={t('venezuela.pagos.searchPlaceholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="h-10 w-56 md:w-64 px-3"
+                    className="h-10 w-full sm:w-56 md:w-64 px-3"
                   />
                   <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
-                    <SelectTrigger className="h-10 w-40 md:w-48 px-3 whitespace-nowrap truncate">
+                    <SelectTrigger className="h-10 w-full sm:w-40 md:w-48 px-3 whitespace-nowrap truncate">
                       <SelectValue placeholder={t('venezuela.pagos.filters.allStatuses')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -1049,7 +1049,7 @@ const PaymentValidationDashboard: React.FC = () => {
                     </SelectContent>
                   </Select>
                   <Button
-                    className="h-10 bg-[#202841] text-white hover:bg-opacity-90"
+                    className="h-10 w-full sm:w-auto bg-[#202841] text-white hover:bg-opacity-90"
                     onClick={exportarGeneral}
                   >
                     <Download className="w-4 h-4 mr-2" />
