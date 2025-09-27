@@ -29,8 +29,8 @@ export const PriceDisplayWithCNY: React.FC<PriceDisplayWithCNYProps> = ({
     return (
       <PriceDisplay 
         amount={amount} 
-        currency={currency} 
-        variant={variant}
+        currency={currency === 'CNY' ? 'USD' : currency} 
+        variant={variant === 'large' ? 'card' : variant}
         className={className}
         showBoth={false} // CRÍTICO: No mostrar Bolívares en China
       />
@@ -66,7 +66,7 @@ export const PriceDisplayWithCNY: React.FC<PriceDisplayWithCNYProps> = ({
     case 'large':
       return (
         <div className={`space-y-2 ${className}`}>
-          <PriceDisplay amount={amount} currency="USD" variant="large" showBoth={false} />
+          <PriceDisplay amount={amount} currency="USD" variant="card" showBoth={false} />
           {showCNY && (
             <div className="text-lg text-red-600 font-semibold">
               {cnyLoading ? 'Cargando CNY...' : formatCNYPrice(amount)}
