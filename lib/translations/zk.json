@@ -2689,6 +2689,25 @@
       "previous": "上一页",
       "next": "下一页"
     }
+  },
+  "paymentsDashboard": {
+    "title": "支付面板",
+    "subtitle": "全局支付监控与验证",
+    "hero": {
+      "title": "支付验证",
+      "desc1": "集中管理待处理与已确认支付。",
+      "desc2": "确认、审核并监控验证流程。"
+    },
+    "stats": {
+      "pending": { "label": "待处理", "help": "等待验证" },
+      "completed": { "label": "已确认", "help": "已验证支付" },
+      "totalAmount": { "label": "总金额", "help": "已处理 USD" }
+    },
+    "quickActions": {
+      "title": "快速操作",
+      "subtitle": "支付面板操作流程",
+      "validate": "验证支付"
+    }
   }
 }
 

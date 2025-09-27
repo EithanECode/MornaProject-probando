@@ -2685,9 +2685,8 @@
       "reload": "Reload Page",
       "contactSupport": "Contact Support"
     }
-  }
-
-  ,"paymentsValidation": {
+  },
+  "paymentsValidation": {
     "loadingPage": "Loading page...",
     "noResults": "No results",
     "pagination": {
@@ -2695,6 +2694,25 @@
       "page": "Page {{current}} / {{total}}",
       "previous": "Previous",
       "next": "Next"
+    }
+  },
+  "paymentsDashboard": {
+    "title": "Payments Dashboard",
+    "subtitle": "Global supervision and validation of payments",
+    "hero": {
+      "title": "Payments Validation",
+      "desc1": "Centralized control of pending and confirmed payments.",
+      "desc2": "Confirm, audit and monitor the verification flow."
+    },
+    "stats": {
+      "pending": { "label": "Pending", "help": "Awaiting validation" },
+      "completed": { "label": "Confirmed", "help": "Validated payments" },
+      "totalAmount": { "label": "Total Amount", "help": "USD processed" }
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "subtitle": "Operational flow of the payments panel",
+      "validate": "Validate Payments"
     }
   }
 }
