@@ -175,20 +175,6 @@ const PAGOS_MENU_ITEMS = [
     badge: 15,
     color: 'text-orange-500',
     path: '/validacion-pagos'
-  },
-  {
-    id: 'transactions',
-    icon: CreditCard,
-    badge: null,
-    color: 'text-orange-500',
-    path: '/pagos/transacciones'
-  },
-  {
-    id: 'reports',
-    icon: BarChart3,
-    badge: null,
-    color: 'text-orange-500',
-    path: '/pagos/reportes'
   }
 ];
 
