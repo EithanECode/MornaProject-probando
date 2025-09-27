@@ -34,6 +34,16 @@ function isPublic(pathname: string) {
 }
 
 export function middleware(req: NextRequest) {
+  // =============================================================
+  // BYPASS TEMPORAL DE RESTRICCIONES (PRUEBAS)
+  // Establece BYPASS_ALL = false para reactivar la lógica previa.
+  // =============================================================
+  const BYPASS_ALL = true; // <- cambiar a false cuando quieras volver a activar restricciones
+  if (BYPASS_ALL) {
+    return NextResponse.next();
+  }
+
+  // --- LÓGICA ORIGINAL (INACTIVA MIENTRAS BYPASS_ALL = true) ---
   const { pathname } = req.nextUrl;
 
   // Permitir archivos estáticos y Next internals

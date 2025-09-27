@@ -33,10 +33,27 @@ export function useCurrencyConverter(): UseCurrencyConverterReturn {
   
   const abortControllerRef = useRef<AbortController | null>(null);
 
+    // Helper seguro para abortar con una razón explícita y limpiar
+    const safeAbort = (reason: string) => {
+      try {
+        if (abortControllerRef.current) {
+          if (!abortControllerRef.current.signal.aborted) {
+            // Proveer una razón explícita reduce warnings en algunos runtimes
+            (abortControllerRef.current as any).abort(reason);
+          }
+          // Limpieza: evitar reutilizar un controller abortado
+          abortControllerRef.current = null;
+        }
+      } catch (e) {
+        // Silenciar cualquier error de abort redundante
+        // console.debug('Abort ignore:', e);
+      }
+    };
+
   // Función para obtener la tasa de cambio actual
   const fetchCurrentRate = useCallback(async () => {
     if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
+    safeAbort('new-fetch');
     }
 
     abortControllerRef.current = new AbortController();
@@ -181,7 +198,7 @@ export function useCurrencyConverter(): UseCurrencyConverterReturn {
       clearInterval(interval);
       try {
         if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
-          abortControllerRef.current.abort();
+            safeAbort('component-unmount');
         }
       } catch (error) {
         // Ignorar errores de abort si ya está abortado

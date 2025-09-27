@@ -40,9 +40,15 @@ import {
 } from 'lucide-react';
 import { PriceDisplay } from '@/components/shared/PriceDisplay';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
-import { useVzlaContext } from '@/lib/VzlaContext';
-import { useRealtimeVzlaPayments } from '@/hooks/use-realtime-vzla-payments';
+// Eliminado contexto de Venezuela: rol pagos ve todos los pagos globales
 import { useTranslation } from '@/hooks/useTranslation';
+
+// =============================================
+// MODO SIMULACIÓN (sin persistir en Supabase)
+// Si es true, las acciones de aprobar / deshacer
+// sólo modifican estado local.
+// =============================================
+const SIMULATE_VALIDATION = true;
 
 // ================================
 // TIPOS DE DATOS TYPESCRIPT
@@ -564,41 +570,41 @@ const PaymentValidationDashboard: React.FC = () => {
   const [mounted, setMounted] = useState(false);
   const [lastRealtimeUpdate, setLastRealtimeUpdate] = useState<number | null>(null);
   const supabase = useMemo(() => getSupabaseBrowserClient(), []);
-  const { vzlaId } = useVzlaContext();
   useEffect(() => { setMounted(true); }, []);
 
-  // Realtime: recargar cuando cambian pedidos pendientes relacionados
-  useRealtimeVzlaPayments(() => {
-    setRefreshIndex(i => i + 1);
-    setLastRealtimeUpdate(Date.now());
-  }, vzlaId);
-
-  // Realtime for clients: refresh when client names or data change
+  // Realtime global: cualquier cambio en orders o clients provoca refresh si afecta estados >=4
   useEffect(() => {
-    const channel = supabase
-      .channel(`vzla-payments-clients-${vzlaId || 'all'}`)
+    const ordersChannel = supabase
+      .channel('pagos-validacion-orders')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
+        const newState = (payload.new as any)?.state;
+        const oldState = (payload.old as any)?.state;
+        if ((newState && newState >= 4) || (oldState && oldState >= 4)) {
+          setRefreshIndex(i => i + 1);
+          setLastRealtimeUpdate(Date.now());
+        }
+      })
+      .subscribe();
+    const clientsChannel = supabase
+      .channel('pagos-validacion-clients')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => {
         setRefreshIndex(i => i + 1);
         setLastRealtimeUpdate(Date.now());
       })
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [supabase, vzlaId]);
-
-  // Polling fallback: refetch periodically in case a realtime event is missed
-  useEffect(() => {
-    if (!vzlaId) return;
-    const intervalMs = 10000; // 10s
-    const id = setInterval(() => {
+    const pollId = setInterval(() => {
       setRefreshIndex(i => i + 1);
       setLastRealtimeUpdate(Date.now());
-    }, intervalMs);
-    return () => clearInterval(id);
-  }, [vzlaId]);
+    }, 15000);
+    return () => {
+      supabase.removeChannel(ordersChannel);
+      supabase.removeChannel(clientsChannel);
+      clearInterval(pollId);
+    };
+  }, [supabase]);
 
   useEffect(() => {
-    const load = async () => {
-      if (!vzlaId) return;
+  const load = async () => {
       setLoading(true);
       setError(null);
       // Guard de timeout para evitar 'Cargando...' infinito
@@ -616,39 +622,13 @@ const PaymentValidationDashboard: React.FC = () => {
       startTimeout();
       try {
         const selectCols = 'id, client_id, productName, description, totalQuote, estimatedBudget, created_at, state';
-        // Filtro principal: columna "asigned" (id de usuario de Supabase)
-        let { data, error } = await supabase
+        // Rol pagos: ver TODOS los pedidos con state >=4 (pendiente pago o superior)
+        const { data, error } = await supabase
           .from('orders')
           .select(selectCols)
-          .eq('asigned', vzlaId)
           .gte('state', 4)
-          .order('created_at', { ascending: false });
-
-  // Fallback 1: "asignnedEVzla" (solo si el error es de columna)
-  const isColumnError1 = error && /column|does not exist|42703/i.test(error.message || '');
-  if (isColumnError1) {
-          const fb1 = await supabase
-            .from('orders')
-            .select(selectCols)
-            .eq('asignnedEVzla', vzlaId)
-            .gte('state', 4)
-            .order('created_at', { ascending: false });
-          data = fb1.data as any[] | null;
-          error = fb1.error as any;
-        }
-
-  // Fallback 2: "asignedEVzla" (solo si persiste error de columna)
-  const isColumnError2 = error && /column|does not exist|42703/i.test(error.message || '');
-  if (isColumnError2) {
-          const fb2 = await supabase
-            .from('orders')
-            .select(selectCols)
-            .eq('asignedEVzla', vzlaId)
-            .gte('state', 4)
-            .order('created_at', { ascending: false });
-          data = fb2.data as any[] | null;
-          error = fb2.error as any;
-        }
+          .order('created_at', { ascending: false })
+          .limit(800);
 
         if (error) throw error;
 
@@ -688,7 +668,7 @@ const PaymentValidationDashboard: React.FC = () => {
       }
     };
     load();
-  }, [vzlaId, refreshIndex, supabase]);
+  }, [refreshIndex, supabase]);
 
   // Calcular estadísticas
   const stats = useMemo((): PaymentStats => {
@@ -835,26 +815,31 @@ const PaymentValidationDashboard: React.FC = () => {
     ));
 
     // Persistir: state = 5 (verificado)
-    try {
-      const idFilter: any = isNaN(Number(id)) ? id : Number(id);
-      const { error } = await supabase
-        .from('orders')
-        .update({ state: 5 })
-        .eq('id', idFilter);
-      if (error) throw error;
-    } catch (e: any) {
-      // Revertir UI si falla
-      setPayments(prev => prev.map(p =>
-        p.id === id ? { ...p, estado: payment.estado } : p
-      ));
-      setLastAction(null);
-      toast({
-        title: t('venezuela.pagos.toasts.approveErrorTitle'),
-        description: e?.message || t('venezuela.pagos.toasts.approveErrorDesc'),
-        variant: 'destructive',
-        duration: 4000,
-      });
-      return;
+    if (!SIMULATE_VALIDATION) {
+      try {
+        const idFilter: any = isNaN(Number(id)) ? id : Number(id);
+        const { error } = await supabase
+          .from('orders')
+          .update({ state: 5 })
+          .eq('id', idFilter);
+        if (error) throw error;
+      } catch (e: any) {
+        // Revertir UI si falla
+        setPayments(prev => prev.map(p =>
+          p.id === id ? { ...p, estado: payment.estado } : p
+        ));
+        setLastAction(null);
+        toast({
+          title: t('venezuela.pagos.toasts.approveErrorTitle'),
+          description: e?.message || t('venezuela.pagos.toasts.approveErrorDesc'),
+          variant: 'destructive',
+          duration: 4000,
+        });
+        return;
+      }
+    } else {
+      // Simulación: pequeño delay para feedback realista
+      await new Promise(r => setTimeout(r, 300));
     }
 
     toast({
@@ -1003,7 +988,7 @@ const PaymentValidationDashboard: React.FC = () => {
     setIsExpanded={setSidebarExpanded}
     isMobileMenuOpen={isMobileMenuOpen}
     onMobileMenuClose={() => setIsMobileMenuOpen(false)}
-    userRole="venezuela" 
+    userRole="pagos" 
   />
       <main className={`flex-1 transition-all duration-300 ${
         sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
@@ -1016,64 +1001,8 @@ const PaymentValidationDashboard: React.FC = () => {
         />
         <div className="p-4 md:p-5 lg:p-6">
           {/* Error visible */}
-          {error && (
-            <div className="mb-4 md:mb-6 flex items-start justify-between gap-3 rounded-lg border border-red-300 bg-red-50 p-3 text-red-800">
-              <div className="flex items-start gap-2">
-                <AlertTriangle className="mt-0.5" size={18} />
-                <div>
-                  <p className="font-semibold">{t('venezuela.pagos.error.loadErrorTitle')}</p>
-                  <p className="text-sm break-all">{error}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* ================================ */}
-          {/* TARJETAS DE ESTADÍSTICAS */}
-          {/* ================================ */}
-          <StatsCards stats={stats} />
-          {/* Removed realtime last update indicator */}
-
-          {/* ================================ */}
-          {/* PESTAÑAS */}
-          {/* ================================ */}
-          <div className="mb-4 md:mb-6">
-            <div className={mounted && theme === 'dark' ? 'border-b border-slate-700' : 'border-b border-gray-200'}>
-              <nav className="-mb-px flex space-x-4 md:space-x-8">
-                {[
-                  { id: 'todos', label: t('venezuela.pagos.tabs.ordersList'), count: loading ? 0 : payments.length },
-                  { id: 'pendientes', label: t('venezuela.pagos.tabs.pendingPayments'), count: loading ? 0 : stats.pendientes },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setSelectedTab(tab.id as any)}
-                    className={`py-3 md:py-4 px-1 border-b-2 font-medium text-xs md:text-sm transition-all duration-200 flex items-center gap-1 md:gap-2 ${
-                      selectedTab === tab.id
-                        ? 'border-blue-500 text-blue-600'
-                        : mounted && theme === 'dark'
-                          ? 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    <span className="hidden sm:inline">{tab.label}</span>
-                    <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
-                    <span className={`px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-xs ${
-                      selectedTab === tab.id 
-                        ? 'bg-blue-100 text-blue-600' 
-                        : mounted && theme === 'dark'
-                          ? 'bg-slate-700 text-slate-200'
-                          : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {tab.count}
-                    </span>
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </div>
-
-          {/* ================================ */}
-          {/* BARRA COMPACTA DERECHA */}
+          {/* BARRA COMPACTA DERECHA (Filtros + Export) */}
           {/* ================================ */}
           <Card className={mounted && theme === 'dark' ? 'bg-slate-800 border-slate-700 mb-4 md:mb-6' : 'bg-white border-gray-200 mb-4 md:mb-6'}>
             <CardHeader className="py-3">
