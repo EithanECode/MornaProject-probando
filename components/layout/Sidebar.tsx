@@ -26,6 +26,7 @@ import { useVzlaContext } from '@/lib/VzlaContext';
 import { useChinaContext } from '@/lib/ChinaContext';
 import { useAdminContext } from '@/lib/AdminContext';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useRealtimePagosPending } from '@/hooks/use-realtime-pagos-pending';
 
 // Importar hooks de realtime
 import { useRealtimeAdmin } from '@/hooks/use-realtime-admin';
@@ -162,23 +163,26 @@ const CHINA_MENU_ITEMS = [
   }
 ];
 
-const PAGOS_MENU_ITEMS = [
-  {
-    id: 'dashboard',
-    icon: LayoutDashboard,
-    badge: null,
-    color: 'text-orange-500',
-    path: '/pagos'
-  },
-  {
-    id: 'payments-validation',
-  // Icono más representativo: caja (Package) en vez de escudo o simple dolar
-  icon: Package,
-    badge: 15,
-    color: 'text-orange-500',
-  path: '/pagos/validacion-pagos'
-  }
-];
+// El badge de pagos se maneja en tiempo real
+const usePagosMenuItems = () => {
+  const pending = useRealtimePagosPending();
+  return [
+    {
+      id: 'dashboard',
+      icon: LayoutDashboard,
+      badge: null,
+      color: 'text-orange-500',
+      path: '/pagos'
+    },
+    {
+      id: 'payments-validation',
+      icon: Package,
+      badge: typeof pending === 'number' && pending > 0 ? pending : null,
+      color: 'text-orange-500',
+      path: '/pagos/validacion-pagos'
+    }
+  ];
+};
 
 const getAdminMenuItems = (t: (key: string) => string) => [
   {
@@ -249,7 +253,7 @@ const getMenuItemsByRole = (role?: string, t?: (key: string) => string) => {
     case 'china':
       return CHINA_MENU_ITEMS;
     case 'pagos':
-      return PAGOS_MENU_ITEMS;
+      return usePagosMenuItems();
     case 'admin':
       return getAdminMenuItems(t!);
     default:
