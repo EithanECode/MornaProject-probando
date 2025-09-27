@@ -44,12 +44,8 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useTranslation } from '@/hooks/useTranslation';
 
 // =============================================
-// MODO SIMULACIÓN (sin persistir en Supabase)
-// Si es true, las acciones de aprobar / deshacer
-// sólo modifican estado local.
+// SIEMPRE datos reales: lógica unificada con admin
 // =============================================
-const SIMULATE_VALIDATION = true;
-// Paginación: cantidad de pedidos por página
 const PAGE_SIZE = 20;
 
 // ================================
@@ -88,106 +84,8 @@ interface DbOrder {
 }
 
 // ================================
-// DATOS MOCK
+// DATOS MOCK ELIMINADOS: SIEMPRE DATOS REALES
 // ================================
-const mockPayments: Payment[] = [
-  {
-    id: 'PED-001',
-    usuario: 'Ana Pérez',
-    fecha: '2025-08-09',
-    idProducto: '#ORD-001',
-    monto: 2450.00,
-    referencia: 'REF-78945612',
-    estado: 'pendiente',
-    metodo: 'Transferencia Bancaria',
-    destino: 'China',
-    descripcion: 'Electrónicos varios'
-  },
-  {
-    id: 'PED-002',
-    usuario: 'Carlos Ruiz',
-    fecha: '2025-08-08',
-    idProducto: '#ORD-002',
-    monto: 1890.50,
-    referencia: 'REF-78945613',
-    estado: 'completado',
-    metodo: 'Tarjeta de Crédito',
-    destino: 'Venezuela',
-    descripcion: 'Herramientas industriales'
-  },
-  {
-    id: 'PED-003',
-    usuario: 'Lucía Méndez',
-    fecha: '2025-08-08',
-    idProducto: '#ORD-003',
-    monto: 3200.75,
-    referencia: 'REF-78945614',
-    estado: 'pendiente',
-    metodo: 'PayPal',
-    destino: 'China',
-    descripcion: 'Ropa deportiva'
-  },
-  {
-    id: 'PED-004',
-    usuario: 'Empresa XYZ',
-    fecha: '2025-08-07',
-    idProducto: '#ORD-004',
-    monto: 5450.25,
-    referencia: 'REF-78945615',
-    estado: 'completado',
-    metodo: 'Transferencia',
-    destino: 'Venezuela',
-    descripcion: 'Maquinaria pesada'
-  },
-  {
-    id: 'PED-005',
-    usuario: 'Tiendas ABC',
-    fecha: '2025-08-07',
-    idProducto: '#ORD-005',
-    monto: 720.00,
-    referencia: 'REF-78945616',
-    estado: 'completado',
-    metodo: 'Tarjeta de Débito',
-    destino: 'Venezuela',
-    descripcion: 'Productos de belleza'
-  },
-  {
-    id: 'PED-006',
-    usuario: 'Juan Rodríguez',
-    fecha: '2025-08-06',
-    idProducto: '#ORD-006',
-    monto: 1675.30,
-    referencia: 'REF-78945617',
-    estado: 'pendiente',
-    metodo: 'Transferencia',
-    destino: 'China',
-    descripcion: 'Equipos médicos'
-  },
-  {
-    id: 'PED-007',
-    usuario: 'María González',
-    fecha: '2025-08-06',
-    idProducto: '#ORD-007',
-    monto: 980.00,
-    referencia: 'REF-78945618',
-    estado: 'pendiente',
-    metodo: 'PayPal',
-    destino: 'Venezuela',
-    descripcion: 'Materiales de construcción'
-  },
-  {
-    id: 'PED-008',
-    usuario: 'Roberto Silva',
-    fecha: '2025-08-05',
-    idProducto: '#ORD-008',
-    monto: 4200.80,
-    referencia: 'REF-78945619',
-    estado: 'completado',
-    metodo: 'Transferencia',
-    destino: 'China',
-    descripcion: 'Tecnología avanzada'
-  }
-];
 
 // ================================
 // COMPONENTE: ICONO ANIMADO
@@ -837,31 +735,27 @@ const PaymentValidationDashboard: React.FC = () => {
     ));
 
     // Persistir: state = 5 (verificado)
-    if (!SIMULATE_VALIDATION) {
-      try {
-        const idFilter: any = isNaN(Number(id)) ? id : Number(id);
-        const { error } = await supabase
-          .from('orders')
-          .update({ state: 5 })
-          .eq('id', idFilter);
-        if (error) throw error;
-      } catch (e: any) {
-        // Revertir UI si falla
-        setPayments(prev => prev.map(p =>
-          p.id === id ? { ...p, estado: payment.estado } : p
-        ));
-        setLastAction(null);
-        toast({
-          title: t('venezuela.pagos.toasts.approveErrorTitle'),
-          description: e?.message || t('venezuela.pagos.toasts.approveErrorDesc'),
-          variant: 'destructive',
-          duration: 4000,
-        });
-        return;
-      }
-    } else {
-      // Simulación: pequeño delay para feedback realista
-      await new Promise(r => setTimeout(r, 300));
+
+    try {
+      const idFilter: any = isNaN(Number(id)) ? id : Number(id);
+      const { error } = await supabase
+        .from('orders')
+        .update({ state: 5 })
+        .eq('id', idFilter);
+      if (error) throw error;
+    } catch (e: any) {
+      // Revertir UI si falla
+      setPayments(prev => prev.map(p =>
+        p.id === id ? { ...p, estado: payment.estado } : p
+      ));
+      setLastAction(null);
+      toast({
+        title: t('venezuela.pagos.toasts.approveErrorTitle'),
+        description: e?.message || t('venezuela.pagos.toasts.approveErrorDesc'),
+        variant: 'destructive',
+        duration: 4000,
+      });
+      return;
     }
 
     toast({
