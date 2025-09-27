@@ -258,7 +258,7 @@ const StatsCards: React.FC<{ stats: PaymentStats }> = ({ stats }) => {
       {cardsData.map((card, index) => (
         <div 
           key={index}
-          className={`${card.bgColor} text-white p-4 md:p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer`}
+          className={`${card.bgColor} text-white p-4 md:p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-default`}
         >
           <div className="flex items-center justify-between">
             <div>

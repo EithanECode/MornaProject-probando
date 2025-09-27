@@ -42,7 +42,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-export type ConfigurationRole = 'admin' | 'china' | 'venezuela' | 'client';
+export type ConfigurationRole = 'admin' | 'china' | 'venezuela' | 'client' | 'pagos';
 
 interface ConfigurationContentProps {
   role: ConfigurationRole;
@@ -80,13 +80,24 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
   const { t } = useTranslation();
 
   // Datos base (simulados) — se pueden adaptar por rol si hace falta más adelante
-  const roleData = {
-    nombre: 'Administrador Principal',
-    email: 'admin@morna.com',
-    telefono: '+58 412-123-4567',
-    rol: role === 'admin' ? 'Administrador' : role,
-    color: 'bg-purple-500'
-  };
+  const roleData = (() => {
+    if (role === 'pagos') {
+      return {
+        nombre: 'Validador Pagos',
+        email: 'pagos@morna.com',
+        telefono: '+58 424-000-0000',
+        rol: 'pagos',
+        color: 'bg-blue-500'
+      };
+    }
+    return {
+      nombre: 'Administrador Principal',
+      email: 'admin@morna.com',
+      telefono: '+58 412-123-4567',
+      rol: role === 'admin' ? 'Administrador' : role,
+      color: 'bg-purple-500'
+    };
+  })();
 
   // Estados del formulario
   const [formData, setFormData] = useState({
