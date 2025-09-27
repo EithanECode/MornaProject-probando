@@ -1050,6 +1050,7 @@
     "edit": "Editar",
     "delete": "Eliminar",
     "confirm": "Confirmar",
+    "accept": "Aceptar",
     "close": "Cerrar",
   "actionCannotBeUndone": "Esta acción no se puede deshacer.",
     "loading": "Cargando...",
@@ -1796,6 +1797,16 @@
             "noneTitle": "No hay cajas disponibles",
             "noneSubtitle": "Crea una caja desde la pestaña Cajas para empaquetar.",
             "select": "Seleccionar"
+          },
+          "labelWarning": {
+            "title": "Antes de empaquetar",
+            "description": "Asegúrate de poner la etiqueta al producto antes de empaquetar.",
+            "download": "Descargar etiqueta",
+            "downloaded": "Etiqueta generada",
+            "downloadError": "No se pudo generar la etiqueta",
+            "noId": "ID de pedido no disponible",
+            "toastTitleSuccess": "Etiqueta lista",
+            "toastTitleError": "Error generando"
           },
           "deleteBox": {
             "title": "Eliminar caja",

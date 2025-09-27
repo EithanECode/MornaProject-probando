@@ -73,9 +73,16 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   // No renderizar hasta que se monte para evitar hidration mismatch
-  if (!mounted) {
-    return null;
-  }
+  // Mantener el Provider en el árbol desde el primer render para que los
+  // consumidores (hooks) no fallen si acceden al contexto antes de que
+  // hayamos leído localStorage. No devolvemos null aquí; en su lugar
+  // sincronizamos `document.documentElement.lang` una vez montado.
+
+  useEffect(() => {
+    if (mounted && typeof document !== 'undefined') {
+      document.documentElement.lang = language;
+    }
+  }, [mounted, language]);
 
   return (
   <LanguageContext.Provider value={{ language, committedLanguage, previewLanguage, commitLanguage, revertLanguage, setLanguage: commitLanguage }}>
