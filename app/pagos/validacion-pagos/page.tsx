@@ -3,7 +3,7 @@
 // Force dynamic rendering to avoid SSR issues with XLSX
 export const dynamic = 'force-dynamic';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { useToast } from '@/hooks/use-toast';
 import Sidebar from '@/components/layout/Sidebar';
@@ -563,6 +563,7 @@ const PaymentValidationDashboard: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<string>('todos');
   const [page, setPage] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
+  const tableContainerRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState<'todos' | 'pendientes'>('todos');
   const [rejectionConfirmation, setRejectionConfirmation] = useState<{ isOpen: boolean; paymentId: string | null }>({ isOpen: false, paymentId: null });
   const [detailsModal, setDetailsModal] = useState<{ isOpen: boolean; payment: Payment | null }>({ isOpen: false, payment: null });
@@ -1094,7 +1095,7 @@ const PaymentValidationDashboard: React.FC = () => {
             </div>
 
             {/* Vista Desktop - Tabla */}
-            <div className="hidden lg:block overflow-x-auto">
+              <div ref={tableContainerRef} className="hidden lg:block overflow-x-auto relative">
               <table className={`w-full table-fixed ${mounted && theme === 'dark' ? 'bg-slate-800' : ''}`}> 
                 <thead className={mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gray-50'}>
                   <tr>
@@ -1119,7 +1120,11 @@ const PaymentValidationDashboard: React.FC = () => {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody
+                  key={page}
+                  className="divide-y divide-gray-200 transition-opacity duration-300"
+                  style={{ opacity: loading ? 0.15 : 1 }}
+                >
                   {filteredPayments.map((payment) => (
                     <tr 
                       key={payment.id} 
@@ -1198,6 +1203,14 @@ const PaymentValidationDashboard: React.FC = () => {
                   ))}
                 </tbody>
               </table>
+              {loading && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-white/80 dark:bg-slate-900/80 shadow-md border border-gray-200 dark:border-slate-700 backdrop-blur-sm transition-opacity">
+                    <Package className="w-5 h-5 text-blue-600 animate-spin" />
+                    <span className="text-sm font-medium text-gray-700 dark:text-slate-200">Cargando página...</span>
+                  </div>
+                </div>
+              )}
             </div>
 
       {filteredPayments.length === 0 && (
@@ -1220,7 +1233,11 @@ const PaymentValidationDashboard: React.FC = () => {
             </div>
             <div className="flex items-center justify-center gap-2">
               <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => {
+                  if (page === 1 || loading) return; 
+                  tableContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  setPage(p => Math.max(1, p - 1));
+                }}
                 disabled={page === 1 || loading}
                 className={`px-3 py-1.5 rounded-md text-xs md:text-sm border transition-colors ${(page === 1 || loading) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-50'} ${mounted && theme === 'dark' ? 'border-slate-600 text-slate-300 hover:bg-slate-700/40' : 'border-gray-300 text-gray-700'}`}
               >Anterior</button>
@@ -1228,7 +1245,11 @@ const PaymentValidationDashboard: React.FC = () => {
                 Página {totalCount === 0 ? 0 : page} / {totalCount === 0 ? 0 : Math.max(1, Math.ceil(totalCount / PAGE_SIZE))}
               </span>
               <button
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => {
+                  if (loading || page >= Math.ceil(totalCount / PAGE_SIZE)) return; 
+                  tableContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  setPage(p => p + 1);
+                }}
                 disabled={loading || page >= Math.ceil(totalCount / PAGE_SIZE)}
                 className={`px-3 py-1.5 rounded-md text-xs md:text-sm border transition-colors ${(loading || page >= Math.ceil(totalCount / PAGE_SIZE)) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-50'} ${mounted && theme === 'dark' ? 'border-slate-600 text-slate-300 hover:bg-slate-700/40' : 'border-gray-300 text-gray-700'}`}
               >Siguiente</button>
