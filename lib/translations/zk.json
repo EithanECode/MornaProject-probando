@@ -1459,7 +1459,42 @@
         "marginsDiscounts": "利润与折扣",
         "profitabilityConfig": "盈利配置",
         "profitMargin": "利润率 (%)",
-        "usdDiscount": "美元支付折扣 (%)"
+        "usdDiscount": "美元支付折扣 (%)",
+        "venezuelaRateTitle": "委内瑞拉汇率",
+        "venezuelaRateDesc": "美元 → 玻利瓦尔汇率值",
+        "chinaRateTitle": "中国汇率",
+        "chinaRateDesc": "美元 → 人民币汇率值",
+        "autoUpdateBCV": "BCV自动更新",
+        "autoUpdateAPI": "API自动更新",
+        "updated": "更新时间：",
+        "source": "来源：",
+        "veRateLabel": "VE 1USD = X Bs",
+        "cnRateLabel": "CN 1USD = X CNY",
+        "timeAgo": {
+          "lessThanMinute": "不到1分钟前",
+          "minutesAgo": "{{count}}分钟前",
+          "hoursAgo": "{{count}}小时前",
+          "daysAgo": "{{count}}天前",
+          "never": "从未"
+        },
+        "sources": {
+          "bcvOfficial": "官方BCV",
+          "pbocOfficial": "官方PBOC"
+        },
+        "profitMarginTitle": "利润率",
+        "configurationAlert": "汇率已配置。请记住在<strong>保存配置</strong>中保存更改以应用所有修改。",
+        "lastSaved": "上次配置保存于 {{date}}",
+        "changeMadeBy": "由 {{userId}} 于 {{date}} 进行的更改",
+        "rateUpdated": "汇率已更新",
+        "rateUpdatedDescription": "{{rate}} {{currency}} [实时API]",
+        "liveApi": "实时API",
+        "manualRateSaved": "手动汇率已保存",
+        "manualRateSavedDescription": "{{rate}} {{currency}} 保存成功",
+        "rateRecovered": "汇率已恢复",
+        "rateRecoveredDescription": "{{rate}} {{currency}} (来自数据库{{age}})",
+        "rateRecoveredDescriptionNoAge": "{{rate}} {{currency}} (来自数据库)",
+        "rateUpdateError": "更新汇率时出错",
+        "warning": "警告"
       },
       "notifications": {
         "notificationSystem": "通知系统",
@@ -1480,7 +1515,8 @@
       },
       "messages": {
         "configSaved": "配置已保存",
-        "configSavedDesc": "业务参数已成功更新。"
+        "configSavedDesc": "业务参数已成功更新。",
+        "configSavedGlobal": "配置已全局保存。更改将对所有用户可用。"
       },
       "summary": {
         "title": "当前配置摘要",

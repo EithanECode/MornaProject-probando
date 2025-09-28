@@ -313,6 +313,7 @@ export default function RegisterForm() {
         required
         className={`py-1 px-2 ${nameError ? 'invalid' : ''}`}
         aria-invalid={!!nameError}
+        suppressHydrationWarning={true}
       />
       {fullName.length > 0 && fullName.length === MAX_NAME && (
         <p className="text-xs text-slate-500">{fullName.length}/{MAX_NAME}</p>
@@ -332,6 +333,7 @@ export default function RegisterForm() {
         required
         className={`py-1 px-2 ${emailError ? 'invalid' : ''}`}
         aria-invalid={!!emailError}
+        suppressHydrationWarning={true}
       />
       {email.length > 0 && email.length === MAX_EMAIL && (
         <p className="text-xs text-slate-500">{email.length}/{MAX_EMAIL}</p>
@@ -357,6 +359,7 @@ export default function RegisterForm() {
               ? `password-strength-border-${currentStrengthInfo.level}`
               : ""
           }`}
+          suppressHydrationWarning={true}
         />
         {password.length > 0 && password.length === MAX_PASSWORD && (
           <span className="absolute -bottom-5 right-1 text-[10px] text-slate-500">{password.length}/{MAX_PASSWORD}</span>
@@ -392,6 +395,7 @@ export default function RegisterForm() {
           required
           className={`py-1 px-2 ${passwordMatchError ? 'invalid' : ''}`}
           aria-invalid={passwordMatchError}
+          suppressHydrationWarning={true}
         />
         <span
           className={`password-toggle-icon ${showCheckmark ? "hidden" : ""}`}

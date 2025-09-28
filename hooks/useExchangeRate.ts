@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ExchangeRateResponse {
   success: boolean;
@@ -35,6 +36,7 @@ export function useExchangeRate(options: UseExchangeRateOptions = {}) {
   const [warning, setWarning] = useState<string | null>(null);
 
   const { toast } = useToast();
+  const { t } = useTranslation();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const onRateUpdateRef = useRef(onRateUpdate);
@@ -82,13 +84,16 @@ export function useExchangeRate(options: UseExchangeRateOptions = {}) {
         }
 
         if (showToast && toastRef.current) {
-          const sourceInfo = data.from_database 
-            ? `(desde BD${data.age_minutes ? `, ${data.age_minutes} min` : ''})`
-            : '(API en vivo)';
+          const title = data.from_database ? t('admin.management.financial.rateRecovered') : t('admin.management.financial.rateUpdated');
+          const description = data.from_database 
+            ? (data.age_minutes 
+                ? t('admin.management.financial.rateRecoveredDescription', { rate: data.rate.toFixed(2), currency: 'Bs/USD', age: `, ${data.age_minutes} min` })
+                : t('admin.management.financial.rateRecoveredDescriptionNoAge', { rate: data.rate.toFixed(2), currency: 'Bs/USD' }))
+            : t('admin.management.financial.rateUpdatedDescription', { rate: data.rate.toFixed(2), currency: 'Bs/USD' });
           
           toastRef.current({
-            title: data.from_database ? "Tasa recuperada" : "Tasa actualizada",
-            description: `${data.rate.toFixed(2)} Bs/USD ${sourceInfo}`,
+            title,
+            description,
             variant: data.warning ? "destructive" : "default",
             duration: data.warning ? 5000 : 3000,
           });
@@ -97,7 +102,7 @@ export function useExchangeRate(options: UseExchangeRateOptions = {}) {
           if (data.warning && showToast) {
             setTimeout(() => {
               toastRef.current?.({
-                title: "Advertencia",
+                title: t('admin.management.financial.warning'),
                 description: data.warning,
                 variant: "destructive",
                 duration: 6000,
@@ -118,7 +123,7 @@ export function useExchangeRate(options: UseExchangeRateOptions = {}) {
       
       if (showToast && toastRef.current) {
         toastRef.current({
-          title: "Error al actualizar tasa",
+          title: t('admin.management.financial.rateUpdateError'),
           description: errorMessage,
           variant: "destructive",
           duration: 5000,

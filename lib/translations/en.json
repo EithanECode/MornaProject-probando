@@ -1457,7 +1457,42 @@
         "marginsDiscounts": "Margins and Discounts",
         "profitabilityConfig": "Profitability configuration",
         "profitMargin": "Profit Margin (%)",
-        "usdDiscount": "USD Payment Discount (%)"
+        "usdDiscount": "USD Payment Discount (%)",
+        "venezuelaRateTitle": "Venezuela Rate",
+        "venezuelaRateDesc": "USD → Bs exchange rate value",
+        "chinaRateTitle": "China Rate",
+        "chinaRateDesc": "USD → CNY exchange rate value",
+        "autoUpdateBCV": "BCV Auto-update",
+        "autoUpdateAPI": "API Auto-update",
+        "updated": "Updated:",
+        "source": "Source:",
+        "veRateLabel": "VE 1USD = X Bs",
+        "cnRateLabel": "CN 1USD = X CNY",
+        "timeAgo": {
+          "lessThanMinute": "Less than 1 minute ago",
+          "minutesAgo": "{{count}} minute{{plural}} ago",
+          "hoursAgo": "{{count}} hour{{plural}} ago",
+          "daysAgo": "{{count}} day{{plural}} ago",
+          "never": "Never"
+        },
+        "sources": {
+          "bcvOfficial": "Official BCV",
+          "pbocOfficial": "Official PBOC"
+        },
+        "profitMarginTitle": "Profit Margin",
+        "configurationAlert": "Exchange rates configured. Remember to save changes in <strong>Save Configuration</strong> to apply all modifications.",
+        "lastSaved": "Last configuration saved on {{date}}",
+        "changeMadeBy": "Change made by {{userId}} on {{date}}",
+        "rateUpdated": "Rate updated",
+        "rateUpdatedDescription": "{{rate}} {{currency}} [Live API]",
+        "liveApi": "Live API",
+        "manualRateSaved": "Manual rate saved",
+        "manualRateSavedDescription": "{{rate}} {{currency}} saved successfully",
+        "rateRecovered": "Rate recovered",
+        "rateRecoveredDescription": "{{rate}} {{currency}} (from DB{{age}})",
+        "rateRecoveredDescriptionNoAge": "{{rate}} {{currency}} (from DB)",
+        "rateUpdateError": "Error updating rate",
+        "warning": "Warning"
       },
       "notifications": {
         "notificationSystem": "Notification System",
@@ -1478,7 +1513,8 @@
       },
       "messages": {
         "configSaved": "Configuration saved",
-        "configSavedDesc": "Business parameters have been updated successfully."
+        "configSavedDesc": "Business parameters have been updated successfully.",
+        "configSavedGlobal": "Configuration saved globally. Changes will be available for all users."
       },
       "summary": {
         "title": "Current Configuration Summary",
