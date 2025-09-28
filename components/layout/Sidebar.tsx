@@ -36,6 +36,7 @@ import { useRealtimeVzlaPayments } from '@/hooks/use-realtime-vzla-payments';
 import { useRealtimeVzlaBoxesContainers } from '@/hooks/use-realtime-vzla-boxes-containers';
 
 // Safe context hooks that don't throw errors
+
 const useSafeClientContext = () => {
   try {
     return useClientContext();
@@ -55,6 +56,15 @@ const useSafeChinaContext = () => {
 const useSafeAdminContext = () => {
   try {
     return useAdminContext();
+  } catch {
+    return null;
+  }
+};
+
+// Hook seguro para Venezuela: llama siempre useVzlaContext, retorna null si no hay provider
+const useSafeVzlaContext = () => {
+  try {
+    return useVzlaContext();
   } catch {
     return null;
   }
@@ -155,26 +165,24 @@ const CHINA_MENU_ITEMS = [
   }
 ];
 
-// El badge de pagos se maneja en tiempo real
-const usePagosMenuItems = () => {
-  const pending = useRealtimePagosPending();
-  return [
-    {
-      id: 'dashboard',
-      icon: LayoutDashboard,
-      badge: null,
-      color: 'text-orange-500',
-      path: '/pagos'
-    },
-    {
-      id: 'payments-validation',
-      icon: Package,
-      badge: typeof pending === 'number' && pending > 0 ? pending : null,
-      color: 'text-orange-500',
-      path: '/pagos/validacion-pagos'
-    }
-  ];
-};
+
+// El badge de pagos se maneja en tiempo real, pero ahora es una función pura
+const getPagosMenuItems = (pending: number | null) => [
+  {
+    id: 'dashboard',
+    icon: LayoutDashboard,
+    badge: null,
+    color: 'text-orange-500',
+    path: '/pagos'
+  },
+  {
+    id: 'payments-validation',
+    icon: Package,
+    badge: typeof pending === 'number' && pending > 0 ? pending : null,
+    color: 'text-orange-500',
+    path: '/pagos/validacion-pagos'
+  }
+];
 
 const getAdminMenuItems = (t: (key: string) => string) => [
   {
@@ -246,14 +254,14 @@ const getBottomItemsByRole = (role?: string) => {
 };
 
 // Función para obtener el menú según el rol
-const getMenuItemsByRole = (role?: string, t?: (key: string) => string) => {
+const getMenuItemsByRole = (role?: string, t?: (key: string) => string, pagosPending?: number | null) => {
   switch (role) {
     case 'venezuela':
       return VENEZUELA_MENU_ITEMS;
     case 'china':
       return CHINA_MENU_ITEMS;
     case 'pagos':
-      return usePagosMenuItems();
+      return getPagosMenuItems(pagosPending ?? null);
     case 'admin':
       return getAdminMenuItems(t!);
     default:
@@ -387,45 +395,23 @@ const SidebarMenuItem = memo(function SidebarMenuItem({
   );
 });
 
+
 export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = false, onMobileMenuClose, userRole = 'client' }: SidebarProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const screenWidth = useScreenSize();
 
-  const menuItems = getMenuItemsByRole(userRole, t);
-
-  // --- Guardar UID del usuario actual en localStorage para consulta global ---
-  let currentUserId = null;
-  if (userRole === 'admin') {
-    const adminCtx = useSafeAdminContext();
-    currentUserId = adminCtx?.adminId || localStorage.getItem('currentUserId');
-    if (currentUserId) localStorage.setItem('currentUserId', currentUserId);
-  } else if (userRole === 'client') {
-    const clientCtx = useSafeClientContext();
-    currentUserId = clientCtx?.clientId || localStorage.getItem('currentUserId');
-    if (currentUserId) localStorage.setItem('currentUserId', currentUserId);
-  } else if (userRole === 'venezuela') {
-    let vzlaCtx = null;
-    try { vzlaCtx = useVzlaContext(); } catch { vzlaCtx = null; }
-    currentUserId = vzlaCtx?.vzlaId || localStorage.getItem('currentUserId');
-    if (currentUserId) localStorage.setItem('currentUserId', currentUserId);
-  } else if (userRole === 'china') {
-    const chinaCtx = useSafeChinaContext();
-    currentUserId = chinaCtx?.chinaId || localStorage.getItem('currentUserId');
-    if (currentUserId) localStorage.setItem('currentUserId', currentUserId);
-  }
-
-  // Call all hooks unconditionally at the top level
+  // Llamar todos los hooks de contexto y realtime al inicio (sin try/catch)
   const clientCtx = useSafeClientContext();
-  // Hook seguro para evitar error si no hay provider
-  let vzlaCtx = null;
-  try {
-    vzlaCtx = useVzlaContext();
-  } catch {
-    vzlaCtx = null;
-  }
+  const vzlaCtx = useSafeVzlaContext();
   const chinaCtx = useSafeChinaContext();
   const adminCtx = useSafeAdminContext();
+  const pagosPending = useRealtimePagosPending();
+
+  // Eliminado manejo de localStorage para currentUserId. Esto debe hacerse al iniciar sesión, no aquí.
+
+  // Ahora obtenemos el menú pasando el pending de pagos si aplica
+  const menuItems = getMenuItemsByRole(userRole, t, pagosPending);
 
   // === Dynamic badge states (declare early to be used by realtime effects) ===
   const [clientActiveOrders, setClientActiveOrders] = useState<number | null>(null);
