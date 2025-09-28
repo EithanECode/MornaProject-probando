@@ -441,6 +441,7 @@
   "delivered": "Delivered",
   "cancelled": "Cancelled",
   "paymentValidated": "Payment validated",
+  "paymentRejected": "Payment rejected",
   "packagingBox": "Packaging (box)",
   "packagingContainer": "Packaging (container)",
   "sentFromChina": "Sent from China",
@@ -452,6 +453,7 @@
         "view": "View details",
         "track": "Track order",
         "pay": "Pay",
+        "payAgain": "Pay Again",
         "download": "Download PDF"
       },
       "progress": "Order progress",

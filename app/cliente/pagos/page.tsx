@@ -235,7 +235,7 @@ export default function PagosPage() {
     setMounted(true);
   }, []);
 
-  // Cargar órdenes del cliente con state 3, 4 y 5 y mapear a pagos
+  // Cargar órdenes del cliente con state 3, 4, 5 y ahora -1 (rechazado) y mapear a pagos
   useEffect(() => {
     loadPayments();
   }, [clientId, supabase]);
@@ -250,7 +250,8 @@ export default function PagosPage() {
         .from('orders')
         .select('id, productName, description, estimatedBudget, totalQuote, state, created_at')
         .eq('client_id', clientId)
-        .in('state', [3, 4, 5])
+        // Incluir -1 para permitir reintento de pago tras rechazo
+        .in('state', [-1, 3, 4, 5])
         .order('created_at', { ascending: false });
       if (error) throw error;
 
@@ -258,10 +259,12 @@ export default function PagosPage() {
         const amountNum = (row.totalQuote ?? row.estimatedBudget ?? 0) as number;
         
         // Mapear estado según los requerimientos
-        let status: Payment['status'] = 'pending';
-        if (row.state === 3) status = 'pending';      // Pendientes
-        else if (row.state === 4) status = 'processing'; // Procesando
-        else if (row.state === 5) status = 'paid';       // Pagado
+  let status: Payment['status'] = 'pending';
+  // State mapping: -1 (rechazado, tratamos como 'failed' visible para reintento), 3 (pendiente de pago), 4 (procesando validación), 5 (pagado)
+  if (row.state === -1) status = 'failed';       // Pago rechazado (mostrar mensaje + permitir retry)
+  else if (row.state === 3) status = 'pending';  // Pendiente de pago
+  else if (row.state === 4) status = 'processing'; // Procesando validación de pago
+  else if (row.state === 5) status = 'paid';       // Pagado
         
         return {
           id: `PAY-${row.id}`,
@@ -723,7 +726,17 @@ export default function PagosPage() {
                           </Button>
                         )}
                         {payment.status === 'failed' && (
-                          <Button variant="outline" size="sm" className="flex-1 hover:bg-red-50 hover:border-red-300 transition-colors text-xs">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            // Estilo diferenciado para indicar rechazo pero invitar a reintentar
+                            className="flex-1 hover:bg-red-50 hover:border-red-300 transition-colors text-xs"
+                            // TODO: Implementar lógica real de reintento (abrir modal de pago) cuando exista flujo consolidado
+                            onClick={() => {
+                              // Placeholder: en un futuro podríamos redirigir al detalle del pedido o abrir modal
+                              // console.log('Retry pago para', payment.orderId);
+                            }}
+                          >
                             <RefreshCw className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
                             {t('client.recentOrders.payments.retry')}
                           </Button>

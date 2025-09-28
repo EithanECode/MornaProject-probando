@@ -443,6 +443,7 @@
   "delivered": "已交付",
   "cancelled": "已取消",
   "paymentValidated": "付款已验证",
+  "paymentRejected": "付款被拒绝",
   "packagingBox": "正在打包（箱）",
   "packagingContainer": "正在打包（集装箱）",
   "sentFromChina": "已从中国发出",
@@ -454,6 +455,7 @@
         "view": "查看详情",
         "track": "追踪订单",
         "pay": "支付",
+        "payAgain": "再次支付",
         "download": "下载 PDF"
       },
       "progress": "订单进度",

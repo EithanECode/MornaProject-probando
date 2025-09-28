@@ -406,6 +406,7 @@
         "shipped": "Enviado",
         "cancelled": "Cancelado",
         "paymentValidated": "Pago validado",
+        "paymentRejected": "Pago Rechazado",
         "packagingBox": "Empaquetando (caja)",
         "packagingContainer": "Empaquetando (contenedor)",
         "sentFromChina": "Enviada de China",
@@ -418,6 +419,7 @@
         "view": "Ver detalles",
         "track": "Ver seguimiento",
         "pay": "Pagar",
+        "payAgain": "Pagar de nuevo",
         "download": "Descargar PDF"
       },
       "progress": "Progreso del pedido",

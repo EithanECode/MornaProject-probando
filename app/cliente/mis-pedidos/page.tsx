@@ -384,6 +384,7 @@ export default function MisPedidosPage() {
 
   // Mapeos de estado numérico de la BD a estados de UI y progreso
   const mapStateToStatus = (state?: number | null): Order['status'] => {
+    if (state === -1) return 'quoted'; // Rechazado: reutilizamos flujo de pago
     if (!state) return 'pending';
     // Coarse mapping para UI del cliente
     if (state === 3) return 'quoted';
@@ -397,6 +398,7 @@ export default function MisPedidosPage() {
 
   const mapStateToProgress = (state?: number | null): number => {
     switch (state) {
+      case -1: return 30; // Rechazado: mismo progreso que cotizado
       case 1: return 10; // creado
       case 2: return 20; // recibido
       case 3: return 30; // cotizado
@@ -2157,6 +2159,7 @@ export default function MisPedidosPage() {
                         {/* Un solo badge basado en stateNum; fallback al badge de status si no hay stateNum */}
                         {typeof order.stateNum === 'number' ? (
                           <Badge className={`text-xs md:text-sm font-semibold px-3 py-1 transition-colors hover:brightness-110 hover:ring-1 ${
+                            order.stateNum === -1 ? 'bg-red-100 text-red-800 border-red-200 hover:bg-red-50 hover:ring-red-200 dark:hover:ring-red-500/20' :
                             order.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
                             order.stateNum === 12 ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200 dark:hover:ring-gray-500/20' :
                             order.stateNum === 11 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
@@ -2171,7 +2174,8 @@ export default function MisPedidosPage() {
                             order.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
                             'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20'
                           }`}>
-                            {order.stateNum === 5 ? t('client.recentOrders.statuses.paymentValidated') :
+                            {order.stateNum === -1 ? t('client.recentOrders.statuses.paymentRejected') :
+                             order.stateNum === 5 ? t('client.recentOrders.statuses.paymentValidated') :
                              order.stateNum === 6 ? t('client.recentOrders.statuses.packagingBox') :
                              order.stateNum === 7 ? t('client.recentOrders.statuses.packagingContainer') :
                              order.stateNum === 9 ? t('client.recentOrders.statuses.sentFromChina') :
@@ -2238,14 +2242,14 @@ export default function MisPedidosPage() {
                       <div className="flex flex-col md:flex-row md:justify-between gap-3 md:gap-0 text-sm">
                         <span className="text-slate-600 font-medium">{t('client.recentOrders.estimatedDelivery')}: {order.estimatedDelivery}</span>
                         <div className="flex gap-2 md:gap-3">
-                          {order.status === 'quoted' && (
+                          {(order.status === 'quoted' || order.stateNum === -1) && (
                             <Button 
                               size="sm" 
                               className="h-7 md:h-8 px-3 md:px-4 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white text-xs font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                               onClick={() => handlePaymentClick(order)}
                             >
                               <DollarSign className="h-3 w-3 mr-1" />
-                              {t('client.recentOrders.actions.pay')}
+                              {order.stateNum === -1 ? t('client.recentOrders.actions.payAgain') : t('client.recentOrders.actions.pay')}
                             </Button>
                           )}
                           <Button 

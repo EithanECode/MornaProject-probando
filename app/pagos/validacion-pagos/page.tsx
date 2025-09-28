@@ -533,10 +533,11 @@ const PaymentValidationDashboard: React.FC = () => {
         let query = supabase
           .from('orders')
           .select(selectCols, { count: 'exact' })
-          .gte('state', 4);
+          .or('state.eq.4,state.eq.5,state.eq.-1'); // añadido -1
         // Filtro server-side por estado (pendiente = state 4, completado >4)
         if (filterStatus === 'pendiente') query = query.eq('state', 4);
-        else if (filterStatus === 'completado') query = query.gt('state', 4);
+        else if (filterStatus === 'completado') query = query.eq('state', 5);
+        else if (filterStatus === 'rechazado') query = query.eq('state', -1);
         const { data, error, count } = await query
           .order('id', { ascending: true })
           .range(from, to);
@@ -555,7 +556,10 @@ const PaymentValidationDashboard: React.FC = () => {
         }
 
   let mapped: Payment[] = (data as DbOrder[] | null)?.map((o) => {
-          const estado: Payment['estado'] = o.state === 4 ? 'pendiente' : 'completado';
+          let estado: Payment['estado'];
+          if (o.state === 4) estado = 'pendiente';
+          else if (o.state === -1) estado = 'rechazado';
+          else estado = 'completado';
           return {
             id: String(o.id),
             usuario: clientMap.get(o.client_id) || 'Cliente',
@@ -779,41 +783,43 @@ const PaymentValidationDashboard: React.FC = () => {
     });
   };
 
-  // Manejar rechazo
-  const handleReject = (id: string) => {
+  // Manejar rechazo (persistente state=-1)
+  const handleReject = async (id: string) => {
     const payment = payments.find(p => p.id === id);
-    if (payment) {
-      setLastAction({
-        type: 'reject',
-        paymentId: id,
-        previousStatus: payment.estado
-      });
-      
-      setPayments(prev => prev.map(p => 
-        p.id === id ? { ...p, estado: 'rechazado' as const } : p
-      ));
-      setRejectionConfirmation({ isOpen: false, paymentId: null });
-
+    if (!payment) return;
+    setLastAction({ type: 'reject', paymentId: id, previousStatus: payment.estado });
+    setPayments(prev => prev.map(p => p.id === id ? { ...p, estado: 'rechazado' as const } : p));
+    setRejectionConfirmation({ isOpen: false, paymentId: null });
+    try {
+      const idFilter: any = isNaN(Number(id)) ? id : Number(id);
+      const { error } = await supabase.from('orders').update({ state: -1 }).eq('id', idFilter);
+      if (error) throw error;
+    } catch (e: any) {
+      setPayments(prev => prev.map(p => p.id === id ? { ...p, estado: payment.estado } : p));
+      setLastAction(null);
       toast({
-    title: t('venezuela.pagos.toasts.rejectedTitle'),
-    description: t('venezuela.pagos.toasts.rejectedDesc', { id }),
-        variant: "default",
-        duration: 3000,
-        action: (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleUndo();
-            }}
-            className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
-          >
-            <RotateCcw size={14} />
-      {t('venezuela.pagos.actions.undo')}
-          </button>
-        ),
+        title: t('venezuela.pagos.toasts.rejectErrorTitle') || 'Error al rechazar',
+        description: e?.message || (t('venezuela.pagos.toasts.rejectErrorDesc') || 'No se pudo completar el rechazo.'),
+        variant: 'destructive',
+        duration: 4000,
       });
+      return;
     }
+    toast({
+      title: t('venezuela.pagos.toasts.rejectedTitle'),
+      description: t('venezuela.pagos.toasts.rejectedDesc', { id }),
+      variant: 'default',
+      duration: 3000,
+      action: (
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleUndo(); }}
+          className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+        >
+          <RotateCcw size={14} />
+          {t('venezuela.pagos.actions.undo')}
+        </button>
+      ),
+    });
   };
 
   const openRejectionConfirmation = (id: string) => {

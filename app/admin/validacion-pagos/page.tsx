@@ -558,10 +558,11 @@ const PaymentValidationDashboard: React.FC = () => {
       startTimeout();
       try {
         const selectCols = 'id, client_id, productName, description, totalQuote, estimatedBudget, created_at, state, sendChina';
+        // Incluir estados 4 (pendiente), 5 (completado) y -1 (rechazado)
         const { data, error } = await supabase
           .from('orders')
           .select(selectCols)
-          .gte('state', 4)
+          .or('state.eq.4,state.eq.5,state.eq.-1')
           .order('created_at', { ascending: false });
         if (error) throw error;
         const clientIds = (data || []).map((o: any) => o.client_id);
@@ -575,7 +576,10 @@ const PaymentValidationDashboard: React.FC = () => {
           clientMap = new Map((clients || []).map((c: any) => [c.user_id, c.name || 'Cliente']));
         }
         const mapped: Payment[] = (data as DbOrder[] | null)?.map((o) => {
-          const estado: Payment['estado'] = o.state === 4 ? 'pendiente' : 'completado';
+          let estado: Payment['estado'];
+          if (o.state === 4) estado = 'pendiente';
+          else if (o.state === -1) estado = 'rechazado';
+          else estado = 'completado';
           return {
             id: String(o.id),
             usuario: clientMap.get(o.client_id) || 'Cliente',
@@ -683,12 +687,12 @@ const PaymentValidationDashboard: React.FC = () => {
   const handleUndo = async () => {
     if (!lastAction) return;
     const { paymentId, previousStatus, type } = lastAction;
-    setPayments(prev => prev.map(p =>
-      p.id === paymentId ? { ...p, estado: previousStatus as any } : p
-    ));
+    // Optimistic revert
+    setPayments(prev => prev.map(p => p.id === paymentId ? { ...p, estado: previousStatus as any } : p));
     try {
-      if (type === 'approve') {
-        const idFilter: any = isNaN(Number(paymentId)) ? paymentId : Number(paymentId);
+      const idFilter: any = isNaN(Number(paymentId)) ? paymentId : Number(paymentId);
+      if (type === 'approve' || type === 'reject') {
+        // Ambos vuelven a pendiente (state 4)
         const { error } = await supabase
           .from('orders')
           .update({ state: 4 })
@@ -701,7 +705,7 @@ const PaymentValidationDashboard: React.FC = () => {
         variant: 'default',
         duration: 3000,
       });
-  setLastAction(null);
+      setLastAction(null);
     } catch (e: any) {
       toast({
         title: t('venezuela.pagos.toasts.undoErrorTitle'),
@@ -709,11 +713,8 @@ const PaymentValidationDashboard: React.FC = () => {
         variant: 'destructive',
         duration: 4000,
       });
-      if (type === 'approve') {
-        setPayments(prev => prev.map(p =>
-          p.id === paymentId ? { ...p, estado: 'completado' } : p
-        ));
-      }
+      // Reaplicar estado que intentábamos revertir
+      setPayments(prev => prev.map(p => p.id === paymentId ? { ...p, estado: (type === 'approve' ? 'completado' : 'rechazado') as any } : p));
     }
   };
 
@@ -771,40 +772,56 @@ const PaymentValidationDashboard: React.FC = () => {
     });
   };
 
-  // Rechazar (solo UI local de momento)
-  const handleReject = (id: string) => {
+  // Rechazar: persistimos en DB (state = -1)
+  const handleReject = async (id: string) => {
     const payment = payments.find(p => p.id === id);
-    if (payment) {
-      setLastAction({
-        type: 'reject',
-        paymentId: id,
-        previousStatus: payment.estado
-      });
-      setPayments(prev => prev.map(p => 
-        p.id === id ? { ...p, estado: 'rechazado' as const } : p
-      ));
-      setRejectionConfirmation({ isOpen: false, paymentId: null });
-
+    if (!payment) return;
+    setLastAction({
+      type: 'reject',
+      paymentId: id,
+      previousStatus: payment.estado
+    });
+    // Optimistic UI
+    setPayments(prev => prev.map(p => p.id === id ? { ...p, estado: 'rechazado' as const } : p));
+    setRejectionConfirmation({ isOpen: false, paymentId: null });
+    try {
+      const idFilter: any = isNaN(Number(id)) ? id : Number(id);
+      const { error } = await supabase
+        .from('orders')
+        .update({ state: -1 })
+        .eq('id', idFilter);
+      if (error) throw error;
+    } catch (e: any) {
+      // Revertir si falla
+      setPayments(prev => prev.map(p => p.id === id ? { ...p, estado: payment.estado } : p));
+      setLastAction(null);
       toast({
-        title: t('venezuela.pagos.toasts.rejectedTitle'),
-        description: t('venezuela.pagos.toasts.rejectedDesc', { id }),
-        variant: "default",
-        duration: 3000,
-        action: (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleUndo();
-            }}
-            className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
-          >
-            <RotateCcw size={14} />
-            {t('venezuela.pagos.actions.undo')}
-          </button>
-        ),
+        title: t('venezuela.pagos.toasts.rejectErrorTitle') || 'Error al rechazar',
+        description: e?.message || (t('venezuela.pagos.toasts.rejectErrorDesc') || 'No se pudo completar el rechazo.'),
+        variant: 'destructive',
+        duration: 4000,
       });
+      return;
     }
+    toast({
+      title: t('venezuela.pagos.toasts.rejectedTitle'),
+      description: t('venezuela.pagos.toasts.rejectedDesc', { id }),
+      variant: 'default',
+      duration: 3000,
+      action: (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleUndo();
+          }}
+          className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+        >
+          <RotateCcw size={14} />
+          {t('venezuela.pagos.actions.undo')}
+        </button>
+      ),
+    });
   };
 
   const openRejectionConfirmation = (id: string) => {
