@@ -116,7 +116,7 @@ export default function AuthPage({
         </div>
 
         <div className="form-container sign-in-container">
-          <LoginForm onNavigateToPasswordReset={onNavigateToPasswordReset} />
+          <LoginForm onNavigateToPasswordReset={onNavigateToPasswordReset} idPrefix="desktop" />
         </div>
 
         <div className="overlay-container">
@@ -158,7 +158,7 @@ export default function AuthPage({
                 <h2>{t('auth.login.welcomeBack')}</h2>
                 <p>{t('auth.login.welcomeMessage')}</p>
               </div>
-              <LoginForm onNavigateToPasswordReset={onNavigateToPasswordReset} />
+              <LoginForm onNavigateToPasswordReset={onNavigateToPasswordReset} idPrefix="mobile" />
             </div>
           ) : (
             <div className="mobile-form">

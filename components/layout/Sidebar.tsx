@@ -391,8 +391,29 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   const { t } = useTranslation();
   const router = useRouter();
   const screenWidth = useScreenSize();
-  
+
   const menuItems = getMenuItemsByRole(userRole, t);
+
+  // --- Guardar UID del usuario actual en localStorage para consulta global ---
+  let currentUserId = null;
+  if (userRole === 'admin') {
+    const adminCtx = useSafeAdminContext();
+    currentUserId = adminCtx?.adminId || localStorage.getItem('currentUserId');
+    if (currentUserId) localStorage.setItem('currentUserId', currentUserId);
+  } else if (userRole === 'client') {
+    const clientCtx = useSafeClientContext();
+    currentUserId = clientCtx?.clientId || localStorage.getItem('currentUserId');
+    if (currentUserId) localStorage.setItem('currentUserId', currentUserId);
+  } else if (userRole === 'venezuela') {
+    let vzlaCtx = null;
+    try { vzlaCtx = useVzlaContext(); } catch { vzlaCtx = null; }
+    currentUserId = vzlaCtx?.vzlaId || localStorage.getItem('currentUserId');
+    if (currentUserId) localStorage.setItem('currentUserId', currentUserId);
+  } else if (userRole === 'china') {
+    const chinaCtx = useSafeChinaContext();
+    currentUserId = chinaCtx?.chinaId || localStorage.getItem('currentUserId');
+    if (currentUserId) localStorage.setItem('currentUserId', currentUserId);
+  }
 
   // Call all hooks unconditionally at the top level
   const clientCtx = useSafeClientContext();
