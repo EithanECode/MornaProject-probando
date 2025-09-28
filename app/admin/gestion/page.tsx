@@ -639,7 +639,7 @@ export default function ConfiguracionPage() {
           </div>
         </header>
 
-        <div className={`p-4 md:p-5 lg:p-6 space-y-6 md:space-y-8 ${mounted && theme === 'dark' ? 'bg-slate-900' : ''}`}>
+  <div className={`w-full max-w-none space-y-6 md:space-y-8 ${mounted && theme === 'dark' ? 'bg-slate-900' : ''}`}>
           {/* Alert de advertencia */}
           <Alert className="border-orange-200 bg-orange-50">
             <AlertTriangle className="h-4 w-4 text-orange-600" />
@@ -741,69 +741,34 @@ export default function ConfiguracionPage() {
 
             {/* TAB: Configuración Financiera */}
             <TabsContent value="financial" className="space-y-6 md:space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                {/* Tarjeta Venezuela */}
                 <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
                     <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Globe className="w-5 h-5 mr-2 text-green-600" />
-                      Tasas de Cambio
+                      {t('admin.management.financial.venezuelaRateTitle') !== 'admin.management.financial.venezuelaRateTitle' ? t('admin.management.financial.venezuelaRateTitle') : 'Tasa Venezuela'}
                     </CardTitle>
                     <CardDescription className="text-black text-sm">
-                      Valores de cambio USD → Bs y USD → CNY
+                      {t('admin.management.financial.venezuelaRateDesc') !== 'admin.management.financial.venezuelaRateDesc' ? t('admin.management.financial.venezuelaRateDesc') : 'Valor de cambio USD → Bs'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {/* 🇻🇪 TASA USD → BS */}
                     <div className="space-y-3 p-4 border border-green-200 rounded-lg bg-green-50/50">
                       <div className="flex items-center gap-2">
                         <span className="text-lg">🇻🇪</span>
                         <Label className="text-sm font-semibold text-green-800">1 USD = X Bs</Label>
                       </div>
-                      
-                      <div className="relative flex items-center">
-                        <Input
-                          id="usdRate"
-                          type="number"
-                          value={config.usdRate}
-                          onChange={e => updateConfig('usdRate', Number(e.target.value))}
-                          className="pr-12"
-                          title="Actualizar tasa desde BCV"
-                          disabled={exchangeRateLoading}
-                        />
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                          {isAutoUpdating ? (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              onClick={refreshRate}
-                              disabled={exchangeRateLoading}
-                              className="!p-2"
-                              title="Actualizar tasa desde BCV"
-                            >
-                              {exchangeRateLoading ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <RefreshCw className="h-4 w-4" />
-                              )}
-                            </Button>
-                          ) : (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              onClick={() => saveManualRate(config.usdRate)}
-                              disabled={!config.usdRate || config.usdRate <= 0}
-                              className="!p-2"
-                              title="Guardar tasa manual"
-                            >
-                              <Save className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between space-x-2">
+                      <Input
+                        id="usdRate"
+                        type="number"
+                        value={config.usdRate}
+                        onChange={e => updateConfig('usdRate', Number(e.target.value))}
+                        className="pr-12"
+                        title="Actualizar tasa desde BCV"
+                        disabled={exchangeRateLoading}
+                      />
+                      <div className="flex items-center justify-between space-x-2 mt-2">
                         <div className="flex items-center space-x-2">
                           {isAutoUpdating ? (
                             <Wifi className="h-4 w-4 text-green-600" />
@@ -822,9 +787,8 @@ export default function ConfiguracionPage() {
                           }
                         />
                       </div>
-
                       {exchangeRateLastUpdated && (
-                        <div className="text-xs text-gray-600">
+                        <div className="text-xs text-gray-600 mt-2">
                           <div className="flex items-center justify-between">
                             <span>Actualizado:</span>
                             <Badge variant="secondary" className="text-xs">
@@ -840,62 +804,39 @@ export default function ConfiguracionPage() {
                         </div>
                       )}
                     </div>
-
-                    {/* 🇨🇳 TASA USD → CNY */}
+                  </CardContent>
+                </Card>
+                {/* Tarjeta China */}
+                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-black text-base md:text-lg">
+                      <Globe className="w-5 h-5 mr-2 text-green-600" />
+                      {t('admin.management.financial.chinaRateTitle') !== 'admin.management.financial.chinaRateTitle' ? t('admin.management.financial.chinaRateTitle') : 'Tasa China'}
+                    </CardTitle>
+                    <CardDescription className="text-black text-sm">
+                      {t('admin.management.financial.chinaRateDesc') !== 'admin.management.financial.chinaRateDesc' ? t('admin.management.financial.chinaRateDesc') : 'Valor de cambio USD → CNY'}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
                     <div className="space-y-3 p-4 border border-red-200 rounded-lg bg-red-50/50">
                       <div className="flex items-center gap-2">
                         <span className="text-lg">🇨🇳</span>
                         <Label className="text-sm font-semibold text-red-800">1 USD = X CNY</Label>
                       </div>
-                      
-                      <div className="relative flex items-center">
-                        <Input
-                          id="cnyRate"
-                          type="number"
-                          step="0.0001"
-                          min={0}
-                          value={config.autoUpdateExchangeRateCNY ? 
-                            (currentExchangeRateCNY !== null ? currentExchangeRateCNY : '') : 
-                            config.cnyRate}
-                          onChange={(e) => applyCost('cnyRate', e.target.value)}
-                          className={exchangeRateErrorCNY ? 'border-red-300 pr-12' : 'pr-12'}
-                          disabled={exchangeRateLoadingCNY}
-                          placeholder="7.2500"
-                        />
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                          {config.autoUpdateExchangeRateCNY ? (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              onClick={refreshRateCNY}
-                              disabled={exchangeRateLoadingCNY}
-                              className="!p-2"
-                              title="Actualizar tasa CNY desde API"
-                            >
-                              {exchangeRateLoadingCNY ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <RefreshCw className="h-4 w-4" />
-                              )}
-                            </Button>
-                          ) : (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              onClick={() => saveManualRateCNY(config.cnyRate)}
-                              disabled={!config.cnyRate || config.cnyRate <= 0}
-                              className="!p-2"
-                              title="Guardar tasa CNY manual"
-                            >
-                              <Save className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between space-x-2">
+                      <Input
+                        id="cnyRate"
+                        type="number"
+                        step="0.0001"
+                        min={0}
+                        value={config.autoUpdateExchangeRateCNY ? 
+                          (currentExchangeRateCNY !== null ? currentExchangeRateCNY : '') : 
+                          config.cnyRate}
+                        onChange={(e) => applyCost('cnyRate', e.target.value)}
+                        className={exchangeRateErrorCNY ? 'border-red-300 pr-12' : 'pr-12'}
+                        disabled={exchangeRateLoadingCNY}
+                        placeholder="7.2500"
+                      />
+                      <div className="flex items-center justify-between space-x-2 mt-2">
                         <div className="flex items-center space-x-2">
                           {isAutoUpdatingCNY ? (
                             <Wifi className="h-4 w-4 text-green-600" />
@@ -914,9 +855,8 @@ export default function ConfiguracionPage() {
                           }
                         />
                       </div>
-
                       {exchangeRateLastUpdatedCNY && (
-                        <div className="text-xs text-gray-600">
+                        <div className="text-xs text-gray-600 mt-2">
                           <div className="flex items-center justify-between">
                             <span>Actualizado:</span>
                             <Badge variant="secondary" className="text-xs">
@@ -932,25 +872,28 @@ export default function ConfiguracionPage() {
                         </div>
                       )}
                     </div>
-
-                    {/* Alert general de estado */}
-                    <Alert className="border-blue-200 bg-blue-50">
-                      <CheckCircle className="h-4 w-4 text-blue-600" />
-                      <AlertDescription className="text-blue-700">
-                        <strong>Tasas de cambio configuradas.</strong> Recuerde guardar los cambios en &quot;<strong>Guardar Configuración</strong>&quot; para aplicar todas las modificaciones.
-                      </AlertDescription>
-                    </Alert>
                   </CardContent>
                 </Card>
-
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+              </div>
+              {/* Alert azul debajo de las tasas */}
+              <div className="mt-4">
+                <Alert className="border-blue-200 bg-blue-50">
+                  <CheckCircle className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-700">
+                    <strong>Tasas de cambio configuradas.</strong> Recuerde guardar los cambios en <strong>Guardar Configuración</strong> para aplicar todas las modificaciones.
+                  </AlertDescription>
+                </Alert>
+              </div>
+              {/* Margen de ganancia debajo del alert */}
+              <div className="mt-4">
+                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm w-full">
                   <CardHeader>
                     <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Percent className="w-5 h-5 mr-2 text-purple-600" />
-                      {t('admin.management.financial.marginsDiscounts')}
+                      {t('admin.management.financial.profitMarginTitle') !== 'admin.management.financial.profitMarginTitle' ? t('admin.management.financial.profitMarginTitle') : 'Margen de ganancia'}
                     </CardTitle>
                     <CardDescription className="text-black text-sm">
-                      {t('admin.management.financial.profitabilityConfig')}
+                      {t('admin.management.financial.profitabilityConfig') !== 'admin.management.financial.profitabilityConfig' ? t('admin.management.financial.profitabilityConfig') : 'Configuración de rentabilidad'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
