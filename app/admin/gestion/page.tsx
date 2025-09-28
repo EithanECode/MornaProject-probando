@@ -45,28 +45,26 @@ interface BusinessConfig {
   airShippingRate: number;
   seaShippingRate: number;
   // Eliminados días de entrega
-  
+
   // Parámetros financieros
   usdRate: number;
   cnyRate: number;
   profitMargin: number;
-  usdDiscountPercent: number;
-  
+  // usdDiscountPercent eliminado
+
   // Parámetros operativos adicionales
   maxQuotationsPerMonth?: number;
   maxModificationsPerOrder?: number;
   quotationValidityDays?: number;
   paymentDeadlineDays?: number;
-  
+
   // Notificaciones y alertas
-  emailNotifications: boolean;
-  whatsappNotifications: boolean;
-  alertsAfterDays: number;
-  
+  alertsAfterDays?: number;
+
   // Configuración de accesos
   sessionTimeout: number;
   requireTwoFactor: boolean;
-  
+
   // Configuración de tasa de cambio
   autoUpdateExchangeRate: boolean;
   autoUpdateExchangeRateCNY: boolean;
@@ -89,18 +87,14 @@ export default function ConfiguracionPage() {
   const [config, setConfig] = useState<BusinessConfig>({
     airShippingRate: 8.50,
     seaShippingRate: 180.00,
-  // Eliminados días de entrega
     usdRate: 36.25,
     cnyRate: 7.25,
     profitMargin: 25,
-    usdDiscountPercent: 5,
     maxQuotationsPerMonth: 5,
     maxModificationsPerOrder: 2,
     quotationValidityDays: 7,
     paymentDeadlineDays: 3,
-    emailNotifications: true,
-    whatsappNotifications: true,
-    alertsAfterDays: 2,
+    alertsAfterDays: 7,
     sessionTimeout: 60,
     requireTwoFactor: false,
     autoUpdateExchangeRate: false,
@@ -346,18 +340,14 @@ export default function ConfiguracionPage() {
         let mergedConfig = {
           airShippingRate: 8.50,
           seaShippingRate: 180.00,
-          // Eliminados días de entrega
           usdRate: 36.25,
           cnyRate: 7.25,
           profitMargin: 25,
-          usdDiscountPercent: 5,
           maxQuotationsPerMonth: 5,
           maxModificationsPerOrder: 2,
           quotationValidityDays: 7,
           paymentDeadlineDays: 3,
-          emailNotifications: true,
-          whatsappNotifications: true,
-          alertsAfterDays: 2,
+          alertsAfterDays: 7,
           sessionTimeout: 60,
           requireTwoFactor: false,
           autoUpdateExchangeRate: false,
@@ -465,39 +455,33 @@ export default function ConfiguracionPage() {
 
   const handleSave = async () => {
     setIsLoading(true);
-    
     try {
+  const configToSave = { ...config };
       // Guardar configuración en base de datos a través de la API
       const response = await fetch('/api/config', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(config)
+        body: JSON.stringify(configToSave)
       });
 
       const data = await response.json();
-      
       if (!data.success) {
         throw new Error(data.error || 'Error saving configuration');
       }
-      
       const now = new Date();
       setLastSaved(now);
       localStorage.setItem('lastConfigSaved', now.toISOString());
-      
       // *** CLAVE: Guardar configuración en localStorage para persistencia ***
-      localStorage.setItem('businessConfig', JSON.stringify(config));
-      
+      localStorage.setItem('businessConfig', JSON.stringify(configToSave));
       toast({
         title: t('admin.management.messages.configSaved'),
         description: "Configuración guardada globalmente. Los cambios estarán disponibles para todos los usuarios.",
       });
-
       // Actualizar baseline para futuras comparaciones
-      baseConfigRef.current = { ...config };
+      baseConfigRef.current = { ...configToSave };
       setBaselineVersion(v => v + 1); // forzar recomputo de hasChanges
-      
     } catch (error: any) {
       console.error('Error saving config:', error);
       toast({
@@ -776,47 +760,47 @@ export default function ConfiguracionPage() {
                         <Label className="text-sm font-semibold text-green-800">1 USD = X Bs</Label>
                       </div>
                       
-                      <div className="flex gap-2">
+                      <div className="relative flex items-center">
                         <Input
                           id="usdRate"
                           type="number"
-                          step="0.01"
-                          min={0}
-                          value={config.autoUpdateExchangeRate ? (currentExchangeRate || config.usdRate) : config.usdRate}
-                          onChange={(e) => applyCost('usdRate', e.target.value)}
-                          className={exchangeRateError ? 'border-red-300' : ''}
+                          value={config.usdRate}
+                          onChange={e => updateConfig('usdRate', Number(e.target.value))}
+                          className="pr-12"
+                          title="Actualizar tasa desde BCV"
                           disabled={exchangeRateLoading}
-                          placeholder="36.25"
                         />
-                        {config.autoUpdateExchangeRate ? (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={refreshRate}
-                            disabled={exchangeRateLoading}
-                            className="shrink-0"
-                            title="Actualizar tasa desde BCV"
-                          >
-                            {exchangeRateLoading ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <RefreshCw className="h-4 w-4" />
-                            )}
-                          </Button>
-                        ) : (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => saveManualRate(config.usdRate)}
-                            disabled={!config.usdRate || config.usdRate <= 0}
-                            className="shrink-0"
-                            title="Guardar tasa manual"
-                          >
-                            <Save className="h-4 w-4" />
-                          </Button>
-                        )}
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                          {isAutoUpdating ? (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={refreshRate}
+                              disabled={exchangeRateLoading}
+                              className="!p-2"
+                              title="Actualizar tasa desde BCV"
+                            >
+                              {exchangeRateLoading ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <RefreshCw className="h-4 w-4" />
+                              )}
+                            </Button>
+                          ) : (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => saveManualRate(config.usdRate)}
+                              disabled={!config.usdRate || config.usdRate <= 0}
+                              className="!p-2"
+                              title="Guardar tasa manual"
+                            >
+                              <Save className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex items-center justify-between space-x-2">
@@ -864,7 +848,7 @@ export default function ConfiguracionPage() {
                         <Label className="text-sm font-semibold text-red-800">1 USD = X CNY</Label>
                       </div>
                       
-                      <div className="flex gap-2">
+                      <div className="relative flex items-center">
                         <Input
                           id="cnyRate"
                           type="number"
@@ -874,39 +858,41 @@ export default function ConfiguracionPage() {
                             (currentExchangeRateCNY !== null ? currentExchangeRateCNY : '') : 
                             config.cnyRate}
                           onChange={(e) => applyCost('cnyRate', e.target.value)}
-                          className={exchangeRateErrorCNY ? 'border-red-300' : ''}
+                          className={exchangeRateErrorCNY ? 'border-red-300 pr-12' : 'pr-12'}
                           disabled={exchangeRateLoadingCNY}
                           placeholder="7.2500"
                         />
-                        {config.autoUpdateExchangeRateCNY ? (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={refreshRateCNY}
-                            disabled={exchangeRateLoadingCNY}
-                            className="shrink-0"
-                            title="Actualizar tasa CNY desde API"
-                          >
-                            {exchangeRateLoadingCNY ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <RefreshCw className="h-4 w-4" />
-                            )}
-                          </Button>
-                        ) : (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => saveManualRateCNY(config.cnyRate)}
-                            disabled={!config.cnyRate || config.cnyRate <= 0}
-                            className="shrink-0"
-                            title="Guardar tasa CNY manual"
-                          >
-                            <Save className="h-4 w-4" />
-                          </Button>
-                        )}
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                          {config.autoUpdateExchangeRateCNY ? (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={refreshRateCNY}
+                              disabled={exchangeRateLoadingCNY}
+                              className="!p-2"
+                              title="Actualizar tasa CNY desde API"
+                            >
+                              {exchangeRateLoadingCNY ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <RefreshCw className="h-4 w-4" />
+                              )}
+                            </Button>
+                          ) : (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => saveManualRateCNY(config.cnyRate)}
+                              disabled={!config.cnyRate || config.cnyRate <= 0}
+                              className="!p-2"
+                              title="Guardar tasa CNY manual"
+                            >
+                              <Save className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex items-center justify-between space-x-2">
@@ -983,26 +969,12 @@ export default function ConfiguracionPage() {
                         }}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="discount" className="text-sm md:text-base">{t('admin.management.financial.usdDiscount')}</Label>
-                      <Input
-                        id="discount"
-                        type="number"
-                        min={0}
-                        value={config.usdDiscountPercent}
-                        onChange={(e) => {
-                          const value = parseFloat(e.target.value);
-                          if (value >= 0 || e.target.value === "") {
-                            updateConfig('usdDiscountPercent', isNaN(value) ? 0 : value);
-                          }
-                        }}
-                      />
-                    </div>
                   </CardContent>
                 </Card>
               </div>
             </TabsContent>
 
+            {/* TAB: Notificaciones */}
             {/* TAB: Notificaciones */}
             <TabsContent value="notifications" className="space-y-6 md:space-y-8">
               <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
@@ -1016,45 +988,17 @@ export default function ConfiguracionPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label htmlFor="email-notifications" className="text-sm md:text-base">{t('admin.management.notifications.email')}</Label>
-                          <p className="text-xs md:text-sm text-slate-500">{t('admin.management.notifications.emailDesc')}</p>
-                        </div>
-                        <Switch
-                          id="email-notifications"
-                          checked={config.emailNotifications}
-                          onCheckedChange={(checked: boolean) => updateConfig('emailNotifications', checked)}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label htmlFor="whatsapp-notifications" className="text-sm md:text-base">{t('admin.management.notifications.whatsapp')}</Label>
-                          <p className="text-xs md:text-sm text-slate-500">{t('admin.management.notifications.whatsappDesc')}</p>
-                        </div>
-                        <Switch
-                          id="whatsapp-notifications"
-                          checked={config.whatsappNotifications}
-                          onCheckedChange={(checked: boolean) => updateConfig('whatsappNotifications', checked)}
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="alertDays" className="text-sm md:text-base">{t('admin.management.notifications.alertAfterDays')}</Label>
-                      <Input
-                        id="alertDays"
-                        type="number"
-                        min={0}
-                        max={365}
-                        value={config.alertsAfterDays}
-                        onChange={(e) => applySingleDay('alertsAfterDays', e.target.value)}
-                      />
-                      <p className="text-xs text-slate-500">{t('admin.management.notifications.alertAfterDaysHelp')}</p>
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="alertDays" className="text-sm md:text-base">{t('admin.management.notifications.alertAfterDays')}</Label>
+                    <Input
+                      id="alertDays"
+                      type="number"
+                      min={0}
+                      max={365}
+                      value={config.alertsAfterDays ?? ''}
+                      onChange={(e) => updateConfig('alertsAfterDays', Number(e.target.value))}
+                    />
+                    <p className="text-xs text-slate-500">{t('admin.management.notifications.alertAfterDaysHelp')}</p>
                   </div>
                 </CardContent>
               </Card>
