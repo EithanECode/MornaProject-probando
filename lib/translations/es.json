@@ -1796,7 +1796,8 @@
             "loading": "Cargando cajas...",
             "noneTitle": "No hay cajas disponibles",
             "noneSubtitle": "Crea una caja desde la pestaña Cajas para empaquetar.",
-            "select": "Seleccionar"
+            "select": "Seleccionar",
+            "cancel": "Cancelar"
           },
           "labelWarning": {
             "title": "Antes de empaquetar",
@@ -1806,7 +1807,9 @@
             "downloadError": "No se pudo generar la etiqueta",
             "noId": "ID de pedido no disponible",
             "toastTitleSuccess": "Etiqueta lista",
-            "toastTitleError": "Error generando"
+            "toastTitleError": "Error generando",
+            "generating": "Generando...",
+            "accept": "Aceptar"
           },
           "deleteBox": {
             "title": "Eliminar caja",
@@ -2815,6 +2818,15 @@
         "sendErrorDesc": "Intenta de nuevo más tarde."
       },
       "modals": {
+        "labelWarning": {
+          "title": "Antes de empaquetar",
+          "description": "Asegúrate de poner la etiqueta al producto antes de empaquetar.",
+          "download": "Descargar etiqueta",
+          "accept": "Aceptar",
+          "generating": "Generando...",
+          "toastTitleSuccess": "Etiqueta lista",
+          "downloaded": "Etiqueta generada"
+        },
         "quote": {
           "title": "Cotizar Pedido",
           "summaryTitle": "Resumen del Pedido",
@@ -2905,7 +2917,8 @@
           "loading": "Cargando cajas...",
           "noneTitle": "No hay cajas disponibles",
           "noneSubtitle": "Crea una caja desde la pestaña Cajas para empaquetar.",
-          "select": "Seleccionar"
+          "select": "Seleccionar",
+          "cancel": "Cancelar"
         },
         "deleteBox": {
           "title": "Eliminar caja",

@@ -1334,7 +1334,8 @@
             "loading": "加载箱子...",
             "noneTitle": "无可用箱子",
             "noneSubtitle": "在箱子标签中创建一个箱子以打包。",
-            "select": "选择"
+            "select": "选择",
+            "cancel": "取消"
           },
           "labelWarning": {
             "title": "打包前",
@@ -1344,7 +1345,9 @@
             "downloadError": "无法生成标签",
             "noId": "订单 ID 不可用",
             "toastTitleSuccess": "标签就绪",
-            "toastTitleError": "生成错误"
+            "toastTitleError": "生成错误",
+            "generating": "生成中...",
+            "accept": "生成并分配"
           },
           "deleteBox": {
             "title": "删除箱子",
@@ -2445,6 +2448,15 @@
       
     },
     "modals": {
+      "labelWarning": {
+        "title": "打包前",
+        "description": "请确保在打包前将标签贴在产品上。",
+        "download": "下载标签",
+        "accept": "生成并分配",
+        "generating": "生成中...",
+        "toastTitleSuccess": "标签就绪",
+        "downloaded": "标签已生成"
+      },
       "quote": {
         "title": "订单报价",
         "summaryTitle": "订单摘要",
@@ -2535,7 +2547,8 @@
         "loading": "加载箱子...",
         "noneTitle": "无可用箱子",
         "noneSubtitle": "在箱子标签中创建一个箱子以打包。",
-        "select": "选择"
+        "select": "选择",
+        "cancel": "取消"
       },
       "deleteBox": {
         "title": "删除箱子",
