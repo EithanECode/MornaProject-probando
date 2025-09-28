@@ -6,9 +6,9 @@ import { getSupabaseServiceRoleClient } from '@/lib/supabase/server';
 export async function GET(request: NextRequest) {
   try {
     const supabase = getSupabaseServiceRoleClient();
-    // Solo traer el primer registro (puedes ajustar por admin_id si lo necesitas)
+    // Configuración global: solo traer el primer registro
     const { data, error } = await supabase
-      .from('configurations')
+      .from('business_config')
       .select('*')
       .limit(1)
       .single();
@@ -31,9 +31,9 @@ export async function POST(request: NextRequest) {
   try {
     const updates = await request.json();
     const supabase = getSupabaseServiceRoleClient();
-    // Buscar si ya existe un registro (puedes ajustar por admin_id si lo necesitas)
+    // Buscar si ya existe un registro global
     const { data: existing, error: fetchError } = await supabase
-      .from('configurations')
+      .from('business_config')
       .select('id')
       .limit(1)
       .single();
@@ -41,16 +41,16 @@ export async function POST(request: NextRequest) {
     if (existing && existing.id) {
       // Actualizar registro existente
       upsertResult = await supabase
-        .from('configurations')
-        .update({ ...updates, lastUpdated: new Date().toISOString() })
+        .from('business_config')
+        .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', existing.id)
         .select()
         .single();
     } else {
       // Insertar nuevo registro
       upsertResult = await supabase
-        .from('configurations')
-        .insert([{ ...updates, lastUpdated: new Date().toISOString() }])
+        .from('business_config')
+        .insert([{ ...updates, updated_at: new Date().toISOString() }])
         .select()
         .single();
     }

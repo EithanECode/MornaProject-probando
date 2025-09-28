@@ -456,7 +456,17 @@ export default function ConfiguracionPage() {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-  const configToSave = { ...config };
+      // Solo guardar los campos globales requeridos
+      const configToSave = {
+        usd_rate: config.usdRate,
+        auto_update_exchange_rate: config.autoUpdateExchangeRate,
+        cny_rate: config.cnyRate,
+        auto_update_exchange_rate_cny: config.autoUpdateExchangeRateCNY,
+        profit_margin: config.profitMargin,
+        air_shipping_rate: config.airShippingRate,
+        sea_shipping_rate: config.seaShippingRate,
+        alerts_after_days: config.alertsAfterDays
+      };
       // Guardar configuración en base de datos a través de la API
       const response = await fetch('/api/config', {
         method: 'POST',
@@ -473,14 +483,39 @@ export default function ConfiguracionPage() {
       const now = new Date();
       setLastSaved(now);
       localStorage.setItem('lastConfigSaved', now.toISOString());
-      // *** CLAVE: Guardar configuración en localStorage para persistencia ***
-      localStorage.setItem('businessConfig', JSON.stringify(configToSave));
+      // Guardar solo los campos globales en localStorage (en camelCase para el frontend)
+      localStorage.setItem('businessConfig', JSON.stringify({
+        usdRate: config.usdRate,
+        autoUpdateExchangeRate: config.autoUpdateExchangeRate,
+        cnyRate: config.cnyRate,
+        autoUpdateExchangeRateCNY: config.autoUpdateExchangeRateCNY,
+        profitMargin: config.profitMargin,
+        airShippingRate: config.airShippingRate,
+        seaShippingRate: config.seaShippingRate,
+        alertsAfterDays: config.alertsAfterDays
+      }));
       toast({
         title: t('admin.management.messages.configSaved'),
         description: "Configuración guardada globalmente. Los cambios estarán disponibles para todos los usuarios.",
       });
       // Actualizar baseline para futuras comparaciones
-      baseConfigRef.current = { ...configToSave };
+      // Para evitar error de tipo, completar con los campos no globales actuales
+      baseConfigRef.current = {
+        usdRate: config.usdRate,
+        autoUpdateExchangeRate: config.autoUpdateExchangeRate,
+        cnyRate: config.cnyRate,
+        autoUpdateExchangeRateCNY: config.autoUpdateExchangeRateCNY,
+        profitMargin: config.profitMargin,
+        airShippingRate: config.airShippingRate,
+        seaShippingRate: config.seaShippingRate,
+        alertsAfterDays: config.alertsAfterDays,
+        sessionTimeout: config.sessionTimeout,
+        requireTwoFactor: config.requireTwoFactor,
+        maxQuotationsPerMonth: config.maxQuotationsPerMonth,
+        maxModificationsPerOrder: config.maxModificationsPerOrder,
+        quotationValidityDays: config.quotationValidityDays,
+        paymentDeadlineDays: config.paymentDeadlineDays
+      };
       setBaselineVersion(v => v + 1); // forzar recomputo de hasChanges
     } catch (error: any) {
       console.error('Error saving config:', error);
@@ -494,8 +529,51 @@ export default function ConfiguracionPage() {
     }
   };
 
+  // Actualiza el config y guarda inmediatamente si es campo global
   const updateConfig = (field: keyof BusinessConfig, value: any) => {
-    setConfig(prev => ({ ...prev, [field]: value }));
+    setConfig(prev => {
+      const newConfig = { ...prev, [field]: value };
+      // Si el campo es global, guardar inmediatamente
+      if ([
+        'usdRate',
+        'autoUpdateExchangeRate',
+        'cnyRate',
+        'autoUpdateExchangeRateCNY',
+        'profitMargin',
+        'airShippingRate',
+        'seaShippingRate',
+        'alertsAfterDays'
+      ].includes(field)) {
+        // Guardar en backend (en snake_case)
+        const configToSave = {
+          usd_rate: field === 'usdRate' ? value : newConfig.usdRate,
+          auto_update_exchange_rate: field === 'autoUpdateExchangeRate' ? value : newConfig.autoUpdateExchangeRate,
+          cny_rate: field === 'cnyRate' ? value : newConfig.cnyRate,
+          auto_update_exchange_rate_cny: field === 'autoUpdateExchangeRateCNY' ? value : newConfig.autoUpdateExchangeRateCNY,
+          profit_margin: field === 'profitMargin' ? value : newConfig.profitMargin,
+          air_shipping_rate: field === 'airShippingRate' ? value : newConfig.airShippingRate,
+          sea_shipping_rate: field === 'seaShippingRate' ? value : newConfig.seaShippingRate,
+          alerts_after_days: field === 'alertsAfterDays' ? value : newConfig.alertsAfterDays
+        };
+        fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(configToSave)
+        });
+        // Guardar en localStorage en camelCase para el frontend
+        localStorage.setItem('businessConfig', JSON.stringify({
+          usdRate: newConfig.usdRate,
+          autoUpdateExchangeRate: newConfig.autoUpdateExchangeRate,
+          cnyRate: newConfig.cnyRate,
+          autoUpdateExchangeRateCNY: newConfig.autoUpdateExchangeRateCNY,
+          profitMargin: newConfig.profitMargin,
+          airShippingRate: newConfig.airShippingRate,
+          seaShippingRate: newConfig.seaShippingRate,
+          alertsAfterDays: newConfig.alertsAfterDays
+        }));
+      }
+      return newConfig;
+    });
   };
 
   // Comparar configuraciones usando ref para evitar loops infinitos
@@ -562,7 +640,7 @@ export default function ConfiguracionPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">{t('admin.management.common.loading')}</p>
+          <p className="mt-4 text-gray-600">Cargando...</p>
         </div>
       </div>
     );
