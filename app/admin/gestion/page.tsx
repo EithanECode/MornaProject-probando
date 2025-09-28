@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { 
@@ -71,6 +72,30 @@ interface BusinessConfig {
 }
 
 export default function ConfiguracionPage() {
+  // Supabase client para obtener usuario
+  const supabase = useMemo(() => createClientComponentClient(), []);
+  // Estado de montaje
+  const [mounted, setMounted] = useState(false);
+  // Efecto para asegurar que el usuario esté logueado y obtener su id (solo después de montar)
+  useEffect(() => {
+    if (!mounted) return;
+    const checkUser = async () => {
+      const { data: userData, error } = await supabase.auth.getUser();
+      const user = userData?.user;
+      if (!user) {
+        // Intentar obtener el id de localStorage
+        const localId = localStorage.getItem('currentUserId');
+        if (!localId) {
+          window.location.href = '/login-register';
+        }
+        // Si existe en localStorage, NO redirigir
+      } else {
+        // Guardar el id en localStorage por si se necesita en otras partes
+        localStorage.setItem('currentUserId', user.id);
+      }
+    };
+    checkUser();
+  }, [supabase, mounted]);
   // Log cuando el componente se monta
   useEffect(() => {
     console.log('[Admin] Component MOUNTED');
@@ -78,12 +103,13 @@ export default function ConfiguracionPage() {
       console.log('[Admin] Component UNMOUNTED');
     };
   }, []);
+
+  // (Eliminado segundo useEffect duplicado de sesión)
   
   const { t } = useTranslation();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const [config, setConfig] = useState<BusinessConfig>({
     airShippingRate: 8.50,
     seaShippingRate: 180.00,
@@ -110,6 +136,8 @@ export default function ConfiguracionPage() {
   
   const [isLoading, setIsLoading] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  // Estado para auditoría
+  const [lastAdmin, setLastAdmin] = useState<{ id: string; updated_at: string } | null>(null);
   const { toast } = useToast();
 
   // Callback estable para actualizar la tasa USD
@@ -331,7 +359,7 @@ export default function ConfiguracionPage() {
     configLoadedRef.current = true;
     console.log('[Admin] loadConfig started...');
     
-    const loadConfig = async () => {
+  const loadConfig = async () => {
       try {
         // 1. Cargar configuración desde localStorage (más confiable)
         const savedConfig = localStorage.getItem('businessConfig');
@@ -371,18 +399,19 @@ export default function ConfiguracionPage() {
         try {
           const response = await fetch('/api/config');
           const data = await response.json();
-          
           if (data.success && data.config) {
             console.log('[Admin] API config received:', data.config);
-            console.log('[Admin] localStorage autoUpdateExchangeRateCNY:', mergedConfig.autoUpdateExchangeRateCNY);
-            console.log('[Admin] API autoUpdateExchangeRateCNY:', data.config.autoUpdateExchangeRateCNY);
-            
-            // Priorizar localStorage para configuraciones de exchange rate
             mergedConfig = { 
               ...mergedConfig, 
               ...data.config
             };
-            console.log('[Admin] Final mergedConfig autoUpdateExchangeRateCNY:', mergedConfig.autoUpdateExchangeRateCNY);
+            // Guardar info de auditoría si existe
+            if (data.config.admin_id || data.config.updated_at) {
+              setLastAdmin({
+                id: data.config.admin_id || '',
+                updated_at: data.config.updated_at || ''
+              });
+            }
           }
         } catch (apiError) {
           console.error('Error loading config from API, using localStorage only:', apiError);
@@ -456,7 +485,19 @@ export default function ConfiguracionPage() {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      // Solo guardar los campos globales requeridos
+      // Obtener usuario actual de Supabase correctamente
+      const { data: userData, error } = await supabase.auth.getUser();
+      let user = userData?.user;
+      let adminId = user?.id;
+      // Si no hay usuario, intentar obtener el id de localStorage
+      if (!adminId) {
+        adminId = localStorage.getItem('currentUserId') || undefined;
+      }
+      if (!adminId) {
+        let msg = 'No se pudo obtener el id del administrador (ni de sesión ni de localStorage)';
+        throw new Error(msg);
+      }
+      // Solo guardar los campos globales requeridos y datos de auditoría
       const configToSave = {
         usd_rate: config.usdRate,
         auto_update_exchange_rate: config.autoUpdateExchangeRate,
@@ -465,7 +506,8 @@ export default function ConfiguracionPage() {
         profit_margin: config.profitMargin,
         air_shipping_rate: config.airShippingRate,
         sea_shipping_rate: config.seaShippingRate,
-        alerts_after_days: config.alertsAfterDays
+        alerts_after_days: config.alertsAfterDays,
+        admin_id: adminId
       };
       // Guardar configuración en base de datos a través de la API
       const response = await fetch('/api/config', {
@@ -494,12 +536,16 @@ export default function ConfiguracionPage() {
         seaShippingRate: config.seaShippingRate,
         alertsAfterDays: config.alertsAfterDays
       }));
+      // Actualizar info de auditoría
+      setLastAdmin({
+        id: adminId,
+        updated_at: now.toISOString()
+      });
       toast({
         title: t('admin.management.messages.configSaved'),
         description: "Configuración guardada globalmente. Los cambios estarán disponibles para todos los usuarios.",
       });
       // Actualizar baseline para futuras comparaciones
-      // Para evitar error de tipo, completar con los campos no globales actuales
       baseConfigRef.current = {
         usdRate: config.usdRate,
         autoUpdateExchangeRate: config.autoUpdateExchangeRate,
@@ -646,6 +692,18 @@ export default function ConfiguracionPage() {
     );
   }
 
+  // Loading ya montado, ahora sí traducción
+  if (mounted && !configLoadedRef.current) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">{t('admin.management.common.loading')}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={
@@ -691,10 +749,20 @@ export default function ConfiguracionPage() {
               </div>
               
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-                {lastSaved && (
+                {(lastSaved || lastAdmin) && (
                   <div className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                     <Clock className="w-4 h-4 inline mr-1" />
-                    {t('admin.management.header.lastSaved')} {lastSaved.toLocaleString('es-VE')}
+                    {lastSaved && (
+                      <>Última configuración guardada el {lastSaved.toLocaleString('es-VE')}</>
+                    )}
+                    {lastAdmin && lastAdmin.id && lastAdmin.updated_at && (
+                      <>
+                        <span className="mx-1">|</span>
+                        <span>
+                          Cambio hecho por <span className="font-semibold">{lastAdmin.id}</span> el <span>{new Date(lastAdmin.updated_at).toLocaleString('es-VE')}</span>
+                        </span>
+                      </>
+                    )}
                   </div>
                 )}
                 <Button 
@@ -981,14 +1049,24 @@ export default function ConfiguracionPage() {
                         id="profit"
                         type="number"
                         min={0}
+                        max={100}
                         value={config.profitMargin}
                         onChange={(e) => {
-                          const value = parseFloat(e.target.value);
-                          if (value >= 0 || e.target.value === "") {
-                            updateConfig('profitMargin', isNaN(value) ? 0 : value);
+                          let value = parseFloat(e.target.value);
+                          if (e.target.value === "") {
+                            updateConfig('profitMargin', 0);
+                            return;
                           }
+                          if (isNaN(value)) value = 0;
+                          if (value < 0) value = 0;
+                          if (value > 100) value = 100;
+                          updateConfig('profitMargin', value);
                         }}
+                        className={config.profitMargin < 0 || config.profitMargin > 100 ? 'border-red-400' : ''}
                       />
+                      {(config.profitMargin < 0 || config.profitMargin > 100) && (
+                        <p className="text-xs text-red-600">El margen debe estar entre 0% y 100%.</p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

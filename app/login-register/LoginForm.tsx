@@ -9,10 +9,11 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 type Props = {
   onNavigateToPasswordReset: () => void;
+  idPrefix?: string;
 };
 
 
-export default function LoginForm({ onNavigateToPasswordReset }: Props) {
+export default function LoginForm({ onNavigateToPasswordReset, idPrefix = "" }: Props) {
   const { t } = useTranslation();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -90,8 +91,15 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
       const supabase = getSupabaseBrowserClient();
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      // Asegurar registro en userlevel sólo si NO existe; no sobrescribir roles existentes
+      // Guardar el id del usuario en localStorage tras login
       const userId = data?.user?.id;
+      if (userId) {
+  localStorage.setItem('currentUserId', userId);
+  // Depuración: mostrar el UID guardado
+  console.log('[Login] UID guardado en localStorage:', userId);
+  console.log('[Login] Valor actual en localStorage.currentUserId:', localStorage.getItem('currentUserId'));
+      }
+      // Asegurar registro en userlevel sólo si NO existe; no sobrescribir roles existentes
       if (userId) {
         try {
           // Verificar si ya existe un userlevel distinto
@@ -192,6 +200,10 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
     onNavigateToPasswordReset?.();
   };
 
+  // IDs únicos para inputs
+  const emailId = idPrefix ? `${idPrefix}-login-email` : "login-email";
+  const passwordId = idPrefix ? `${idPrefix}-login-password` : "login-password";
+
   return (
     <form className="auth-form login-form" onSubmit={handleSubmit}>
       <div className="login-lottie-icon">
@@ -206,10 +218,10 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
         )}
       </div>
       <h2>{t('auth.login.title')}</h2>
-      <label htmlFor="login-email">{t('auth.common.email')}</label>
+      <label htmlFor={emailId}>{t('auth.common.email')}</label>
       <input
         type="email"
-        id="login-email"
+        id={emailId}
         placeholder={t('auth.common.emailPlaceholder')}
         value={email}
         maxLength={MAX_EMAIL}
@@ -222,12 +234,12 @@ export default function LoginForm({ onNavigateToPasswordReset }: Props) {
         <p className="text-red-500 text-xs mt-1" role="alert">{emailError}</p>
       )}
 
-    <label htmlFor="login-password">{t('auth.common.password')}</label>
+    <label htmlFor={passwordId}>{t('auth.common.password')}</label>
       <div className="password-input-container">
         <input
           type={showPassword ? "text" : "password"}
-          id="login-password"
-      placeholder={t('auth.common.passwordPlaceholder')}
+          id={passwordId}
+          placeholder={t('auth.common.passwordPlaceholder')}
           value={password}
           maxLength={MAX_PASSWORD}
           onChange={(e) => setPassword(e.target.value.slice(0, MAX_PASSWORD))}
