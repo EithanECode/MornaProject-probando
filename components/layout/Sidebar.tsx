@@ -44,14 +44,6 @@ const useSafeClientContext = () => {
   }
 };
 
-const useSafeVzlaContext = () => {
-  try {
-    return useVzlaContext();
-  } catch {
-    return null;
-  }
-};
-
 const useSafeChinaContext = () => {
   try {
     return useChinaContext();
@@ -208,6 +200,14 @@ const getAdminMenuItems = (t: (key: string) => string) => [
     badge: null,
     color: 'text-orange-500',
     path: '/admin/pedidos'
+  },
+  {
+    id: 'payments',
+    label: t && typeof t === 'function' ? t('sidebar.payments') : 'Pagos',
+    icon: CreditCard,
+    badge: null,
+    color: 'text-orange-500',
+    path: '/admin/pagos'
   },
   {
     id: 'payments-validation',
@@ -396,7 +396,13 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
   // Call all hooks unconditionally at the top level
   const clientCtx = useSafeClientContext();
-  const vzlaCtx = useSafeVzlaContext();
+  // Hook seguro para evitar error si no hay provider
+  let vzlaCtx = null;
+  try {
+    vzlaCtx = useVzlaContext();
+  } catch {
+    vzlaCtx = null;
+  }
   const chinaCtx = useSafeChinaContext();
   const adminCtx = useSafeAdminContext();
 
