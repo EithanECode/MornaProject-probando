@@ -14,6 +14,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Toaster } from '@/components/ui/toaster';
 import { toast } from '@/hooks/use-toast';
+// PDF
+import jsPDF from 'jspdf';
 
 import {
   Calculator,
@@ -95,6 +97,23 @@ interface ContainerItem {
   creation_date?: string;
   created_at?: string;
   [key: string]: any;
+}
+
+// Utilidad para convertir un SVG público a PNG DataURL para incrustar en PDF
+async function svgToPngDataUrl(path: string, size=120): Promise<string>{
+  const resp = await fetch(path);
+  const svgText = await resp.text();
+  const blob = new Blob([svgText], { type: 'image/svg+xml' });
+  const blobUrl = URL.createObjectURL(blob);
+  try {
+    const img = await new Promise<HTMLImageElement>((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=blobUrl; });
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d'); if(!ctx) throw new Error('Canvas no soportado');
+    ctx.clearRect(0,0,size,size);
+    ctx.drawImage(img,0,0,size,size);
+    return canvas.toDataURL('image/png');
+  } finally { URL.revokeObjectURL(blobUrl); }
 }
 
 // Elimina los datos de ejemplo
@@ -260,8 +279,14 @@ export default function PedidosChina() {
   const [newContainerName, setNewContainerName] = useState('');
   // Modal Empaquetar
   const modalEmpaquetarRef = useRef<HTMLDivElement>(null);
-  const [modalEmpaquetar, setModalEmpaquetar] = useState<{ open: boolean; pedidoId?: number }>() as any;
+  interface ModalEmpaquetarState { open: boolean; pedidoId?: number }
+  const [modalEmpaquetar, setModalEmpaquetar] = useState<ModalEmpaquetarState>({ open: false });
   const [isModalEmpaquetarClosing, setIsModalEmpaquetarClosing] = useState(false);
+  // Modal Etiqueta antes de confirmar asignación a caja
+  const modalEtiquetaRef = useRef<HTMLDivElement>(null);
+  const [modalEtiqueta, setModalEtiqueta] = useState<{ open: boolean; pedidoId?: number; box?: BoxItem }>( { open: false } );
+  const [isModalEtiquetaClosing, setIsModalEtiquetaClosing] = useState(false);
+  const [generatingLabel, setGeneratingLabel] = useState(false);
 
   // Modal Empaquetar Caja (asignar contenedor)
   const modalEmpaquetarCajaRef = useRef<HTMLDivElement>(null);
@@ -588,6 +613,13 @@ export default function PedidosChina() {
       setModalEmpaquetar({ open: false });
       setIsModalEmpaquetarClosing(false);
     }, 300);
+  };
+  const closeModalEtiqueta = () => {
+    setIsModalEtiquetaClosing(true);
+    setTimeout(()=>{
+      setModalEtiqueta({ open: false });
+      setIsModalEtiquetaClosing(false);
+    },300);
   };
 
   const closeModalEmpaquetarCaja = () => {
@@ -1187,6 +1219,43 @@ export default function PedidosChina() {
     esteMes: pedidos.length
   };
 
+  // Generar etiqueta PDF 50x35 mm
+  async function handleGenerateOrderLabelPdf(pedidoId?: number){
+    if(!pedidoId){
+  toast({ title: t('chinese.ordersPage.modals.labelWarning.toastTitleError', { defaultValue: 'Error generando' }), description: t('chinese.ordersPage.modals.labelWarning.noId', { defaultValue: 'ID de pedido no disponible' }) });
+      return;
+    }
+    try {
+      const labelW = 50; // mm
+      const labelH = 35; // mm
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [labelH, labelW] });
+      const padding = 3;
+      doc.setFillColor(255,255,255); doc.rect(0,0,labelW,labelH,'F');
+      doc.setDrawColor(40,40,45); doc.setLineWidth(0.4); doc.roundedRect(0.7,0.7,labelW-1.4,labelH-1.4,2,2);
+  let logoData: string | undefined;
+      try { logoData = await svgToPngDataUrl('/pita_icon.svg', 120); } catch { /* ignore logo errors */ }
+      doc.setFillColor(15,76,129); doc.rect(0,0,labelW,9,'F');
+      if(logoData){
+        try { doc.addImage(logoData, 'PNG', 2,1.2,7,7); } catch {/* ignore */}
+      } else {
+        // fallback simple
+        doc.setFont('helvetica','bold'); doc.setTextColor(255,255,255); doc.setFontSize(6); doc.text('PITA',4.5,5,{align:'center'});
+      }
+      doc.setFont('helvetica','bold'); doc.setTextColor(255,255,255); doc.setFontSize(7.5); doc.text('PITA EXPRESS', labelW/2,5.2,{align:'center'});
+      const code = `#PED-${String(pedidoId).padStart(3,'0')}`;
+      doc.setFont('helvetica','bold'); doc.setTextColor(20,20,25); doc.setFontSize(16); doc.text(code, labelW/2, 20, { align: 'center' });
+      doc.setFont('helvetica','normal'); doc.setFontSize(5.2); doc.setTextColor(60,60,65);
+  const desc = t('chinese.ordersPage.modals.labelWarning.description', { defaultValue: 'Asegúrate de poner la etiqueta al producto antes de empaquetar.' });
+      doc.text(doc.splitTextToSize(desc, labelW-8), labelW/2, 26.5, { align: 'center' });
+      const blobUrl = doc.output('bloburl');
+      window.open(blobUrl,'_blank','noopener,noreferrer');
+  toast({ title: t('chinese.ordersPage.modals.labelWarning.toastTitleSuccess', { defaultValue: 'Etiqueta lista' }), description: t('chinese.ordersPage.modals.labelWarning.downloaded', { defaultValue: 'Etiqueta generada' }) });
+    } catch(e){
+      console.error(e);
+  toast({ title: t('chinese.ordersPage.modals.labelWarning.toastTitleError', { defaultValue: 'Error generando' }), description: t('chinese.ordersPage.modals.labelWarning.downloadError', { defaultValue: 'No se pudo generar la etiqueta' }) });
+    }
+  }
+
   const pedidosFiltrados = pedidos.filter(p => {
     const estadoOk = filtroEstado === 'todos' || p.estado === filtroEstado;
     const clienteOk = !filtroCliente || p.cliente.toLowerCase().includes(filtroCliente.toLowerCase());
@@ -1241,6 +1310,7 @@ export default function PedidosChina() {
 
   // Asignar pedido a caja (empaquetar)
   const handleSelectCajaForPedido = async (pedidoId: number, box: BoxItem) => {
+    // Esta versión ahora se invoca luego de aceptar la etiqueta
     const boxId = box.box_id ?? box.boxes_id ?? box.id;
     if (!boxId) {
       toast({ title: t('chinese.ordersPage.toasts.invalidBoxTitle'), description: t('chinese.ordersPage.toasts.invalidBoxDesc') });
@@ -2930,7 +3000,15 @@ export default function PedidosChina() {
                 size="sm"
                 className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={stateNum >= 3}
-                onClick={() => modalEmpaquetar?.pedidoId && handleSelectCajaForPedido(modalEmpaquetar.pedidoId, box)}
+                // Reemplazado flujo: abrir modal etiqueta en lugar de asignar directamente
+                onClick={() => {
+                  if (modalEmpaquetar?.pedidoId) {
+                    // Guardar combo y abrir modal etiqueta
+                    setModalEtiqueta({ open: true, pedidoId: modalEmpaquetar.pedidoId, box });
+                    // Cerramos modal de selección de caja
+                    closeModalEmpaquetar();
+                  }
+                }}
               >
                 {t('chinese.ordersPage.modals.selectBoxForOrder.select')}
               </Button>
@@ -2940,6 +3018,64 @@ export default function PedidosChina() {
                   })}
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Modal Etiqueta: confirmar generación etiqueta antes de asignar caja */}
+        {modalEtiqueta.open && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
+            <div
+              ref={modalEtiquetaRef}
+              className={`bg-white rounded-2xl p-6 max-w-md mx-4 w-full transition-all duration-300 ${
+                isModalEtiquetaClosing ? 'translate-y-full scale-95 opacity-0' : 'animate-in slide-in-from-bottom-4 duration-300'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.labelWarning.title', { defaultValue: 'Generar Etiqueta' })}</h3>
+                <Button variant="ghost" size="sm" onClick={() => { closeModalEtiqueta(); setTimeout(()=>{ setModalEmpaquetar(prev=> ({...prev, open:true})); },350); }} className="h-8 w-8 p-0">
+                  <span className="text-2xl">×</span>
+                </Button>
+              </div>
+              <p className="text-slate-600 mb-4 text-sm">
+                {t('chinese.ordersPage.modals.labelWarning.description', { defaultValue: 'Asegúrate de poner la etiqueta al producto antes de empaquetar.' })}
+              </p>
+              <div className="flex flex-wrap justify-end gap-3">
+                {/* Botón de generar (abrir en nueva pestaña) sin descarga directa */}
+                <Button
+                  variant="outline"
+                  onClick={async ()=>{
+                    if(!modalEtiqueta.pedidoId) return;
+                    setGeneratingLabel(true);
+                    try { await handleGenerateOrderLabelPdf(modalEtiqueta.pedidoId); } finally { setGeneratingLabel(false); }
+                  }}
+                  disabled={generatingLabel}
+                >
+                  {generatingLabel ? t('chinese.ordersPage.modals.labelWarning.generating', { defaultValue: 'Generando...' }) : t('chinese.ordersPage.modals.labelWarning.download', { defaultValue: 'Ver etiqueta' })}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => { closeModalEtiqueta(); setTimeout(()=>{ setModalEmpaquetar(prev=> ({...prev, open:true})); },350); }}
+                  disabled={generatingLabel}
+                >
+                  {t('chinese.ordersPage.modals.selectBoxForOrder.cancel', { defaultValue: 'Cancelar' })}
+                </Button>
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700"
+                  disabled={generatingLabel}
+                  onClick={async ()=>{
+                    if(!modalEtiqueta.pedidoId || !modalEtiqueta.box) return;
+                    setGeneratingLabel(true);
+                    try {
+                      // Solo asignar sin abrir PDF
+                      await handleSelectCajaForPedido(modalEtiqueta.pedidoId, modalEtiqueta.box);
+                      closeModalEtiqueta();
+                    } finally { setGeneratingLabel(false); }
+                  }}
+                >
+                  {generatingLabel ? t('chinese.ordersPage.modals.labelWarning.generating', { defaultValue: 'Generando...' }) : t('chinese.ordersPage.modals.labelWarning.accept', { defaultValue: 'Generar y asignar' })}
+                </Button>
+              </div>
             </div>
           </div>
         )}

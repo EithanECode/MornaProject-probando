@@ -1343,7 +1343,9 @@
             "downloadError": "Label could not be generated",
             "noId": "Order ID not available",
             "toastTitleSuccess": "Label ready",
-            "toastTitleError": "Generation error"
+            "toastTitleError": "Generation error",
+            "generating": "Generating...",
+            "accept": "Accept"
           },
           "deleteBox": {
             "title": "Delete box",
@@ -2450,6 +2452,15 @@
       "sendErrorDesc": "Try again later."
     },
     "modals": {
+      "labelWarning": {
+        "title": "Before packaging",
+        "description": "Make sure to place the label on the product before packaging.",
+        "download": "Download label",
+        "accept": "Generate and assign",
+        "generating": "Generating...",
+        "toastTitleSuccess": "Label ready",
+        "downloaded": "Label generated"
+      },
       "quote": {
         "title": "Quote Order",
         "summaryTitle": "Order Summary",
@@ -2540,7 +2551,8 @@
         "loading": "Loading boxes...",
         "noneTitle": "No boxes available",
         "noneSubtitle": "Create a box from the Boxes tab to pack.",
-        "select": "Select"
+        "select": "Select",
+        "cancel": "Cancel"
       },
       "deleteBox": {
         "title": "Delete box",
