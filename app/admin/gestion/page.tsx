@@ -51,6 +51,7 @@ interface BusinessConfig {
   // Parámetros financieros
   usdRate: number;
   cnyRate: number;
+  binanceRate: number;
   profitMargin: number;
   // usdDiscountPercent eliminado
 
@@ -70,6 +71,7 @@ interface BusinessConfig {
   // Configuración de tasa de cambio
   autoUpdateExchangeRate: boolean;
   autoUpdateExchangeRateCNY: boolean;
+  autoUpdateBinanceRate: boolean;
 }
 
 export default function ConfiguracionPage() {
@@ -117,6 +119,7 @@ export default function ConfiguracionPage() {
     seaShippingRate: 180.00,
     usdRate: 36.25,
     cnyRate: 7.25,
+    binanceRate: 299.51,
     profitMargin: 25,
     maxQuotationsPerMonth: 5,
     maxModificationsPerOrder: 2,
@@ -126,7 +129,8 @@ export default function ConfiguracionPage() {
     sessionTimeout: 60,
     requireTwoFactor: false,
     autoUpdateExchangeRate: false,
-    autoUpdateExchangeRateCNY: false
+    autoUpdateExchangeRateCNY: false,
+    autoUpdateBinanceRate: false
   });
   
   // Referencia al estado base para detectar cambios
@@ -394,6 +398,12 @@ export default function ConfiguracionPage() {
     return `Hace ${diffHours} horas`;
   }, [exchangeRateLastUpdatedCNY]);
 
+  // ========== BINANCE RATE (USDT → VES) - MODO MANUAL ==========
+  // Sin auto-actualización, solo edición manual del campo
+  
+  // Estado para la calculadora de conversión USDT → VES
+  const [usdtAmount, setUsdtAmount] = useState<number>(100);
+
   useEffect(() => {
     console.log('[Admin] loadConfig useEffect triggered, configLoaded:', configLoadedRef.current);
     
@@ -412,11 +422,27 @@ export default function ConfiguracionPage() {
         const savedConfig = localStorage.getItem('businessConfig');
         console.log('[Admin] Raw localStorage savedConfig:', savedConfig);
         
+        // Limpiar binanceRate viejo de localStorage si existe
+        if (savedConfig) {
+          try {
+            const parsed = JSON.parse(savedConfig);
+            if (parsed.binanceRate && parsed.binanceRate < 100) {
+              // Si tiene un valor viejo (< 100), eliminarlo
+              delete parsed.binanceRate;
+              localStorage.setItem('businessConfig', JSON.stringify(parsed));
+              console.log('[Admin] Removed old binanceRate from localStorage');
+            }
+          } catch (e) {
+            console.error('[Admin] Error cleaning localStorage:', e);
+          }
+        }
+        
         let mergedConfig = {
           airShippingRate: 8.50,
           seaShippingRate: 180.00,
           usdRate: 36.25,
           cnyRate: 7.25,
+          binanceRate: 299.51,
           profitMargin: 25,
           maxQuotationsPerMonth: 5,
           maxModificationsPerOrder: 2,
@@ -426,7 +452,8 @@ export default function ConfiguracionPage() {
           sessionTimeout: 60,
           requireTwoFactor: false,
           autoUpdateExchangeRate: false,
-          autoUpdateExchangeRateCNY: false
+          autoUpdateExchangeRateCNY: false,
+          autoUpdateBinanceRate: false
         };
 
         if (savedConfig) {
@@ -535,6 +562,8 @@ export default function ConfiguracionPage() {
         auto_update_exchange_rate: config.autoUpdateExchangeRate,
         cny_rate: config.cnyRate,
         auto_update_exchange_rate_cny: config.autoUpdateExchangeRateCNY,
+        binance_rate: config.binanceRate,
+        auto_update_binance_rate: config.autoUpdateBinanceRate,
         profit_margin: config.profitMargin,
         air_shipping_rate: config.airShippingRate,
         sea_shipping_rate: config.seaShippingRate,
@@ -563,6 +592,8 @@ export default function ConfiguracionPage() {
         autoUpdateExchangeRate: config.autoUpdateExchangeRate,
         cnyRate: config.cnyRate,
         autoUpdateExchangeRateCNY: config.autoUpdateExchangeRateCNY,
+        binanceRate: config.binanceRate,
+        autoUpdateBinanceRate: config.autoUpdateBinanceRate,
         profitMargin: config.profitMargin,
         airShippingRate: config.airShippingRate,
         seaShippingRate: config.seaShippingRate,
@@ -583,6 +614,8 @@ export default function ConfiguracionPage() {
         autoUpdateExchangeRate: config.autoUpdateExchangeRate,
         cnyRate: config.cnyRate,
         autoUpdateExchangeRateCNY: config.autoUpdateExchangeRateCNY,
+        binanceRate: config.binanceRate,
+        autoUpdateBinanceRate: config.autoUpdateBinanceRate,
         profitMargin: config.profitMargin,
         airShippingRate: config.airShippingRate,
         seaShippingRate: config.seaShippingRate,
@@ -617,6 +650,8 @@ export default function ConfiguracionPage() {
         'autoUpdateExchangeRate',
         'cnyRate',
         'autoUpdateExchangeRateCNY',
+        'binanceRate',
+        'autoUpdateBinanceRate',
         'profitMargin',
         'airShippingRate',
         'seaShippingRate',
@@ -628,6 +663,8 @@ export default function ConfiguracionPage() {
           auto_update_exchange_rate: field === 'autoUpdateExchangeRate' ? value : newConfig.autoUpdateExchangeRate,
           cny_rate: field === 'cnyRate' ? value : newConfig.cnyRate,
           auto_update_exchange_rate_cny: field === 'autoUpdateExchangeRateCNY' ? value : newConfig.autoUpdateExchangeRateCNY,
+          binance_rate: field === 'binanceRate' ? value : newConfig.binanceRate,
+          auto_update_binance_rate: field === 'autoUpdateBinanceRate' ? value : newConfig.autoUpdateBinanceRate,
           profit_margin: field === 'profitMargin' ? value : newConfig.profitMargin,
           air_shipping_rate: field === 'airShippingRate' ? value : newConfig.airShippingRate,
           sea_shipping_rate: field === 'seaShippingRate' ? value : newConfig.seaShippingRate,
@@ -644,6 +681,8 @@ export default function ConfiguracionPage() {
           autoUpdateExchangeRate: newConfig.autoUpdateExchangeRate,
           cnyRate: newConfig.cnyRate,
           autoUpdateExchangeRateCNY: newConfig.autoUpdateExchangeRateCNY,
+          binanceRate: newConfig.binanceRate,
+          autoUpdateBinanceRate: newConfig.autoUpdateBinanceRate,
           profitMargin: newConfig.profitMargin,
           airShippingRate: newConfig.airShippingRate,
           seaShippingRate: newConfig.seaShippingRate,
@@ -950,8 +989,8 @@ export default function ConfiguracionPage() {
                           value={config.usdRate}
                           onChange={e => updateConfig('usdRate', Number(e.target.value))}
                           className="pr-12"
-                          title="Actualizar tasa desde BCV"
-                          disabled={exchangeRateLoading}
+                          title={config.autoUpdateExchangeRate ? "Campo bloqueado: Auto-actualización activada" : "Editar tasa manualmente"}
+                          disabled={exchangeRateLoading || config.autoUpdateExchangeRate}
                         />
                         <Button
                           type="button"
@@ -959,13 +998,13 @@ export default function ConfiguracionPage() {
                           size="sm"
                           onClick={refreshRate}
                           disabled={exchangeRateLoading}
-                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-blue-100"
+                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100"
                           title="Actualizar tasa desde BCV"
                         >
                           {exchangeRateLoading ? (
-                            <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+                            <RefreshCw className="h-4 w-4 animate-spin text-black" />
                           ) : (
-                            <RefreshCw className="h-4 w-4 text-blue-600" />
+                            <RefreshCw className="h-4 w-4 text-black" />
                           )}
                         </Button>
                       </div>
@@ -1036,8 +1075,9 @@ export default function ConfiguracionPage() {
                             config.cnyRate}
                           onChange={(e) => applyCost('cnyRate', e.target.value)}
                           className={exchangeRateErrorCNY ? 'border-red-300 pr-12' : 'pr-12'}
-                          disabled={exchangeRateLoadingCNY}
+                          disabled={exchangeRateLoadingCNY || config.autoUpdateExchangeRateCNY}
                           placeholder="7.2500"
+                          title={config.autoUpdateExchangeRateCNY ? "Campo bloqueado: Auto-actualización activada" : "Editar tasa manualmente"}
                         />
                         <Button
                           type="button"
@@ -1045,13 +1085,13 @@ export default function ConfiguracionPage() {
                           size="sm"
                           onClick={refreshRateCNY}
                           disabled={exchangeRateLoadingCNY}
-                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-red-100"
+                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100"
                           title="Actualizar tasa desde API"
                         >
                           {exchangeRateLoadingCNY ? (
-                            <RefreshCw className="h-4 w-4 animate-spin text-red-600" />
+                            <RefreshCw className="h-4 w-4 animate-spin text-black" />
                           ) : (
-                            <RefreshCw className="h-4 w-4 text-red-600" />
+                            <RefreshCw className="h-4 w-4 text-black" />
                           )}
                         </Button>
                       </div>
@@ -1095,18 +1135,113 @@ export default function ConfiguracionPage() {
                   </CardContent>
                 </Card>
               </div>
-              {/* Alert azul debajo de las tasas */}
-              <div className="mt-4">
-                <Alert className="border-blue-200 bg-blue-50">
-                  <CheckCircle className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-700">
-                    <div dangerouslySetInnerHTML={{ __html: t('admin.management.financial.configurationAlert') }} />
-                  </AlertDescription>
-                </Alert>
-              </div>
-              {/* Margen de ganancia debajo del alert */}
-              <div className="mt-4">
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm w-full">
+
+              {/* Segunda fila: Tasa Binance y Margen de Ganancia */}
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6">
+                {/* Tarjeta Binance */}
+                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-black text-base md:text-lg">
+                      <Globe className="w-5 h-5 mr-2 text-green-600" />
+                      {t('admin.management.financial.binanceRateTitle')}
+                    </CardTitle>
+                    <CardDescription className="text-black text-sm">
+                      {t('admin.management.financial.binanceRateDesc')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-3 p-4 border border-orange-200 rounded-lg bg-orange-50/50">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🪙</span>
+                        <Label className="text-sm font-semibold text-orange-800">{t('admin.management.financial.binanceRateLabel')}</Label>
+                      </div>
+                      <div className="relative">
+                        <Input
+                          id="binanceRate"
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          value={config.binanceRate}
+                          onChange={(e) => {
+                            const val = parseFloat(e.target.value) || 0;
+                            setConfig(prev => ({ ...prev, binanceRate: val }));
+                            setBaselineVersion(v => v + 1);
+                          }}
+                          className="pr-12"
+                          disabled={false}
+                          placeholder="299.51"
+                          title="Edita manualmente la tasa de Binance P2P (consulta en binance.com/es/p2p)"
+                        />
+                      </div>
+                      <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-xs text-blue-800">
+                          💡 <strong>{t('admin.management.financial.binanceConsejo')}</strong>{' '}
+                          <a 
+                            href="https://p2p.binance.com/es/trade/VES/USDT" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="underline hover:text-blue-600"
+                          >
+                            {t('admin.management.financial.binanceConsejoLink')}
+                          </a>
+                          {' '}{t('admin.management.financial.binanceConsejoText')}
+                        </p>
+                      </div>
+
+                      {/* Calculadora de Conversión USDT → VES */}
+                      <div className="mt-4 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Calculator className="w-5 h-5 text-orange-600" />
+                          <h4 className="text-sm font-semibold text-orange-900">{t('admin.management.financial.calculadoraTitle')}</h4>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Input USDT */}
+                          <div className="space-y-2">
+                            <Label htmlFor="usdtCalc" className="text-xs text-orange-800">{t('admin.management.financial.calculadoraCantidadUSDT')}</Label>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-600 font-semibold">₮</span>
+                              <Input
+                                id="usdtCalc"
+                                type="number"
+                                step="0.01"
+                                min={0}
+                                value={usdtAmount}
+                                onChange={(e) => setUsdtAmount(parseFloat(e.target.value) || 0)}
+                                className="pl-8 border-orange-300 focus:border-orange-500 focus:ring-orange-500"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Output VES */}
+                          <div className="space-y-2">
+                            <Label className="text-xs text-orange-800">{t('admin.management.financial.calculadoraEquivalenteVES')}</Label>
+                            <div className="relative">
+                              <div className="flex items-center h-10 px-3 bg-white border border-orange-300 rounded-md">
+                                <span className="text-lg font-bold text-orange-600">
+                                  {(usdtAmount * config.binanceRate).toLocaleString('es-VE', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                  })} Bs
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Info adicional */}
+                        <div className="mt-3 pt-3 border-t border-orange-200">
+                          <p className="text-xs text-orange-700">
+                            📊 {t('admin.management.financial.calculadoraUsandoTasa')} <span className="font-semibold">{config.binanceRate} Bs/USDT</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Tarjeta Margen de Ganancia (movida aquí) */}
+                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader>
                     <CardTitle className="flex items-center text-black text-base md:text-lg">
                       <Percent className="w-5 h-5 mr-2 text-purple-600" />
@@ -1144,6 +1279,16 @@ export default function ConfiguracionPage() {
                     </div>
                   </CardContent>
                 </Card>
+              </div>
+
+              {/* Alert azul debajo de las tasas */}
+              <div className="mt-4">
+                <Alert className="border-blue-200 bg-blue-50">
+                  <CheckCircle className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-700">
+                    <div dangerouslySetInnerHTML={{ __html: t('admin.management.financial.configurationAlert') }} />
+                  </AlertDescription>
+                </Alert>
               </div>
             </TabsContent>
 
@@ -1189,7 +1334,7 @@ export default function ConfiguracionPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
                 <div className="text-center p-3 bg-white rounded-lg">
                   <p className="text-slate-600">{t('admin.management.summary.airShipping')}</p>
                   <p className="font-bold text-blue-600">{formatCurrency(config.airShippingRate)}/kg</p>
@@ -1205,6 +1350,10 @@ export default function ConfiguracionPage() {
                 <div className="text-center p-3 bg-white rounded-lg">
                   <p className="text-slate-600">🇨🇳 USD → CNY</p>
                   <p className="font-bold text-red-600">{config.autoUpdateExchangeRateCNY ? (currentExchangeRateCNY || config.cnyRate) : config.cnyRate} CNY</p>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg">
+                  <p className="text-slate-600">🪙 USDT → VES</p>
+                  <p className="font-bold text-orange-600">{config.binanceRate} Bs</p>
                 </div>
                 <div className="text-center p-3 bg-white rounded-lg">
                   <p className="text-slate-600">{t('admin.management.summary.margin')}</p>
