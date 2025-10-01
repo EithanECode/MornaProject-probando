@@ -66,7 +66,6 @@ interface BusinessConfig {
 
   // Configuración de accesos
   sessionTimeout: number;
-  requireTwoFactor: boolean;
 
   // Configuración de tasa de cambio
   autoUpdateExchangeRate: boolean;
@@ -127,7 +126,6 @@ export default function ConfiguracionPage() {
     paymentDeadlineDays: 3,
     alertsAfterDays: 7,
     sessionTimeout: 60,
-    requireTwoFactor: false,
     autoUpdateExchangeRate: false,
     autoUpdateExchangeRateCNY: false,
     autoUpdateBinanceRate: false
@@ -150,9 +148,16 @@ export default function ConfiguracionPage() {
   // Callback estable para actualizar la tasa USD
   const handleRateUpdate = useCallback((newRate: number) => {
     setConfig(prev => {
-      // Evitar actualización si el valor no ha cambiado
       if (prev.usdRate === newRate) {
         return prev;
+      }
+      // Guardar automáticamente si el switch está activo
+      if (config.autoUpdateExchangeRate) {
+        fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usdRate: newRate, autoUpdateExchangeRate: true })
+        });
       }
       return { ...prev, usdRate: newRate };
     });
@@ -256,15 +261,11 @@ export default function ConfiguracionPage() {
   // Función para aplicar cambios en la configuración
   const applyCost = useCallback((field: keyof BusinessConfig, raw: string) => {
     const cleaned = sanitizeCost(raw);
-    const num = cleaned === '' ? 0 : parseFloat(cleaned);
-    const finalValue = isNaN(num) ? 0 : num;
-    
+    // Permitir vacío, pero si no es vacío, convertir a número
+    const finalValue = cleaned === '' ? '' : (isNaN(parseFloat(cleaned)) ? '' : parseFloat(cleaned));
     setConfig(prev => {
       const newConfig = { ...prev, [field]: finalValue };
-      
-      // Guardar inmediatamente en localStorage para persistencia
       localStorage.setItem('businessConfig', JSON.stringify(newConfig));
-      
       return newConfig;
     });
     
@@ -274,8 +275,8 @@ export default function ConfiguracionPage() {
       return v + 1;
     });
 
-    // Si es tasa CNY y la actualización automática está desactivada, guardar en BD
-    if (field === 'cnyRate' && !config.autoUpdateExchangeRateCNY && finalValue > 0) {
+    // Si es tasa CNY y la actualización automática está desactivada, guardar en BD solo si es número > 0
+    if (field === 'cnyRate' && !config.autoUpdateExchangeRateCNY && typeof finalValue === 'number' && finalValue > 0) {
       if (manualRateTimeoutRefCNY.current) {
         clearTimeout(manualRateTimeoutRefCNY.current);
       }
@@ -284,8 +285,8 @@ export default function ConfiguracionPage() {
       }, 1500);
     }
 
-    // Si es tasa USD y la actualización automática está desactivada, guardar en BD
-    if (field === 'usdRate' && !config.autoUpdateExchangeRate && finalValue > 0) {
+    // Si es tasa USD y la actualización automática está desactivada, guardar en BD solo si es número > 0
+    if (field === 'usdRate' && !config.autoUpdateExchangeRate && typeof finalValue === 'number' && finalValue > 0) {
       if (manualRateTimeoutRef.current) {
         clearTimeout(manualRateTimeoutRef.current);
       }
@@ -353,6 +354,14 @@ export default function ConfiguracionPage() {
     setConfig(prev => {
       console.log('[Admin] Updating config.cnyRate from', prev.cnyRate, 'to', newRate);
       if (prev.cnyRate === newRate) return prev;
+      // Guardar automáticamente si el switch está activo
+      if (config.autoUpdateExchangeRateCNY) {
+        fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cnyRate: newRate, autoUpdateExchangeRateCNY: true })
+        });
+      }
       return { ...prev, cnyRate: newRate };
     });
   }, [config.cnyRate, currentExchangeRateCNY]);
@@ -451,7 +460,6 @@ export default function ConfiguracionPage() {
           paymentDeadlineDays: 3,
           alertsAfterDays: 7,
           sessionTimeout: 60,
-          requireTwoFactor: false,
           autoUpdateExchangeRate: false,
           autoUpdateExchangeRateCNY: false,
           autoUpdateBinanceRate: false
@@ -621,22 +629,21 @@ export default function ConfiguracionPage() {
       });
       // Actualizar baseline para futuras comparaciones
       baseConfigRef.current = {
-        usdRate: config.usdRate,
-        autoUpdateExchangeRate: config.autoUpdateExchangeRate,
-        cnyRate: config.cnyRate,
-        autoUpdateExchangeRateCNY: config.autoUpdateExchangeRateCNY,
-        binanceRate: config.binanceRate,
-        autoUpdateBinanceRate: config.autoUpdateBinanceRate,
-        profitMargin: config.profitMargin,
-        airShippingRate: config.airShippingRate,
-        seaShippingRate: config.seaShippingRate,
-        alertsAfterDays: config.alertsAfterDays,
-        sessionTimeout: config.sessionTimeout,
-        requireTwoFactor: config.requireTwoFactor,
-        maxQuotationsPerMonth: config.maxQuotationsPerMonth,
-        maxModificationsPerOrder: config.maxModificationsPerOrder,
-        quotationValidityDays: config.quotationValidityDays,
-        paymentDeadlineDays: config.paymentDeadlineDays
+  usdRate: config.usdRate,
+  autoUpdateExchangeRate: config.autoUpdateExchangeRate,
+  cnyRate: config.cnyRate,
+  autoUpdateExchangeRateCNY: config.autoUpdateExchangeRateCNY,
+  binanceRate: config.binanceRate,
+  autoUpdateBinanceRate: config.autoUpdateBinanceRate,
+  profitMargin: config.profitMargin,
+  airShippingRate: config.airShippingRate,
+  seaShippingRate: config.seaShippingRate,
+  alertsAfterDays: config.alertsAfterDays,
+  sessionTimeout: config.sessionTimeout,
+  maxQuotationsPerMonth: config.maxQuotationsPerMonth,
+  maxModificationsPerOrder: config.maxModificationsPerOrder,
+  quotationValidityDays: config.quotationValidityDays,
+  paymentDeadlineDays: config.paymentDeadlineDays
       };
       setBaselineVersion(v => v + 1); // forzar recomputo de hasChanges
     } catch (error: any) {
@@ -702,6 +709,7 @@ export default function ConfiguracionPage() {
       }
       return newConfig;
     });
+    setBaselineVersion(v => v + 1); // Forzar detección de cambios para activar el botón de guardar
   };
 
   // Comparar configuraciones usando ref para evitar loops infinitos
@@ -714,6 +722,21 @@ export default function ConfiguracionPage() {
       return false;
     }
     
+    // Validar que ningún campo relevante sea 0 o vacío
+    const requiredFields = [
+      'airShippingRate',
+      'seaShippingRate',
+      'usdRate',
+      'cnyRate',
+      'binanceRate',
+      'profitMargin'
+    ];
+    for (const field of requiredFields) {
+      const value = configRef.current[field];
+      if (value === 0 || value === '' || value === null || typeof value === 'undefined') {
+        return false;
+      }
+    }
     const hasChangesResult = JSON.stringify(baseConfigRef.current) !== JSON.stringify(configRef.current);
     console.log('[Admin] hasChanges calculation:', {
       baselineVersion,
@@ -721,7 +744,6 @@ export default function ConfiguracionPage() {
       baseConfig: baseConfigRef.current,
       currentConfig: configRef.current
     });
-    
     return hasChangesResult;
   }, [baselineVersion]); // Solo depende de baselineVersion, no de config
 
