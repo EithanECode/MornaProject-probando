@@ -144,6 +144,7 @@ export default function ConfiguracionPage() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   // Estado para auditoría
   const [lastAdmin, setLastAdmin] = useState<{ id: string; updated_at: string } | null>(null);
+  const [lastAdminName, setLastAdminName] = useState<string>("");
   const { toast } = useToast();
 
   // Callback estable para actualizar la tasa USD
@@ -485,6 +486,16 @@ export default function ConfiguracionPage() {
                 id: data.config.admin_id || '',
                 updated_at: data.config.updated_at || ''
               });
+              // Buscar el nombre del admin por su UID
+              if (data.config.admin_id) {
+                fetch(`/api/admin-name?uid=${data.config.admin_id}`)
+                  .then(res => res.json())
+                  .then(res => {
+                    if (res.success && res.name) setLastAdminName(res.name);
+                    else setLastAdminName('Administrador');
+                  })
+                  .catch(() => setLastAdminName('Administrador'));
+              }
             }
           }
         } catch (apiError) {
@@ -834,7 +845,7 @@ export default function ConfiguracionPage() {
                         <span className="mx-1">|</span>
                         <span>
                           {t('admin.management.financial.changeMadeBy', { 
-                            userId: lastAdmin.id, 
+                            userName: lastAdminName || lastAdmin.id,
                             date: new Date(lastAdmin.updated_at).toLocaleString('es-VE') 
                           })}
                         </span>

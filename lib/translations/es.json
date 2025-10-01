@@ -406,7 +406,6 @@
         "shipped": "Enviado",
         "cancelled": "Cancelado",
         "paymentValidated": "Pago validado",
-        "paymentRejected": "Pago Rechazado",
         "packagingBox": "Empaquetando (caja)",
         "packagingContainer": "Empaquetando (contenedor)",
         "sentFromChina": "Enviada de China",
@@ -419,7 +418,6 @@
         "view": "Ver detalles",
         "track": "Ver seguimiento",
         "pay": "Pagar",
-        "payAgain": "Pagar de nuevo",
         "download": "Descargar PDF"
       },
       "progress": "Progreso del pedido",
@@ -1921,52 +1919,9 @@
         "marginsDiscounts": "Márgenes y Descuentos",
         "profitabilityConfig": "Configuración de rentabilidad",
         "profitMargin": "Margen de ganancia (%)",
-        "usdDiscount": "Descuento por pago en USD (%)",
-        "venezuelaRateTitle": "Tasa Venezuela",
-        "venezuelaRateDesc": "Valor de cambio USD → Bs",
-        "chinaRateTitle": "Tasa China",
-        "chinaRateDesc": "Valor de cambio USD → CNY",
-        "binanceRateTitle": "Tasa Binance",
-        "binanceRateDesc": "Valor USDT → VES (Binance P2P)",
-        "autoUpdateBCV": "Auto-actualización BCV",
-        "autoUpdateAPI": "Auto-actualización API",
-        "updated": "Actualizado:",
-        "source": "Fuente:",
-        "veRateLabel": "VE 1USD = X Bs",
-        "cnRateLabel": "CN 1USD = X CNY",
-        "binanceRateLabel": "VE  USDT = X Bs",
-        "binanceConsejo": "Consejo: Consulta la tasa actual en",
-        "binanceConsejoLink": "Binance P2P",
-        "binanceConsejoText": "y actualiza el valor manualmente aquí.",
-        "calculadoraTitle": "Calculadora de Conversión",
-        "calculadoraCantidadUSDT": "Cantidad USDT",
-        "calculadoraEquivalenteVES": "Equivalente en VES",
-        "calculadoraUsandoTasa": "Usando tasa:",
-        "timeAgo": {
-          "lessThanMinute": "Hace menos de 1 minuto",
-          "minutesAgo": "Hace {{count}} minuto{{plural}}",
-          "hoursAgo": "Hace {{count}} hora{{plural}}",
-          "daysAgo": "Hace {{count}} día{{plural}}",
-          "never": "Nunca"
-        },
-        "sources": {
-          "bcvOfficial": "BCV Oficial",
-          "pbocOfficial": "Oficial PBOC"
-        },
-        "profitMarginTitle": "Margen de ganancia",
-        "configurationAlert": "Tasas de cambio configuradas. Recuerde guardar los cambios en <strong>Guardar Configuración</strong> para aplicar todas las modificaciones.",
-        "lastSaved": "Última configuración guardada el {{date}}",
-        "changeMadeBy": "Cambio hecho por {{userId}} el {{date}}",
-        "rateUpdated": "Tasa actualizada",
-        "rateUpdatedDescription": "{{rate}} {{currency}} [API en vivo]",
-        "liveApi": "API en vivo",
-        "manualRateSaved": "Tasa manual guardada",
-        "manualRateSavedDescription": "{{rate}} {{currency}} guardada exitosamente",
-        "rateRecovered": "Tasa recuperada",
-        "rateRecoveredDescription": "{{rate}} {{currency}} (desde BD{{age}})",
-        "rateRecoveredDescriptionNoAge": "{{rate}} {{currency}} (desde BD)",
-        "rateUpdateError": "Error al actualizar tasa",
-        "warning": "Advertencia"
+        "usdDiscount": "Descuento por pago en USD (%)"
+  ,"lastSaved": "Guardado:"
+  ,"changeMadeBy": "Cambios realizados por {{userName}} el {{date}}"
       },
       "notifications": {
         "notificationSystem": "Sistema de notificaciones",
@@ -1987,8 +1942,7 @@
       },
       "messages": {
         "configSaved": "Configuración guardada",
-        "configSavedDesc": "Los parámetros del negocio se han actualizado correctamente.",
-        "configSavedGlobal": "Configuración guardada globalmente. Los cambios estarán disponibles para todos los usuarios."
+        "configSavedDesc": "Los parámetros del negocio se han actualizado correctamente."
       },
       "summary": {
         "title": "Resumen de la Configuración Actual",
