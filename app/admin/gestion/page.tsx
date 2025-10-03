@@ -723,7 +723,7 @@ export default function ConfiguracionPage() {
     }
     
     // Validar que ningún campo relevante sea 0 o vacío
-    const requiredFields = [
+    const requiredFields: (keyof BusinessConfig)[] = [
       'airShippingRate',
       'seaShippingRate',
       'usdRate',
@@ -733,7 +733,7 @@ export default function ConfiguracionPage() {
     ];
     for (const field of requiredFields) {
       const value = configRef.current[field];
-      if (value === 0 || value === '' || value === null || typeof value === 'undefined') {
+      if (value === 0 || value === null || typeof value === 'undefined') {
         return false;
       }
     }
