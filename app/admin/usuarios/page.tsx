@@ -171,10 +171,12 @@ export default function UsuariosPage() {
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | UserStatus>('all');
   const [animationKey, setAnimationKey] = useState(0);
+  // Controlar que las animaciones de aparición solo ocurran la PRIMERA vez que se cargan los usuarios
+  const [didInitialAnimate, setDidInitialAnimate] = useState(false);
 
-  // Paginación
+  // Paginación (fija a 10 por página)
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const PAGE_SIZE = 10;
 
   // Handlers para actualizar filtros con animación
   const handleSearchChange = (value: string) => {
@@ -238,15 +240,15 @@ export default function UsuariosPage() {
     return deduped;
   }, [users, searchTerm, roleFilter, statusFilter]);
 
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(filteredUsers.length / pageSize)), [filteredUsers.length, pageSize]);
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(filteredUsers.length / PAGE_SIZE)), [filteredUsers.length]);
   const pagedUsers = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return filteredUsers.slice(start, start + pageSize);
-  }, [filteredUsers, page, pageSize]);
+    const start = (page - 1) * PAGE_SIZE;
+    return filteredUsers.slice(start, start + PAGE_SIZE);
+  }, [filteredUsers, page]);
   // Texto de paginación internacionalizado
   const paginationText = t('admin.users.pagination.showing', {
-    from: (filteredUsers.length === 0 ? 0 : (page - 1) * pageSize + 1),
-    to: Math.min(page * pageSize, filteredUsers.length),
+    from: (filteredUsers.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1),
+    to: Math.min(page * PAGE_SIZE, filteredUsers.length),
     total: filteredUsers.length
   });
 
@@ -254,6 +256,15 @@ export default function UsuariosPage() {
   useEffect(() => {
     setPage(1);
   }, [searchTerm, roleFilter, statusFilter, users.length]);
+
+  // Marcar que ya se animó la primera vez (cuando termina el primer loading exitoso)
+  useEffect(() => {
+    if (!usersLoading && users.length > 0 && !didInitialAnimate) {
+      // Pequeño timeout para asegurar que el layout esté pintado antes de bloquear animaciones futuras
+      const id = setTimeout(() => setDidInitialAnimate(true), 50);
+      return () => clearTimeout(id);
+    }
+  }, [usersLoading, users.length, didInitialAnimate]);
 
   const isNewUser = !!(editingUser && !/^[0-9a-fA-F-]{36}$/.test(editingUser.id));
   const fullNameTooLong = !!(editingUser && editingUser.fullName.length > 50);
@@ -721,10 +732,10 @@ export default function UsuariosPage() {
                                       <tr 
                     key={user.id}
                     className={`hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-300 ease-out group ${flashUserId === user.id ? 'animate-[pulse_1.2s_ease-in-out_2] bg-green-50/70' : ''}`}
-                                        style={{
-                                          animationDelay: `${index * 50}ms`,
+                                        style={didInitialAnimate ? undefined : {
+                                          animationDelay: `${index * 30}ms`,
                                           animationName: 'fadeInUp',
-                                          animationDuration: '0.6s',
+                                          animationDuration: '0.45s',
                                           animationTimingFunction: 'ease-out',
                                           animationFillMode: 'forwards'
                                         }}
@@ -810,10 +821,10 @@ export default function UsuariosPage() {
                   role="button"
                   tabIndex={0}
                   className={`bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 p-4 md:p-5 hover:shadow-lg transition-all duration-300 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 ${flashUserId === user.id ? 'animate-[pulse_1.2s_ease-in-out_2] ring-2 ring-green-300/60' : ''}`}
-                                  style={{
-                                    animationDelay: `${index * 50}ms`,
+                                  style={didInitialAnimate ? undefined : {
+                                    animationDelay: `${index * 25}ms`,
                                     animationName: 'fadeInUp',
-                                    animationDuration: '0.6s',
+                                    animationDuration: '0.45s',
                                     animationTimingFunction: 'ease-out',
                                     animationFillMode: 'forwards'
                                   }}
@@ -886,9 +897,9 @@ export default function UsuariosPage() {
                               <div className="text-center py-12 md:py-16">
                                 <div 
                                   className="flex flex-col items-center gap-3 md:gap-4 text-slate-500"
-                                  style={{
+                                  style={didInitialAnimate ? undefined : {
                                     animationName: 'fadeInUp',
-                                    animationDuration: '0.6s',
+                                    animationDuration: '0.45s',
                                     animationTimingFunction: 'ease-out',
                                     animationFillMode: 'forwards'
                                   }}
@@ -901,25 +912,10 @@ export default function UsuariosPage() {
                             )}
                             {/* Controles de paginación */}
                             {filteredUsers.length > 0 && (
-                              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
-                                <div className="text-xs text-slate-600">
-                                  {paginationText}
-                                </div>
+                              <div className="flex flex-col sm:flex-row items-center justify-end gap-3 mt-4">
+                                {/* Texto de paginación eliminado a solicitud; se mantiene solo el control de páginas */}
                                 <div className="flex items-center gap-3">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs text-slate-600">{t('admin.users.pagination.perPage')}</span>
-                                    <Select value={String(pageSize)} onValueChange={(v) => setPageSize(parseInt(v))}>
-                                      <SelectTrigger className="h-8 w-[84px]">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="5">5</SelectItem>
-                                        <SelectItem value="10">10</SelectItem>
-                                        <SelectItem value="20">20</SelectItem>
-                                        <SelectItem value="50">50</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
+                                  {/* Selector de tamaño de página removido: siempre 10 */}
                                   <div className="flex items-center gap-1">
                                     <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
                                       <ChevronLeft className="w-4 h-4" />
