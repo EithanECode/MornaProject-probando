@@ -153,7 +153,7 @@ export default function LoginForm({ onNavigateToPasswordReset, idPrefix = "" }: 
       const isChina = ["china"].includes(normalized);
       const isAdmin = ["admin", "administrador", "administrator"].includes(normalized);
 
-      // Set cookie role (client/venezuela/china/admin/pagos) para middleware
+  // Set cookie role (client/venezuela/china/admin) para middleware (el rol pagos fue eliminado)
       try {
         const roleForCookie = isClient
           ? 'client'

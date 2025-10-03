@@ -877,6 +877,7 @@
         "Cliente": "Client",
         "Empleado China": "China Employee",
         "Empleado Vzla": "Venezuela Employee",
+  "Pagos": "Payments Validator",
         "Admin": "Admin"
       },
       "status": {

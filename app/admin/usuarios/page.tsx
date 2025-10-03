@@ -77,7 +77,7 @@ import {
 import Header from '@/components/layout/Header';
 
 type UserStatus = 'activo' | 'inactivo';
-type UserRole = 'Cliente' | 'Empleado China' | 'Empleado Vzla' | 'Admin';
+type UserRole = 'Cliente' | 'Empleado China' | 'Empleado Vzla' | 'Pagos' | 'Admin';
 
 interface User {
   id: string;
@@ -111,6 +111,13 @@ const ROLE_COLORS: Record<UserRole, string> = {
     'group-hover:ring-1 group-hover:ring-blue-200',
     'transition-colors duration-200'
   ].join(' '),
+  'Pagos': [
+    'bg-amber-100 text-amber-800 border-amber-200',
+    'hover:bg-amber-50 group-hover:bg-amber-50',
+    'hover:border-amber-300 group-hover:border-amber-300',
+    'group-hover:ring-1 group-hover:ring-amber-200',
+    'transition-colors duration-200'
+  ].join(' '),
   'Admin': [
     'bg-purple-100 text-purple-800 border-purple-200',
     'hover:bg-purple-50 group-hover:bg-purple-50',
@@ -140,8 +147,9 @@ export default function UsuariosPage() {
         let uiRole: UserRole;
         if (lvl === 'admin') uiRole = 'Admin';
         else if (lvl === 'client') uiRole = 'Cliente';
-        else if (lvl === 'china') uiRole = 'Empleado China';
-        else if (lvl === 'vzla' || lvl === 'venezuela') uiRole = 'Empleado Vzla';
+  else if (lvl === 'china') uiRole = 'Empleado China';
+  else if (lvl === 'vzla' || lvl === 'venezuela') uiRole = 'Empleado Vzla';
+  else if (lvl === 'pagos') uiRole = 'Pagos';
         else {
           // fallback to old mapping
           uiRole = u.role === 'administrator' ? 'Admin' : u.role === 'employee' ? 'Empleado Vzla' : 'Cliente';
@@ -380,12 +388,22 @@ export default function UsuariosPage() {
       return;
     }
     const isNew = !/^[0-9a-fA-F-]{36}$/.test(editingUser.id); // id temporal no UUID
-    const dbRole: 'administrator' | 'client' | 'employee' = editingUser.role === 'Admin' ? 'administrator' : editingUser.role === 'Cliente' ? 'client' : 'employee';
+    const dbRole: 'administrator' | 'client' | 'employee' =
+      editingUser.role === 'Admin'
+        ? 'administrator'
+        : editingUser.role === 'Cliente'
+          ? 'client'
+          : 'employee'; // Empleado China, Empleado Vzla, Pagos => employee
+
     const userLevel = editingUser.role === 'Admin'
       ? 'Admin'
       : editingUser.role === 'Cliente'
-      ? 'Client'
-      : (editingUser.role === 'Empleado China' ? 'China' : 'Vzla');
+        ? 'Client'
+        : editingUser.role === 'Empleado China'
+          ? 'China'
+          : editingUser.role === 'Empleado Vzla'
+            ? 'Vzla'
+            : 'Pagos';
     const prevUsers = users;
 
     if (isNew) {
@@ -406,9 +424,10 @@ export default function UsuariosPage() {
           id: created.id,
           fullName: created.name || editingUser.fullName,
           email: created.email || editingUser.email,
-          role: (created.user_level?.toLowerCase?.() === 'china') ? 'Empleado China'
-                : (created.user_level?.toLowerCase?.() === 'vzla' || created.user_level?.toLowerCase?.() === 'venezuela') ? 'Empleado Vzla'
-                : (dbRole === 'administrator' ? 'Admin' : dbRole === 'client' ? 'Cliente' : 'Empleado Vzla'),
+      role: (created.user_level?.toLowerCase?.() === 'china') ? 'Empleado China'
+        : (created.user_level?.toLowerCase?.() === 'vzla' || created.user_level?.toLowerCase?.() === 'venezuela') ? 'Empleado Vzla'
+        : (created.user_level?.toLowerCase?.() === 'pagos') ? 'Pagos'
+        : (dbRole === 'administrator' ? 'Admin' : dbRole === 'client' ? 'Cliente' : 'Empleado Vzla'),
           status: 'activo',
           createdAt: created.created_at || new Date().toISOString(),
         };
@@ -601,7 +620,7 @@ export default function UsuariosPage() {
                               <SelectValue placeholder={t('admin.users.form.selectRole')} />
                             </SelectTrigger>
                             <SelectContent>
-                              {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
+                              {(['Cliente','Empleado China','Empleado Vzla','Pagos','Admin'] as UserRole[]).map((r) => (
                                 <SelectItem key={r} value={r}>{t(`admin.users.roles.${r}` as any)}</SelectItem>
                               ))}
                             </SelectContent>
@@ -704,7 +723,10 @@ export default function UsuariosPage() {
                     className={`hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-300 ease-out group ${flashUserId === user.id ? 'animate-[pulse_1.2s_ease-in-out_2] bg-green-50/70' : ''}`}
                                         style={{
                                           animationDelay: `${index * 50}ms`,
-                                          animation: 'fadeInUp 0.6s ease-out forwards'
+                                          animationName: 'fadeInUp',
+                                          animationDuration: '0.6s',
+                                          animationTimingFunction: 'ease-out',
+                                          animationFillMode: 'forwards'
                                         }}
                                       >
                                         <td className="py-4 px-6" style={{width: '40%'}}>
@@ -790,7 +812,10 @@ export default function UsuariosPage() {
                   className={`bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 p-4 md:p-5 hover:shadow-lg transition-all duration-300 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 ${flashUserId === user.id ? 'animate-[pulse_1.2s_ease-in-out_2] ring-2 ring-green-300/60' : ''}`}
                                   style={{
                                     animationDelay: `${index * 50}ms`,
-                                    animation: 'fadeInUp 0.6s ease-out forwards'
+                                    animationName: 'fadeInUp',
+                                    animationDuration: '0.6s',
+                                    animationTimingFunction: 'ease-out',
+                                    animationFillMode: 'forwards'
                                   }}
                                 >
                                                                                                         <div className="flex flex-col gap-3 md:gap-4 w-full">
@@ -862,7 +887,10 @@ export default function UsuariosPage() {
                                 <div 
                                   className="flex flex-col items-center gap-3 md:gap-4 text-slate-500"
                                   style={{
-                                    animation: 'fadeInUp 0.6s ease-out forwards'
+                                    animationName: 'fadeInUp',
+                                    animationDuration: '0.6s',
+                                    animationTimingFunction: 'ease-out',
+                                    animationFillMode: 'forwards'
                                   }}
                                 >
                                   <Users className="w-10 h-10 md:w-12 md:h-12 text-slate-300" />

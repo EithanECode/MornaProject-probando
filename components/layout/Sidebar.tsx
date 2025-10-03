@@ -210,14 +210,6 @@ const getAdminMenuItems = (t: (key: string) => string) => [
     path: '/admin/pedidos'
   },
   {
-    id: 'payments',
-    label: t && typeof t === 'function' ? t('sidebar.payments') : 'Pagos',
-    icon: CreditCard,
-    badge: null,
-    color: 'text-orange-500',
-    path: '/admin/pagos'
-  },
-  {
     id: 'payments-validation',
     label: t && typeof t === 'function' ? t('sidebar.payments-validation') : 'Validación de pagos',
     icon: BadgeDollarSign,
