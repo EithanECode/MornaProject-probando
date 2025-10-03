@@ -68,9 +68,9 @@ interface BusinessConfig {
   sessionTimeout: number;
 
   // Configuración de tasa de cambio
-  autoUpdateExchangeRate: boolean;
-  autoUpdateExchangeRateCNY: boolean;
-  autoUpdateBinanceRate: boolean;
+  auto_update_exchange_rate: boolean;
+  auto_update_exchange_rate_cny: boolean;
+  auto_update_binance_rate: boolean;
 }
 
 export default function ConfiguracionPage() {
@@ -126,9 +126,9 @@ export default function ConfiguracionPage() {
     paymentDeadlineDays: 3,
     alertsAfterDays: 7,
     sessionTimeout: 60,
-    autoUpdateExchangeRate: false,
-    autoUpdateExchangeRateCNY: false,
-    autoUpdateBinanceRate: false
+  auto_update_exchange_rate: false,
+  auto_update_exchange_rate_cny: false,
+  auto_update_binance_rate: false
   });
   
   // Referencia al estado base para detectar cambios
@@ -152,11 +152,11 @@ export default function ConfiguracionPage() {
         return prev;
       }
       // Guardar automáticamente si el switch está activo
-      if (config.autoUpdateExchangeRate) {
+  if (config.auto_update_exchange_rate) {
         fetch('/api/config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ usdRate: newRate, autoUpdateExchangeRate: true })
+          body: JSON.stringify({ usd_rate: newRate, auto_update_exchange_rate: true })
         });
       }
       return { ...prev, usdRate: newRate };
@@ -276,7 +276,7 @@ export default function ConfiguracionPage() {
     });
 
     // Si es tasa CNY y la actualización automática está desactivada, guardar en BD solo si es número > 0
-    if (field === 'cnyRate' && !config.autoUpdateExchangeRateCNY && typeof finalValue === 'number' && finalValue > 0) {
+  if (field === 'cnyRate' && !config.auto_update_exchange_rate_cny && typeof finalValue === 'number' && finalValue > 0) {
       if (manualRateTimeoutRefCNY.current) {
         clearTimeout(manualRateTimeoutRefCNY.current);
       }
@@ -286,7 +286,7 @@ export default function ConfiguracionPage() {
     }
 
     // Si es tasa USD y la actualización automática está desactivada, guardar en BD solo si es número > 0
-    if (field === 'usdRate' && !config.autoUpdateExchangeRate && typeof finalValue === 'number' && finalValue > 0) {
+  if (field === 'usdRate' && !config.auto_update_exchange_rate && typeof finalValue === 'number' && finalValue > 0) {
       if (manualRateTimeoutRef.current) {
         clearTimeout(manualRateTimeoutRef.current);
       }
@@ -294,10 +294,10 @@ export default function ConfiguracionPage() {
         saveManualRate(finalValue);
       }, 1500);
     }
-  }, [config.autoUpdateExchangeRateCNY, config.autoUpdateExchangeRate, saveManualRateCNY, saveManualRate]);
+  }, [config.auto_update_exchange_rate_cny, config.auto_update_exchange_rate, saveManualRateCNY, saveManualRate]);
 
   // Memoizar el valor de autoUpdate USD para evitar loops infinitos
-  const autoUpdateUSD = useMemo(() => config.autoUpdateExchangeRate, [config.autoUpdateExchangeRate]);
+  const autoUpdateUSD = useMemo(() => config.auto_update_exchange_rate, [config.auto_update_exchange_rate]);
 
   // Hook para manejo de tasa de cambio
   const {
@@ -325,17 +325,17 @@ export default function ConfiguracionPage() {
   
   // Inicializar información de CNY cuando se activa el switch
   useEffect(() => {
-    if (config.autoUpdateExchangeRateCNY && !exchangeRateLastUpdatedCNY) {
+  if (config.auto_update_exchange_rate_cny && !exchangeRateLastUpdatedCNY) {
       // Si el switch está activo pero no hay fecha de actualización, inicializar
       setExchangeRateLastUpdatedCNY(new Date());
       setExchangeRateSourceCNY(t('admin.management.financial.sources.pbocOfficial'));
     }
-  }, [config.autoUpdateExchangeRateCNY, exchangeRateLastUpdatedCNY, t]);
+  }, [config.auto_update_exchange_rate_cny, exchangeRateLastUpdatedCNY, t]);
   // Estado para el ícono Wi-Fi de CNY (debe reflejar el estado del switch)
-  const isAutoUpdatingCNY = config.autoUpdateExchangeRateCNY;
+  const isAutoUpdatingCNY = config.auto_update_exchange_rate_cny;
   
   // Debug: Log del estado del switch CNY
-  console.log('[Admin] CNY Switch State - config.autoUpdateExchangeRateCNY:', config.autoUpdateExchangeRateCNY);
+  console.log('[Admin] CNY Switch State - config.auto_update_exchange_rate_cny:', config.auto_update_exchange_rate_cny);
   console.log('[Admin] CNY Switch State - config.cnyRate:', config.cnyRate);
 
   // Callback para recibir actualizaciones del ExchangeRateManager
@@ -355,11 +355,11 @@ export default function ConfiguracionPage() {
       console.log('[Admin] Updating config.cnyRate from', prev.cnyRate, 'to', newRate);
       if (prev.cnyRate === newRate) return prev;
       // Guardar automáticamente si el switch está activo
-      if (config.autoUpdateExchangeRateCNY) {
+      if (config.auto_update_exchange_rate_cny) {
         fetch('/api/config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cnyRate: newRate, autoUpdateExchangeRateCNY: true })
+          body: JSON.stringify({ cny_rate: newRate, auto_update_exchange_rate_cny: true })
         });
       }
       return { ...prev, cnyRate: newRate };
@@ -460,19 +460,19 @@ export default function ConfiguracionPage() {
           paymentDeadlineDays: 3,
           alertsAfterDays: 7,
           sessionTimeout: 60,
-          autoUpdateExchangeRate: false,
-          autoUpdateExchangeRateCNY: false,
-          autoUpdateBinanceRate: false
+          auto_update_exchange_rate: false,
+          auto_update_exchange_rate_cny: false,
+          auto_update_binance_rate: false
         };
 
         if (savedConfig) {
           try {
             const parsedConfig = JSON.parse(savedConfig);
             console.log('[Admin] Parsed localStorage config:', parsedConfig);
-            console.log('[Admin] Parsed autoUpdateExchangeRateCNY:', parsedConfig.autoUpdateExchangeRateCNY);
+            console.log('[Admin] Parsed auto_update_exchange_rate_cny:', parsedConfig.auto_update_exchange_rate_cny);
             mergedConfig = { ...mergedConfig, ...parsedConfig };
             // Eliminar campos de días de entrega si existen en localStorage
-            console.log('[Admin] After merge with localStorage:', mergedConfig.autoUpdateExchangeRateCNY);
+            console.log('[Admin] After merge with localStorage:', mergedConfig.auto_update_exchange_rate_cny);
           } catch (e) {
             console.error('Error parsing saved config:', e);
           }
@@ -510,7 +510,7 @@ export default function ConfiguracionPage() {
           console.error('Error loading config from API, using localStorage only:', apiError);
         }
 
-        // Respeta el valor guardado de autoUpdateExchangeRateCNY
+  // Respeta el valor guardado de auto_update_exchange_rate_cny
         
         // Respeta el valor guardado en localStorage
 
@@ -578,11 +578,11 @@ export default function ConfiguracionPage() {
       // Solo guardar los campos globales requeridos y datos de auditoría
       const configToSave = {
         usd_rate: config.usdRate,
-        auto_update_exchange_rate: config.autoUpdateExchangeRate,
+        auto_update_exchange_rate: config.auto_update_exchange_rate,
         cny_rate: config.cnyRate,
-        auto_update_exchange_rate_cny: config.autoUpdateExchangeRateCNY,
+        auto_update_exchange_rate_cny: config.auto_update_exchange_rate_cny,
         binance_rate: config.binanceRate,
-        auto_update_binance_rate: config.autoUpdateBinanceRate,
+        auto_update_binance_rate: config.auto_update_binance_rate,
         profit_margin: config.profitMargin,
         air_shipping_rate: config.airShippingRate,
         sea_shipping_rate: config.seaShippingRate,
@@ -607,16 +607,16 @@ export default function ConfiguracionPage() {
       localStorage.setItem('lastConfigSaved', now.toISOString());
       // Guardar solo los campos globales en localStorage (en camelCase para el frontend)
       localStorage.setItem('businessConfig', JSON.stringify({
-        usdRate: config.usdRate,
-        autoUpdateExchangeRate: config.autoUpdateExchangeRate,
-        cnyRate: config.cnyRate,
-        autoUpdateExchangeRateCNY: config.autoUpdateExchangeRateCNY,
-        binanceRate: config.binanceRate,
-        autoUpdateBinanceRate: config.autoUpdateBinanceRate,
-        profitMargin: config.profitMargin,
-        airShippingRate: config.airShippingRate,
-        seaShippingRate: config.seaShippingRate,
-        alertsAfterDays: config.alertsAfterDays
+  usdRate: config.usdRate,
+  auto_update_exchange_rate: config.auto_update_exchange_rate,
+  cnyRate: config.cnyRate,
+  auto_update_exchange_rate_cny: config.auto_update_exchange_rate_cny,
+  binanceRate: config.binanceRate,
+  auto_update_binance_rate: config.auto_update_binance_rate,
+  profitMargin: config.profitMargin,
+  airShippingRate: config.airShippingRate,
+  seaShippingRate: config.seaShippingRate,
+  alertsAfterDays: config.alertsAfterDays
       }));
       // Actualizar info de auditoría
       setLastAdmin({
@@ -630,11 +630,11 @@ export default function ConfiguracionPage() {
       // Actualizar baseline para futuras comparaciones
       baseConfigRef.current = {
   usdRate: config.usdRate,
-  autoUpdateExchangeRate: config.autoUpdateExchangeRate,
+  auto_update_exchange_rate: config.auto_update_exchange_rate,
   cnyRate: config.cnyRate,
-  autoUpdateExchangeRateCNY: config.autoUpdateExchangeRateCNY,
+  auto_update_exchange_rate_cny: config.auto_update_exchange_rate_cny,
   binanceRate: config.binanceRate,
-  autoUpdateBinanceRate: config.autoUpdateBinanceRate,
+  auto_update_binance_rate: config.auto_update_binance_rate,
   profitMargin: config.profitMargin,
   airShippingRate: config.airShippingRate,
   seaShippingRate: config.seaShippingRate,
@@ -665,11 +665,11 @@ export default function ConfiguracionPage() {
       // Si el campo es global, guardar inmediatamente
       if ([
         'usdRate',
-        'autoUpdateExchangeRate',
+        'auto_update_exchange_rate',
         'cnyRate',
-        'autoUpdateExchangeRateCNY',
+        'auto_update_exchange_rate_cny',
         'binanceRate',
-        'autoUpdateBinanceRate',
+        'auto_update_binance_rate',
         'profitMargin',
         'airShippingRate',
         'seaShippingRate',
@@ -678,11 +678,11 @@ export default function ConfiguracionPage() {
         // Guardar en backend (en snake_case)
         const configToSave = {
           usd_rate: field === 'usdRate' ? value : newConfig.usdRate,
-          auto_update_exchange_rate: field === 'autoUpdateExchangeRate' ? value : newConfig.autoUpdateExchangeRate,
+          auto_update_exchange_rate: field === 'auto_update_exchange_rate' ? value : newConfig.auto_update_exchange_rate,
           cny_rate: field === 'cnyRate' ? value : newConfig.cnyRate,
-          auto_update_exchange_rate_cny: field === 'autoUpdateExchangeRateCNY' ? value : newConfig.autoUpdateExchangeRateCNY,
+          auto_update_exchange_rate_cny: field === 'auto_update_exchange_rate_cny' ? value : newConfig.auto_update_exchange_rate_cny,
           binance_rate: field === 'binanceRate' ? value : newConfig.binanceRate,
-          auto_update_binance_rate: field === 'autoUpdateBinanceRate' ? value : newConfig.autoUpdateBinanceRate,
+          auto_update_binance_rate: field === 'auto_update_binance_rate' ? value : newConfig.auto_update_binance_rate,
           profit_margin: field === 'profitMargin' ? value : newConfig.profitMargin,
           air_shipping_rate: field === 'airShippingRate' ? value : newConfig.airShippingRate,
           sea_shipping_rate: field === 'seaShippingRate' ? value : newConfig.seaShippingRate,
@@ -693,14 +693,14 @@ export default function ConfiguracionPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(configToSave)
         });
-        // Guardar en localStorage en camelCase para el frontend
+        // Guardar en localStorage en snake_case para el frontend
         localStorage.setItem('businessConfig', JSON.stringify({
           usdRate: newConfig.usdRate,
-          autoUpdateExchangeRate: newConfig.autoUpdateExchangeRate,
+          auto_update_exchange_rate: newConfig.auto_update_exchange_rate,
           cnyRate: newConfig.cnyRate,
-          autoUpdateExchangeRateCNY: newConfig.autoUpdateExchangeRateCNY,
+          auto_update_exchange_rate_cny: newConfig.auto_update_exchange_rate_cny,
           binanceRate: newConfig.binanceRate,
-          autoUpdateBinanceRate: newConfig.autoUpdateBinanceRate,
+          auto_update_binance_rate: newConfig.auto_update_binance_rate,
           profitMargin: newConfig.profitMargin,
           airShippingRate: newConfig.airShippingRate,
           seaShippingRate: newConfig.seaShippingRate,
@@ -819,8 +819,8 @@ export default function ConfiguracionPage() {
     >
       {/* ExchangeRateManager independiente */}
       <ExchangeRateManager 
-        onRateUpdate={handleExchangeRateUpdate} 
-        autoUpdate={config.autoUpdateExchangeRateCNY}
+  onRateUpdate={handleExchangeRateUpdate} 
+  autoUpdate={config.auto_update_exchange_rate_cny}
       />
       
       <Sidebar 
@@ -1022,8 +1022,8 @@ export default function ConfiguracionPage() {
                           value={config.usdRate}
                           onChange={e => updateConfig('usdRate', Number(e.target.value))}
                           className="pr-12"
-                          title={config.autoUpdateExchangeRate ? "Campo bloqueado: Auto-actualización activada" : "Editar tasa manualmente"}
-                          disabled={exchangeRateLoading || config.autoUpdateExchangeRate}
+                          title={config.auto_update_exchange_rate ? "Campo bloqueado: Auto-actualización activada" : "Editar tasa manualmente"}
+                          disabled={exchangeRateLoading || config.auto_update_exchange_rate}
                         />
                         <Button
                           type="button"
@@ -1054,9 +1054,9 @@ export default function ConfiguracionPage() {
                         </div>
                         <Switch
                           id="autoUpdate"
-                          checked={config.autoUpdateExchangeRate}
+                          checked={config.auto_update_exchange_rate}
                           onCheckedChange={(checked) => {
-                            setConfig(prev => ({ ...prev, autoUpdateExchangeRate: checked }));
+                            setConfig(prev => ({ ...prev, auto_update_exchange_rate: checked }));
                             setBaselineVersion(v => v + 1); // Forzar detección de cambios
                           }}
                         />
@@ -1103,14 +1103,14 @@ export default function ConfiguracionPage() {
                           type="number"
                           step="0.0001"
                           min={0}
-                          value={config.autoUpdateExchangeRateCNY ? 
+                          value={config.auto_update_exchange_rate_cny ? 
                             (currentExchangeRateCNY !== null ? currentExchangeRateCNY : '') : 
                             config.cnyRate}
                           onChange={(e) => applyCost('cnyRate', e.target.value)}
                           className={exchangeRateErrorCNY ? 'border-red-300 pr-12' : 'pr-12'}
-                          disabled={exchangeRateLoadingCNY || config.autoUpdateExchangeRateCNY}
+                          disabled={exchangeRateLoadingCNY || config.auto_update_exchange_rate_cny}
                           placeholder="7.2500"
-                          title={config.autoUpdateExchangeRateCNY ? "Campo bloqueado: Auto-actualización activada" : "Editar tasa manualmente"}
+                          title={config.auto_update_exchange_rate_cny ? "Campo bloqueado: Auto-actualización activada" : "Editar tasa manualmente"}
                         />
                         <Button
                           type="button"
@@ -1141,9 +1141,9 @@ export default function ConfiguracionPage() {
                         </div>
                         <Switch
                           id="autoUpdateCNY"
-                          checked={config.autoUpdateExchangeRateCNY}
+                          checked={config.auto_update_exchange_rate_cny}
                           onCheckedChange={(checked) => {
-                            setConfig(prev => ({ ...prev, autoUpdateExchangeRateCNY: checked }));
+                            setConfig(prev => ({ ...prev, auto_update_exchange_rate_cny: checked }));
                             setBaselineVersion(v => v + 1); // Forzar detección de cambios
                           }}
                         />
@@ -1378,11 +1378,11 @@ export default function ConfiguracionPage() {
                 </div>
                 <div className="text-center p-3 bg-white rounded-lg">
                   <p className="text-slate-600">🇻🇪 USD → Bs</p>
-                  <p className="font-bold text-green-600">{config.autoUpdateExchangeRate ? (currentExchangeRate || config.usdRate) : config.usdRate} Bs</p>
+                  <p className="font-bold text-green-600">{config.auto_update_exchange_rate ? (currentExchangeRate || config.usdRate) : config.usdRate} Bs</p>
                 </div>
                 <div className="text-center p-3 bg-white rounded-lg">
                   <p className="text-slate-600">🇨🇳 USD → CNY</p>
-                  <p className="font-bold text-red-600">{config.autoUpdateExchangeRateCNY ? (currentExchangeRateCNY || config.cnyRate) : config.cnyRate} CNY</p>
+                  <p className="font-bold text-red-600">{config.auto_update_exchange_rate_cny ? (currentExchangeRateCNY || config.cnyRate) : config.cnyRate} CNY</p>
                 </div>
                 <div className="text-center p-3 bg-white rounded-lg">
                   <p className="text-slate-600">🪙 USDT → VES</p>
