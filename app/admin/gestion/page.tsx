@@ -147,51 +147,60 @@ export default function ConfiguracionPage() {
   const { toast } = useToast();
 
   // =============================
-  // Realtime: callback para refetch cuando la tabla business_config cambia
+  // Realtime: recibir row directo y mapear a estado UI (sin refetch)
   // =============================
-  const handleRealtimeConfigUpdate = useCallback(async () => {
-    try {
-      // Refetch de la configuración más reciente
-      const res = await fetch('/api/config');
-      const data = await res.json();
-      if (!data.success || !data.config) return;
-
-      const fresh = data.config;
-      // Evitar trabajo innecesario si no hay cambios reales respecto al baseline actual
-      const currentSnapshot = baseConfigRef.current ? JSON.stringify(baseConfigRef.current) : null;
-      const incomingSnapshot = JSON.stringify({ ...baseConfigRef.current, ...fresh });
-      if (currentSnapshot && currentSnapshot === incomingSnapshot) {
-        return; // No cambios materiales
+  const handleRealtimeConfigRow = useCallback((row: any, eventType: string) => {
+    if (!row) return;
+    // Mapear columnas snake_case → estado camelCase de UI
+    const mapped: Partial<BusinessConfig> = {};
+    const mapPairs: [keyof BusinessConfig, string][] = [
+      ['usdRate', 'usd_rate'],
+      ['cnyRate', 'cny_rate'],
+      ['binanceRate', 'binance_rate'],
+      ['profitMargin', 'profit_margin'],
+      ['airShippingRate', 'air_shipping_rate'],
+      ['seaShippingRate', 'sea_shipping_rate'],
+      ['alertsAfterDays', 'alerts_after_days'],
+      // switches (ya están en snake en UI)
+      ['auto_update_exchange_rate', 'auto_update_exchange_rate'],
+      ['auto_update_exchange_rate_cny', 'auto_update_exchange_rate_cny'],
+      ['auto_update_binance_rate', 'auto_update_binance_rate']
+    ];
+    let changed = false;
+    mapPairs.forEach(([uiKey, dbKey]) => {
+      if (Object.prototype.hasOwnProperty.call(row, dbKey)) {
+        const newVal = row[dbKey];
+        // Comparar con baseline (si existe)
+        const currentBaselineVal = baseConfigRef.current ? (baseConfigRef.current as any)[uiKey] : undefined;
+        if (currentBaselineVal !== newVal) {
+          (mapped as any)[uiKey] = newVal;
+          changed = true;
+        }
       }
-
-      setConfig(prev => {
-        const merged = { ...prev, ...fresh };
-        baseConfigRef.current = { ...merged }; // Actualizar baseline para no activar botón de guardar
-        return merged;
-      });
-      // Actualizar auditoría
-      if (fresh.updated_at) {
-        try { setLastSaved(new Date(fresh.updated_at)); } catch {}
-      }
-      if (fresh.admin_id) {
-        setLastAdmin({ id: fresh.admin_id, updated_at: fresh.updated_at || new Date().toISOString() });
-        // Obtener nombre amigable del admin
-        fetch(`/api/admin-name?uid=${fresh.admin_id}`)
-          .then(r => r.json())
-          .then(r => { if (r.success && r.name) setLastAdminName(r.name); })
-          .catch(() => {});
-      }
-      // Forzar recomputo de hasChanges para reflejar estado sincronizado
-  setBaselineVersion(v => v + 1);
-  console.log('[Realtime] business_config sincronizada (UI actualizada)');
-    } catch (e) {
-      console.error('[Realtime] Error refetching business_config:', e);
+    });
+    if (!changed) {
+      return; // nada relevante
     }
-  // Dependencias: sólo funciones estables / refs (no incluir config para evitar loops)
-  }, [toast]);
+    setConfig(prev => {
+      const merged = { ...prev, ...mapped };
+      baseConfigRef.current = { ...merged }; // actualizar baseline para evitar marcar cambios locales
+      return merged;
+    });
+    if (row.updated_at) {
+      try { setLastSaved(new Date(row.updated_at)); } catch {}
+    }
+    if (row.admin_id) {
+      setLastAdmin({ id: row.admin_id, updated_at: row.updated_at || new Date().toISOString() });
+      fetch(`/api/admin-name?uid=${row.admin_id}`)
+        .then(r => r.json())
+        .then(r => { if (r.success && r.name) setLastAdminName(r.name); })
+        .catch(() => {});
+    }
+    setBaselineVersion(v => v + 1);
+    console.log('[Realtime] Config actualizada vía evento', eventType, mapped);
+  }, []);
 
-  // Suscripción Realtime (una sola vez siempre que el callback se mantenga estable)
-  useRealtimeBusinessConfig(handleRealtimeConfigUpdate);
+  useRealtimeBusinessConfig(handleRealtimeConfigRow);
 
   // Callback estable para actualizar la tasa USD
   const handleRateUpdate = useCallback((newRate: number) => {
@@ -199,16 +208,10 @@ export default function ConfiguracionPage() {
       if (prev.usdRate === newRate) {
         return prev;
       }
-      // Guardar automáticamente si el switch está activo
-  if (config.auto_update_exchange_rate) {
-        fetch('/api/config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ usd_rate: newRate, auto_update_exchange_rate: true })
-        });
-      }
       return { ...prev, usdRate: newRate };
     });
+  // Marcar que hay cambios pendientes de guardar
+  setBaselineVersion(v => v + 1);
   }, []);
 
   // Callback estable para actualizar la tasa CNY - SIMPLIFICADO
@@ -311,11 +314,7 @@ export default function ConfiguracionPage() {
     const cleaned = sanitizeCost(raw);
     // Permitir vacío, pero si no es vacío, convertir a número
     const finalValue = cleaned === '' ? '' : (isNaN(parseFloat(cleaned)) ? '' : parseFloat(cleaned));
-    setConfig(prev => {
-      const newConfig = { ...prev, [field]: finalValue };
-      localStorage.setItem('businessConfig', JSON.stringify(newConfig));
-      return newConfig;
-    });
+  setConfig(prev => ({ ...prev, [field]: finalValue }));
     
     // Forzar detección de cambios para activar el botón de guardar
     setBaselineVersion(v => {
@@ -403,15 +402,10 @@ export default function ConfiguracionPage() {
       console.log('[Admin] Updating config.cnyRate from', prev.cnyRate, 'to', newRate);
       if (prev.cnyRate === newRate) return prev;
       // Guardar automáticamente si el switch está activo
-      if (config.auto_update_exchange_rate_cny) {
-        fetch('/api/config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cny_rate: newRate, auto_update_exchange_rate_cny: true })
-        });
-      }
       return { ...prev, cnyRate: newRate };
     });
+      // Marcar que hay cambios pendientes (el valor actualizado de la tasa CNY aún no se persiste hasta Guardar)
+      setBaselineVersion(v => v + 1);
   }, [config.cnyRate, currentExchangeRateCNY]);
 
   // Función de refrescar CNY - SIMPLE
@@ -476,26 +470,9 @@ export default function ConfiguracionPage() {
     
   const loadConfig = async () => {
       try {
-        // 1. Cargar configuración desde localStorage (más confiable)
-        const savedConfig = localStorage.getItem('businessConfig');
-        console.log('[Admin] Raw localStorage savedConfig:', savedConfig);
-        
-        // Limpiar binanceRate viejo de localStorage si existe
-        if (savedConfig) {
-          try {
-            const parsed = JSON.parse(savedConfig);
-            if (parsed.binanceRate && parsed.binanceRate < 100) {
-              // Si tiene un valor viejo (< 100), eliminarlo
-              delete parsed.binanceRate;
-              localStorage.setItem('businessConfig', JSON.stringify(parsed));
-              console.log('[Admin] Removed old binanceRate from localStorage');
-            }
-          } catch (e) {
-            console.error('[Admin] Error cleaning localStorage:', e);
-          }
-        }
-        
-        let mergedConfig = {
+        // Fuente de verdad global: API (DB). LocalStorage solo como fallback.
+  // Sin lectura desde localStorage: solo defaults + API
+  let mergedConfig = {
           airShippingRate: 8.50,
           seaShippingRate: 180.00,
           usdRate: 36.25,
@@ -512,58 +489,35 @@ export default function ConfiguracionPage() {
           auto_update_exchange_rate_cny: false,
           auto_update_binance_rate: false
         };
-
-        if (savedConfig) {
-          try {
-            const parsedConfig = JSON.parse(savedConfig);
-            console.log('[Admin] Parsed localStorage config:', parsedConfig);
-            console.log('[Admin] Parsed auto_update_exchange_rate_cny:', parsedConfig.auto_update_exchange_rate_cny);
-            mergedConfig = { ...mergedConfig, ...parsedConfig };
-            // Eliminar campos de días de entrega si existen en localStorage
-            console.log('[Admin] After merge with localStorage:', mergedConfig.auto_update_exchange_rate_cny);
-          } catch (e) {
-            console.error('Error parsing saved config:', e);
-          }
-        }
-
-        // 2. Intentar cargar desde la API y hacer merge
+        // 1. Intentar cargar desde API (siempre preferido)
+  let apiSucceeded = false;
         try {
           const response = await fetch('/api/config');
           const data = await response.json();
           if (data.success && data.config) {
-            console.log('[Admin] API config received:', data.config);
-            mergedConfig = { 
-              ...mergedConfig, 
-              ...data.config
-            };
-            // Guardar info de auditoría si existe
+            mergedConfig = { ...mergedConfig, ...data.config };
+            apiSucceeded = true;
             if (data.config.admin_id || data.config.updated_at) {
               setLastAdmin({
                 id: data.config.admin_id || '',
                 updated_at: data.config.updated_at || ''
               });
-              // Buscar el nombre del admin por su UID
               if (data.config.admin_id) {
                 fetch(`/api/admin-name?uid=${data.config.admin_id}`)
-                  .then(res => res.json())
-                  .then(res => {
-                    if (res.success && res.name) setLastAdminName(res.name);
-                    else setLastAdminName('Administrador');
-                  })
+                  .then(r => r.json())
+                  .then(r => { if (r.success && r.name) setLastAdminName(r.name); else setLastAdminName('Administrador'); })
                   .catch(() => setLastAdminName('Administrador'));
-              }
+            }
             }
           }
-        } catch (apiError) {
-          console.error('Error loading config from API, using localStorage only:', apiError);
+        } catch (e) {
+          console.warn('[Admin] API config fetch failed, will fallback to localStorage if present');
         }
 
-  // Respeta el valor guardado de auto_update_exchange_rate_cny
-        
-        // Respeta el valor guardado en localStorage
+  // No persistimos en localStorage: la fuente de verdad es siempre la API
 
         // 3. Aplicar configuración final
-        console.log('[Admin] loadConfig completed, mergedConfig:', mergedConfig);
+  console.log('[Admin] loadConfig completed (SOURCE =', apiSucceeded ? 'API' : 'LOCAL/DEFAULT', '), mergedConfig:', mergedConfig);
         try {
           setConfig(mergedConfig);
           baseConfigRef.current = { ...mergedConfig };
@@ -576,11 +530,12 @@ export default function ConfiguracionPage() {
         console.error('Error loading config:', error);
       }
       
-      // Recuperar última fecha de guardado
-      const savedDate = localStorage.getItem('lastConfigSaved');
-      if (savedDate) {
-        setLastSaved(new Date(savedDate));
-      }
+      // Establecer última fecha de guardado desde mergedConfig.updated_at si existe
+      try {
+        if (baseConfigRef.current && (baseConfigRef.current as any).updated_at) {
+          setLastSaved(new Date((baseConfigRef.current as any).updated_at));
+        }
+      } catch {}
       
       setMounted(true);
     };
@@ -650,26 +605,16 @@ export default function ConfiguracionPage() {
       if (!data.success) {
         throw new Error(data.error || 'Error saving configuration');
       }
-      const now = new Date();
-      setLastSaved(now);
-      localStorage.setItem('lastConfigSaved', now.toISOString());
-      // Guardar solo los campos globales en localStorage (en camelCase para el frontend)
-      localStorage.setItem('businessConfig', JSON.stringify({
-  usdRate: config.usdRate,
-  auto_update_exchange_rate: config.auto_update_exchange_rate,
-  cnyRate: config.cnyRate,
-  auto_update_exchange_rate_cny: config.auto_update_exchange_rate_cny,
-  binanceRate: config.binanceRate,
-  auto_update_binance_rate: config.auto_update_binance_rate,
-  profitMargin: config.profitMargin,
-  airShippingRate: config.airShippingRate,
-  seaShippingRate: config.seaShippingRate,
-  alertsAfterDays: config.alertsAfterDays
-      }));
+      // Preferir updated_at devuelto por la API; fallback al now local
+      if (data.config && data.config.updated_at) {
+        try { setLastSaved(new Date(data.config.updated_at)); } catch { setLastSaved(new Date()); }
+      } else {
+        setLastSaved(new Date());
+      }
       // Actualizar info de auditoría
       setLastAdmin({
         id: adminId,
-        updated_at: now.toISOString()
+        updated_at: (data.config && data.config.updated_at) ? data.config.updated_at : new Date().toISOString()
       });
       toast({
         title: t('admin.management.messages.configSaved'),
@@ -708,56 +653,9 @@ export default function ConfiguracionPage() {
 
   // Actualiza el config y guarda inmediatamente si es campo global
   const updateConfig = (field: keyof BusinessConfig, value: any) => {
-    setConfig(prev => {
-      const newConfig = { ...prev, [field]: value };
-      // Si el campo es global, guardar inmediatamente
-      if ([
-        'usdRate',
-        'auto_update_exchange_rate',
-        'cnyRate',
-        'auto_update_exchange_rate_cny',
-        'binanceRate',
-        'auto_update_binance_rate',
-        'profitMargin',
-        'airShippingRate',
-        'seaShippingRate',
-        'alertsAfterDays'
-      ].includes(field)) {
-        // Guardar en backend (en snake_case)
-        const configToSave = {
-          usd_rate: field === 'usdRate' ? value : newConfig.usdRate,
-          auto_update_exchange_rate: field === 'auto_update_exchange_rate' ? value : newConfig.auto_update_exchange_rate,
-          cny_rate: field === 'cnyRate' ? value : newConfig.cnyRate,
-          auto_update_exchange_rate_cny: field === 'auto_update_exchange_rate_cny' ? value : newConfig.auto_update_exchange_rate_cny,
-          binance_rate: field === 'binanceRate' ? value : newConfig.binanceRate,
-          auto_update_binance_rate: field === 'auto_update_binance_rate' ? value : newConfig.auto_update_binance_rate,
-          profit_margin: field === 'profitMargin' ? value : newConfig.profitMargin,
-          air_shipping_rate: field === 'airShippingRate' ? value : newConfig.airShippingRate,
-          sea_shipping_rate: field === 'seaShippingRate' ? value : newConfig.seaShippingRate,
-          alerts_after_days: field === 'alertsAfterDays' ? value : newConfig.alertsAfterDays
-        };
-        fetch('/api/config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(configToSave)
-        });
-        // Guardar en localStorage en snake_case para el frontend
-        localStorage.setItem('businessConfig', JSON.stringify({
-          usdRate: newConfig.usdRate,
-          auto_update_exchange_rate: newConfig.auto_update_exchange_rate,
-          cnyRate: newConfig.cnyRate,
-          auto_update_exchange_rate_cny: newConfig.auto_update_exchange_rate_cny,
-          binanceRate: newConfig.binanceRate,
-          auto_update_binance_rate: newConfig.auto_update_binance_rate,
-          profitMargin: newConfig.profitMargin,
-          airShippingRate: newConfig.airShippingRate,
-          seaShippingRate: newConfig.seaShippingRate,
-          alertsAfterDays: newConfig.alertsAfterDays
-        }));
-      }
-      return newConfig;
-    });
-    setBaselineVersion(v => v + 1); // Forzar detección de cambios para activar el botón de guardar
+    setConfig(prev => ({ ...prev, [field]: value }));
+    // Sólo marcar que hay cambios; el guardado ocurre en handleSave
+    setBaselineVersion(v => v + 1);
   };
 
   // Comparar configuraciones usando ref para evitar loops infinitos
