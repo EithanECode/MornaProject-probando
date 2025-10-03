@@ -136,8 +136,8 @@ export default function ConfiguracionPage() {
   const baseConfigRef = useRef<BusinessConfig | null>(null);
   const [baselineVersion, setBaselineVersion] = useState(0);
   
-  // Bandera para evitar que loadConfig se ejecute múltiples veces
-  const configLoadedRef = useRef(false);
+  // Estado de fetching en curso (carga inicial / refetch)
+  const [isFetching, setIsFetching] = useState(true);
   
   const [isLoading, setIsLoading] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -178,26 +178,38 @@ export default function ConfiguracionPage() {
         }
       }
     });
-    if (!changed) {
-      return; // nada relevante
+    if (changed) {
+      setConfig(prev => {
+        const merged = { ...prev, ...mapped };
+        baseConfigRef.current = { ...merged }; // actualizar baseline para evitar marcar cambios locales
+        return merged;
+      });
+      setBaselineVersion(v => v + 1);
+      console.log('[Realtime] Config actualizada vía evento', eventType, mapped);
+    } else {
+      // Aunque no haya cambios de valores (porque ya estaban aplicados localmente) igual registrar auditoría
+      console.log('[Realtime] Evento sin cambios de valores, aplicando solo auditoría', eventType);
     }
-    setConfig(prev => {
-      const merged = { ...prev, ...mapped };
-      baseConfigRef.current = { ...merged }; // actualizar baseline para evitar marcar cambios locales
-      return merged;
-    });
     if (row.updated_at) {
       try { setLastSaved(new Date(row.updated_at)); } catch {}
     }
     if (row.admin_id) {
-      setLastAdmin({ id: row.admin_id, updated_at: row.updated_at || new Date().toISOString() });
-      fetch(`/api/admin-name?uid=${row.admin_id}`)
-        .then(r => r.json())
-        .then(r => { if (r.success && r.name) setLastAdminName(r.name); })
-        .catch(() => {});
+      const sameAdmin = lastAdmin?.id === row.admin_id;
+      // Actualizar siempre si cambia updated_at o cambia el admin
+      if (!sameAdmin || (lastAdmin && lastAdmin.updated_at !== row.updated_at)) {
+        setLastAdmin({ id: row.admin_id, updated_at: row.updated_at || new Date().toISOString() });
+        const cacheKey = `adminName:${row.admin_id}`;
+        const cached = typeof window !== 'undefined' ? sessionStorage.getItem(cacheKey) : null;
+        if (cached) {
+          setLastAdminName(cached);
+        } else {
+          fetch(`/api/admin-name?uid=${row.admin_id}`)
+            .then(r => r.json())
+            .then(r => { if (r.success && r.name) { setLastAdminName(r.name); sessionStorage.setItem(cacheKey, r.name); } })
+            .catch(() => {});
+        }
+      }
     }
-    setBaselineVersion(v => v + 1);
-    console.log('[Realtime] Config actualizada vía evento', eventType, mapped);
   }, []);
 
   useRealtimeBusinessConfig(handleRealtimeConfigRow);
@@ -455,93 +467,73 @@ export default function ConfiguracionPage() {
   
   // Estado para la calculadora de conversión USDT → VES
   const [usdtAmount, setUsdtAmount] = useState<number>(100);
+  // Nueva función central para traer la config SIEMPRE desde API (fuente única)
+  const fetchConfig = useCallback(async () => {
+    setIsFetching(true);
+    try {
+      const res = await fetch('/api/config', { cache: 'no-store' });
+      const data = await res.json();
+      if (data.success && data.config) {
+        const db = data.config;
+        const mapped: BusinessConfig = {
+          airShippingRate: db.air_shipping_rate ?? 8.50,
+          seaShippingRate: db.sea_shipping_rate ?? 180.00,
+          usdRate: db.usd_rate ?? 36.25,
+          cnyRate: db.cny_rate ?? 7.25,
+          binanceRate: db.binance_rate ?? 299.51,
+          profitMargin: db.profit_margin ?? 25,
+          maxQuotationsPerMonth: db.max_quotations_per_month ?? 5,
+          maxModificationsPerOrder: db.max_modifications_per_order ?? 2,
+          quotationValidityDays: db.quotation_validity_days ?? 7,
+          paymentDeadlineDays: db.payment_deadline_days ?? 3,
+          alertsAfterDays: db.alerts_after_days ?? 7,
+          sessionTimeout: db.session_timeout ?? 60,
+          auto_update_exchange_rate: db.auto_update_exchange_rate ?? false,
+          auto_update_exchange_rate_cny: db.auto_update_exchange_rate_cny ?? false,
+          auto_update_binance_rate: db.auto_update_binance_rate ?? false
+        };
+        setConfig(mapped);
+        baseConfigRef.current = { ...mapped };
+        if (db.updated_at) {
+          try { setLastSaved(new Date(db.updated_at)); } catch {}
+        }
+        if (db.admin_id) {
+          const cacheKey = `adminName:${db.admin_id}`;
+          const cached = sessionStorage.getItem(cacheKey);
+          if (cached) {
+            setLastAdminName(cached);
+          } else {
+            fetch(`/api/admin-name?uid=${db.admin_id}`)
+              .then(r => r.json())
+              .then(r => { if (r.success && r.name) { setLastAdminName(r.name); sessionStorage.setItem(cacheKey, r.name); } else setLastAdminName('Administrador'); })
+              .catch(() => setLastAdminName('Administrador'));
+          }
+          setLastAdmin({ id: db.admin_id, updated_at: db.updated_at || new Date().toISOString() });
+        }
+        setBaselineVersion(v => v + 1);
+        console.log('[Admin] Config fetched (mount/refetch)');
+      } else {
+        console.warn('[Admin] Config API returned empty');
+      }
+    } catch (e) {
+      console.error('[Admin] Error fetching config', e);
+    } finally {
+      setIsFetching(false);
+      setMounted(true);
+    }
+  }, []);
 
   useEffect(() => {
-    console.log('[Admin] loadConfig useEffect triggered, configLoaded:', configLoadedRef.current);
-    
-    // Evitar que se ejecute múltiples veces
-    if (configLoadedRef.current) {
-      console.log('[Admin] loadConfig already executed, skipping...');
-      return;
-    }
-    
-    configLoadedRef.current = true;
-    console.log('[Admin] loadConfig started...');
-    
-  const loadConfig = async () => {
-      try {
-        // Fuente de verdad global: API (DB). LocalStorage solo como fallback.
-  // Sin lectura desde localStorage: solo defaults + API
-  let mergedConfig = {
-          airShippingRate: 8.50,
-          seaShippingRate: 180.00,
-          usdRate: 36.25,
-          cnyRate: 7.25,
-          binanceRate: 299.51,
-          profitMargin: 25,
-          maxQuotationsPerMonth: 5,
-          maxModificationsPerOrder: 2,
-          quotationValidityDays: 7,
-          paymentDeadlineDays: 3,
-          alertsAfterDays: 7,
-          sessionTimeout: 60,
-          auto_update_exchange_rate: false,
-          auto_update_exchange_rate_cny: false,
-          auto_update_binance_rate: false
-        };
-        // 1. Intentar cargar desde API (siempre preferido)
-  let apiSucceeded = false;
-        try {
-          const response = await fetch('/api/config');
-          const data = await response.json();
-          if (data.success && data.config) {
-            mergedConfig = { ...mergedConfig, ...data.config };
-            apiSucceeded = true;
-            if (data.config.admin_id || data.config.updated_at) {
-              setLastAdmin({
-                id: data.config.admin_id || '',
-                updated_at: data.config.updated_at || ''
-              });
-              if (data.config.admin_id) {
-                fetch(`/api/admin-name?uid=${data.config.admin_id}`)
-                  .then(r => r.json())
-                  .then(r => { if (r.success && r.name) setLastAdminName(r.name); else setLastAdminName('Administrador'); })
-                  .catch(() => setLastAdminName('Administrador'));
-            }
-            }
-          }
-        } catch (e) {
-          console.warn('[Admin] API config fetch failed, will fallback to localStorage if present');
-        }
-
-  // No persistimos en localStorage: la fuente de verdad es siempre la API
-
-        // 3. Aplicar configuración final
-  console.log('[Admin] loadConfig completed (SOURCE =', apiSucceeded ? 'API' : 'LOCAL/DEFAULT', '), mergedConfig:', mergedConfig);
-        try {
-          setConfig(mergedConfig);
-          baseConfigRef.current = { ...mergedConfig };
-          console.log('[Admin] setConfig completed successfully');
-        } catch (error) {
-          console.error('[Admin] Error in setConfig:', error);
-        }
-        
-      } catch (error) {
-        console.error('Error loading config:', error);
-      }
-      
-      // Establecer última fecha de guardado desde mergedConfig.updated_at si existe
-      try {
-        if (baseConfigRef.current && (baseConfigRef.current as any).updated_at) {
-          setLastSaved(new Date((baseConfigRef.current as any).updated_at));
-        }
-      } catch {}
-      
-      setMounted(true);
+    fetchConfig();
+    const onFocus = () => fetchConfig();
+    const onVisibility = () => { if (document.visibilityState === 'visible') fetchConfig(); };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
     };
-
-    loadConfig();
-  }, []);
+  }, [fetchConfig]);
 
   // Cleanup effect para el timeout de tasa manual
   useEffect(() => {
@@ -616,6 +608,18 @@ export default function ConfiguracionPage() {
         id: adminId,
         updated_at: (data.config && data.config.updated_at) ? data.config.updated_at : new Date().toISOString()
       });
+      // Forzar nombre inmediato del propio usuario (sin esperar evento realtime)
+      try {
+        const cacheKey = `adminName:${adminId}`;
+        const cached = typeof window !== 'undefined' ? sessionStorage.getItem(cacheKey) : null;
+        if (cached) {
+          setLastAdminName(cached);
+        } else {
+          fetch(`/api/admin-name?uid=${adminId}`)
+            .then(r => r.json())
+            .then(r => { if (r.success && r.name) { setLastAdminName(r.name); sessionStorage.setItem(cacheKey, r.name); } });
+        }
+      } catch {}
       toast({
         title: t('admin.management.messages.configSaved'),
         description: t('admin.management.messages.configSavedGlobal'),
@@ -639,6 +643,34 @@ export default function ConfiguracionPage() {
   paymentDeadlineDays: config.paymentDeadlineDays
       };
       setBaselineVersion(v => v + 1); // forzar recomputo de hasChanges
+      // Refetch inmediato (garantizar sólo datos de API como fuente)
+      await fetch('/api/config', { cache: 'no-store' })
+        .then(r => r.json())
+        .then(d => {
+          if (d.success && d.config) {
+            const db = d.config;
+            const mapped: BusinessConfig = {
+              airShippingRate: db.air_shipping_rate ?? 8.50,
+              seaShippingRate: db.sea_shipping_rate ?? 180.00,
+              usdRate: db.usd_rate ?? 36.25,
+              cnyRate: db.cny_rate ?? 7.25,
+              binanceRate: db.binance_rate ?? 299.51,
+              profitMargin: db.profit_margin ?? 25,
+              maxQuotationsPerMonth: db.max_quotations_per_month ?? 5,
+              maxModificationsPerOrder: db.max_modifications_per_order ?? 2,
+              quotationValidityDays: db.quotation_validity_days ?? 7,
+              paymentDeadlineDays: db.payment_deadline_days ?? 3,
+              alertsAfterDays: db.alerts_after_days ?? 7,
+              sessionTimeout: db.session_timeout ?? 60,
+              auto_update_exchange_rate: db.auto_update_exchange_rate ?? false,
+              auto_update_exchange_rate_cny: db.auto_update_exchange_rate_cny ?? false,
+              auto_update_binance_rate: db.auto_update_binance_rate ?? false
+            };
+            setConfig(mapped);
+            baseConfigRef.current = { ...mapped };
+            setBaselineVersion(v => v + 1);
+          }
+        });
     } catch (error: any) {
       console.error('Error saving config:', error);
       toast({
@@ -743,7 +775,7 @@ export default function ConfiguracionPage() {
   }
 
   // Loading ya montado, ahora sí traducción
-  if (mounted && !configLoadedRef.current) {
+  if (isFetching) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="text-center">
