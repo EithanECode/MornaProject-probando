@@ -39,6 +39,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useExchangeRate } from '@/hooks/useExchangeRate';
+import { useRealtimeBusinessConfig } from '@/hooks/use-realtime-business-config';
 import ExchangeRateManager from '@/components/admin/ExchangeRateManager';
 import { useTimeTranslations } from '@/hooks/useTimeTranslations';
 
@@ -144,6 +145,53 @@ export default function ConfiguracionPage() {
   const [lastAdmin, setLastAdmin] = useState<{ id: string; updated_at: string } | null>(null);
   const [lastAdminName, setLastAdminName] = useState<string>("");
   const { toast } = useToast();
+
+  // =============================
+  // Realtime: callback para refetch cuando la tabla business_config cambia
+  // =============================
+  const handleRealtimeConfigUpdate = useCallback(async () => {
+    try {
+      // Refetch de la configuración más reciente
+      const res = await fetch('/api/config');
+      const data = await res.json();
+      if (!data.success || !data.config) return;
+
+      const fresh = data.config;
+      // Evitar trabajo innecesario si no hay cambios reales respecto al baseline actual
+      const currentSnapshot = baseConfigRef.current ? JSON.stringify(baseConfigRef.current) : null;
+      const incomingSnapshot = JSON.stringify({ ...baseConfigRef.current, ...fresh });
+      if (currentSnapshot && currentSnapshot === incomingSnapshot) {
+        return; // No cambios materiales
+      }
+
+      setConfig(prev => {
+        const merged = { ...prev, ...fresh };
+        baseConfigRef.current = { ...merged }; // Actualizar baseline para no activar botón de guardar
+        return merged;
+      });
+      // Actualizar auditoría
+      if (fresh.updated_at) {
+        try { setLastSaved(new Date(fresh.updated_at)); } catch {}
+      }
+      if (fresh.admin_id) {
+        setLastAdmin({ id: fresh.admin_id, updated_at: fresh.updated_at || new Date().toISOString() });
+        // Obtener nombre amigable del admin
+        fetch(`/api/admin-name?uid=${fresh.admin_id}`)
+          .then(r => r.json())
+          .then(r => { if (r.success && r.name) setLastAdminName(r.name); })
+          .catch(() => {});
+      }
+      // Forzar recomputo de hasChanges para reflejar estado sincronizado
+  setBaselineVersion(v => v + 1);
+  console.log('[Realtime] business_config sincronizada (UI actualizada)');
+    } catch (e) {
+      console.error('[Realtime] Error refetching business_config:', e);
+    }
+  // Dependencias: sólo funciones estables / refs (no incluir config para evitar loops)
+  }, [toast]);
+
+  // Suscripción Realtime (una sola vez siempre que el callback se mantenga estable)
+  useRealtimeBusinessConfig(handleRealtimeConfigUpdate);
 
   // Callback estable para actualizar la tasa USD
   const handleRateUpdate = useCallback((newRate: number) => {
