@@ -148,12 +148,13 @@ export default function LoginForm({ onNavigateToPasswordReset, idPrefix = "" }: 
         normalized = level.trim().toLowerCase();
       }
 
-      const isClient = ["cliente", "client"].includes(normalized);
-      const isVzla = ["vzla", "venezuela"].includes(normalized);
-      const isChina = ["china"].includes(normalized);
-      const isAdmin = ["admin", "administrador", "administrator"].includes(normalized);
+  const isClient = ["cliente", "client"].includes(normalized);
+  const isVzla = ["vzla", "venezuela"].includes(normalized);
+  const isChina = ["china"].includes(normalized);
+  const isAdmin = ["admin", "administrador", "administrator"].includes(normalized);
+  const isPagos = ["pagos", "payments", "payment", "validador", "validator"].includes(normalized);
 
-  // Set cookie role (client/venezuela/china/admin) para middleware (el rol pagos fue eliminado)
+  // Set cookie role (client/venezuela/china/pagos/admin) para middleware
       try {
         const roleForCookie = isClient
           ? 'client'
@@ -161,9 +162,11 @@ export default function LoginForm({ onNavigateToPasswordReset, idPrefix = "" }: 
             ? 'venezuela'
             : isChina
               ? 'china'
-              : isAdmin
-                ? 'admin'
-                : '';
+              : isPagos
+                ? 'pagos'
+                : isAdmin
+                  ? 'admin'
+                  : '';
         if (roleForCookie) {
           document.cookie = `role=${roleForCookie}; Path=/; Max-Age=${60 * 60 * 12}; SameSite=Lax`;
         } else {
@@ -174,17 +177,12 @@ export default function LoginForm({ onNavigateToPasswordReset, idPrefix = "" }: 
         console.warn('No se pudo setear cookie de rol', e);
       }
 
-      if (isClient) {
-        window.location.href = '/cliente';
-      } else if (isVzla) {
-        window.location.href = '/venezuela';
-      } else if (isChina) {
-        window.location.href = '/china';
-      } else if (isAdmin) {
-        window.location.href = '/admin';
-      } else {
-        window.location.href = '/gestion';
-      }
+  if (isClient) window.location.href = '/cliente';
+  else if (isVzla) window.location.href = '/venezuela';
+  else if (isChina) window.location.href = '/china';
+  else if (isPagos) window.location.href = '/pagos';
+  else if (isAdmin) window.location.href = '/admin';
+  else window.location.href = '/gestion';
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
   setErrorMsg(message || t('auth.login.errorFallback'));

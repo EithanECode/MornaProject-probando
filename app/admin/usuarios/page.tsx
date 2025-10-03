@@ -531,7 +531,7 @@ export default function UsuariosPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">{t('admin.users.filters.allRoles')}</SelectItem>
-                        {(['Cliente','Empleado China','Empleado Vzla','Admin'] as UserRole[]).map((r) => (
+                        {(['Cliente','Empleado China','Empleado Vzla','Pagos','Admin'] as UserRole[]).map((r) => (
                           <SelectItem key={r} value={r}>{t(`admin.users.roles.${r}` as any)}</SelectItem>
                         ))}
                       </SelectContent>
