@@ -217,13 +217,16 @@ export default function ConfiguracionPage() {
   // Callback estable para actualizar la tasa USD
   const handleRateUpdate = useCallback((newRate: number) => {
     setConfig(prev => {
-      if (prev.usdRate === newRate) {
-        return prev;
-      }
+      if (prev.usdRate === newRate) return prev;
       return { ...prev, usdRate: newRate };
     });
-  // Marcar que hay cambios pendientes de guardar
-  setBaselineVersion(v => v + 1);
+    // Si el modo auto está activo, persistir inmediatamente (sin esperar botón Guardar)
+    if (configRef.current?.auto_update_exchange_rate) {
+      scheduleAutoPersist('usdRate', { usd_rate: newRate, auto_update_exchange_rate: true });
+    } else {
+      // Solo marcar como cambio manual pendiente
+      setBaselineVersion(v => v + 1);
+    }
   }, []);
 
   // Callback estable para actualizar la tasa CNY - SIMPLIFICADO
@@ -411,13 +414,14 @@ export default function ConfiguracionPage() {
     
     // Actualizar el config para que el input muestre el valor de la API inmediatamente
     setConfig(prev => {
-      console.log('[Admin] Updating config.cnyRate from', prev.cnyRate, 'to', newRate);
       if (prev.cnyRate === newRate) return prev;
-      // Guardar automáticamente si el switch está activo
       return { ...prev, cnyRate: newRate };
     });
-      // Marcar que hay cambios pendientes (el valor actualizado de la tasa CNY aún no se persiste hasta Guardar)
+    if (configRef.current?.auto_update_exchange_rate_cny) {
+      scheduleAutoPersist('cnyRate', { cny_rate: newRate, auto_update_exchange_rate_cny: true });
+    } else {
       setBaselineVersion(v => v + 1);
+    }
   }, [config.cnyRate, currentExchangeRateCNY]);
 
   // Función de refrescar CNY - SIMPLE
@@ -681,6 +685,55 @@ export default function ConfiguracionPage() {
     // Sólo marcar que hay cambios; el guardado ocurre en handleSave
     setBaselineVersion(v => v + 1);
   };
+
+  // =============================
+  // Persistencia automática para tasas en modo auto
+  // =============================
+  const autoPersistingRef = useRef<Record<string, boolean>>({});
+  const autoPersistTimersRef = useRef<Record<string, any>>({});
+  const persistAutoRate = useCallback(async (partial: Record<string, any>, fieldKey: 'usdRate' | 'cnyRate') => {
+    try {
+      if (autoPersistingRef.current[fieldKey]) return; // evitar solapamiento
+      autoPersistingRef.current[fieldKey] = true;
+      const response = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...partial })
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || 'Error auto-persistiendo tasa');
+      // Ajustar baseline solo para los campos modificados para que no se active Guardar
+      setConfig(prev => {
+        const updated = { ...prev } as any;
+        if (typeof partial.usd_rate !== 'undefined') updated.usdRate = partial.usd_rate;
+        if (typeof partial.cny_rate !== 'undefined') updated.cnyRate = partial.cny_rate;
+        baseConfigRef.current = { ...updated };
+        return updated;
+      });
+      if (data.config?.updated_at) {
+        try { setLastSaved(new Date(data.config.updated_at)); } catch {}
+      }
+      // Evitar incrementar baselineVersion innecesariamente (ya sincronizado)
+      console.log('[AutoPersist] Tasa sincronizada', partial);
+    } catch (e) {
+      console.error('[AutoPersist] Error', e);
+      // Si falla, marcar cambio pendiente para permitir Guardar manual
+      setBaselineVersion(v => v + 1);
+    } finally {
+      autoPersistingRef.current[fieldKey] = false;
+    }
+  }, []);
+
+  const scheduleAutoPersist = useCallback((fieldKey: 'usdRate' | 'cnyRate', payload: Record<string, any>) => {
+    // Limpiar timer previo
+    if (autoPersistTimersRef.current[fieldKey]) {
+      clearTimeout(autoPersistTimersRef.current[fieldKey]);
+    }
+    // Debounce (ej: 1.2s); evita escribir en DB con demasiada frecuencia si llegan bursts
+    autoPersistTimersRef.current[fieldKey] = setTimeout(() => {
+      persistAutoRate(payload, fieldKey);
+    }, 1200);
+  }, [persistAutoRate]);
 
   // Comparar configuraciones usando ref para evitar loops infinitos
   const configRef = useRef(config);
@@ -993,14 +1046,14 @@ export default function ConfiguracionPage() {
                           onChange={e => updateConfig('usdRate', Number(e.target.value))}
                           className="pr-12"
                           title={config.auto_update_exchange_rate ? "Campo bloqueado: Auto-actualización activada" : "Editar tasa manualmente"}
-                          disabled={exchangeRateLoading || config.auto_update_exchange_rate}
+                          disabled={isLoading || exchangeRateLoading || config.auto_update_exchange_rate}
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
                           onClick={refreshRate}
-                          disabled={exchangeRateLoading}
+                          disabled={isLoading || exchangeRateLoading}
                           className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100"
                           title="Actualizar tasa desde BCV"
                         >
@@ -1025,9 +1078,11 @@ export default function ConfiguracionPage() {
                         <Switch
                           id="autoUpdate"
                           checked={config.auto_update_exchange_rate}
+                          disabled={isLoading}
                           onCheckedChange={(checked) => {
+                            if (isLoading) return;
                             setConfig(prev => ({ ...prev, auto_update_exchange_rate: checked }));
-                            setBaselineVersion(v => v + 1); // Forzar detección de cambios
+                            setBaselineVersion(v => v + 1);
                           }}
                         />
                       </div>
@@ -1078,7 +1133,7 @@ export default function ConfiguracionPage() {
                             config.cnyRate}
                           onChange={(e) => applyCost('cnyRate', e.target.value)}
                           className={exchangeRateErrorCNY ? 'border-red-300 pr-12' : 'pr-12'}
-                          disabled={exchangeRateLoadingCNY || config.auto_update_exchange_rate_cny}
+                          disabled={isLoading || exchangeRateLoadingCNY || config.auto_update_exchange_rate_cny}
                           placeholder="7.2500"
                           title={config.auto_update_exchange_rate_cny ? "Campo bloqueado: Auto-actualización activada" : "Editar tasa manualmente"}
                         />
@@ -1087,7 +1142,7 @@ export default function ConfiguracionPage() {
                           variant="ghost"
                           size="sm"
                           onClick={refreshRateCNY}
-                          disabled={exchangeRateLoadingCNY}
+                          disabled={isLoading || exchangeRateLoadingCNY}
                           className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100"
                           title="Actualizar tasa desde API"
                         >
@@ -1112,9 +1167,11 @@ export default function ConfiguracionPage() {
                         <Switch
                           id="autoUpdateCNY"
                           checked={config.auto_update_exchange_rate_cny}
+                          disabled={isLoading}
                           onCheckedChange={(checked) => {
+                            if (isLoading) return;
                             setConfig(prev => ({ ...prev, auto_update_exchange_rate_cny: checked }));
-                            setBaselineVersion(v => v + 1); // Forzar detección de cambios
+                            setBaselineVersion(v => v + 1);
                           }}
                         />
                       </div>
@@ -1171,7 +1228,7 @@ export default function ConfiguracionPage() {
                             setBaselineVersion(v => v + 1);
                           }}
                           className="pr-12"
-                          disabled={false}
+                          disabled={isLoading}
                           placeholder="299.51"
                           title="Edita manualmente la tasa de Binance P2P (consulta en binance.com/es/p2p)"
                         />
@@ -1257,7 +1314,7 @@ export default function ConfiguracionPage() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="profit" className="text-sm md:text-base">{t('admin.management.financial.profitMargin')}</Label>
-                      <Input
+                        <Input
                         id="profit"
                         type="number"
                         min={0}
@@ -1275,6 +1332,7 @@ export default function ConfiguracionPage() {
                           updateConfig('profitMargin', value);
                         }}
                         className={config.profitMargin < 0 || config.profitMargin > 100 ? 'border-red-400' : ''}
+                          disabled={isLoading}
                       />
                       {(config.profitMargin < 0 || config.profitMargin > 100) && (
                         <p className="text-xs text-red-600">El margen debe estar entre 0% y 100%.</p>
@@ -1318,6 +1376,7 @@ export default function ConfiguracionPage() {
                       max={365}
                       value={config.alertsAfterDays ?? ''}
                       onChange={(e) => updateConfig('alertsAfterDays', Number(e.target.value))}
+                      disabled={isLoading}
                     />
                     <p className="text-xs text-slate-500">{t('admin.management.notifications.alertAfterDaysHelp')}</p>
                   </div>
