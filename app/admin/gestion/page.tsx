@@ -523,17 +523,9 @@ export default function ConfiguracionPage() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchConfig();
-    const onFocus = () => fetchConfig();
-    const onVisibility = () => { if (document.visibilityState === 'visible') fetchConfig(); };
-    window.addEventListener('focus', onFocus);
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => {
-      window.removeEventListener('focus', onFocus);
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
-  }, [fetchConfig]);
+  // Control de refetch en foco con throttle para evitar “salto” visual al volver rápidamente
+  // Solo primera carga: luego todo dependerá de realtime + guardado explícito
+  useEffect(() => { fetchConfig(); }, [fetchConfig]);
 
   // Cleanup effect para el timeout de tasa manual
   useEffect(() => {
