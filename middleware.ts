@@ -38,9 +38,9 @@ export function middleware(req: NextRequest) {
   // BYPASS TEMPORAL DE RESTRICCIONES (PRUEBAS)
   // Establece BYPASS_ALL = false para reactivar la lógica previa.
   // =============================================================
-  const BYPASS_ALL = true; // <- cambiar a false cuando quieras volver a activar restricciones
+  const BYPASS_ALL = false; // Bypass desactivado: middleware de roles activo
   if (BYPASS_ALL) {
-    return NextResponse.next();
+    return NextResponse.next(); // (Modo mantenimiento) - actualmente OFF
   }
 
   // --- LÓGICA ORIGINAL (INACTIVA MIENTRAS BYPASS_ALL = true) ---
@@ -75,7 +75,7 @@ export function middleware(req: NextRequest) {
   else if (['vzla', 'venezuela'].includes(normalized)) normalized = 'venezuela';
   else if (['china'].includes(normalized)) normalized = 'china';
   else if (['admin', 'administrador', 'administrator'].includes(normalized)) normalized = 'admin';
-  else if (['pagos', 'payments', 'payment'].includes(normalized)) normalized = 'pagos';
+  else if (['pagos', 'payments', 'payment', 'validador', 'validator', 'validador de pagos', 'payments validator'].includes(normalized)) normalized = 'pagos';
 
   const allowed = ROLE_ALLOWED_PREFIXES[normalized];
 
