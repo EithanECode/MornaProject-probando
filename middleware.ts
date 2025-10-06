@@ -22,6 +22,8 @@ const ROLE_ALLOWED_PREFIXES: Record<string, string[]> = {
 // Rutas públicas que no requieren autenticación / rol
 const PUBLIC_PATHS = [
   '/login-register',
+  // Ruta explícita para recibir links de restablecimiento/confirmación
+  '/login-register/reset',
   '/manifest.json',
   '/api', // permitir APIs (ajustar si se requiere proteger algunas)
   '/videos',
@@ -57,6 +59,20 @@ export function middleware(req: NextRequest) {
   }
 
   if (isPublic(pathname)) {
+    return NextResponse.next();
+  }
+
+  // Permitir explícitamente los enlaces de restablecimiento/confirmación que
+  // puedan incluir parámetros como access_token o type=recovery en la URL.
+  // (El hash/fragment no llega al servidor; estos checks ayudan cuando el
+  // proveedor añade query params o algunos clientes reenvían la petición.)
+  const searchParams = req.nextUrl.searchParams;
+  if (
+    pathname === '/login-register/reset' ||
+    pathname.startsWith('/login-register/reset') ||
+    searchParams.has('access_token') ||
+    searchParams.get('type') === 'recovery'
+  ) {
     return NextResponse.next();
   }
 
