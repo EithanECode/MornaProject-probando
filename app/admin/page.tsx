@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useRouter } from 'next/navigation';
 
 export default function AdminDashboard() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -44,6 +45,21 @@ export default function AdminDashboard() {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const { adminId } = useAdminContext();
+  const router = useRouter();
+
+  // Notificaciones (ejemplo)
+  const [notificationsList, setNotificationsList] = useState<Array<{
+    id: string;
+    title: string;
+    description?: string;
+    href?: string;
+    unread?: boolean;
+  }>>([
+    { id: 'n1', title: t('admin.dashboard.recentActivity.activities.criticalAlert'), description: '#PED-1234 requiere atención', href: '/admin/pedidos', unread: true },
+    { id: 'n2', title: t('admin.dashboard.recentActivity.activities.paymentValidated'), description: 'Pago #P-456 validado', href: '/admin/validacion-pagos', unread: false },
+    { id: 'n3', title: t('admin.dashboard.recentActivity.activities.configurationUpdated'), description: 'Parámetros de operación actualizados', href: '/admin/gestion', unread: false },
+  ]);
+  const unreadCount = notificationsList.filter(n => n.unread).length;
 
     // Datos de pedidos desde la tabla orders
   const { data: adminOrdersData, error: adminOrdersError, refetch: refetchOrders } = useAdminOrders();
@@ -134,10 +150,17 @@ export default function AdminDashboard() {
         sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       }`}>
         <Header 
-          notifications={stats.criticalAlerts}
+          notifications={unreadCount || stats.criticalAlerts}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('admin.dashboard.title')}
           subtitle={t('admin.dashboard.subtitle')}
+          notificationsItems={notificationsList}
+          onMarkAllAsRead={() => {
+            setNotificationsList(prev => prev.map(n => ({ ...n, unread: false })));
+          }}
+          onOpenNotifications={() => {
+            router.push('/admin/gestion');
+          }}
         />
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
