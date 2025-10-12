@@ -1,0 +1,82 @@
+### PRUEBAS RÁPIDAS NOTIFICACIONES (usar la extensión REST Client en VS Code)
+
+# 1) Cambiar estado de pedido (cliente + roles)
+# Sustituye :id por un ID real de orders existente
+PUT http://localhost:3000/api/orders/1/state
+Content-Type: application/json
+
+{
+  "state": 4,
+  "changed_by": "tester@local",
+  "notes": "Smoke test asignado Vzla"
+}
+
+###
+PUT http://localhost:3000/api/orders/1/state
+Content-Type: application/json
+
+{
+  "state": 1,
+  "changed_by": "tester@local",
+  "notes": "Smoke test esperando pago"
+}
+
+###
+PUT http://localhost:3000/api/orders/1/state
+Content-Type: application/json
+
+{
+  "state": 3,
+  "changed_by": "tester@local",
+  "notes": "Smoke test cotización China"
+}
+
+### 2) Crear pedido desde admin (cliente + roles según estado inicial)
+POST http://localhost:3000/api/admin/orders
+Content-Type: application/json
+
+{
+  "client_id": "<CLIENT_UUID>",
+  "productName": "Producto test",
+  "description": "Pedido de prueba",
+  "quantity": 1,
+  "estimatedBudget": 100,
+  "deliveryType": "Caracas",
+  "shippingType": "air",
+  "imgs": [],
+  "links": ["https://example.com/test"],
+  "state": 1
+}
+
+### 3) Actualizar pedido desde admin (cliente + roles)
+# Sustituye :id por ID real
+PATCH http://localhost:3000/api/admin/orders/1
+Content-Type: application/json
+
+{
+  "state": 4
+}
+
+### 4) Actualizar configuración (admin)
+POST http://localhost:3000/api/config
+Content-Type: application/json
+
+{
+  "payment_deadline_days": 5
+}
+
+### 5) Listar notificaciones por audiencia
+# Rol
+GET http://localhost:3000/api/notifications?audience_type=role&audience_value=venezuela
+
+###
+GET http://localhost:3000/api/notifications?audience_type=role&audience_value=pagos
+
+###
+GET http://localhost:3000/api/notifications?audience_type=role&audience_value=china
+
+###
+GET http://localhost:3000/api/notifications?audience_type=role&audience_value=admin
+
+### Usuario
+GET http://localhost:3000/api/notifications?audience_type=user&audience_value=<CLIENT_UUID>

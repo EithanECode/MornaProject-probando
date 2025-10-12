@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getSupabaseServiceRoleClient } from '@/lib/supabase/server';
+import { NotificationsFactory } from '@/lib/notifications';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -118,7 +119,7 @@ export async function POST(req: NextRequest) {
       asignedEVzla: null,
     };
 
-    let { data, error } = await supabase
+  let { data, error } = await supabase
       .from('orders')
       .insert([insertPayload])
       .select('*')
@@ -147,6 +148,80 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error('POST /api/admin/orders insert error:', error.message, { details: error.details, payload: insertPayload });
       return NextResponse.json({ error: error.message, details: error.details }, { status: 500, headers: { 'Cache-Control': 'no-store' } });
+    }
+
+    // Emitir notificaciones post-creación (no bloqueantes)
+    try {
+      if (data?.client_id) {
+        const stateName = (typeof data.state === 'number') ? String(data.state) : undefined;
+        const notif = NotificationsFactory.client.orderStatusChanged({
+          orderId: String(data.id),
+          status: stateName ? undefined : undefined,
+        });
+        await supabase.from('notifications').insert([
+          {
+            audience_type: 'user',
+            audience_value: data.client_id,
+            title: notif.title,
+            description: `Tu pedido #${data.id} ha sido creado`,
+            href: notif.href,
+            severity: notif.severity,
+            user_id: data.client_id,
+            order_id: String(data.id),
+          },
+        ]);
+      }
+
+      // Si el estado inicial requiere cotización (3), notificar a China
+
+        // Siempre notificar a China que hay nuevo pedido para gestionar/cotizar
+        const notifChina = NotificationsFactory.china.newOrderForQuote({ orderId: String(data.id) });
+        await supabase.from('notifications').insert([
+          {
+            audience_type: 'role',
+            audience_value: 'china',
+            title: notifChina.title,
+            description: notifChina.description,
+            href: notifChina.href,
+            severity: notifChina.severity,
+            order_id: String(data.id),
+          },
+        ]);
+
+        // Notificar a Pagos solo cuando entre en validación (estado 4) – creación inicial no
+        if (data?.state === 4) {
+          const notifPagos = NotificationsFactory.pagos.newAssignedOrder({ orderId: String(data.id) });
+          await supabase.from('notifications').insert([
+            {
+              audience_type: 'role',
+              audience_value: 'pagos',
+              title: notifPagos.title,
+              description: notifPagos.description,
+              href: notifPagos.href,
+              severity: notifPagos.severity,
+              order_id: String(data.id),
+            },
+          ]);
+        }
+
+      // Si el estado inicial es 2 (pendiente para China), notificar a China
+      if (data?.state === 2) {
+        const notifChina2 = NotificationsFactory.china.orderRequiresAttention({ orderId: String(data.id) });
+        await supabase.from('notifications').insert([
+          {
+            audience_type: 'role',
+            audience_value: 'china',
+            title: notifChina2.title,
+            description: notifChina2.description,
+            href: notifChina2.href,
+            severity: notifChina2.severity,
+            order_id: String(data.id),
+          },
+        ]);
+      }
+
+    } catch (notifyErr) {
+      console.error('Admin create order notification error:', notifyErr);
     }
 
     return NextResponse.json({ ok: true, data }, { status: 201, headers: { 'Cache-Control': 'no-store' } });

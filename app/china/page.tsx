@@ -9,6 +9,7 @@ import { useClientsInfo } from '@/hooks/use-clients-info';
 import { useChinaContext } from '@/lib/ChinaContext';
 import { useTheme } from "next-themes";
 import { useRealtimeChina } from '@/hooks/use-realtime-china';
+import { useNotifications } from '@/hooks/use-notifications';
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,6 +46,7 @@ import {
   Zap
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // Tipos
 interface PendingOrder {
@@ -93,6 +95,7 @@ export default function ChinaDashboard() {
   const { t } = useTranslation();
   // Estado para forzar actualización del componente
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const router = useRouter();
   
   // Pedidos asignados al empleado China autenticado
   const { data: chinaOrders, loading: ordersLoading, error: ordersError, refetch: refetchChinaOrders } = useChinaOrders(refreshTrigger);
@@ -108,6 +111,9 @@ export default function ChinaDashboard() {
   const { chinaId } = useChinaContext();
   
   console.log('China Dashboard: chinaId =', chinaId);
+
+  // Notificaciones para China (per-user read)
+  const { uiItems: notificationsList, unreadCount, markAllAsRead, markOneAsRead } = useNotifications({ role: 'china', userId: chinaId, limit: 10, enabled: true });
 
   // Función para actualizar pedidos en realtime
   const handleOrdersUpdate = useCallback(() => {
@@ -344,10 +350,14 @@ export default function ChinaDashboard() {
         sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       }`}>
         <Header 
-          notifications={(pedidosPendientes || 0) + (pedidosEnProceso || 0)}
+          notifications={unreadCount || 0}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('chinese.title')}
           subtitle={t('chinese.subtitle')}
+          notificationsItems={notificationsList}
+          onMarkAllAsRead={async () => { await markAllAsRead(); }}
+          onOpenNotifications={() => { router.push('/china/pedidos'); }}
+          onItemClick={(id) => { markOneAsRead(id); }}
         />
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-8">

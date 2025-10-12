@@ -121,30 +121,9 @@ const VENEZUELA_MENU_ITEMS = [
   {
     id: 'orders',
     icon: Package,
-  badge: null,
+    badge: null,
     color: 'text-orange-500',
     path: '/venezuela/pedidos'
-  },
-  {
-    id: 'support',
-    icon: MessageCircle,
-  badge: null,
-    color: 'text-orange-500',
-    path: '/venezuela/soporte'
-  },
-  {
-    id: 'payments-validation',
-    icon: BadgeDollarSign,
-    badge: null,
-    color: 'text-orange-500',
-    path: '/venezuela/validacion-pagos'
-  },
-  {
-    id: 'reports',
-    icon: BarChart3,
-    badge: null,
-    color: 'text-orange-500',
-    path: '/venezuela/reportes'
   }
 ];
 

@@ -49,6 +49,8 @@ import { Boxes } from 'lucide-react';
 import { useChinaContext } from '@/lib/ChinaContext';
 import { useRealtimeChina } from '@/hooks/use-realtime-china';
 import { getSupabaseBrowserClient as _getClient } from '@/lib/supabase/client';
+import { useNotifications } from '@/hooks/use-notifications';
+import { useRouter } from 'next/navigation';
 
 // Tipos
 interface Pedido {
@@ -122,6 +124,9 @@ export default function PedidosChina() {
   const { t } = useTranslation();
   // NUEVO: obtener chinaId del contexto
   const { chinaId } = useChinaContext();
+  const router = useRouter();
+  // Notificaciones desde DB para China
+  const { uiItems: notificationsList, unreadCount, markAllAsRead, markOneAsRead } = useNotifications({ role: 'china', userId: chinaId, limit: 10, enabled: true });
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(false);
   // Mapear state numérico a texto usado en China
@@ -1529,11 +1534,15 @@ export default function PedidosChina() {
         }`}
       >
         <Header 
-          notifications={stats.pendientes}
+          notifications={unreadCount || 0}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('chinese.ordersPage.title')}
           subtitle={t('chinese.ordersPage.subtitle')}
           showTitleOnMobile
+          notificationsItems={notificationsList}
+          onMarkAllAsRead={async () => { await markAllAsRead(); }}
+          onOpenNotifications={() => { router.push('/china/pedidos'); }}
+          onItemClick={(id) => { markOneAsRead(id); }}
         />
         
   <div className="p-4 md:p-5 lg:p-6 space-y-6 max-w-7xl mx-auto w-full">

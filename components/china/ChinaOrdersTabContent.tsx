@@ -402,7 +402,7 @@ export default function ChinaOrdersTabContent() {
       // Mantener sólo los que tienen asignedEChina definido (el API ya lo hace si no se pasa el parámetro, esto es defensivo)
       const mappedPedidos = data
         .filter((order:any)=> !!order.asignedEChina)
-        .filter((order:any)=> Number(order.state) !== 1) // Ocultamos state 1 (creación)
+        // Ya no excluimos state 1; queremos ver pedidos recién creados si están asignados
         .map((order:any)=>({
           id: order.id,
           cliente: order.clientName || '',

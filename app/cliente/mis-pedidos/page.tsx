@@ -23,6 +23,7 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useClientContext } from '@/lib/ClientContext';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useNotifications } from '@/hooks/use-notifications';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -1462,6 +1463,9 @@ export default function MisPedidosPage() {
     }
   };
 
+  // Notificaciones del cliente (DB-backed)
+  const { uiItems: notificationsList, unreadCount, markAllAsRead, markOneAsRead } = useNotifications({ role: 'client', userId: clientId, limit: 10, enabled: !!clientId });
+
   if (!mounted) return null;
 
   return (
@@ -1478,10 +1482,14 @@ export default function MisPedidosPage() {
         sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       }`}>
         <Header 
-          notifications={stats.pending} 
+          notifications={unreadCount || 0} 
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('client.recentOrders.title')}
           subtitle={t('client.recentOrders.subtitle')}
+          notificationsItems={notificationsList}
+          onMarkAllAsRead={async () => { await markAllAsRead(); }}
+          onItemClick={async (id) => { await markOneAsRead(id); }}
+          onOpenNotifications={() => { /* ya estamos en mis-pedidos */ }}
         />
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">

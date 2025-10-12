@@ -38,28 +38,18 @@ import {
 import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRouter } from 'next/navigation';
+import { useNotifications } from '@/hooks/use-notifications';
 
 export default function AdminDashboard() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
-  const { adminId } = useAdminContext();
   const router = useRouter();
+  const { adminId } = useAdminContext();
 
   // Notificaciones (ejemplo)
-  const [notificationsList, setNotificationsList] = useState<Array<{
-    id: string;
-    title: string;
-    description?: string;
-    href?: string;
-    unread?: boolean;
-  }>>([
-    { id: 'n1', title: t('admin.dashboard.recentActivity.activities.criticalAlert'), description: '#PED-1234 requiere atención', href: '/admin/pedidos', unread: true },
-    { id: 'n2', title: t('admin.dashboard.recentActivity.activities.paymentValidated'), description: 'Pago #P-456 validado', href: '/admin/validacion-pagos', unread: false },
-    { id: 'n3', title: t('admin.dashboard.recentActivity.activities.configurationUpdated'), description: 'Parámetros de operación actualizados', href: '/admin/gestion', unread: false },
-  ]);
-  const unreadCount = notificationsList.filter(n => n.unread).length;
+  const { uiItems: notificationsList, unreadCount, markAllAsRead } = useNotifications({ role: 'admin', userId: adminId, limit: 10, enabled: true });
 
     // Datos de pedidos desde la tabla orders
   const { data: adminOrdersData, error: adminOrdersError, refetch: refetchOrders } = useAdminOrders();
@@ -150,13 +140,13 @@ export default function AdminDashboard() {
         sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       }`}>
         <Header 
-          notifications={unreadCount || stats.criticalAlerts}
+          notifications={unreadCount}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('admin.dashboard.title')}
           subtitle={t('admin.dashboard.subtitle')}
           notificationsItems={notificationsList}
-          onMarkAllAsRead={() => {
-            setNotificationsList(prev => prev.map(n => ({ ...n, unread: false })));
+          onMarkAllAsRead={async () => {
+            await markAllAsRead();
           }}
           onOpenNotifications={() => {
             router.push('/admin/gestion');

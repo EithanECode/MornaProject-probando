@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServiceRoleClient } from '@/lib/supabase/server';
+import { NotificationsFactory } from '@/lib/notifications';
 
 export const revalidate = 0;
 
@@ -121,6 +122,115 @@ export async function PUT(
       .order('timestamp', { ascending: false })
       .limit(1)
       .single();
+
+    // Emitir notificaciones (no bloqueantes)
+    try {
+      // Obtener datos necesarios del pedido (cliente)
+      const { data: updatedOrder } = await supabase
+        .from('orders')
+        .select('id, state, client_id')
+        .eq('id', orderId)
+        .single();
+
+  const stateName = getStateName(state);
+
+      if (updatedOrder?.client_id) {
+  const notif = NotificationsFactory.client.orderStatusChanged({ orderId: String(orderId), status: stateName });
+        await supabase.from('notifications').insert([
+          {
+            audience_type: 'user',
+            audience_value: updatedOrder.client_id,
+            title: notif.title,
+            description: notif.description,
+            href: notif.href,
+            severity: notif.severity,
+            user_id: updatedOrder.client_id,
+            order_id: String(orderId),
+          },
+        ]);
+      }
+
+      // Notificar a Venezuela cuando se asigne a Vzla (estado 4)
+      if (state === 4) {
+        const notifVzla = NotificationsFactory.venezuela.newAssignedOrder({ orderId: String(orderId) });
+        await supabase.from('notifications').insert([
+          {
+            audience_type: 'role',
+            audience_value: 'venezuela',
+            title: notifVzla.title,
+            description: notifVzla.description,
+            href: notifVzla.href,
+            severity: notifVzla.severity,
+            order_id: String(orderId),
+          },
+        ]);
+      }
+
+      // Notificar a Pagos cuando entre a validación (estado 4)
+      if (state === 4) {
+        const notifPagos = NotificationsFactory.pagos.newAssignedOrder({ orderId: String(orderId) });
+        await supabase.from('notifications').insert([
+          {
+            audience_type: 'role',
+            audience_value: 'pagos',
+            title: notifPagos.title,
+            description: notifPagos.description,
+            href: notifPagos.href,
+            severity: notifPagos.severity,
+            order_id: String(orderId),
+          },
+        ]);
+      }
+
+      // Notificar a China cuando requiera cotización (estado 3) y avisar al cliente que la cotización está lista
+      if (state === 3) {
+        const notifChina = NotificationsFactory.china.newOrderForQuote({ orderId: String(orderId) });
+        await supabase.from('notifications').insert([
+          {
+            audience_type: 'role',
+            audience_value: 'china',
+            title: notifChina.title,
+            description: notifChina.description,
+            href: notifChina.href,
+            severity: notifChina.severity,
+            order_id: String(orderId),
+          },
+        ]);
+        if (updatedOrder?.client_id) {
+          const clientNotif = NotificationsFactory.client.quoteReady({ orderId: String(orderId) });
+          await supabase.from('notifications').insert([
+            {
+              audience_type: 'user',
+              audience_value: updatedOrder.client_id,
+              title: clientNotif.title,
+              description: clientNotif.description,
+              href: clientNotif.href,
+              severity: clientNotif.severity,
+              user_id: updatedOrder.client_id,
+              order_id: String(orderId),
+            },
+          ]);
+        }
+      }
+
+      // Notificar a China cuando pase a pendiente para China (estado 2)
+      if (state === 2) {
+        const notifChina2 = NotificationsFactory.china.orderRequiresAttention({ orderId: String(orderId) });
+        await supabase.from('notifications').insert([
+          {
+            audience_type: 'role',
+            audience_value: 'china',
+            title: notifChina2.title,
+            description: notifChina2.description,
+            href: notifChina2.href,
+            severity: notifChina2.severity,
+            order_id: String(orderId),
+          },
+        ]);
+      }
+    } catch (notifyErr) {
+      console.error('Order state notification error:', notifyErr);
+    }
 
     return NextResponse.json({
       success: true,

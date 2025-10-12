@@ -42,6 +42,7 @@ import { PriceDisplay } from '@/components/shared/PriceDisplay';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 // Eliminado contexto de Venezuela: rol pagos ve todos los pagos globales
 import { useTranslation } from '@/hooks/useTranslation';
+import { NotificationsFactory } from '@/lib/notifications';
 
 // =============================================
 // SIEMPRE datos reales: lógica unificada con admin
@@ -62,6 +63,8 @@ interface Payment {
   metodo: string;
   destino?: string;
   descripcion?: string;
+  // Necesario para notificar al cliente tras aprobar/rechazar
+  clientUserId?: string;
 }
 
 interface PaymentStats {
@@ -570,7 +573,8 @@ const PaymentValidationDashboard: React.FC = () => {
             estado,
             metodo: 'Transferencia',
             destino: 'Venezuela',
-            descripcion: o.description || 'Pedido en proceso de pago'
+            descripcion: o.description || 'Pedido en proceso de pago',
+            clientUserId: o.client_id
           };
         }) || [];
 
@@ -747,6 +751,25 @@ const PaymentValidationDashboard: React.FC = () => {
         .update({ state: 5 })
         .eq('id', idFilter);
       if (error) throw error;
+      // Notificar al cliente: pago aprobado
+      if (payment.clientUserId) {
+        const notif = NotificationsFactory.client.paymentReviewed({ orderId: id, paymentId: id, status: 'aprobado' });
+        await fetch('/api/notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            audience_type: 'user',
+            audience_value: payment.clientUserId,
+            title: notif.title,
+            description: notif.description,
+            href: notif.href,
+            severity: notif.severity,
+            user_id: payment.clientUserId,
+            order_id: id,
+            payment_id: id,
+          })
+        });
+      }
     } catch (e: any) {
       // Revertir UI si falla
       setPayments(prev => prev.map(p =>
@@ -794,6 +817,25 @@ const PaymentValidationDashboard: React.FC = () => {
       const idFilter: any = isNaN(Number(id)) ? id : Number(id);
       const { error } = await supabase.from('orders').update({ state: -1 }).eq('id', idFilter);
       if (error) throw error;
+      // Notificar al cliente: pago rechazado
+      if (payment.clientUserId) {
+        const notif = NotificationsFactory.client.paymentReviewed({ orderId: id, paymentId: id, status: 'rechazado' });
+        await fetch('/api/notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            audience_type: 'user',
+            audience_value: payment.clientUserId,
+            title: notif.title,
+            description: notif.description,
+            href: notif.href,
+            severity: notif.severity,
+            user_id: payment.clientUserId,
+            order_id: id,
+            payment_id: id,
+          })
+        });
+      }
     } catch (e: any) {
       setPayments(prev => prev.map(p => p.id === id ? { ...p, estado: payment.estado } : p));
       setLastAction(null);

@@ -322,22 +322,7 @@ export default function VenezuelaDashboard() {
                       <span className="text-xs md:text-sm font-medium">{t('venezuela.quickActions.reviewOrder')}</span>
                     </Button>
                   </Link>
-                  <Link href="/venezuela/soporte">
-                    <Button variant="outline" className="h-16 md:h-20 lg:h-24 flex flex-col gap-2 md:gap-3 hover:bg-orange-50 hover:border-orange-300 transition-all duration-300 group w-full">
-                      <div className="p-2 md:p-3 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors">
-                        <MessageSquare className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8 text-orange-600" />
-                      </div>
-                      <span className="text-xs md:text-sm font-medium">{t('venezuela.quickActions.chatSupport')}</span>
-                    </Button>
-                  </Link>
-                  <Link href="/venezuela/validacion-pagos">
-                    <Button variant="outline" className="h-16 md:h-20 lg:h-24 flex flex-col gap-2 md:gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
-                      <div className="p-2 md:p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                        <DollarSign className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8 text-blue-600" />
-                      </div>
-                      <span className="text-xs md:text-sm font-medium">{t('venezuela.quickActions.validatePayment')}</span>
-                    </Button>
-                  </Link>
+                  {/* Tarjetas removidas: soporte y validación de pagos */}
                 </div>
               </CardContent>
             </Card>

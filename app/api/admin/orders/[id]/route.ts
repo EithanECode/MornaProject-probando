@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServiceRoleClient } from '@/lib/supabase/server';
+import { NotificationsFactory } from '@/lib/notifications';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -59,7 +60,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'No fields to update' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
     }
 
-    const { data, error } = await supabase
+  const { data, error } = await supabase
       .from('orders')
       .update(update)
       .eq('id', id)
@@ -71,9 +72,87 @@ export async function PATCH(
       return NextResponse.json({ error: error.message }, { status: 500, headers: { 'Cache-Control': 'no-store' } });
     }
 
+    // Notificaciones si cambia estado
+    try {
+      if (typeof body.state === 'number' && data?.id) {
+        const orderId = String(data.id);
+        const stateNum = body.state as number;
+        const stateName = getStateName(stateNum);
+
+        // Obtener client_id
+        const { data: orderFull } = await supabase.from('orders').select('client_id').eq('id', id).single();
+        if (orderFull?.client_id) {
+          const notif = NotificationsFactory.client.orderStatusChanged({ orderId, status: stateName });
+          await supabase.from('notifications').insert([
+            {
+              audience_type: 'user',
+              audience_value: orderFull.client_id,
+              title: notif.title,
+              description: notif.description,
+              href: notif.href,
+              severity: notif.severity,
+              user_id: orderFull.client_id,
+              order_id: orderId,
+            },
+          ]);
+        }
+
+        if (stateNum === 4) {
+          const notifVzla = NotificationsFactory.venezuela.newAssignedOrder({ orderId });
+          await supabase.from('notifications').insert([
+            {
+              audience_type: 'role',
+              audience_value: 'venezuela',
+              title: notifVzla.title,
+              description: notifVzla.description,
+              href: notifVzla.href,
+              severity: notifVzla.severity,
+              order_id: orderId,
+            },
+          ]);
+        }
+
+        if (stateNum === 1) {
+          const notifPagos = NotificationsFactory.pagos.newAssignedOrder({ orderId });
+          await supabase.from('notifications').insert([
+            {
+              audience_type: 'role',
+              audience_value: 'pagos',
+              title: notifPagos.title,
+              description: notifPagos.description,
+              href: notifPagos.href,
+              severity: notifPagos.severity,
+              order_id: orderId,
+            },
+          ]);
+        }
+      }
+    } catch (notifyErr) {
+      console.error('Admin update order notification error:', notifyErr);
+    }
+
     return NextResponse.json({ ok: true, data }, { status: 200, headers: { 'Cache-Control': 'no-store' } });
   } catch (err: any) {
     console.error('PATCH /api/admin/orders/[id] exception:', err?.message || err);
     return NextResponse.json({ error: err?.message || 'Unknown error' }, { status: 500, headers: { 'Cache-Control': 'no-store' } });
   }
+}
+
+function getStateName(state: number): string {
+  const stateNames: Record<number, string> = {
+    1: 'Pedido creado',
+    2: 'Recibido',
+    3: 'Cotizado',
+    4: 'Asignado Venezuela',
+    5: 'En procesamiento',
+    6: 'Preparando envío',
+    7: 'Listo para envío',
+    8: 'Enviado',
+    9: 'En tránsito',
+    10: 'En aduana',
+    11: 'En almacén Venezuela',
+    12: 'Listo para entrega',
+    13: 'Entregado',
+  };
+  return stateNames[state] || 'Estado desconocido';
 }

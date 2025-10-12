@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServiceRoleClient } from '@/lib/supabase/server';
+import { NotificationsFactory } from '@/lib/notifications';
 
 
 
@@ -55,6 +56,29 @@ export async function POST(request: NextRequest) {
         .single();
     }
     if (upsertResult.error) throw upsertResult.error;
+
+    // Notificar a administradores (no bloqueante)
+    try {
+      const notif = NotificationsFactory.admin.managementChanged({
+        userName: 'Configuración actualizada',
+        configSection: Object.keys(updates || {}).slice(0, 3).join(', ') || 'configuración',
+      });
+      await supabase
+        .from('notifications')
+        .insert([
+          {
+            audience_type: 'role',
+            audience_value: 'admin',
+            title: notif.title,
+            description: notif.description,
+            href: notif.href,
+            severity: notif.severity,
+          },
+        ]);
+    } catch (notifyErr) {
+      console.error('Config update notification error:', notifyErr);
+    }
+
     return NextResponse.json({
       success: true,
       config: upsertResult.data,

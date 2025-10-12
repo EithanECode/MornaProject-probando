@@ -31,6 +31,7 @@ interface HeaderProps {
   }>;
   onMarkAllAsRead?: () => void;
   onOpenNotifications?: () => void;
+  onItemClick?: (id: string) => void;
 }
 
 export default function Header({ 
@@ -43,6 +44,7 @@ export default function Header({
   notificationsItems = [],
   onMarkAllAsRead,
   onOpenNotifications,
+  onItemClick,
 }: HeaderProps) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -100,12 +102,13 @@ export default function Header({
                   <DropdownMenuSeparator />
                   {notificationsItems && notificationsItems.length > 0 ? (
           notificationsItems.slice(0, 6).map((n) => (
-                      <DropdownMenuItem
+          <DropdownMenuItem
                         key={n.id}
             className={`flex flex-col items-start gap-0.5 ${n.unread ? 'bg-slate-50' : ''} ${n.href ? 'cursor-pointer hover:bg-slate-100' : ''}`}
                         onSelect={(e) => {
                           if (n.href) {
                             e.preventDefault();
+            onItemClick?.(n.id);
                             router.push(n.href);
                           }
                         }}
@@ -165,12 +168,13 @@ export default function Header({
                   <DropdownMenuSeparator />
                   {notificationsItems && notificationsItems.length > 0 ? (
           notificationsItems.slice(0, 6).map((n) => (
-                      <DropdownMenuItem
+          <DropdownMenuItem
                         key={n.id}
             className={`flex flex-col items-start gap-0.5 ${n.unread ? 'bg-slate-50' : ''} ${n.href ? 'cursor-pointer hover:bg-slate-100' : ''}`}
                         onSelect={(e) => {
                           if (n.href) {
                             e.preventDefault();
+            onItemClick?.(n.id);
                             router.push(n.href);
                           }
                         }}

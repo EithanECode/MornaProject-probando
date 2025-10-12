@@ -11,6 +11,7 @@ import { useTheme } from 'next-themes';
 import dynamicImport from 'next/dynamic';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
+import { useNotifications } from '@/hooks/use-notifications';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -163,6 +164,7 @@ export default function DashboardPage() {
 
   // Obtener el id del cliente autenticado
   const { clientId } = useClientContext();
+  const { uiItems: notificationsList, unreadCount, markAllAsRead } = useNotifications({ role: 'client', userId: clientId, limit: 10, enabled: !!clientId });
   // Obtener los pedidos del cliente autenticado
   const { data: clientOrders, loading: ordersLoading, error: ordersError } = useClientOrders();
 
@@ -250,10 +252,12 @@ export default function DashboardPage() {
         sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       }`}>
         <Header 
-          notifications={CLIENT_STATS.pendingOrders} 
+          notifications={unreadCount || 0} 
           onMenuToggle={handleMobileMenuToggle}
           title={t('client.dashboard.title')}
           subtitle={t('client.dashboard.subtitle')}
+          notificationsItems={notificationsList}
+          onMarkAllAsRead={async () => { await markAllAsRead(); }}
         />
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
