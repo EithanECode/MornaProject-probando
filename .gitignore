@@ -1,4 +1,36 @@
-# Entornos locales
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# OS/Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Coverage
+coverage/
+
+# Misc
+.vercel/
+.turbo/# Entornos locales
 .env
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
