@@ -1695,7 +1695,9 @@
     "actualizado": "Updated"
   },
   "header": {
-    "notifications": "Notifications"
+  "notifications": "Notifications",
+  "markAllAsRead": "Mark all as read",
+  "viewAll": "View all"
   },
 
   "venezuela": {

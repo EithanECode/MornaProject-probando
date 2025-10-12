@@ -101,24 +101,26 @@ export default function Header({
                   <DropdownMenuLabel className="px-2 py-1.5">{t('header.notifications')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {notificationsItems && notificationsItems.length > 0 ? (
-          notificationsItems.slice(0, 6).map((n) => (
-          <DropdownMenuItem
-                        key={n.id}
-            className={`flex flex-col items-start gap-0.5 ${n.unread ? 'bg-slate-50' : ''} ${n.href ? 'cursor-pointer hover:bg-slate-100' : ''}`}
-                        onSelect={(e) => {
-                          if (n.href) {
-                            e.preventDefault();
-            onItemClick?.(n.id);
-                            router.push(n.href);
-                          }
-                        }}
-                      >
-                        <span className={`text-sm ${n.unread ? 'font-semibold' : 'font-medium'}`}>{n.title}</span>
-                        {n.description && (
-                          <span className="text-xs text-slate-500">{n.description}</span>
-                        )}
-                      </DropdownMenuItem>
-                    ))
+                    <div className="max-h-80 overflow-y-auto">
+                      {notificationsItems.map((n) => (
+                        <DropdownMenuItem
+                          key={n.id}
+                          className={`flex flex-col items-start gap-0.5 ${n.unread ? 'bg-slate-50' : ''} ${n.href ? 'cursor-pointer hover:bg-slate-100' : ''}`}
+                          onSelect={(e) => {
+                            if (n.href) {
+                              e.preventDefault();
+                              onItemClick?.(n.id);
+                              router.push(n.href);
+                            }
+                          }}
+                        >
+                          <span className={`text-sm ${n.unread ? 'font-semibold' : 'font-medium'}`}>{n.title}</span>
+                          {n.description && (
+                            <span className="text-xs text-slate-500">{n.description}</span>
+                          )}
+                        </DropdownMenuItem>
+                      ))}
+                    </div>
                   ) : (
                     <div className="px-3 py-6 text-sm text-center text-slate-500">
                       {t('header.noNotifications') || 'Sin notificaciones'}
@@ -167,24 +169,26 @@ export default function Header({
                   <DropdownMenuLabel className="px-2 py-1.5">{t('header.notifications')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {notificationsItems && notificationsItems.length > 0 ? (
-          notificationsItems.slice(0, 6).map((n) => (
-          <DropdownMenuItem
-                        key={n.id}
-            className={`flex flex-col items-start gap-0.5 ${n.unread ? 'bg-slate-50' : ''} ${n.href ? 'cursor-pointer hover:bg-slate-100' : ''}`}
-                        onSelect={(e) => {
-                          if (n.href) {
-                            e.preventDefault();
-            onItemClick?.(n.id);
-                            router.push(n.href);
-                          }
-                        }}
-                      >
-                        <span className={`text-sm ${n.unread ? 'font-semibold' : 'font-medium'}`}>{n.title}</span>
-                        {n.description && (
-                          <span className="text-xs text-slate-500">{n.description}</span>
-                        )}
-                      </DropdownMenuItem>
-                    ))
+                    <div className="max-h-80 overflow-y-auto">
+                      {notificationsItems.map((n) => (
+                        <DropdownMenuItem
+                          key={n.id}
+                          className={`flex flex-col items-start gap-0.5 ${n.unread ? 'bg-slate-50' : ''} ${n.href ? 'cursor-pointer hover:bg-slate-100' : ''}`}
+                          onSelect={(e) => {
+                            if (n.href) {
+                              e.preventDefault();
+                              onItemClick?.(n.id);
+                              router.push(n.href);
+                            }
+                          }}
+                        >
+                          <span className={`text-sm ${n.unread ? 'font-semibold' : 'font-medium'}`}>{n.title}</span>
+                          {n.description && (
+                            <span className="text-xs text-slate-500">{n.description}</span>
+                          )}
+                        </DropdownMenuItem>
+                      ))}
+                    </div>
                   ) : (
                     <div className="px-3 py-6 text-sm text-center text-slate-500">
                       {t('header.noNotifications') || 'Sin notificaciones'}

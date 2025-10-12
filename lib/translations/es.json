@@ -1998,7 +1998,9 @@
     }
   },
   "header": {
-    "notifications": "Notificaciones"
+  "notifications": "Notificaciones",
+  "markAllAsRead": "Marcar todo como leído",
+  "viewAll": "Ver todas"
   },
   "venezuela": {
     "dashboard": {
