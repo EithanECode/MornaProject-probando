@@ -56,7 +56,15 @@ export const NotificationsFactory = {
       id: `cli-pay-${p.paymentId || p.orderId}-${Date.now()}`,
       role: 'client',
       title: 'Resultado de pago',
-      description: p.status ? `Tu pago fue ${p.status}` : 'Tu pago fue revisado',
+      description: (() => {
+        const orderTag = p.orderId ? ` del pedido #${p.orderId}` : '';
+        if (!p.status) return `Tu pago${orderTag} fue revisado`;
+        // Normalizar mensajes comunes
+        const st = p.status.toLowerCase();
+        if (st === 'rechazado' || st === 'rechazado ') return `Tu pago${orderTag} fue rechazado`;
+        if (st === 'aprobado' || st === 'aprobado ') return `Tu pago${orderTag} fue aprobado`;
+        return `Tu pago${orderTag} fue ${p.status}`;
+      })(),
       href: hrefs.client.payments(p.paymentId),
       severity: p.status === 'rechazado' ? 'warn' : 'info',
       unread: true,

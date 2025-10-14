@@ -112,7 +112,8 @@ export async function PATCH(
           ]);
         }
 
-        if (stateNum === 1) {
+        // Notificar a Pagos cuando entre a validación (estado 4)
+        if (stateNum === 4) {
           const notifPagos = NotificationsFactory.pagos.newAssignedOrder({ orderId });
           await supabase.from('notifications').insert([
             {
