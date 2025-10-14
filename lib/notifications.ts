@@ -77,8 +77,8 @@ export const NotificationsFactory = {
       role: 'china',
       title: 'Nuevo pedido para cotización',
       description: p.orderId
-        ? `Pedido #${p.orderId} requiere cotización para el empleado chino`
-        : 'Nuevo pedido requiere cotización para el empleado chino',
+        ? `Pedido #${p.orderId} requiere cotización`
+        : 'Nuevo pedido requiere cotización',
       href: hrefs.china.quotes(p.orderId),
       severity: 'info',
       unread: true,
