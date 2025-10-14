@@ -76,7 +76,9 @@ export const NotificationsFactory = {
       id: `cn-quote-${p.orderId}-${Date.now()}`,
       role: 'china',
       title: 'Nuevo pedido para cotización',
-      description: p.orderId ? `Pedido ${p.orderId} requiere cotización` : 'Nuevo pedido requiere cotización',
+      description: p.orderId
+        ? `Pedido #${p.orderId} requiere cotización para el empleado chino`
+        : 'Nuevo pedido requiere cotización para el empleado chino',
       href: hrefs.china.quotes(p.orderId),
       severity: 'info',
       unread: true,
@@ -86,7 +88,7 @@ export const NotificationsFactory = {
       id: `cn-attn-${p.orderId}-${Date.now()}`,
       role: 'china',
       title: 'Pedido requiere atención',
-      description: p.orderId ? `Pedido ${p.orderId} pendiente para gestión en China` : 'Hay pedidos pendientes para China',
+      description: p.orderId ? `Pedido #${p.orderId} pendiente para gestión en China` : 'Hay pedidos pendientes para China',
       href: hrefs.china.quotes(p.orderId),
       severity: 'info',
       unread: true,

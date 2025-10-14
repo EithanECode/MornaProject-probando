@@ -135,19 +135,36 @@ export async function PUT(
   const stateName = getStateName(state);
 
       if (updatedOrder?.client_id) {
-  const notif = NotificationsFactory.client.orderStatusChanged({ orderId: String(orderId), status: stateName });
-        await supabase.from('notifications').insert([
-          {
-            audience_type: 'user',
-            audience_value: updatedOrder.client_id,
-            title: notif.title,
-            description: notif.description,
-            href: notif.href,
-            severity: notif.severity,
-            user_id: updatedOrder.client_id,
-            order_id: String(orderId),
-          },
-        ]);
+        if (state === 3) {
+          // Solo enviar la notificación específica de cotización lista para evitar duplicados
+          const clientNotif = NotificationsFactory.client.quoteReady({ orderId: String(orderId) });
+          await supabase.from('notifications').insert([
+            {
+              audience_type: 'user',
+              audience_value: updatedOrder.client_id,
+              title: clientNotif.title,
+              description: clientNotif.description,
+              href: clientNotif.href,
+              severity: clientNotif.severity,
+              user_id: updatedOrder.client_id,
+              order_id: String(orderId),
+            },
+          ]);
+        } else {
+          const notif = NotificationsFactory.client.orderStatusChanged({ orderId: String(orderId), status: stateName });
+          await supabase.from('notifications').insert([
+            {
+              audience_type: 'user',
+              audience_value: updatedOrder.client_id,
+              title: notif.title,
+              description: notif.description,
+              href: notif.href,
+              severity: notif.severity,
+              user_id: updatedOrder.client_id,
+              order_id: String(orderId),
+            },
+          ]);
+        }
       }
 
       // Notificar a Venezuela cuando se asigne a Vzla (estado 4)
