@@ -135,22 +135,8 @@ export async function PUT(
   const stateName = getStateName(state);
 
       if (updatedOrder?.client_id) {
-        if (state === 3) {
-          // Solo enviar la notificación específica de cotización lista para evitar duplicados
-          const clientNotif = NotificationsFactory.client.quoteReady({ orderId: String(orderId) });
-          await supabase.from('notifications').insert([
-            {
-              audience_type: 'user',
-              audience_value: updatedOrder.client_id,
-              title: clientNotif.title,
-              description: clientNotif.description,
-              href: clientNotif.href,
-              severity: clientNotif.severity,
-              user_id: updatedOrder.client_id,
-              order_id: String(orderId),
-            },
-          ]);
-        } else {
+        // Para state===3, la notificación específica se envía más abajo en el bloque de estado 3
+        if (state !== 3) {
           const notif = NotificationsFactory.client.orderStatusChanged({ orderId: String(orderId), status: stateName });
           await supabase.from('notifications').insert([
             {
@@ -215,18 +201,29 @@ export async function PUT(
         ]);
         if (updatedOrder?.client_id) {
           const clientNotif = NotificationsFactory.client.quoteReady({ orderId: String(orderId) });
-          await supabase.from('notifications').insert([
-            {
-              audience_type: 'user',
-              audience_value: updatedOrder.client_id,
-              title: clientNotif.title,
-              description: clientNotif.description,
-              href: clientNotif.href,
-              severity: clientNotif.severity,
-              user_id: updatedOrder.client_id,
-              order_id: String(orderId),
-            },
-          ]);
+          // Dedupe: si ya existe una notificación igual para este pedido/usuario, omitir
+          const { data: existing } = await supabase
+            .from('notifications')
+            .select('id')
+            .eq('audience_type', 'user')
+            .eq('audience_value', updatedOrder.client_id)
+            .eq('order_id', String(orderId))
+            .eq('title', clientNotif.title)
+            .limit(1);
+          if (!existing || existing.length === 0) {
+            await supabase.from('notifications').insert([
+              {
+                audience_type: 'user',
+                audience_value: updatedOrder.client_id,
+                title: clientNotif.title,
+                description: clientNotif.description,
+                href: clientNotif.href,
+                severity: clientNotif.severity,
+                user_id: updatedOrder.client_id,
+                order_id: String(orderId),
+              },
+            ]);
+          }
         }
       }
 

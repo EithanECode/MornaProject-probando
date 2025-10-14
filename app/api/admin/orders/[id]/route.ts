@@ -85,18 +85,29 @@ export async function PATCH(
           if (stateNum === 3) {
             // Solo enviar la notificación específica de cotización lista para evitar duplicados
             const quoteNotif = NotificationsFactory.client.quoteReady({ orderId });
-            await supabase.from('notifications').insert([
-              {
-                audience_type: 'user',
-                audience_value: orderFull.client_id,
-                title: quoteNotif.title,
-                description: quoteNotif.description,
-                href: quoteNotif.href,
-                severity: quoteNotif.severity,
-                user_id: orderFull.client_id,
-                order_id: orderId,
-              },
-            ]);
+            // Dedupe: si ya existe una notificación igual para este pedido/usuario, omitir
+            const { data: existing } = await supabase
+              .from('notifications')
+              .select('id')
+              .eq('audience_type', 'user')
+              .eq('audience_value', orderFull.client_id)
+              .eq('order_id', orderId)
+              .eq('title', quoteNotif.title)
+              .limit(1);
+            if (!existing || existing.length === 0) {
+              await supabase.from('notifications').insert([
+                {
+                  audience_type: 'user',
+                  audience_value: orderFull.client_id,
+                  title: quoteNotif.title,
+                  description: quoteNotif.description,
+                  href: quoteNotif.href,
+                  severity: quoteNotif.severity,
+                  user_id: orderFull.client_id,
+                  order_id: orderId,
+                },
+              ]);
+            }
           } else {
             const notif = NotificationsFactory.client.orderStatusChanged({ orderId, status: stateName });
             await supabase.from('notifications').insert([

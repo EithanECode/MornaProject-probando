@@ -1288,12 +1288,11 @@ export default function PedidosChina() {
     const totalProductos = Number(precioUnitario) * Number(pedido.cantidad || 0);
     const total = totalProductos + Number(precioEnvio);
 
-    // 1) Actualizar totalQuote en la tabla orders
+    // 1) Actualizar totalQuote en la tabla orders (sin cambiar estado aquí)
     const { error: updateError } = await supabase
       .from('orders')
       .update({ 
         totalQuote: total, 
-        state: 3,
         unitQuote: precioUnitario,
         shippingPrice: precioEnvio,
         height: altura,
@@ -1307,6 +1306,17 @@ export default function PedidosChina() {
       console.error('Error update totalQuote:', updateError);
       return;
     }
+    // 2) Cambiar estado a 3 vía API para disparar notificaciones del lado servidor
+    try {
+      await fetch(`/api/orders/${pedido.id}/state`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state: 3, changed_by: 'china', notes: 'Pedido cotizado' }),
+      });
+    } catch (e) {
+      console.error('No se pudo notificar cambio de estado a 3', e);
+    }
+
     // Actualizar estado local y cerrar modal (sin PDF)
     setPedidos(prev => prev.map(p => p.id === pedido.id ? { ...p, cotizado: true, estado: 'cotizado', precio: precioUnitario, totalQuote: total, numericState: 3 } : p));
     setModalCotizar({ open: false });
