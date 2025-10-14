@@ -95,6 +95,23 @@ export async function PATCH(
               order_id: orderId,
             },
           ]);
+
+          // Enviar notificación específica de cotización lista cuando state === 3
+          if (stateNum === 3) {
+            const quoteNotif = NotificationsFactory.client.quoteReady({ orderId });
+            await supabase.from('notifications').insert([
+              {
+                audience_type: 'user',
+                audience_value: orderFull.client_id,
+                title: quoteNotif.title,
+                description: quoteNotif.description,
+                href: quoteNotif.href,
+                severity: quoteNotif.severity,
+                user_id: orderFull.client_id,
+                order_id: orderId,
+              },
+            ]);
+          }
         }
 
         if (stateNum === 4) {

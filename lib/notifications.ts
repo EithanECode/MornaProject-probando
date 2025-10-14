@@ -29,7 +29,7 @@ export const NotificationsFactory = {
       id: `cli-quote-${p.orderId}-${Date.now()}`,
       role: 'client',
       title: 'Tu cotización está lista',
-      description: p.orderId ? `Ya puedes revisar la cotización del pedido ${p.orderId}` : 'Ya puedes revisar tu cotización',
+      description: p.orderId ? `Tu cotización del pedido #${p.orderId} está lista` : 'Tu cotización está lista',
       href: hrefs.client.order(p.orderId),
       severity: 'info',
       unread: true,
