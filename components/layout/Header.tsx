@@ -80,7 +80,11 @@ export default function Header({
           {/* Right Section */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Desktop Notifications (Dropdown) */}
-            <DropdownMenu>
+            <DropdownMenu onOpenChange={(open) => {
+              if (open) {
+                onMarkAllAsRead?.();
+              }
+            }}>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="outline" 
@@ -149,7 +153,11 @@ export default function Header({
             </DropdownMenu>
             
             {/* Mobile Notifications (Dropdown) */}
-            <DropdownMenu>
+            <DropdownMenu onOpenChange={(open) => {
+              if (open) {
+                onMarkAllAsRead?.();
+              }
+            }}>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="outline" 
