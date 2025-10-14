@@ -239,18 +239,22 @@ export default function MisPedidosPage() {
   const [isNewOrderModalOpen, setIsNewOrderModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
-  const [newOrderData, setNewOrderData] = useState<NewOrderData>({
+  // Estado inicial reutilizable para el wizard de nuevo pedido
+  const INITIAL_NEW_ORDER_DATA: NewOrderData = {
     productName: '',
     description: '',
     quantity: 1,
     specifications: '',
     requestType: 'link',
-  deliveryType: '',
+    productUrl: '',
+    productImage: undefined,
+    deliveryType: '',
     deliveryVenezuela: '',
     estimatedBudget: '',
     client_id: '',
-    client_name: ''
-  });
+    client_name: '',
+  };
+  const [newOrderData, setNewOrderData] = useState<NewOrderData>(INITIAL_NEW_ORDER_DATA);
   // Marca si el usuario intentó avanzar el Paso 1 con datos inválidos
   const [attemptedStep1, setAttemptedStep1] = useState(false);
 
@@ -268,6 +272,16 @@ export default function MisPedidosPage() {
   const [hoveredDeliveryOption, setHoveredDeliveryOption] = useState<string | null>(null);
   const [isFolderHovered, setIsFolderHovered] = useState(false);
   const [isCameraHovered, setIsCameraHovered] = useState(false);
+
+  // Helper para reiniciar completamente el wizard
+  const resetNewOrderWizard = () => {
+    setNewOrderData({ ...INITIAL_NEW_ORDER_DATA, client_id: clientId || '', client_name: clientName || '' });
+    setCurrentStep(1);
+    setAttemptedStep1(false);
+    setStepDirection('next');
+    setIsTransitioning(false);
+    setShowSuccessAnimation(false);
+  };
   const [isLinkHovered, setIsLinkHovered] = useState(false);
   
   // Estados para drag and drop
@@ -1322,18 +1336,7 @@ export default function MisPedidosPage() {
         setShowSuccessAnimation(true);
         setTimeout(() => {
           setIsNewOrderModalOpen(false);
-          setCurrentStep(1);
-          setNewOrderData({
-            productName: '',
-            description: '',
-            quantity: 1,
-            specifications: '',
-            requestType: 'link',
-            deliveryType: '',
-            deliveryVenezuela: '',
-            estimatedBudget: '',
-            client_id: ''
-          });
+          resetNewOrderWizard();
         }, 1500);
         fetchOrders();
       } catch (err: any) {
@@ -1521,7 +1524,7 @@ export default function MisPedidosPage() {
 
           {/* Botón Nuevo Pedido */}
           <div className="flex justify-end">
-            <Dialog open={isNewOrderModalOpen} onOpenChange={setIsNewOrderModalOpen}>
+            <Dialog open={isNewOrderModalOpen} onOpenChange={(open) => { setIsNewOrderModalOpen(open); if (open) resetNewOrderWizard(); }}>
               <DialogTrigger asChild>
                 <Button className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                   <Plus className="w-4 h-4 mr-2" />
