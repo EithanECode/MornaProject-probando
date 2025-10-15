@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useNotifications } from '@/hooks/use-notifications';
 import { AppRole } from '@/lib/types/notifications';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -57,26 +57,38 @@ export default function Header({
 }: HeaderProps) {
   const { t } = useTranslation();
   const router = useRouter();
+  const pathname = usePathname();
   const handleMenuToggle = () => {
     onMenuToggle?.();
   };
 
   // Si se proporciona notificationsRole, el Header manejará notificaciones internamente
   const [internalUserId, setInternalUserId] = useState<string | undefined>(notificationsUserId);
+  // Inferir rol por ruta si no viene explícito
+  const inferredRole: AppRole | undefined = useMemo(() => {
+    if (!pathname) return undefined;
+    if (pathname.startsWith('/china')) return 'china';
+    if (pathname.startsWith('/pagos')) return 'pagos';
+    if (pathname.startsWith('/venezuela')) return 'venezuela';
+    if (pathname.startsWith('/admin')) return 'admin';
+    if (pathname.startsWith('/cliente') || pathname.startsWith('/client')) return 'client';
+    return undefined;
+  }, [pathname]);
+  const roleToUse = notificationsRole ?? inferredRole;
   useEffect(() => {
-    if (!notificationsUserId && notificationsRole) {
-      // Obtener userId actual desde Supabase en cliente
+    if (!notificationsUserId && roleToUse) {
+      // Obtener userId actual desde Supabase en cliente (necesario para client; inocuo para otros roles)
       const supabase = getSupabaseBrowserClient();
       supabase.auth.getUser().then(({ data }) => {
         const uid = data?.user?.id;
         if (uid) setInternalUserId(uid);
       }).catch(() => {});
     }
-  }, [notificationsUserId, notificationsRole]);
+  }, [notificationsUserId, roleToUse]);
 
-  const notificationsEnabled = !!notificationsRole;
+  const notificationsEnabled = !!roleToUse;
   const { uiItems, unreadCount, markAllAsRead, markOneAsRead } = useNotifications({
-    role: notificationsRole,
+    role: roleToUse,
     userId: internalUserId,
     limit: 20,
     enabled: notificationsEnabled,

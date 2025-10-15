@@ -96,9 +96,37 @@ export default function ChinaDashboard() {
   // Estado para forzar actualización del componente
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const router = useRouter();
+  // Obtener el id del empleado de China autenticado (debe declararse antes de usarlo en callbacks)
+  const { chinaId } = useChinaContext();
   
   // Pedidos asignados al empleado China autenticado
   const { data: chinaOrders, loading: ordersLoading, error: ordersError, refetch: refetchChinaOrders } = useChinaOrders(refreshTrigger);
+  // Pending count como en /china/pedidos: mismo mapeo y misma fuente (pedidos asignados al usuario)
+  function mapStateToEstado(state: number) {
+    if (state >= 5 && state <= 8) return 'enviado';
+    if (state === 4) return 'procesando';
+    if (state === 3) return 'cotizado';
+    if (state === 2) return 'pendiente';
+    // Fallback igual que en /china/pedidos
+    return 'pendiente';
+  }
+  const [pendingFromPedidos, setPendingFromPedidos] = useState(0);
+  const fetchAssignedPedidosPending = useCallback(async () => {
+    try {
+      if (!chinaId) { setPendingFromPedidos(0); return; }
+      const res = await fetch(`/china/pedidos/api/orders?asignedEChina=${chinaId}`);
+      const data = await res.json();
+      if (!Array.isArray(data)) { setPendingFromPedidos(0); return; }
+      const count = data
+        .map((order: any) => ({ state: order.state }))
+        .map(o => mapStateToEstado(Number(o.state || 0)))
+        .filter(estado => estado === 'pendiente')
+        .length;
+      setPendingFromPedidos(count);
+    } catch {
+      setPendingFromPedidos(0);
+    }
+  }, [chinaId]);
   // Obtener información de los clientes
   const { data: clientsInfo } = useClientsInfo();
   // Nombres de los clientes de los 3 pedidos más recientes
@@ -107,9 +135,6 @@ export default function ChinaDashboard() {
     clientsInfo?.find((client: any) => client.user_id === order.client_id)?.name ?? order.client_id
   );
 
-  // Obtener el id del empleado de China autenticado
-  const { chinaId } = useChinaContext();
-  
   console.log('China Dashboard: chinaId =', chinaId);
 
   // Notificaciones para China (per-user read)
@@ -133,9 +158,15 @@ export default function ChinaDashboard() {
     if (!chinaId) return;
     const id = setInterval(() => {
       refetchChinaOrders();
+      fetchAssignedPedidosPending();
     }, 10000);
     return () => clearInterval(id);
-  }, [chinaId, refetchChinaOrders]);
+  }, [chinaId, refetchChinaOrders, fetchAssignedPedidosPending]);
+
+  // Cargar al montar
+  useEffect(() => {
+    fetchAssignedPedidosPending();
+  }, [fetchAssignedPedidosPending]);
   
   // Badges estandarizados para pedidos según estado numérico
   function getOrderBadge(stateNum?: number) {
@@ -157,7 +188,8 @@ export default function ChinaDashboard() {
   const totalPedidos = chinaOrders?.length ?? 0;
   // Ajuste: para el panel China ignoramos state === 1 (creación) y comenzamos a contar desde 2
   // Pendientes: estado 2 (revisado Venezuela, listo para acción China)
-  const pedidosPendientes = chinaOrders?.filter((order: any) => order.state === 2).length ?? 0;
+  // Usar el mismo conteo que /china/pedidos (incluye fallback a 'pendiente' como allí)
+  const pedidosPendientes = pendingFromPedidos;
   // En proceso: estados 3 y 4 (cotizaciones y proceso / pago)
   const pedidosEnProceso = chinaOrders?.filter((order: any) => order.state === 3 || order.state === 4).length ?? 0;
   // Enviados: estados 5 a 8 solamente (no incluimos >8 para mantener rango solicitado)
@@ -396,7 +428,7 @@ export default function ChinaDashboard() {
                   <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{pedidosPendientes}</div>
                   <p className="text-xs text-blue-700">{t('chinese.status')}</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / totalPedidos) * 100}%`}}></div>
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(pedidosPendientes / Math.max(1, totalPedidos)) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
