@@ -39,6 +39,7 @@ export default function PagosDashboardPage() {
           notificationsItems={pagosNotifItems}
           onMarkAllAsRead={markAllPagosRead}
           onItemClick={(id) => markPagosOneRead(id)}
+          notificationsRole="pagos"
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('paymentsDashboard.title')}
           subtitle={t('paymentsDashboard.subtitle')}

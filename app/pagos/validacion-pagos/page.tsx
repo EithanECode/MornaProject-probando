@@ -967,6 +967,7 @@ const PaymentValidationDashboard: React.FC = () => {
           notificationsItems={pagosNotifItems}
           onMarkAllAsRead={markAllPagosRead}
           onItemClick={(id) => markPagosOneRead(id)}
+          notificationsRole="pagos"
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('venezuela.pagos.title')}
           subtitle={t('venezuela.pagos.subtitle')}

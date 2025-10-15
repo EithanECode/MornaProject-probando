@@ -88,30 +88,6 @@ const QUICK_ACTIONS = (t: TFunction) => ([
     hoverBg: 'hover:bg-orange-50',
     hoverBorder: 'hover:border-orange-300',
     href: '/cliente/tracking'
-  },
-  {
-    id: 'support',
-    title: t('client.quickActions.support'),
-    description: t('client.quickActions.supportDesc'),
-    icon: MessageSquare,
-    color: 'bg-blue-500',
-    bgColor: 'bg-blue-100',
-    textColor: 'text-blue-600',
-    hoverBg: 'hover:bg-blue-50',
-    hoverBorder: 'hover:border-blue-300',
-    href: '/cliente/soporte'
-  },
-  {
-    id: 'payments',
-    title: t('client.quickActions.payments'),
-    description: t('client.quickActions.paymentsDesc'),
-    icon: DollarSign,
-    color: 'bg-orange-500',
-    bgColor: 'bg-orange-100',
-    textColor: 'text-orange-600',
-    hoverBg: 'hover:bg-orange-50',
-    hoverBorder: 'hover:border-orange-300',
-    href: '/cliente/pagos'
   }
 ]);
 

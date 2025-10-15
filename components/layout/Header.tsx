@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useState } from 'react';
 import { Bell, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +14,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useRouter } from 'next/navigation';
+import { useNotifications } from '@/hooks/use-notifications';
+import { AppRole } from '@/lib/types/notifications';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 interface HeaderProps {
   notifications: number;
@@ -32,6 +36,9 @@ interface HeaderProps {
   onMarkAllAsRead?: () => void;
   onOpenNotifications?: () => void;
   onItemClick?: (id: string) => void;
+  // Nueva modalidad: que el propio Header gestione notificaciones
+  notificationsRole?: AppRole; // e.g., 'pagos', 'china', etc.
+  notificationsUserId?: string; // opcional, si no se pasa se obtiene de Supabase
 }
 
 export default function Header({ 
@@ -45,12 +52,38 @@ export default function Header({
   onMarkAllAsRead,
   onOpenNotifications,
   onItemClick,
+  notificationsRole,
+  notificationsUserId,
 }: HeaderProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const handleMenuToggle = () => {
     onMenuToggle?.();
   };
+
+  // Si se proporciona notificationsRole, el Header manejará notificaciones internamente
+  const [internalUserId, setInternalUserId] = useState<string | undefined>(notificationsUserId);
+  useEffect(() => {
+    if (!notificationsUserId && notificationsRole) {
+      // Obtener userId actual desde Supabase en cliente
+      const supabase = getSupabaseBrowserClient();
+      supabase.auth.getUser().then(({ data }) => {
+        const uid = data?.user?.id;
+        if (uid) setInternalUserId(uid);
+      }).catch(() => {});
+    }
+  }, [notificationsUserId, notificationsRole]);
+
+  const notificationsEnabled = !!notificationsRole;
+  const { uiItems, unreadCount, markAllAsRead, markOneAsRead } = useNotifications({
+    role: notificationsRole,
+    userId: internalUserId,
+    limit: 20,
+    enabled: notificationsEnabled,
+  });
+
+  const effectiveNotifications = notificationsEnabled ? unreadCount : notifications;
+  const effectiveItems = notificationsEnabled ? uiItems : notificationsItems;
 
   return (
   <header className="bg-white/90 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40 shadow-sm">
@@ -82,7 +115,11 @@ export default function Header({
             {/* Desktop Notifications (Dropdown) */}
             <DropdownMenu onOpenChange={(open) => {
               if (open) {
-                onMarkAllAsRead?.();
+                if (notificationsEnabled) {
+                  markAllAsRead?.();
+                } else {
+                  onMarkAllAsRead?.();
+                }
               }
             }}>
               <DropdownMenuTrigger asChild>
@@ -93,9 +130,9 @@ export default function Header({
                 >
                   <Bell className="w-4 h-4 mr-2" />
                   <span className="hidden md:inline">{t('header.notifications')}</span>
-                  {notifications > 0 && (
+                  {effectiveNotifications > 0 && (
                     <Badge className="absolute -top-2 -right-2 w-5 h-5 p-0 flex items-center justify-center bg-[#202841] text-white text-xs">
-                      {notifications}
+                      {effectiveNotifications}
                     </Badge>
                   )}
                 </Button>
@@ -104,16 +141,20 @@ export default function Header({
                 <div className="p-2">
                   <DropdownMenuLabel className="px-2 py-1.5">{t('header.notifications')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  {notificationsItems && notificationsItems.length > 0 ? (
+                  {effectiveItems && effectiveItems.length > 0 ? (
                     <div className="max-h-80 overflow-y-auto">
-                      {notificationsItems.map((n) => (
+                      {effectiveItems.map((n) => (
                         <DropdownMenuItem
                           key={n.id}
                           className={`flex flex-col items-start gap-0.5 ${n.unread ? 'bg-slate-50' : ''} ${n.href ? 'cursor-pointer hover:bg-slate-100' : ''}`}
                           onSelect={(e) => {
                             if (n.href) {
                               e.preventDefault();
-                              onItemClick?.(n.id);
+                              if (notificationsEnabled) {
+                                markOneAsRead?.(n.id);
+                              } else {
+                                onItemClick?.(n.id);
+                              }
                               router.push(n.href);
                             }
                           }}
@@ -137,7 +178,7 @@ export default function Header({
                     variant="outline"
                     size="sm"
                     className="w-full"
-                    onClick={() => onMarkAllAsRead?.()}
+                    onClick={() => notificationsEnabled ? markAllAsRead?.() : onMarkAllAsRead?.()}
                   >
                     {t('header.markAllAsRead') || 'Marcar todo como leído'}
                   </Button>
@@ -155,7 +196,11 @@ export default function Header({
             {/* Mobile Notifications (Dropdown) */}
             <DropdownMenu onOpenChange={(open) => {
               if (open) {
-                onMarkAllAsRead?.();
+                if (notificationsEnabled) {
+                  markAllAsRead?.();
+                } else {
+                  onMarkAllAsRead?.();
+                }
               }
             }}>
               <DropdownMenuTrigger asChild>
@@ -165,9 +210,9 @@ export default function Header({
                   className="relative sm:hidden hover:bg-slate-50 transition-colors"
                 >
                   <Bell className="w-4 h-4" />
-                  {notifications > 0 && (
+                  {effectiveNotifications > 0 && (
                     <Badge className="absolute -top-2 -right-2 w-5 h-5 p-0 flex items-center justify-center bg-[#202841] text-white text-xs">
-                      {notifications}
+                      {effectiveNotifications}
                     </Badge>
                   )}
                 </Button>
@@ -176,16 +221,20 @@ export default function Header({
                 <div className="p-2">
                   <DropdownMenuLabel className="px-2 py-1.5">{t('header.notifications')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  {notificationsItems && notificationsItems.length > 0 ? (
+                  {effectiveItems && effectiveItems.length > 0 ? (
                     <div className="max-h-80 overflow-y-auto">
-                      {notificationsItems.map((n) => (
+                      {effectiveItems.map((n) => (
                         <DropdownMenuItem
                           key={n.id}
                           className={`flex flex-col items-start gap-0.5 ${n.unread ? 'bg-slate-50' : ''} ${n.href ? 'cursor-pointer hover:bg-slate-100' : ''}`}
                           onSelect={(e) => {
                             if (n.href) {
                               e.preventDefault();
-                              onItemClick?.(n.id);
+                              if (notificationsEnabled) {
+                                markOneAsRead?.(n.id);
+                              } else {
+                                onItemClick?.(n.id);
+                              }
                               router.push(n.href);
                             }
                           }}
@@ -209,7 +258,7 @@ export default function Header({
                     variant="outline"
                     size="sm"
                     className="w-full"
-                    onClick={() => onMarkAllAsRead?.()}
+                    onClick={() => notificationsEnabled ? markAllAsRead?.() : onMarkAllAsRead?.()}
                   >
                     {t('header.markAllAsRead') || 'Marcar todo como leído'}
                   </Button>

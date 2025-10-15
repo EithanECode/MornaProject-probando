@@ -6,7 +6,8 @@ const nowIso = () => new Date().toISOString();
 const hrefs = {
   client: {
     order: (orderId?: string) => `/cliente/mis-pedidos${orderId ? `?id=${orderId}` : ''}`,
-    payments: (paymentId?: string) => `/cliente/pagos${paymentId ? `?id=${paymentId}` : ''}`,
+    // Redirigir pagos del cliente al listado de pedidos tras remover /cliente/pagos
+    payments: (paymentId?: string) => `/cliente/mis-pedidos${paymentId ? `?paymentId=${paymentId}` : ''}`,
   },
   china: {
     quotes: (orderId?: string) => `/china/pedidos${orderId ? `?id=${orderId}` : ''}`,

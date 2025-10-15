@@ -93,20 +93,6 @@ const CLIENT_MENU_ITEMS = [
   badge: null,
     color: 'text-orange-500',
     path: '/cliente/mis-pedidos'
-  },
-  {
-    id: 'payments',
-    icon: CreditCard,
-  badge: null,
-    color: 'text-orange-500',
-    path: '/cliente/pagos'
-  },
-  {
-    id: 'support',
-    icon: MessageCircle,
-    badge: null,
-    color: 'text-orange-500',
-    path: '/cliente/soporte'
   }
 ];
 
