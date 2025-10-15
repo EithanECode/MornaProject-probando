@@ -154,16 +154,13 @@ export async function POST(req: NextRequest) {
     try {
       if (data?.client_id) {
         const stateName = (typeof data.state === 'number') ? String(data.state) : undefined;
-        const notif = NotificationsFactory.client.orderStatusChanged({
-          orderId: String(data.id),
-          status: stateName ? undefined : undefined,
-        });
+        const notif = NotificationsFactory.client.orderCreated({ orderId: String(data.id) });
         await supabase.from('notifications').insert([
           {
             audience_type: 'user',
             audience_value: data.client_id,
             title: notif.title,
-            description: `Tu pedido #${data.id} ha sido creado`,
+            description: notif.description,
             href: notif.href,
             severity: notif.severity,
             user_id: data.client_id,

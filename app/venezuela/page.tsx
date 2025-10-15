@@ -227,6 +227,7 @@ export default function VenezuelaDashboard() {
       }`}>
         <Header 
           notifications={stats.pendingOrders + stats.activeChats}
+          notificationsRole="venezuela"
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('venezuela.dashboard.title')}
           subtitle={t('venezuela.dashboard.subtitle')}

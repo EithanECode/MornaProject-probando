@@ -3010,4 +3010,53 @@
       "next": "Siguiente"
     }
   }
+  ,
+  "notifications": {
+    "client": {
+      "orderCreated": {
+        "title": "Actualización de pedido",
+        "description": "Tu pedido #{{orderId}} ha sido creado"
+      },
+      "quoteReady": {
+        "title": "Tu cotización está lista",
+        "description": "Tu cotización del pedido #{{orderId}} está lista"
+      },
+      "orderStatusChanged": {
+        "title": "Actualización de pedido",
+        "description": "Tu pedido cambió de estado"
+      },
+      "paymentReviewed": {
+        "title": "Resultado de pago",
+        "descApproved": "Tu pago del pedido #{{orderId}} fue aprobado",
+        "descRejected": "Tu pago del pedido #{{orderId}} fue rechazado",
+        "descReviewed": "Tu pago del pedido #{{orderId}} fue revisado"
+      }
+    },
+    "china": {
+      "newOrderForQuote": {
+        "title": "Nuevo pedido para cotización",
+        "description": "Pedido #{{orderId}} requiere cotización"
+      },
+      "orderRequiresAttention": {
+        "title": "Pedido requiere atención",
+        "description": "Pedido #{{orderId}} pendiente para gestión en China"
+      },
+      "readyToPack": {
+        "title": "Listo para empaquetar",
+        "description": "El producto #{{orderId}} está listo para empaquetar"
+      }
+    },
+    "pagos": {
+      "newAssignedOrder": {
+        "title": "Nuevo pedido asignado",
+        "description": "Pedido {{orderId}} asignado para validación de pago"
+      }
+    },
+    "venezuela": {
+      "newAssignedOrder": {
+        "title": "Nuevo pedido asignado",
+        "description": "Pedido {{orderId}} asignado"
+      }
+    }
+  }
 }

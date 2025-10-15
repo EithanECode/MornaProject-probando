@@ -26,11 +26,21 @@ const hrefs = {
 // Generadores por rol según requisitos del usuario
 export const NotificationsFactory = {
   client: {
+    orderCreated: (p: NotificationEventPayload): AppNotification => ({
+      id: `cli-created-${p.orderId}-${Date.now()}`,
+      role: 'client',
+      title: 'notifications.client.orderCreated.title',
+      description: `notifications.client.orderCreated.description|${JSON.stringify({ orderId: p.orderId })}`,
+      href: hrefs.client.order(p.orderId),
+      severity: 'info',
+      unread: true,
+      createdAt: nowIso(),
+    }),
     quoteReady: (p: NotificationEventPayload): AppNotification => ({
       id: `cli-quote-${p.orderId}-${Date.now()}`,
       role: 'client',
-      title: 'Tu cotización está lista',
-      description: p.orderId ? `Tu cotización del pedido #${p.orderId} está lista` : 'Tu cotización está lista',
+      title: 'notifications.client.quoteReady.title',
+      description: `notifications.client.quoteReady.description|${JSON.stringify({ orderId: p.orderId })}`,
       href: hrefs.client.order(p.orderId),
       severity: 'info',
       unread: true,
@@ -39,15 +49,8 @@ export const NotificationsFactory = {
     orderStatusChanged: (p: NotificationEventPayload): AppNotification => ({
       id: `cli-order-${p.orderId}-${Date.now()}`,
       role: 'client',
-      title: 'Actualización de pedido',
-      description: (() => {
-        if (!p.status) return 'Tu pedido cambió de estado';
-        // Texto especial para cuando pasa a estado "Asignado Venezuela"
-        if (p.status.toLowerCase() === 'asignado venezuela') {
-          return 'Tu pedido está en espera de confirmación de pago';
-        }
-        return `Tu pedido cambió a: ${p.status}`;
-      })(),
+      title: 'notifications.client.orderStatusChanged.title',
+      description: 'notifications.client.orderStatusChanged.description',
       href: hrefs.client.order(p.orderId),
       severity: 'info',
       unread: true,
@@ -56,16 +59,10 @@ export const NotificationsFactory = {
     paymentReviewed: (p: NotificationEventPayload): AppNotification => ({
       id: `cli-pay-${p.paymentId || p.orderId}-${Date.now()}`,
       role: 'client',
-      title: 'Resultado de pago',
-      description: (() => {
-        const orderTag = p.orderId ? ` del pedido #${p.orderId}` : '';
-        if (!p.status) return `Tu pago${orderTag} fue revisado`;
-        // Normalizar mensajes comunes
-        const st = p.status.toLowerCase();
-        if (st === 'rechazado' || st === 'rechazado ') return `Tu pago${orderTag} fue rechazado`;
-        if (st === 'aprobado' || st === 'aprobado ') return `Tu pago${orderTag} fue aprobado`;
-        return `Tu pago${orderTag} fue ${p.status}`;
-      })(),
+      title: 'notifications.client.paymentReviewed.title',
+      description: `notifications.client.paymentReviewed.${
+        p.status?.toLowerCase().includes('rechaz') ? 'descRejected' : p.status?.toLowerCase().includes('aprob') ? 'descApproved' : 'descReviewed'
+      }|${JSON.stringify({ orderId: p.orderId })}`,
       href: hrefs.client.payments(p.paymentId),
       severity: p.status === 'rechazado' ? 'warn' : 'info',
       unread: true,
@@ -76,10 +73,8 @@ export const NotificationsFactory = {
     newOrderForQuote: (p: NotificationEventPayload): AppNotification => ({
       id: `cn-quote-${p.orderId}-${Date.now()}`,
       role: 'china',
-      title: 'Nuevo pedido para cotización',
-      description: p.orderId
-        ? `Pedido #${p.orderId} requiere cotización`
-        : 'Nuevo pedido requiere cotización',
+      title: 'notifications.china.newOrderForQuote.title',
+      description: `notifications.china.newOrderForQuote.description|${JSON.stringify({ orderId: p.orderId })}`,
       href: hrefs.china.quotes(p.orderId),
       severity: 'info',
       unread: true,
@@ -88,8 +83,18 @@ export const NotificationsFactory = {
     orderRequiresAttention: (p: NotificationEventPayload): AppNotification => ({
       id: `cn-attn-${p.orderId}-${Date.now()}`,
       role: 'china',
-      title: 'Pedido requiere atención',
-      description: p.orderId ? `Pedido #${p.orderId} pendiente para gestión en China` : 'Hay pedidos pendientes para China',
+      title: 'notifications.china.orderRequiresAttention.title',
+      description: `notifications.china.orderRequiresAttention.description|${JSON.stringify({ orderId: p.orderId })}`,
+      href: hrefs.china.quotes(p.orderId),
+      severity: 'info',
+      unread: true,
+      createdAt: nowIso(),
+    }),
+    readyToPack: (p: NotificationEventPayload): AppNotification => ({
+      id: `cn-pack-${p.orderId}-${Date.now()}`,
+      role: 'china',
+      title: 'notifications.china.readyToPack.title',
+      description: `notifications.china.readyToPack.description|${JSON.stringify({ orderId: p.orderId })}`,
       href: hrefs.china.quotes(p.orderId),
       severity: 'info',
       unread: true,
@@ -100,8 +105,8 @@ export const NotificationsFactory = {
     newAssignedOrder: (p: NotificationEventPayload): AppNotification => ({
       id: `pg-assign-${p.orderId}-${Date.now()}`,
       role: 'pagos',
-      title: 'Nuevo pedido asignado',
-      description: p.orderId ? `Pedido ${p.orderId} asignado para validación de pago` : 'Nuevo pedido asignado',
+      title: 'notifications.pagos.newAssignedOrder.title',
+      description: `notifications.pagos.newAssignedOrder.description|${JSON.stringify({ orderId: p.orderId })}`,
       href: hrefs.pagos.assigned(p.orderId),
       severity: 'info',
       unread: true,
@@ -126,8 +131,8 @@ export const NotificationsFactory = {
     newAssignedOrder: (p: NotificationEventPayload): AppNotification => ({
       id: `ve-assign-${p.orderId}-${Date.now()}`,
       role: 'venezuela',
-      title: 'Nuevo pedido asignado',
-      description: p.orderId ? `Pedido ${p.orderId} asignado` : 'Nuevo pedido asignado',
+      title: 'notifications.venezuela.newAssignedOrder.title',
+      description: `notifications.venezuela.newAssignedOrder.description|${JSON.stringify({ orderId: p.orderId })}`,
       href: hrefs.venezuela.assigned(p.orderId),
       severity: 'info',
       unread: true,

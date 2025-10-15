@@ -113,6 +113,54 @@
       { "title": "Simple Process", "desc": "Reset your password in just 2 steps" }
     ]
   },
+  "notifications": {
+    "client": {
+      "orderCreated": {
+        "title": "Order update",
+        "description": "Your order #{{orderId}} has been created"
+      },
+      "quoteReady": {
+        "title": "Your quote is ready",
+        "description": "Your quote for order #{{orderId}} is ready"
+      },
+      "orderStatusChanged": {
+        "title": "Order update",
+        "description": "Your order changed status"
+      },
+      "paymentReviewed": {
+        "title": "Payment result",
+        "descApproved": "Your payment for order #{{orderId}} was approved",
+        "descRejected": "Your payment for order #{{orderId}} was rejected",
+        "descReviewed": "Your payment for order #{{orderId}} was reviewed"
+      }
+    },
+    "china": {
+      "newOrderForQuote": {
+        "title": "New order for quote",
+        "description": "Order #{{orderId}} requires a quote"
+      },
+      "orderRequiresAttention": {
+        "title": "Order requires attention",
+        "description": "Order #{{orderId}} pending for China"
+      },
+      "readyToPack": {
+        "title": "Ready to pack",
+        "description": "Product #{{orderId}} is ready to pack"
+      }
+    },
+    "pagos": {
+      "newAssignedOrder": {
+        "title": "New assigned order",
+        "description": "Order {{orderId}} assigned for payment validation"
+      }
+    },
+    "venezuela": {
+      "newAssignedOrder": {
+        "title": "New assigned order",
+        "description": "Order {{orderId}} assigned"
+      }
+    }
+  },
   "client": {
     "dashboard": {
       "title": "Client Dashboard",

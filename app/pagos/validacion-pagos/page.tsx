@@ -750,12 +750,16 @@ const PaymentValidationDashboard: React.FC = () => {
     // Persistir: state = 5 (verificado)
 
     try {
-      const idFilter: any = isNaN(Number(id)) ? id : Number(id);
-      const { error } = await supabase
-        .from('orders')
-        .update({ state: 5 })
-        .eq('id', idFilter);
-      if (error) throw error;
+      // Usar el endpoint público para que dispare notificaciones de forma centralizada
+      const resp = await fetch(`/api/orders/${id}/state`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state: 5 }),
+      });
+      if (!resp.ok) {
+        const msg = await resp.json().catch(()=>({ error: 'Error al actualizar estado' }));
+        throw new Error(msg?.error || 'Error al actualizar el estado del pedido');
+      }
       // Notificar al cliente: pago aprobado
       if (payment.clientUserId) {
         const notif = NotificationsFactory.client.paymentReviewed({ orderId: id, paymentId: id, status: 'aprobado' });

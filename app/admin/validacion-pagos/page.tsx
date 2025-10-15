@@ -731,12 +731,15 @@ const PaymentValidationDashboard: React.FC = () => {
       p.id === id ? { ...p, estado: 'completado' as const } : p
     ));
     try {
-      const idFilter: any = isNaN(Number(id)) ? id : Number(id);
-      const { error } = await supabase
-        .from('orders')
-        .update({ state: 5 })
-        .eq('id', idFilter);
-      if (error) throw error;
+      const resp = await fetch(`/api/orders/${id}/state`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state: 5 }),
+      });
+      if (!resp.ok) {
+        const msg = await resp.json().catch(()=>({ error: 'Error al actualizar estado' }));
+        throw new Error(msg?.error || 'Error al actualizar el estado del pedido');
+      }
     } catch (e: any) {
       setPayments(prev => prev.map(p =>
         p.id === id ? { ...p, estado: payment.estado } : p

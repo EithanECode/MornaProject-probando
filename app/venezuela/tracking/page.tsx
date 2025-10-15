@@ -306,6 +306,7 @@ export default function VenezuelaTrackingPage() {
       }`}>
         <Header 
           notifications={stats.needsUpdate}
+          notificationsRole="venezuela"
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title="Tracking de Pedidos"
           subtitle="Sigue el estado de los pedidos en tiempo real"

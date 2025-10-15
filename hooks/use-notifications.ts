@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { AppNotification, AppRole } from '@/lib/types/notifications';
+import { useTranslation } from '@/hooks/useTranslation';
 
 type Options = {
   role?: AppRole;
@@ -19,6 +20,7 @@ export type UiNotificationItem = {
 };
 
 export function useNotifications({ role, userId, limit = 10, enabled = true }: Options) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<AppNotification[]>([]);
@@ -120,8 +122,39 @@ export function useNotifications({ role, userId, limit = 10, enabled = true }: O
   }, [userId, fetchNotifications]);
 
   const uiItems: UiNotificationItem[] = useMemo(() => {
-    return items.map(n => ({ id: n.id, title: n.title, description: n.description, href: n.href || undefined, unread: n.unread }));
-  }, [items]);
+    return items.map(n => {
+      // Intento de i18n: si el título parece una key (contiene ':'), usar traducción; si no, usar original
+      let title = n.title;
+      let description = n.description;
+      // Convención de keys guardadas en title/description: notifications.path:key
+      // Ejemplos:
+      //   title: notifications.china.readyToPack.title
+      //   description: notifications.china.readyToPack.description|{"orderId":"123"}
+      const tryTranslate = (raw?: string) => {
+        if (!raw) return undefined as string | undefined;
+        // Permite payload JSON tras un separador '|'
+        const [key, payloadRaw] = raw.split('|');
+        if (key?.startsWith('notifications.')) {
+          let opts: Record<string, any> | undefined = undefined;
+          if (payloadRaw) {
+            try { opts = JSON.parse(payloadRaw); } catch {}
+          }
+          return t(key, opts);
+        }
+        return raw;
+      };
+      // Intentar traducir
+      const localizedTitle = tryTranslate(title);
+      const localizedDesc = tryTranslate(description);
+      return {
+        id: n.id,
+        title: localizedTitle ?? title,
+        description: localizedDesc ?? description,
+        href: n.href || undefined,
+        unread: n.unread,
+      };
+    });
+  }, [items, t]);
 
   const unreadCount = useMemo(() => items.filter(n => n.unread).length, [items]);
 

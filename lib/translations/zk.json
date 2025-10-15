@@ -115,6 +115,54 @@
       { "title": "简单流程", "desc": "仅需两步即可重置密码" }
     ]
   },
+  "notifications": {
+    "client": {
+      "orderCreated": {
+        "title": "订单更新",
+        "description": "你的订单 #{{orderId}} 已创建"
+      },
+      "quoteReady": {
+        "title": "你的报价已准备好",
+        "description": "订单 #{{orderId}} 的报价已准备好"
+      },
+      "orderStatusChanged": {
+        "title": "订单更新",
+        "description": "你的订单状态已更新"
+      },
+      "paymentReviewed": {
+        "title": "支付结果",
+        "descApproved": "订单 #{{orderId}} 的支付已通过",
+        "descRejected": "订单 #{{orderId}} 的支付被拒绝",
+        "descReviewed": "订单 #{{orderId}} 的支付已审核"
+      }
+    },
+    "china": {
+      "newOrderForQuote": {
+        "title": "新订单待报价",
+        "description": "订单 #{{orderId}} 需要报价"
+      },
+      "orderRequiresAttention": {
+        "title": "订单需要处理",
+        "description": "订单 #{{orderId}} 待中国区处理"
+      },
+      "readyToPack": {
+        "title": "准备打包",
+        "description": "产品 #{{orderId}} 已准备打包"
+      }
+    },
+    "pagos": {
+      "newAssignedOrder": {
+        "title": "新订单已分配",
+        "description": "订单 {{orderId}} 已分配进行支付验证"
+      }
+    },
+    "venezuela": {
+      "newAssignedOrder": {
+        "title": "新订单已分配",
+        "description": "订单 {{orderId}} 已分配"
+      }
+    }
+  },
   "client": {
     "dashboard": {
       "title": "客户控制面板",

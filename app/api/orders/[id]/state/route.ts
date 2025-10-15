@@ -243,6 +243,35 @@ export async function PUT(
           },
         ]);
       }
+
+      // Notificar a China cuando el pedido esté listo para empaquetar (estado 5)
+      if (state === 5) {
+        const notifChinaPack = NotificationsFactory.china.readyToPack({ orderId: String(orderId) });
+        // Dedupe: evitar múltiples notificaciones iguales en un lapso corto
+        const since = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
+        const { data: existingPack } = await supabase
+          .from('notifications')
+          .select('id')
+          .eq('audience_type', 'role')
+          .eq('audience_value', 'china')
+          .eq('order_id', String(orderId))
+          .eq('title', notifChinaPack.title)
+          .gte('created_at', since)
+          .limit(1);
+        if (!existingPack || existingPack.length === 0) {
+          await supabase.from('notifications').insert([
+            {
+              audience_type: 'role',
+              audience_value: 'china',
+              title: notifChinaPack.title,
+              description: notifChinaPack.description,
+              href: notifChinaPack.href,
+              severity: notifChinaPack.severity,
+              order_id: String(orderId),
+            },
+          ]);
+        }
+      }
     } catch (notifyErr) {
       console.error('Order state notification error:', notifyErr);
     }

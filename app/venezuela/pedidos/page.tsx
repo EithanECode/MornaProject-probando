@@ -740,6 +740,7 @@ export default function VenezuelaPedidosPage() {
       }`}>
         <Header 
           notifications={0}
+          notificationsRole="venezuela"
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('venezuela.pedidos.title')}
           subtitle={t('venezuela.pedidos.subtitle')}
