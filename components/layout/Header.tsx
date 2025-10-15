@@ -82,8 +82,11 @@ export default function Header({
     enabled: notificationsEnabled,
   });
 
-  const effectiveNotifications = notificationsEnabled ? unreadCount : notifications;
-  const effectiveItems = notificationsEnabled ? uiItems : notificationsItems;
+  const baseNotifications = notificationsEnabled ? unreadCount : notifications;
+  const baseItems = notificationsEnabled ? uiItems : notificationsItems;
+  const effectiveNotifications = baseNotifications;
+  // Mostrar solo no leídas. Si no viene 'unread' definido, asumir que está no leída para que se muestre.
+  const effectiveItems = (baseItems || []).filter((n) => (n.unread === undefined ? true : !!n.unread));
 
   return (
   <header className="bg-white/90 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40 shadow-sm">
@@ -113,15 +116,7 @@ export default function Header({
           {/* Right Section */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Desktop Notifications (Dropdown) */}
-            <DropdownMenu onOpenChange={(open) => {
-              if (open) {
-                if (notificationsEnabled) {
-                  markAllAsRead?.();
-                } else {
-                  onMarkAllAsRead?.();
-                }
-              }
-            }}>
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="outline" 
@@ -173,36 +168,20 @@ export default function Header({
                   )}
                 </div>
                 <DropdownMenuSeparator />
-                <div className="p-2 flex items-center gap-2">
+                <div className="p-2 flex items-center">
                   <Button
-                    variant="outline"
                     size="sm"
                     className="w-full"
                     onClick={() => notificationsEnabled ? markAllAsRead?.() : onMarkAllAsRead?.()}
                   >
-                    {t('header.markAllAsRead') || 'Marcar todo como leído'}
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    onClick={() => onOpenNotifications?.()}
-                  >
-                    {t('header.viewAll') || 'Ver todas'}
+                    {t('header.clear') || 'Limpiar'}
                   </Button>
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
             
             {/* Mobile Notifications (Dropdown) */}
-            <DropdownMenu onOpenChange={(open) => {
-              if (open) {
-                if (notificationsEnabled) {
-                  markAllAsRead?.();
-                } else {
-                  onMarkAllAsRead?.();
-                }
-              }
-            }}>
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="outline" 
@@ -253,21 +232,13 @@ export default function Header({
                   )}
                 </div>
                 <DropdownMenuSeparator />
-                <div className="p-2 flex items-center gap-2">
+                <div className="p-2 flex items-center">
                   <Button
-                    variant="outline"
                     size="sm"
                     className="w-full"
                     onClick={() => notificationsEnabled ? markAllAsRead?.() : onMarkAllAsRead?.()}
                   >
-                    {t('header.markAllAsRead') || 'Marcar todo como leído'}
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    onClick={() => onOpenNotifications?.()}
-                  >
-                    {t('header.viewAll') || 'Ver todas'}
+                    {t('header.clear') || 'Limpiar'}
                   </Button>
                 </div>
               </DropdownMenuContent>

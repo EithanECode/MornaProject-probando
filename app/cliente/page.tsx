@@ -232,7 +232,7 @@ export default function DashboardPage() {
           onMenuToggle={handleMobileMenuToggle}
           title={t('client.dashboard.title')}
           subtitle={t('client.dashboard.subtitle')}
-          notificationsItems={notificationsList}
+          notificationsItems={notificationsList.filter(n => n.unread)}
           onMarkAllAsRead={async () => { await markAllAsRead(); }}
         />
         

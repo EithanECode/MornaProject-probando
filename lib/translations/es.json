@@ -2000,7 +2000,9 @@
   "header": {
   "notifications": "Notificaciones",
   "markAllAsRead": "Marcar todo como leído",
-  "viewAll": "Ver todas"
+  "viewAll": "Ver todas",
+  "clear": "Limpiar",
+  "noNotifications": "Sin notificaciones"
   },
   "venezuela": {
     "dashboard": {

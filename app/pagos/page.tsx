@@ -36,7 +36,7 @@ export default function PagosDashboardPage() {
       <main className={`transition-all duration-300 flex-1 ${sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'}`}> 
         <Header 
           notifications={pagosUnread}
-          notificationsItems={pagosNotifItems}
+          notificationsItems={pagosNotifItems.filter(n => n.unread)}
           onMarkAllAsRead={markAllPagosRead}
           onItemClick={(id) => markPagosOneRead(id)}
           notificationsRole="pagos"

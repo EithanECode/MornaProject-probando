@@ -1549,7 +1549,7 @@ export default function PedidosChina() {
           title={t('chinese.ordersPage.title')}
           subtitle={t('chinese.ordersPage.subtitle')}
           showTitleOnMobile
-          notificationsItems={notificationsList}
+          notificationsItems={notificationsList.filter(n => n.unread)}
           onMarkAllAsRead={async () => { await markAllAsRead(); }}
           onOpenNotifications={() => { router.push('/china/pedidos'); }}
           onItemClick={(id) => { markOneAsRead(id); }}

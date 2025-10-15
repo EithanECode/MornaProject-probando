@@ -354,7 +354,7 @@ export default function ChinaDashboard() {
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('chinese.title')}
           subtitle={t('chinese.subtitle')}
-          notificationsItems={notificationsList}
+          notificationsItems={notificationsList.filter(n => n.unread)}
           onMarkAllAsRead={async () => { await markAllAsRead(); }}
           onOpenNotifications={() => { router.push('/china/pedidos'); }}
           onItemClick={(id) => { markOneAsRead(id); }}

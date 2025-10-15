@@ -24,6 +24,8 @@ export function useNotifications({ role, userId, limit = 10, enabled = true }: O
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<AppNotification[]>([]);
+  // Resolver userId automáticamente si no se pasa
+  const [resolvedUserId, setResolvedUserId] = useState<string | undefined>(userId);
 
   const audience = useMemo(() => {
     if (role === 'client') {
@@ -39,6 +41,14 @@ export function useNotifications({ role, userId, limit = 10, enabled = true }: O
     setError(null);
     try {
       const supabase = getSupabaseBrowserClient();
+      // Intentar resolver el userId actual si no lo tenemos aún
+      if (!resolvedUserId) {
+        try {
+          const { data } = await supabase.auth.getUser();
+          const uid = data?.user?.id;
+          if (uid) setResolvedUserId(uid);
+        } catch {}
+      }
       let query = supabase
         .from('notifications')
         .select('id, title, description, href, severity, created_at, unread, audience_type, audience_value, user_id, order_id, payment_id, notification_reads ( user_id )')
@@ -50,8 +60,9 @@ export function useNotifications({ role, userId, limit = 10, enabled = true }: O
       if (error) throw error;
       // Map unread per-user: unread=true if no read record for current user
       const mapped = (Array.isArray(data) ? data : []).map((row: any) => {
-        const unreadForUser = userId
-          ? !((row.notification_reads || []).some((r: any) => r.user_id === userId))
+        const uid = resolvedUserId;
+        const unreadForUser = uid
+          ? !((row.notification_reads || []).some((r: any) => r.user_id === uid))
           : !!row.unread;
         return { ...row, unread: unreadForUser } as AppNotification;
       });
@@ -61,7 +72,7 @@ export function useNotifications({ role, userId, limit = 10, enabled = true }: O
     } finally {
       setLoading(false);
     }
-  }, [audience.type, audience.value, limit, enabled, userId]);
+  }, [audience.type, audience.value, limit, enabled, resolvedUserId]);
 
   useEffect(() => {
     fetchNotifications();
@@ -71,7 +82,7 @@ export function useNotifications({ role, userId, limit = 10, enabled = true }: O
   useEffect(() => {
     if (!enabled) return;
     fetchNotifications();
-  }, [userId]);
+  }, [resolvedUserId]);
 
   // Realtime
   useEffect(() => {
@@ -97,29 +108,28 @@ export function useNotifications({ role, userId, limit = 10, enabled = true }: O
     if (!audience.value) return;
     const supabase = getSupabaseBrowserClient();
     // Insert read markers for current user for all notifications in scope
-    if (!userId) return;
+    if (!resolvedUserId) return;
     // Fetch ids first (lightweight)
     const { data } = await supabase
       .from('notifications')
       .select('id')
       .eq('audience_type', audience.type)
       .eq('audience_value', audience.value)
-      .order('created_at', { ascending: false })
-      .limit(200);
+      .order('created_at', { ascending: false });
     const ids: string[] = (data || []).map((r: any) => r.id);
     if (ids.length === 0) return;
     // Upsert markers (ignore conflicts)
-    const rows = ids.map(id => ({ notification_id: id, user_id: userId }));
+    const rows = ids.map(id => ({ notification_id: id, user_id: resolvedUserId }));
     await supabase.from('notification_reads').upsert(rows, { onConflict: 'notification_id,user_id', ignoreDuplicates: true });
     fetchNotifications();
-  }, [audience.type, audience.value, fetchNotifications, userId]);
+  }, [audience.type, audience.value, fetchNotifications, resolvedUserId]);
 
   const markOneAsRead = useCallback(async (id: string) => {
-    if (!userId) return;
+    if (!resolvedUserId) return;
     const supabase = getSupabaseBrowserClient();
-    await supabase.from('notification_reads').upsert({ notification_id: id, user_id: userId }, { onConflict: 'notification_id,user_id', ignoreDuplicates: true });
+    await supabase.from('notification_reads').upsert({ notification_id: id, user_id: resolvedUserId }, { onConflict: 'notification_id,user_id', ignoreDuplicates: true });
     fetchNotifications();
-  }, [userId, fetchNotifications]);
+  }, [resolvedUserId, fetchNotifications]);
 
   const uiItems: UiNotificationItem[] = useMemo(() => {
     return items.map(n => {
