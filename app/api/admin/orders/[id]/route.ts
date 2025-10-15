@@ -151,6 +151,7 @@ export async function PATCH(
               description: notifPagos.description,
               href: notifPagos.href,
               severity: notifPagos.severity,
+              unread: true,
               order_id: orderId,
             },
           ]);

@@ -43,6 +43,7 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 // Eliminado contexto de Venezuela: rol pagos ve todos los pagos globales
 import { useTranslation } from '@/hooks/useTranslation';
 import { NotificationsFactory } from '@/lib/notifications';
+import { useNotifications } from '@/hooks/use-notifications';
 
 // =============================================
 // SIEMPRE datos reales: lógica unificada con admin
@@ -123,6 +124,8 @@ const AnimatedIcon: React.FC<{
 // ================================
 const StatsCards: React.FC<{ stats: PaymentStats }> = ({ stats }) => {
   const { t } = useTranslation();
+  // Notificaciones para rol Pagos
+  const { uiItems: pagosNotifItems, unreadCount: pagosUnread, markAllAsRead: markAllPagosRead, markOneAsRead: markPagosOneRead } = useNotifications({ role: 'pagos', limit: 20, enabled: true });
   const cardsData = [
     {
       title: t('venezuela.pagos.stats.totalSpent'),
@@ -455,6 +458,8 @@ const PaymentValidationDashboard: React.FC = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { toast } = useToast();
+  // Notificaciones para rol Pagos
+  const { uiItems: pagosNotifItems, unreadCount: pagosUnread, markAllAsRead: markAllPagosRead, markOneAsRead: markPagosOneRead } = useNotifications({ role: 'pagos', limit: 20, enabled: true });
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -958,7 +963,10 @@ const PaymentValidationDashboard: React.FC = () => {
         sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'
       } w-full`}>
         <Header 
-          notifications={3}
+          notifications={pagosUnread}
+          notificationsItems={pagosNotifItems}
+          onMarkAllAsRead={markAllPagosRead}
+          onItemClick={(id) => markPagosOneRead(id)}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('venezuela.pagos.title')}
           subtitle={t('venezuela.pagos.subtitle')}

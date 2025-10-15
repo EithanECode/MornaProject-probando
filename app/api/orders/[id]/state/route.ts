@@ -180,6 +180,7 @@ export async function PUT(
             description: notifPagos.description,
             href: notifPagos.href,
             severity: notifPagos.severity,
+            unread: true,
             order_id: String(orderId),
           },
         ]);

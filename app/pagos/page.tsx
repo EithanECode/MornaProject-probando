@@ -10,12 +10,16 @@ import { PriceDisplay } from '@/components/shared/PriceDisplay';
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useNotifications } from '@/hooks/use-notifications';
 
 export default function PagosDashboardPage() {
   const [sidebarExpanded, setSidebarExpanded] = React.useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const { pending, completed, totalAmount, loading, error, refresh } = usePagosStats();
   const { t } = useTranslation();
+
+  // Notificaciones para rol Pagos (igual que en /pagos/validacion-pagos)
+  const { uiItems: pagosNotifItems, unreadCount: pagosUnread, markAllAsRead: markAllPagosRead, markOneAsRead: markPagosOneRead } = useNotifications({ role: 'pagos', limit: 20, enabled: true });
 
   const totalProcesados = pending + completed; // pedidos en pipeline de pagos
   const porcentajeConfirmados = totalProcesados > 0 ? (completed / totalProcesados) * 100 : 0;
@@ -31,7 +35,10 @@ export default function PagosDashboardPage() {
       />
       <main className={`transition-all duration-300 flex-1 ${sidebarExpanded ? 'lg:ml-72 lg:w-[calc(100%-18rem)]' : 'lg:ml-24 lg:w-[calc(100%-6rem)]'}`}> 
         <Header 
-          notifications={pending}
+          notifications={pagosUnread}
+          notificationsItems={pagosNotifItems}
+          onMarkAllAsRead={markAllPagosRead}
+          onItemClick={(id) => markPagosOneRead(id)}
           onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={t('paymentsDashboard.title')}
           subtitle={t('paymentsDashboard.subtitle')}

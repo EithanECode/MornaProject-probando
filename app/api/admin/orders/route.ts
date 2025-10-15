@@ -199,6 +199,7 @@ export async function POST(req: NextRequest) {
               description: notifPagos.description,
               href: notifPagos.href,
               severity: notifPagos.severity,
+              unread: true,
               order_id: String(data.id),
             },
           ]);
