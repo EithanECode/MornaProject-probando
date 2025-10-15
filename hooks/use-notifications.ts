@@ -27,6 +27,30 @@ export function useNotifications({ role, userId, limit = 10, enabled = true }: O
   // Resolver userId automáticamente si no se pasa
   const [resolvedUserId, setResolvedUserId] = useState<string | undefined>(userId);
 
+  // Helpers para fallback local (persistencia en navegador por usuario/ámbito)
+  const getLocalKey = useCallback(() => {
+    const audienceKey = `${role ?? 'unknown'}:${userId ?? 'unknown'}`;
+    const uid = resolvedUserId ?? 'unknown';
+    return `notif_reads:${audienceKey}:${uid}`;
+  }, [role, userId, resolvedUserId]);
+
+  const getLocalReadIds = useCallback((): Set<string> => {
+    try {
+      const raw = typeof window !== 'undefined' ? window.localStorage.getItem(getLocalKey()) : null;
+      if (!raw) return new Set();
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return new Set(arr.filter(Boolean));
+    } catch {}
+    return new Set();
+  }, [getLocalKey]);
+
+  const saveLocalReadIds = useCallback((ids: Set<string>) => {
+    try {
+      if (typeof window === 'undefined') return;
+      window.localStorage.setItem(getLocalKey(), JSON.stringify(Array.from(ids)));
+    } catch {}
+  }, [getLocalKey]);
+
   const audience = useMemo(() => {
     if (role === 'client') {
       return { type: 'user', value: userId };
@@ -49,21 +73,46 @@ export function useNotifications({ role, userId, limit = 10, enabled = true }: O
           if (uid) setResolvedUserId(uid);
         } catch {}
       }
-      let query = supabase
+      // 1) Traer notificaciones para el público indicado
+      const { data: notifData, error: notifErr } = await supabase
         .from('notifications')
-        .select('id, title, description, href, severity, created_at, unread, audience_type, audience_value, user_id, order_id, payment_id, notification_reads ( user_id )')
+        .select('id, title, description, href, severity, created_at, unread, audience_type, audience_value, user_id, order_id, payment_id')
         .eq('audience_type', audience.type)
         .eq('audience_value', audience.value)
         .order('created_at', { ascending: false })
         .limit(limit);
-      const { data, error } = await query;
-      if (error) throw error;
-      // Map unread per-user: unread=true if no read record for current user
-      const mapped = (Array.isArray(data) ? data : []).map((row: any) => {
-        const uid = resolvedUserId;
-        const unreadForUser = uid
-          ? !((row.notification_reads || []).some((r: any) => r.user_id === uid))
-          : !!row.unread;
+      if (notifErr) throw notifErr;
+
+      const rows = Array.isArray(notifData) ? notifData : [];
+
+      // 2) Si tenemos userId, consultar qué notificaciones ya están marcadas como leídas para ese usuario
+      let readIds = new Set<string>();
+      const uidForRead = resolvedUserId;
+      if (uidForRead && rows.length > 0) {
+        const ids = rows.map((r: any) => r.id).filter(Boolean);
+        if (ids.length > 0) {
+          const { data: readRows, error: readErr } = await supabase
+            .from('notification_reads')
+            .select('notification_id')
+            .eq('user_id', uidForRead)
+            .in('notification_id', ids as any);
+          if (!readErr && Array.isArray(readRows)) {
+            readIds = new Set(readRows.map((r: any) => r.notification_id));
+          }
+        }
+      }
+
+      // 2b) Fallback local: fusionar con los IDs guardados en localStorage
+      if (resolvedUserId) {
+        const localIds = getLocalReadIds();
+        if (localIds.size > 0) {
+          localIds.forEach((l) => readIds.add(l));
+        }
+      }
+
+      // 3) Mapear unread por usuario usando readIds; si no hay uid, usar flag unread de la fila
+      const mapped = rows.map((row: any) => {
+        const unreadForUser = uidForRead ? !readIds.has(row.id) : !!row.unread;
         return { ...row, unread: unreadForUser } as AppNotification;
       });
       setItems(mapped);
@@ -107,8 +156,16 @@ export function useNotifications({ role, userId, limit = 10, enabled = true }: O
   const markAllAsRead = useCallback(async () => {
     if (!audience.value) return;
     const supabase = getSupabaseBrowserClient();
-    // Insert read markers for current user for all notifications in scope
-    if (!resolvedUserId) return;
+    // Asegurar userId: resolverlo si aún no está
+    let uid = resolvedUserId;
+    if (!uid) {
+      try {
+        const { data } = await supabase.auth.getUser();
+        uid = data?.user?.id;
+        if (uid) setResolvedUserId(uid);
+      } catch {}
+      if (!uid) return; // sin user no podemos marcar como leídas per-user
+    }
     // Fetch ids first (lightweight)
     const { data } = await supabase
       .from('notifications')
@@ -119,17 +176,38 @@ export function useNotifications({ role, userId, limit = 10, enabled = true }: O
     const ids: string[] = (data || []).map((r: any) => r.id);
     if (ids.length === 0) return;
     // Upsert markers (ignore conflicts)
-    const rows = ids.map(id => ({ notification_id: id, user_id: resolvedUserId }));
+    const rows = ids.map(id => ({ notification_id: id, user_id: uid! }));
     await supabase.from('notification_reads').upsert(rows, { onConflict: 'notification_id,user_id', ignoreDuplicates: true });
+    // Fallback local: guardar todos como leídos
+    try {
+      const current = getLocalReadIds();
+      ids.forEach(id => current.add(id));
+      saveLocalReadIds(current);
+    } catch {}
     fetchNotifications();
-  }, [audience.type, audience.value, fetchNotifications, resolvedUserId]);
+  }, [audience.type, audience.value, fetchNotifications, resolvedUserId, getLocalReadIds, saveLocalReadIds]);
 
   const markOneAsRead = useCallback(async (id: string) => {
-    if (!resolvedUserId) return;
     const supabase = getSupabaseBrowserClient();
-    await supabase.from('notification_reads').upsert({ notification_id: id, user_id: resolvedUserId }, { onConflict: 'notification_id,user_id', ignoreDuplicates: true });
+    // Asegurar userId
+    let uid = resolvedUserId;
+    if (!uid) {
+      try {
+        const { data } = await supabase.auth.getUser();
+        uid = data?.user?.id;
+        if (uid) setResolvedUserId(uid);
+      } catch {}
+      if (!uid) return;
+    }
+    await supabase.from('notification_reads').upsert({ notification_id: id, user_id: uid }, { onConflict: 'notification_id,user_id', ignoreDuplicates: true });
+    // Fallback local: guardar este ID como leído
+    try {
+      const current = getLocalReadIds();
+      current.add(id);
+      saveLocalReadIds(current);
+    } catch {}
     fetchNotifications();
-  }, [resolvedUserId, fetchNotifications]);
+  }, [resolvedUserId, fetchNotifications, getLocalReadIds, saveLocalReadIds]);
 
   const uiItems: UiNotificationItem[] = useMemo(() => {
     return items.map(n => {

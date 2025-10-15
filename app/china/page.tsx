@@ -390,6 +390,8 @@ export default function ChinaDashboard() {
           onMarkAllAsRead={async () => { await markAllAsRead(); }}
           onOpenNotifications={() => { router.push('/china/pedidos'); }}
           onItemClick={(id) => { markOneAsRead(id); }}
+          notificationsRole="china"
+          notificationsUserId={chinaId}
         />
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-8">
