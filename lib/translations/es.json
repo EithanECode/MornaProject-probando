@@ -483,7 +483,8 @@
         "transitioning": "Transicionando...",
         "previous": "Anterior",
         "next": "Siguiente",
-        "createOrder": "Crear Pedido",
+  "createOrder": "Crear Pedido",
+  "creatingOrder": "Creando pedido...",
         "dialogDescription": "Sigue los pasos para crear tu solicitud de importación",
         "stepTitles": {
           "productInfo": "Información del Producto",

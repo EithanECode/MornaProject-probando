@@ -569,7 +569,8 @@
         "transitioning": "转换中...",
         "previous": "上一步",
         "next": "下一步",
-        "createOrder": "创建订单",
+  "createOrder": "创建订单",
+  "creatingOrder": "正在创建订单...",
         "dialogDescription": "按照步骤创建你的进口请求",
         "stepTitles": {
           "productInfo": "产品信息",

@@ -568,7 +568,8 @@
         "transitioning": "Transitioning...",
         "previous": "Previous",
         "next": "Next",
-        "createOrder": "Create Order",
+  "createOrder": "Create Order",
+  "creatingOrder": "Creating order...",
         "dialogDescription": "Follow the steps to create your import request",
         "stepTitles": {
           "productInfo": "Product Information",

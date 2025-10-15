@@ -257,6 +257,8 @@ export default function MisPedidosPage() {
   const [newOrderData, setNewOrderData] = useState<NewOrderData>(INITIAL_NEW_ORDER_DATA);
   // Marca si el usuario intentó avanzar el Paso 1 con datos inválidos
   const [attemptedStep1, setAttemptedStep1] = useState(false);
+  // Estado de carga al crear pedido
+  const [creatingOrder, setCreatingOrder] = useState(false);
 
   // Obtener el user_id del usuario autenticado
   useEffect(() => {
@@ -281,6 +283,7 @@ export default function MisPedidosPage() {
     setStepDirection('next');
     setIsTransitioning(false);
     setShowSuccessAnimation(false);
+    setCreatingOrder(false);
   };
   const [isLinkHovered, setIsLinkHovered] = useState(false);
   
@@ -1009,6 +1012,7 @@ export default function MisPedidosPage() {
   let orderIdCreated: string | number | null = null;
   // Variable antigua nombrePDF eliminada (se generará una versión sanitizada más adelante)
 
+    setCreatingOrder(true);
     // Flujo: 1) Crear pedido vía API para obtener su ID. 2) Generar PDF usando ese ID. 3) Subir PDF. 4) PATCH pedido con pdfRoutes.
     (async () => {
       try {
@@ -1343,6 +1347,8 @@ export default function MisPedidosPage() {
         console.error('Error general generando / subiendo PDF o creando pedido:', err);
         toast({ title: 'Error generando pedido', description: err?.message || 'Fallo inesperado al generar PDF.', variant: 'destructive', duration: 6000 });
         alert('No se pudo generar o subir el PDF. Intenta nuevamente.');
+      } finally {
+        setCreatingOrder(false);
       }
     })();
   };
@@ -2021,10 +2027,20 @@ export default function MisPedidosPage() {
                     ) : (
                       <Button
                         onClick={handleSubmitOrder}
-                        className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        disabled={creatingOrder}
+                        className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
                       >
-                        <Check className="w-4 h-4 mr-2" />
-                        {t('client.recentOrders.newOrder.createOrder')}
+                        {creatingOrder ? (
+                          <div className="flex items-center">
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                            {t('client.recentOrders.newOrder.creatingOrder')}
+                          </div>
+                        ) : (
+                          <>
+                            <Check className="w-4 h-4 mr-2" />
+                            {t('client.recentOrders.newOrder.createOrder')}
+                          </>
+                        )}
                       </Button>
                     )}
                   </div>
