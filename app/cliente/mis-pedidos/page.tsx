@@ -98,10 +98,8 @@ interface NewOrderData {
   description: string;
   quantity: number;
   specifications: string;
-  requestType: 'link' | 'photo';
-  productUrl?: string;
+  productUrl: string;
   productImage?: File;
-  // deliveryType ya no autoselecciona doorToDoor; se limita a 'air' | 'maritime'. Vacío indica no seleccionado.
   deliveryType: '' | 'air' | 'maritime';
   deliveryVenezuela: string;
   estimatedBudget: string;
@@ -245,7 +243,6 @@ export default function MisPedidosPage() {
     description: '',
     quantity: 1,
     specifications: '',
-    requestType: 'link',
     productUrl: '',
     productImage: undefined,
     deliveryType: '',
@@ -1025,9 +1022,9 @@ export default function MisPedidosPage() {
           estimatedBudget: Number(newOrderData.estimatedBudget),
           deliveryType: newOrderData.deliveryVenezuela,
           shippingType: newOrderData.deliveryType,
+          // imgs y links se actualizarán luego con URLs públicas
           imgs: [],
-          // @ts-ignore
-          links: newOrderData.productUrl ? [newOrderData.productUrl] : [],
+          links: [],
           pdfRoutes: null,
           state: 1,
           order_origin: 'vzla'
@@ -1124,11 +1121,8 @@ export default function MisPedidosPage() {
           ['Quantity', `${newOrderData.quantity}`],
           ['Description', newOrderData.description || '-'],
           ['Specifications', newOrderData.specifications || '-'],
+          ['URL', newOrderData.productUrl || '-'],
         ];
-        if (newOrderData.requestType === 'link') {
-          // @ts-ignore (productUrl podría existir en el tipo extendido)
-          pedidoTable.push(['URL', newOrderData.productUrl || '-']);
-        }
 
         // === ENCABEZADO PROFESIONAL ===
         doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
@@ -1160,8 +1154,8 @@ export default function MisPedidosPage() {
 
         let currentY = 50;
 
-        // === MANEJO POR TIPO DE PEDIDO ===
-        if (newOrderData.requestType === 'photo' && newOrderData.productImage) {
+        // Siempre mostrar imagen y tabla lado a lado si hay imagen, si no solo tabla
+        if (newOrderData.productImage) {
           // Imagen y tabla lado a lado
           const imgWidth = 80;
           const imgHeight = 80;
@@ -1207,7 +1201,7 @@ export default function MisPedidosPage() {
               1: { cellWidth: tableWidth - 50 }
             }
           });
-        } else if (newOrderData.requestType === 'link') {
+        } else {
           // Tabla ocupando todo el ancho
           doc.setFillColor(colors.light[0], colors.light[1], colors.light[2]);
           doc.rect(margin, currentY, pageWidth - (margin * 2), 12, 'F');
@@ -1242,19 +1236,7 @@ export default function MisPedidosPage() {
               1: { cellWidth: pageWidth - (margin * 2) - 60 }
             }
           });
-          // Destacar la URL si existe
-          // @ts-ignore
-          if (newOrderData.productUrl) {
-            const finalY = (doc as any).lastAutoTable?.finalY + 12;
-            doc.setFontSize(10);
-            doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-            doc.text('Product URL:', margin, finalY + 6);
-            doc.setFontSize(10);
-            doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-            // @ts-ignore
-            const urlText = doc.splitTextToSize(newOrderData.productUrl, pageWidth - (margin * 2));
-            doc.text(urlText, margin, finalY + 14);
-          }
+          // La URL ya está incluida como fila en la tabla ('URL'), se evita duplicarla como sección aparte.
         }
 
         // === FOOTER PROFESIONAL ===
@@ -1274,6 +1256,11 @@ export default function MisPedidosPage() {
 
         // Subir PDF a Supabase Storage con nombre sanitizado
         const pdfBlob = doc.output('blob');
+        if (!(pdfBlob instanceof Blob) || pdfBlob.size === 0) {
+          console.error('PDF Blob inválido o vacío:', pdfBlob);
+          toast({ title: 'Error generando PDF', description: 'No se pudo generar el archivo PDF.', variant: 'destructive', duration: 6000 });
+          return;
+        }
         const safeProduct = sanitizeForFile(newOrderData.productName);
         const safeClient = sanitizeForFile(clientId || newOrderData.client_id);
         const safeDeliveryVzla = sanitizeForFile(newOrderData.deliveryVenezuela);
@@ -1311,9 +1298,67 @@ export default function MisPedidosPage() {
           return;
         }
 
-        const finalKey = uploadResult.data?.path || uploadKey;
-        const pdfUrl = `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${finalKey}`;
+  const finalKey = uploadResult.data?.path || uploadKey;
+  // Obtener URL pública a través del API de Supabase (más robusto que concatenar)
+  const pdfPublic = supabase.storage.from('orders').getPublicUrl(finalKey);
+  const pdfUrl = pdfPublic?.data?.publicUrl || `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${finalKey}`;
         console.log('pdfUrl:', pdfUrl);
+
+        // Subir imagen del producto (si existe) al bucket y obtener URL pública
+        const imageUrls: string[] = [];
+        if (newOrderData.productImage) {
+          try {
+            const imgFile = newOrderData.productImage as File;
+            const ext = (() => {
+              const type = (imgFile.type || '').toLowerCase();
+              if (type.includes('jpeg') || type.includes('jpg')) return 'jpg';
+              if (type.includes('png')) return 'png';
+              if (type.includes('webp')) return 'webp';
+              // fallback intenta extraer de nombre
+              const name = imgFile.name || '';
+              const dot = name.lastIndexOf('.');
+              return dot !== -1 ? name.substring(dot + 1).toLowerCase() : 'jpg';
+            })();
+            const imgSafeProduct = sanitizeForFile(newOrderData.productName);
+            const imgSafeClient = sanitizeForFile(clientId || newOrderData.client_id);
+            const timestamp = Date.now();
+            const imgFolder = (safeDeliveryType || 'otros') + '/imgs';
+            const imageKey = `${imgFolder}/${orderIdCreated}_${timestamp}_${imgSafeClient}_${imgSafeProduct}.${ext}`;
+
+            const doUploadImg = async (key: string) => {
+              return await supabase.storage
+                .from('orders')
+                .upload(key, imgFile, {
+                  cacheControl: '3600',
+                  upsert: true,
+                  contentType: imgFile.type || 'image/jpeg'
+                });
+            };
+
+            let imgUpload = await doUploadImg(imageKey);
+            if (imgUpload.error && /Invalid key/i.test(imgUpload.error.message || '')) {
+              const ultraImgKey = imageKey
+                .replace(/[^a-zA-Z0-9/_\-.]/g, '')
+                .replace(/--+/g, '-');
+              imgUpload = await doUploadImg(ultraImgKey);
+              if (!imgUpload.error) {
+                console.log('Upload imagen exitoso tras retry con key:', ultraImgKey);
+              }
+            }
+
+            if (imgUpload.error) {
+              console.warn('No se pudo subir la imagen del producto:', imgUpload.error);
+              toast({ title: 'Advertencia', description: 'Pedido creado pero no se pudo subir la imagen del producto.', duration: 5000 });
+            } else {
+              const imgFinalKey = imgUpload.data?.path || imageKey;
+              const imgPublic = supabase.storage.from('orders').getPublicUrl(imgFinalKey);
+              const imageUrl = imgPublic?.data?.publicUrl || `https://bgzsodcydkjqehjafbkv.supabase.co/storage/v1/object/public/orders/${imgFinalKey}`;
+              imageUrls.push(imageUrl);
+            }
+          } catch (e) {
+            console.warn('Excepción subiendo imagen del producto:', e);
+          }
+        }
 
         // 4) Actualizar el pedido con la URL del PDF y opcionalmente imgs/links
         const patchRes = await fetch(`/api/admin/orders/${orderIdCreated}`, {
@@ -1321,9 +1366,7 @@ export default function MisPedidosPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             pdfRoutes: pdfUrl,
-            // @ts-ignore
-            imgs: pdfUrl ? [pdfUrl] : [],
-            // @ts-ignore
+            imgs: imageUrls,
             links: newOrderData.productUrl ? [newOrderData.productUrl] : []
           })
         });
@@ -1334,8 +1377,8 @@ export default function MisPedidosPage() {
             if (j?.error) errMsg += ` - ${j.error}`;
             if (j?.details) errMsg += ` | ${Array.isArray(j.details) ? j.details.join(', ') : j.details}`;
           } catch {/* ignore */}
-          console.error('Error actualizando pedido con PDF URL:', errMsg, { orderIdCreated, pdfUrl });
-          toast({ title: 'Advertencia', description: 'Pedido creado pero no se pudo asociar el PDF.', duration: 5000 });
+          console.error('Error asociando PDF/recursos a la orden en la BD:', errMsg, { orderIdCreated, pdfUrl, imgs: imageUrls, links: newOrderData.productUrl });
+          toast({ title: 'Advertencia', description: 'Pedido creado y PDF subido, pero no se pudo asociar en la base de datos. Intenta nuevamente.', duration: 6000 });
         }
         setShowSuccessAnimation(true);
         setTimeout(() => {
@@ -1438,15 +1481,13 @@ export default function MisPedidosPage() {
         if (newOrderData.productName.length > NAME_MAX) return false;
         if (newOrderData.description.length > DESCRIPTION_MAX) return false;
         if (!isValidQuantity(newOrderData.quantity)) return false;
-        if (newOrderData.requestType === 'photo' && !newOrderData.specifications.trim()) return false;
-        if (newOrderData.requestType === 'link') {
-          if (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) return false;
-        }
+        if (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) return false;
+        if (!newOrderData.productImage) return false;
         return true;
       case 2:
         // Ahora sólo requerimos tipo de envío y modalidad/pickup (deliveryVenezuela). El presupuesto estimado es opcional.
-        if (!newOrderData.deliveryType || !newOrderData.deliveryVenezuela) return false;
-        return true;
+  if (!newOrderData.deliveryType || !newOrderData.deliveryVenezuela) return false;
+  return true;
       case 3:
         return true;
       default:
@@ -1710,7 +1751,7 @@ export default function MisPedidosPage() {
                       <div className="space-y-3">
                         <Label htmlFor="specifications" className="text-sm font-semibold text-slate-700 flex items-center">
                           <Settings className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.specifications')}{newOrderData.requestType === 'photo' && <span className="text-red-500 ml-1">*</span>}
+                          {t('client.recentOrders.newOrder.specifications')}
                         </Label>
                         <div className="relative group">
                           <Textarea
@@ -1719,140 +1760,74 @@ export default function MisPedidosPage() {
                             onChange={(e) => setNewOrderData({ ...newOrderData, specifications: e.target.value })}
                             placeholder={t('client.recentOrders.newOrder.specificationsPlaceholder')}
                             rows={3}
-                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300 ${attemptedStep1 && newOrderData.requestType === 'photo' && !newOrderData.specifications.trim() ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300`}
                           />
-                          {attemptedStep1 && newOrderData.requestType === 'photo' && !newOrderData.specifications.trim() && (
-                            <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.requiredField') || 'Campo requerido'}</p>
-                          )}
+                          {/* Validación eliminada porque ya no hay tipo de solicitud */}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-orange-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
 
-                      {/* Tipo de Solicitud */}
-                      <div className="space-y-4">
-                        <Label className="text-sm font-semibold text-slate-700 flex items-center">
-                          <Target className="w-4 h-4 mr-2 text-blue-600" />
-                          {t('client.recentOrders.newOrder.requestType')}<span className="text-red-500 ml-1">*</span>
-                        </Label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div
-                            className={`p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                              newOrderData.requestType === 'link'
-                                ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-orange-50 shadow-lg'
-                                : 'border-slate-200 hover:border-blue-300 bg-white/80 backdrop-blur-sm hover:shadow-md'
-                            }`}
-                            onClick={() => setNewOrderData({ ...newOrderData, requestType: 'link' })}
-                            onMouseEnter={() => setIsLinkHovered(true)}
-                            onMouseLeave={() => setIsLinkHovered(false)}
-                          >
-                            <div className="flex items-center space-x-4">
-                              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-orange-500 rounded-lg flex items-center justify-center">
-                                <Player
-                                  key={isLinkHovered ? 'link-active' : 'link-inactive'}
-                                  src={linkLottie}
-                                  className="w-5 h-5"
-                                  loop={false}
-                                  autoplay={isLinkHovered}
-                                />
-                              </div>
-                              <div>
-                                <p className="font-semibold text-slate-800">{t('client.recentOrders.newOrder.linkTitle')}</p>
-                                <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.linkSubtitle')}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            className={`p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                              newOrderData.requestType === 'photo'
-                                ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-orange-50 shadow-lg'
-                                : 'border-slate-200 hover:border-blue-300 bg-white/80 backdrop-blur-sm hover:shadow-md'
-                            }`}
-                            onClick={() => setNewOrderData({ ...newOrderData, requestType: 'photo' })}
-                            onMouseEnter={() => setIsCameraHovered(true)}
-                            onMouseLeave={() => setIsCameraHovered(false)}
-                          >
-                            <div className="flex items-center space-x-4">
-                              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-orange-500 rounded-lg flex items-center justify-center">
-                                <Player
-                                  key={isCameraHovered ? 'camera-active' : 'camera-inactive'}
-                                  src={cameraLottie}
-                                  className="w-5 h-5"
-                                  loop={false}
-                                  autoplay={isCameraHovered}
-                                />
-                              </div>
-                              <div>
-                                <p className="font-semibold text-slate-800">{t('client.recentOrders.newOrder.photoTitle')}</p>
-                                <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.photoSubtitle')}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {newOrderData.requestType === 'link' && (
-                          <div className="space-y-2">
-                            <Label htmlFor="productUrl" className="flex items-center gap-1">{t('client.recentOrders.newOrder.productUrl')}<span className="text-red-500">*</span></Label>
-                            <Input
-                              id="productUrl"
-                              type="url"
-                              value={newOrderData.productUrl || ''}
-                              onChange={(e) => setNewOrderData({ ...newOrderData, productUrl: e.target.value })}
-                              placeholder={t('client.recentOrders.newOrder.productUrlPlaceholder')}
-                              className={`transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 ${attemptedStep1 && (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
-                            />
-                            {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (
-                              <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidUrl')}</p>
-                            )}
-                            {attemptedStep1 && !newOrderData.productUrl && (
-                              <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.requiredField') || 'Campo requerido'}</p>
-                            )}
-                          </div>
+                      {/* URL del producto (siempre visible) */}
+                      <div className="space-y-2">
+                        <Label htmlFor="productUrl" className="flex items-center gap-1">{t('client.recentOrders.newOrder.productUrl')}<span className="text-red-500">*</span></Label>
+                        <Input
+                          id="productUrl"
+                          type="url"
+                          value={newOrderData.productUrl || ''}
+                          onChange={(e) => setNewOrderData({ ...newOrderData, productUrl: e.target.value })}
+                          placeholder={t('client.recentOrders.newOrder.productUrlPlaceholder')}
+                          className={`transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 ${attemptedStep1 && (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                        />
+                        {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (
+                          <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidUrl')}</p>
                         )}
+                        {attemptedStep1 && !newOrderData.productUrl && (
+                          <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.requiredField') || 'Campo requerido'}</p>
+                        )}
+                      </div>
 
-                        {newOrderData.requestType === 'photo' && (
-                          <div className="space-y-3">
-                            <Label className="text-sm font-semibold text-slate-700 flex items-center">
-                              <ImageIcon className="w-4 h-4 mr-2 text-blue-600" />
-                              {t('client.recentOrders.newOrder.productImage')}<span className="text-red-500 ml-1">*</span>
-                            </Label>
-                            {newOrderData.productImage ? (
-                              <div className="relative">
-                                <div className="border-2 border-slate-200 rounded-xl overflow-hidden bg-white">
-                                  <img
-                                    src={URL.createObjectURL(newOrderData.productImage)}
-                                    alt={t('client.recentOrders.newOrder.productImage')}
-                                    className="w-full h-48 object-cover"
-                                  />
-                                  <div className="p-3 flex gap-2">
-                                    <Button variant="outline" size="sm" onClick={() => document.getElementById('imageUpload')?.click()}>
-                                      <Upload className="w-4 h-4 mr-1" />{t('client.recentOrders.newOrder.change')}
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setNewOrderData({ ...newOrderData, productImage: undefined })}
-                                      className="text-red-600"
-                                    >
-                                      <X className="w-4 h-4 mr-1" />{t('client.recentOrders.newOrder.delete')}
-                                    </Button>
-                                  </div>
-                                </div>
-                                <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                              </div>
-                            ) : (
-                              <div
-                                className={`border-2 border-dashed rounded-xl p-8 text-center bg-white ${isDragOver ? 'border-blue-500 bg-blue-50' : 'border-slate-300'}`}
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                onDrop={handleDrop}
-                              >
-                                <p className="text-sm text-slate-600 mb-4">{t('client.recentOrders.newOrder.dragDrop')}</p>
-                                <Button variant="outline" onClick={() => document.getElementById('imageUpload')?.click()}>
-                                  <Upload className="w-4 h-4 mr-2" />{t('client.recentOrders.newOrder.selectImage')}
+                      {/* Foto del producto (siempre visible) */}
+                      <div className="space-y-3">
+                        <Label className="text-sm font-semibold text-slate-700 flex items-center">
+                          <ImageIcon className="w-4 h-4 mr-2 text-blue-600" />
+                          {t('client.recentOrders.newOrder.productImage')}<span className="text-red-500 ml-1">*</span>
+                        </Label>
+                        {newOrderData.productImage ? (
+                          <div className="relative">
+                            <div className="border-2 border-slate-200 rounded-xl overflow-hidden bg-white">
+                              <img
+                                src={URL.createObjectURL(newOrderData.productImage)}
+                                alt={t('client.recentOrders.newOrder.productImage')}
+                                className="w-full h-48 object-cover"
+                              />
+                              <div className="p-3 flex gap-2">
+                                <Button variant="outline" size="sm" onClick={() => document.getElementById('imageUpload')?.click()}>
+                                  <Upload className="w-4 h-4 mr-1" />{t('client.recentOrders.newOrder.change')}
                                 </Button>
-                                <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setNewOrderData({ ...newOrderData, productImage: undefined })}
+                                  className="text-red-600"
+                                >
+                                  <X className="w-4 h-4 mr-1" />{t('client.recentOrders.newOrder.delete')}
+                                </Button>
                               </div>
-                            )}
+                            </div>
+                            <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                          </div>
+                        ) : (
+                          <div
+                            className={`border-2 border-dashed rounded-xl p-8 text-center bg-white ${isDragOver ? 'border-blue-500 bg-blue-50' : 'border-slate-300'}`}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                          >
+                            <p className="text-sm text-slate-600 mb-4">{t('client.recentOrders.newOrder.dragDrop')}</p>
+                            <Button variant="outline" onClick={() => document.getElementById('imageUpload')?.click()}>
+                              <Upload className="w-4 h-4 mr-2" />{t('client.recentOrders.newOrder.selectImage')}
+                            </Button>
+                            <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                           </div>
                         )}
                       </div>

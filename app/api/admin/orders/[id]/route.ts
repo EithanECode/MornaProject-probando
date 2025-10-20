@@ -48,12 +48,37 @@ export async function PATCH(
     const body = await req.json().catch(() => ({}));
     const update: Record<string, any> = {};
 
+    // Sanitizar URLs para cumplir constraints (misma lógica que POST)
+    const sanitizeUrl = (u: any) => {
+      if (typeof u !== 'string') return null;
+      let raw = u.trim();
+      if (!/^https?:\/\//i.test(raw)) return null;
+      try {
+        const urlObj = new URL(raw);
+        const canonical = `${urlObj.origin}${urlObj.pathname}`;
+        raw = decodeURIComponent(canonical);
+      } catch { /* keep raw */ }
+      raw = raw.replace(/[^A-Za-z0-9._~:\/#?&=+\-]/g, '-');
+      if (raw.length > 255) raw = raw.slice(0, 255);
+      if (!/^https?:\/\/[A-Za-z0-9./_~:=+\-]+$/i.test(raw)) return null;
+      return raw;
+    };
+
     // Allow updating select fields
     if (typeof body.description === 'string') update.description = body.description;
-    if (typeof body.state === 'number' && body.state >= 1 && body.state <= 8) update.state = body.state;
-    if (typeof body.pdfRoutes === 'string') update.pdfRoutes = body.pdfRoutes;
-    if (Array.isArray(body.imgs)) update.imgs = body.imgs;
-    if (Array.isArray(body.links)) update.links = body.links;
+    if (typeof body.state === 'number' && body.state >= 1 && body.state <= 13) update.state = body.state;
+    if (typeof body.pdfRoutes === 'string') {
+      const safePdf = sanitizeUrl(body.pdfRoutes);
+      if (safePdf) update.pdfRoutes = safePdf; // si es inválida, omitir para evitar error
+    }
+    if (Array.isArray(body.imgs)) {
+      const safeImgs = body.imgs.map(sanitizeUrl).filter(Boolean);
+      update.imgs = safeImgs;
+    }
+    if (Array.isArray(body.links)) {
+      const safeLinksRaw = body.links.map(sanitizeUrl).filter(Boolean);
+      update.links = safeLinksRaw.slice(0, 1); // por si hay constraint de máx 1 link
+    }
   // Nota: Asignaciones se omiten por ahora hasta confirmar columnas/valores exactos
 
     if (Object.keys(update).length === 0) {
