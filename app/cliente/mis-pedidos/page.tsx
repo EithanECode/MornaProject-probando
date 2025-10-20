@@ -403,8 +403,9 @@ export default function MisPedidosPage() {
     if (!state) return 'pending';
     // Coarse mapping para UI del cliente
     if (state === 3) return 'quoted';
-    if (state >= 4 && state <= 7) return 'processing';
-    if (state === 8 || state === 9) return 'shipped';
+    // Estados 7 y 8 deben ser iguales a 9 (enviado)
+    if (state >= 4 && state <= 6) return 'processing';
+    if (state === 7 || state === 8 || state === 9) return 'shipped';
     if (state === 10 || state === 11 || state === 12) return 'processing';
     if (state >= 13) return 'delivered';
     if (state === 2) return 'pending';
@@ -420,9 +421,10 @@ export default function MisPedidosPage() {
       case 4: return 60; // procesando
       case 5: return 70; // en proceso
       case 6: return 75; // en proceso
-      case 7: return 80; // en proceso
-  case 8: return 85; // enviado a vzla
-  case 9: return 90; // llegando a Vzla
+      // Estados 7 y 8 deben ser iguales a 9
+      case 7: return 90; // igual que 9
+      case 8: return 90; // igual que 9
+      case 9: return 90; // llegando a Vzla
       case 10: return 92; // en aduana
       case 11: return 95; // recibido
       case 12: return 98; // listo para entrega
@@ -2166,9 +2168,8 @@ export default function MisPedidosPage() {
                             order.stateNum === 12 ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200 dark:hover:ring-gray-500/20' :
                             order.stateNum === 11 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
                             order.stateNum === 10 ? 'bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-50 hover:ring-orange-200 dark:hover:ring-orange-500/20' :
-                            order.stateNum === 9 ? 'bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-50 hover:ring-cyan-200 dark:hover:ring-cyan-500/20' :
-                            order.stateNum === 8 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
-                            order.stateNum === 7 ? 'bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:ring-indigo-200 dark:hover:ring-indigo-500/20' :
+                            // 7 y 8 deben verse igual que 9
+                            (order.stateNum === 7 || order.stateNum === 8 || order.stateNum === 9) ? 'bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-50 hover:ring-cyan-200 dark:hover:ring-cyan-500/20' :
                             order.stateNum === 6 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
                             order.stateNum === 5 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
                             order.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
@@ -2179,13 +2180,12 @@ export default function MisPedidosPage() {
                             {order.stateNum === -1 ? t('client.recentOrders.statuses.paymentRejected') :
                              order.stateNum === 5 ? t('client.recentOrders.statuses.paymentValidated') :
                              order.stateNum === 6 ? t('client.recentOrders.statuses.packagingBox') :
-                             order.stateNum === 7 ? t('client.recentOrders.statuses.packagingContainer') :
-                             order.stateNum === 9 ? t('client.recentOrders.statuses.sentFromChina') :
+                             // 7 y 8 etiquetados como 9
+                             (order.stateNum === 7 || order.stateNum === 8 || order.stateNum === 9) ? t('client.recentOrders.statuses.sentFromChina') :
                              order.stateNum === 10 ? t('client.recentOrders.statuses.inCustoms') :
                              order.stateNum === 11 ? t('client.recentOrders.statuses.arriving') :
                              order.stateNum === 12 ? t('client.recentOrders.statuses.inStore') :
                              order.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
-                             order.stateNum === 8 ? t('client.recentOrders.statuses.shipped') :
                              order.stateNum === 4 ? t('client.recentOrders.statuses.processing') :
                              order.stateNum === 3 ? t('client.recentOrders.statuses.quoted') :
                              order.stateNum === 2 ? t('client.recentOrders.statuses.pending') :
@@ -2349,9 +2349,8 @@ export default function MisPedidosPage() {
                         selectedOrder.stateNum === 12 ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200 dark:hover:ring-gray-500/20' :
                         selectedOrder.stateNum === 11 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
                         selectedOrder.stateNum === 10 ? 'bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-50 hover:ring-orange-200 dark:hover:ring-orange-500/20' :
-                        selectedOrder.stateNum === 9 ? 'bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-50 hover:ring-cyan-200 dark:hover:ring-cyan-500/20' :
-                        selectedOrder.stateNum === 8 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
-                        selectedOrder.stateNum === 7 ? 'bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:ring-indigo-200 dark:hover:ring-indigo-500/20' :
+                        // 7 y 8 deben verse igual que 9
+                        (selectedOrder.stateNum === 7 || selectedOrder.stateNum === 8 || selectedOrder.stateNum === 9) ? 'bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-50 hover:ring-cyan-200 dark:hover:ring-cyan-500/20' :
                         selectedOrder.stateNum === 6 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
                         selectedOrder.stateNum === 5 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
                         selectedOrder.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
@@ -2362,13 +2361,11 @@ export default function MisPedidosPage() {
                         {selectedOrder.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
                          selectedOrder.stateNum === 5 ? t('client.recentOrders.statuses.paymentValidated') :
                          selectedOrder.stateNum === 6 ? t('client.recentOrders.statuses.packagingBox') :
-                         selectedOrder.stateNum === 7 ? t('client.recentOrders.statuses.packagingContainer') :
-                         selectedOrder.stateNum === 9 ? t('client.recentOrders.statuses.sentFromChina') :
+                         // 7 y 8 etiquetados como 9
+                         (selectedOrder.stateNum === 7 || selectedOrder.stateNum === 8 || selectedOrder.stateNum === 9) ? t('client.recentOrders.statuses.sentFromChina') :
                          selectedOrder.stateNum === 10 ? t('client.recentOrders.statuses.inCustoms') :
                          selectedOrder.stateNum === 11 ? t('client.recentOrders.statuses.arriving') :
                          selectedOrder.stateNum === 12 ? t('client.recentOrders.statuses.inStore') :
-                         selectedOrder.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
-                         selectedOrder.stateNum === 8 ? t('client.recentOrders.statuses.shipped') :
                          selectedOrder.stateNum === 4 ? t('client.recentOrders.statuses.processing') :
                          selectedOrder.stateNum === 3 ? t('client.recentOrders.statuses.quoted') :
                          selectedOrder.stateNum === 2 ? t('client.recentOrders.statuses.pending') :
