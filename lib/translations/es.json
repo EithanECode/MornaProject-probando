@@ -1465,6 +1465,8 @@
         "createdBy": "Creado por",
         "detailsTitle": "Detalles del pedido",
         "detailsDescription": "Información completa sobre el pedido",
+        "progress": "Progreso",
+        "currentStep": "Paso actual",
         "client": "Cliente",
         "assignedTo": "Asignado a:", 
         "elapsedTime": "Tiempo transcurrido",

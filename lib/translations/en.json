@@ -1053,6 +1053,8 @@
         "createdBy": "Created by",
         "detailsTitle": "Order Details",
         "detailsDescription": "Full information about the order",
+        "progress": "Progress",
+        "currentStep": "Current step",
         "client": "Client",
         "assignedTo": "Assigned to", 
         "elapsedTime": "Elapsed time",

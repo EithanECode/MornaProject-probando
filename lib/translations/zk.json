@@ -1056,6 +1056,8 @@
         "createdBy": "创建者",
         "detailsTitle": "订单详情",
         "detailsDescription": "有关订单的完整信息",
+        "progress": "进度",
+        "currentStep": "当前步骤",
         "client": "客户",
         "assignedTo": "分配给", 
         "elapsedTime": "经过的时间",

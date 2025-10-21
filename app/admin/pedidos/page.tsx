@@ -50,6 +50,7 @@ import {
   Check
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -94,6 +95,8 @@ interface Order {
   createdAt?: string;
   // Public URL to the generated order PDF (from Supabase storage)
   pdfUrl?: string | null;
+  // Estado numérico (1..13) para progreso
+  stateNum?: number;
 }
 
 interface NewOrderData {
@@ -397,6 +400,14 @@ export default function PedidosPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
+  const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
+  const [trackingLoading, setTrackingLoading] = useState(false);
+  const [trackingInfo, setTrackingInfo] = useState<{
+    tracking_number?: string | null;
+    tracking_company?: string | null;
+    arrive_date?: string | null;
+    tracking_link?: string | null;
+  } | null>(null);
   const [editFormData, setEditFormData] = useState<Order | null>(null);
   const [animateStats, setAnimateStats] = useState(false);
   const { theme } = useTheme();
@@ -454,6 +465,7 @@ export default function PedidosPage() {
         priority: 'media',
   createdAt: o.created_at || undefined,
         pdfUrl: o.pdfRoutes ?? null,
+        stateNum: typeof o.state === 'number' ? o.state : (o.state ? Number(o.state) : undefined),
       };
     });
     setOrders(mapped);
@@ -958,6 +970,27 @@ export default function PedidosPage() {
     }
   };
 
+  // Abrir modal de tracking y cargar datos desde API (service role)
+  const handleOpenTrackingModal = async (order: Order) => {
+    try {
+      setIsTrackingModalOpen(true);
+      setTrackingLoading(true);
+      setTrackingInfo(null);
+      const res = await fetch(`/api/admin/orders/${encodeURIComponent(order.id)}/tracking`, { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        setTrackingInfo(json || null);
+      } else {
+        setTrackingInfo(null);
+      }
+    } catch (e) {
+      console.warn('Error cargando tracking:', e);
+      setTrackingInfo(null);
+    } finally {
+      setTrackingLoading(false);
+    }
+  };
+
   // Determinar qué configuración de colores usar
   const statusConfig = mounted && theme === 'dark' ? STATUS_CONFIG : STATUS_CONFIG_LIGHT;
   const assignedConfig = mounted && theme === 'dark' ? ASSIGNED_CONFIG : ASSIGNED_CONFIG_LIGHT;
@@ -1118,6 +1151,39 @@ export default function PedidosPage() {
   const QTY_MIN = 1;
   const QTY_MAX = 9999;
   const MAX_IMAGE_BYTES = 50 * 1024 * 1024; // 50 MB
+
+  // Progreso por estado (similar a cliente/mis-pedidos)
+  const mapStateToProgress = (state?: number | null): number => {
+    switch (state) {
+      case 1: return 10; // creado
+      case 2: return 18; // recibido
+      case 3: return 26; // cotizado
+      case 4: return 38; // asignado vzla
+      case 5: return 46; // procesamiento
+      case 6: return 54; // preparando envío
+      case 7: return 62; // listo envío
+      case 8: return 72; // enviado
+      case 9: return 80; // en tránsito
+      case 10:return 86; // aduana
+      case 11:return 92; // almacén vzla
+      case 12:return 98; // listo entrega
+      case 13:return 100; // entregado
+      default: return 0;
+    }
+  };
+
+  // Paso actual (etiquetas similares a Cliente > Mis pedidos)
+  const STEP_KEYS = ['created','processing','shipped','in-transit','customs','delivered'] as const;
+  type StepKey = typeof STEP_KEYS[number];
+  const adminStateToStepKey = (state?: number | null): StepKey => {
+    const s = typeof state === 'number' ? state : 0;
+    if (s >= 13) return 'delivered';
+    if (s >= 10) return 'customs';
+    if (s >= 7) return 'in-transit'; // incluye enviado y tránsito
+    if (s >= 4) return 'processing';
+    if (s >= 3) return 'processing';
+    return 'created';
+  };
 
   // Sliding tab indicator helpers
   const activeTabIndex = activeTab === 'admin' ? 0 : activeTab === 'venezuela' ? 1 : 2;
@@ -1698,14 +1764,14 @@ export default function PedidosPage() {
       </Dialog>
 
       {/* Modal de Detalles del Pedido */}
-      <Dialog open={!!selectedOrder && !isEditModalOpen && !isDocumentsModalOpen} onOpenChange={() => setSelectedOrder(null)}>
+      <Dialog open={!!selectedOrder && !isEditModalOpen && !isDocumentsModalOpen && !isTrackingModalOpen} onOpenChange={() => setSelectedOrder(null)}>
         {selectedOrder && (
           <DialogContent
-            className={mounted && theme === 'dark' ? 'sm:max-w-[700px] bg-slate-900 p-0 rounded-lg shadow-2xl animate-in fade-in-0 slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95' : 'sm:max-w-[700px] bg-white p-0 rounded-lg shadow-2xl animate-in fade-in-0 slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95'}
+            className={mounted && theme === 'dark' ? 'sm:max-w-[700px] max-h-[80vh] overflow-y-auto bg-slate-900 p-0 rounded-lg shadow-2xl animate-in fade-in-0 slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95' : 'sm:max-w-[700px] max-h-[80vh] overflow-y-auto bg-white p-0 rounded-lg shadow-2xl animate-in fade-in-0 slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95'}
           >
             <div className="flex flex-col md:flex-row">
               {/* Sección izquierda - Detalles del pedido */}
-              <div className={mounted && theme === 'dark' ? 'md:w-2/3 p-4 md:p-6 lg:p-8 border-b md:border-b-0 md:border-r border-slate-700' : 'md:w-2/3 p-4 md:p-6 lg:p-8 border-b md:border-b-0 md:border-r border-gray-200'}>
+              <div className={mounted && theme === 'dark' ? 'md:w-2/3 p-4 md:p-6 lg:p-8 border-b md:border-b-0 md:border-r border-slate-700 overflow-y-auto' : 'md:w-2/3 p-4 md:p-6 lg:p-8 border-b md:border-b-0 md:border-r border-gray-200 overflow-y-auto'}>
                 <DialogHeader>
                   <DialogTitle className={`text-lg md:text-xl lg:text-2xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                     {t('admin.orders.modal.detailsTitle', { id: selectedOrder.id })}
@@ -1766,6 +1832,52 @@ export default function PedidosPage() {
                       </Badge>
                     </div>
                   </div>
+
+                  {/* Progreso del pedido */}
+                  <div className="mt-4">
+                    <p className={`font-semibold text-base md:text-lg mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('admin.orders.modal.progress')}</p>
+                    <div className="space-y-2">
+                      <Progress value={mapStateToProgress(selectedOrder.stateNum)} className={mounted && theme === 'dark' ? 'bg-slate-800' : ''} />
+                      <div className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
+                        {mapStateToProgress(selectedOrder.stateNum)}%
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Paso actual con etiquetas (copiado de Mis pedidos) */}
+                  <div className="mt-4">
+                    <p className={`font-semibold text-base md:text-lg mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('admin.orders.modal.currentStep')}</p>
+                    {(() => {
+                      const currentKey = adminStateToStepKey(selectedOrder.stateNum);
+                      const steps: { key: StepKey; label: string }[] = [
+                        { key: 'created', label: t('client.recentOrders.trackingModal.states.created') },
+                        { key: 'processing', label: t('client.recentOrders.trackingModal.states.processing') },
+                        { key: 'shipped', label: t('client.recentOrders.trackingModal.states.shipped') },
+                        { key: 'in-transit', label: t('client.recentOrders.trackingModal.states.in-transit') },
+                        { key: 'customs', label: t('client.recentOrders.trackingModal.states.customs') },
+                        { key: 'delivered', label: t('client.recentOrders.trackingModal.states.delivered') },
+                      ];
+                      const currentIndex = steps.findIndex(s => s.key === currentKey);
+                      return (
+                        <div className="flex items-center gap-3 flex-wrap">
+                          {steps.map((s, idx) => {
+                            const done = idx <= currentIndex;
+                            return (
+                              <div key={s.key} className="flex items-center gap-2">
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold border ${done ? (mounted && theme === 'dark' ? 'bg-green-600 text-white border-green-700' : 'bg-green-600 text-white border-green-700') : (mounted && theme === 'dark' ? 'bg-slate-800 text-slate-300 border-slate-600' : 'bg-slate-100 text-slate-600 border-slate-300')}`}>
+                                  {idx + 1}
+                                </div>
+                                <span className={`text-xs md:text-sm ${done ? (mounted && theme === 'dark' ? 'text-green-300' : 'text-green-700') : (mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600')}`}>{s.label}</span>
+                                {idx < steps.length - 1 && (
+                                  <div className={`w-6 h-[2px] ${idx < currentIndex ? 'bg-green-600' : (mounted && theme === 'dark' ? 'bg-slate-600' : 'bg-slate-300')}`} />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </div>
                 </div>
 
                 <div className="mt-6 md:mt-8">
@@ -1805,8 +1917,83 @@ export default function PedidosPage() {
                     <Eye className="w-4 h-4 mr-2" />
                     {t('admin.orders.modal.buttons.viewDocuments')}
                   </Button>
+                  <Button
+                    className={mounted && theme === 'dark' ? 'w-full bg-emerald-600 text-white hover:bg-emerald-700' : 'w-full bg-emerald-600 text-white hover:bg-emerald-700'}
+                    onClick={() => handleOpenTrackingModal(selectedOrder)}
+                  >
+                    <Truck className="w-4 h-4 mr-2" />
+                    {t('tracking')}
+                  </Button>
                 </div>
               </div>
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
+
+      {/* Modal para Ver Tracking */}
+      <Dialog open={isTrackingModalOpen} onOpenChange={setIsTrackingModalOpen}>
+        {selectedOrder && (
+          <DialogContent className={mounted && theme === 'dark' ? 'sm:max-w-[520px] max-h-[75vh] overflow-y-auto bg-slate-900 border-slate-700' : 'sm:max-w-[520px] max-h-[75vh] overflow-y-auto'}>
+            <DialogHeader>
+              <DialogTitle className={mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}>
+                {t('tracking')} #{selectedOrder.id}
+              </DialogTitle>
+              <DialogDescription className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-500'}>
+                {t('admin.orders.modal.detailsDescription')}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-2">
+              {trackingLoading ? (
+                <p className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>Cargando…</p>
+              ) : (
+                <>
+                  <div className="space-y-1">
+                    <p className={mounted && theme === 'dark' ? 'text-slate-300 text-sm' : 'text-slate-600 text-sm'}>
+                      {t('client.recentOrders.trackingModal.trackingNumber')}
+                    </p>
+                    <p className="font-mono font-medium">{trackingInfo?.tracking_number || '—'}</p>
+                  </div>
+                  {(trackingInfo?.tracking_company || trackingInfo?.arrive_date) && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {trackingInfo?.tracking_company && (
+                        <div>
+                          <p className={mounted && theme === 'dark' ? 'text-slate-300 text-sm' : 'text-slate-600 text-sm'}>Compañía</p>
+                          <p className="font-medium">{trackingInfo.tracking_company}</p>
+                        </div>
+                      )}
+                      {trackingInfo?.arrive_date && (
+                        <div>
+                          <p className={mounted && theme === 'dark' ? 'text-slate-300 text-sm' : 'text-slate-600 text-sm'}>Arribo estimado</p>
+                          <p className="font-medium">{new Date(trackingInfo.arrive_date).toLocaleDateString()}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <div className="pt-2">
+                    {trackingInfo?.tracking_link ? (
+                      <a
+                        href={trackingInfo.tracking_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center px-3 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                      >
+                        <Link className="w-4 h-4 mr-2" />
+                        {t('admin.orders.china.modals.sendContainer.trackingLinkLabel')}
+                      </a>
+                    ) : (
+                      <p className={mounted && theme === 'dark' ? 'text-slate-400 text-sm' : 'text-slate-500 text-sm'}>
+                        No hay enlace de tracking disponible.
+                      </p>
+                    )}
+                  </div>
+                  {!trackingInfo?.tracking_number && !trackingInfo?.tracking_link && (
+                    <p className={mounted && theme === 'dark' ? 'text-slate-400 text-sm' : 'text-slate-500 text-sm'}>
+                      No hay información de tracking para este pedido todavía.
+                    </p>
+                  )}
+                </>
+              )}
             </div>
           </DialogContent>
         )}
