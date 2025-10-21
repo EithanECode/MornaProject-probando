@@ -1259,7 +1259,7 @@ export default function ChinaOrdersTabContent() {
               <div>
                 <label className="text-sm font-medium">{t('admin.orders.china.modals.quote.unitPriceLabel', { defaultValue: 'Precio de producto unitario' })} <span className="text-red-500">*</span></label>
                 <div className="relative mt-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 select-none">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 select-none">¥</span>
                   <input
                     name="precioUnitario"
                     type="number"

@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PriceDisplay } from '@/components/shared/PriceDisplay';
 import { PriceDisplayWithCNY } from '@/components/shared/PriceDisplayWithCNY';
+import { useCNYConversion } from '@/hooks/use-cny-conversion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -122,6 +123,7 @@ async function svgToPngDataUrl(path: string, size=120): Promise<string>{
 
 export default function PedidosChina() {
   const { t } = useTranslation();
+  const { formatCNYPrice, loading: cnyLoading, cnyRate } = useCNYConversion();
   // NUEVO: obtener chinaId del contexto
   const { chinaId } = useChinaContext();
   const router = useRouter();
@@ -1284,15 +1286,18 @@ export default function PedidosChina() {
       return;
     }
 
-    const supabase = getSupabaseBrowserClient();
-    const totalProductos = Number(precioUnitario) * Number(pedido.cantidad || 0);
-    const total = totalProductos + Number(precioEnvio);
+  const supabase = getSupabaseBrowserClient();
+  // Entradas ahora en CNY (¥): convertir a USD para guardar en totalQuote
+  const totalProductosCNY = Number(precioUnitario) * Number(pedido.cantidad || 0);
+  const totalCNY = totalProductosCNY + Number(precioEnvio);
+  const rate = cnyRate && cnyRate > 0 ? cnyRate : 7.25;
+  const totalUSD = totalCNY / rate;
 
     // 1) Actualizar totalQuote en la tabla orders (sin cambiar estado aquí)
     const { error: updateError } = await supabase
       .from('orders')
       .update({ 
-        totalQuote: total, 
+        totalQuote: totalUSD, 
         unitQuote: precioUnitario,
         shippingPrice: precioEnvio,
         height: altura,
@@ -1318,7 +1323,7 @@ export default function PedidosChina() {
     }
 
     // Actualizar estado local y cerrar modal (sin PDF)
-    setPedidos(prev => prev.map(p => p.id === pedido.id ? { ...p, cotizado: true, estado: 'cotizado', precio: precioUnitario, totalQuote: total, numericState: 3 } : p));
+  setPedidos(prev => prev.map(p => p.id === pedido.id ? { ...p, cotizado: true, estado: 'cotizado', precio: precioUnitario, totalQuote: totalUSD, numericState: 3 } : p));
     setModalCotizar({ open: false });
     setIsModalCotizarClosing(false);
   };  // getStatusColor/Text ya no se usan; sustituido por getOrderBadge basado en estado numérico
@@ -2346,8 +2351,8 @@ export default function PedidosChina() {
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.unitPriceLabel')}</label>
-                                     <div className="relative">
-                     <span className="absolute left-3 top-3 text-slate-500">$</span>
+                                    <div className="relative">
+                                     <span className="absolute left-3 top-3 text-slate-500">¥</span>
                       <input
                         type="number"
                         name="precio"
@@ -2374,7 +2379,7 @@ export default function PedidosChina() {
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.shippingPriceLabel')}</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-3 text-slate-500">$</span>
+                    <span className="absolute left-3 top-3 text-slate-500">¥</span>
                     <input
                       type="number"
                       name="precioEnvio"
@@ -2511,12 +2516,20 @@ export default function PedidosChina() {
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.totalToPay')}</label>
                   <div className="px-4 py-3 border border-slate-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50">
-                    <PriceDisplayWithCNY 
-                      amount={((modalCotizar.precioUnitario || 0) * (modalCotizar.pedido?.cantidad || 0)) + (modalCotizar.precioEnvio || 0)} 
-                      currency="USD"
-                      variant="card"
-                      className="border-green-200 text-green-600 font-bold"
-                    />
+                    {(() => {
+                      const totalCNY = ((modalCotizar.precioUnitario || 0) * (modalCotizar.pedido?.cantidad || 0)) + (modalCotizar.precioEnvio || 0);
+                      const totalUSD = cnyRate && cnyRate > 0 ? totalCNY / cnyRate : 0;
+                      return (
+                        <div className="space-y-1">
+                          <div className="text-green-600 font-bold">
+                            {`¥${totalCNY.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                          </div>
+                          <div className="text-sm text-slate-600">
+                            {cnyLoading ? '...' : `≈ $${totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
                 <div className="flex justify-end space-x-3 pt-4">
