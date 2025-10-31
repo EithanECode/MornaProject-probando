@@ -219,7 +219,7 @@
       "ordersPlaced": "Pedidos realizados",
       "inTransit": "En Tránsito",
       "activeShipmentsShort": "Envíos activos",
-      "totalSpent": "Total Gastado",
+      "totalSpent": "Total Pagado",
       "totalInvestment": "Inversión total",
       "completed": "Completados",
       "ordersDelivered": "Pedidos entregados"
@@ -728,7 +728,7 @@
     "ordersPlaced": "Pedidos realizados",
     "inTransit": "En Tránsito",
     "activeShipmentsShort": "Envíos activos",
-    "totalSpent": "Total Gastado",
+    "totalSpent": "Total Pagado",
     "totalInvestment": "Inversión total",
     "completed": "Completados",
     "ordersDelivered": "Pedidos entregados"
