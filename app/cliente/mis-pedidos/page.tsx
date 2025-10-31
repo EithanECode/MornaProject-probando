@@ -79,6 +79,8 @@ interface Order {
   category: string;
   estimatedBudget?: number | null;
   totalQuote?: number | null;
+  unitQuote?: number | null;
+  shippingPrice?: number | null;
   stateNum?: number; // estado numérico 1..13 desde BD para badges detallados
   documents?: Array<{
     type: 'image' | 'link';
@@ -437,9 +439,9 @@ export default function MisPedidosPage() {
   const fetchOrders = async () => {
     if (!clientId) return;
     try {
-      const { data, error } = await supabase
-        .from('orders')
-  .select('id, productName, description, estimatedBudget, totalQuote, state, created_at, pdfRoutes, quantity, box_id')
+  const { data, error } = await supabase
+    .from('orders')
+  .select('id, productName, description, estimatedBudget, totalQuote, unitQuote, shippingPrice, state, created_at, pdfRoutes, quantity, box_id')
         .eq('client_id', clientId)
         .order('created_at', { ascending: false });
       if (error) {
@@ -515,19 +517,23 @@ export default function MisPedidosPage() {
       }
 
       const mapped: Order[] = (data || []).map((row: any) => {
-  const amountNumber = (row.totalQuote ?? row.estimatedBudget ?? 0) as number;
         const oid = String(row.id);
-  const tn = tnMap[oid] ?? null;
-  const tc = tcMap[oid] ?? null;
-  const ad = adMap[oid] ?? null;
+        const tn = tnMap[oid] ?? null;
+        const tc = tcMap[oid] ?? null;
+        const ad = adMap[oid] ?? null;
         const tl = tlMap[oid] ?? null;
+
+        const unit = typeof row.unitQuote === 'number' ? row.unitQuote : (row.unitQuote ? Number(row.unitQuote) : 0);
+        const ship = typeof row.shippingPrice === 'number' ? row.shippingPrice : (row.shippingPrice ? Number(row.shippingPrice) : 0);
+        const calcAmount = Number(unit || 0) + Number(ship || 0);
+        const status = mapStateToStatus(row.state as number | null);
 
         return {
           id: String(row.id),
           product: row.productName || 'Pedido',
           description: row.description || '',
-          amount: `$${Number(amountNumber || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`,
-          status: mapStateToStatus(row.state as number | null),
+          amount: `$${Number(calcAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`,
+          status,
           progress: mapStateToProgress(row.state as number | null),
           tracking: '',
           estimatedDelivery: '',
@@ -535,13 +541,15 @@ export default function MisPedidosPage() {
           category: '',
           estimatedBudget: typeof row.estimatedBudget === 'number' ? row.estimatedBudget : (row.estimatedBudget ? Number(row.estimatedBudget) : null),
           totalQuote: typeof row.totalQuote === 'number' ? row.totalQuote : (row.totalQuote ? Number(row.totalQuote) : null),
+          unitQuote: unit,
+          shippingPrice: ship,
           stateNum: typeof row.state === 'number' ? row.state : (row.state ? Number(row.state) : undefined),
           documents: row.pdfRoutes ? [{ type: 'link' as const, url: row.pdfRoutes, label: 'Resumen PDF' }] : [],
           pdfRoutes: row.pdfRoutes || null,
           tracking_number: tn,
           tracking_company: tc,
           arrive_date: ad,
-      tracking_link: tl,
+          tracking_link: tl,
         };
       });
       setOrders(mapped);
@@ -601,10 +609,10 @@ export default function MisPedidosPage() {
     processing: orders.filter(o => o.status === 'processing').length,
     shipped: orders.filter(o => o.status === 'shipped').length,
     delivered: orders.filter(o => o.status === 'delivered').length,
-    // Total gastado: solo considerar pedidos ya pagados/en proceso en adelante usando totalQuote
+    // Total gastado: considerar pedidos en proceso/enviados/entregados y sumar unitQuote + shippingPrice (Opción A)
     totalSpent: orders
       .filter(o => o.status === 'processing' || o.status === 'shipped' || o.status === 'delivered')
-      .reduce((sum, order) => sum + Number(order.totalQuote ?? 0), 0)
+      .reduce((sum, o) => sum + Number(o.unitQuote ?? 0) + Number(o.shippingPrice ?? 0), 0)
   };
 
   // Helpers específicos para el modal de tracking (colores simples)
@@ -2213,9 +2221,9 @@ export default function MisPedidosPage() {
                               emphasizeBolivars={true}
                               className="text-slate-800"
                             />
-                          ) : order.status === 'quoted' && typeof order.totalQuote !== 'undefined' && order.totalQuote !== null ? (
+                          ) : order.status === 'quoted' ? (
                             <PriceDisplay 
-                              amount={Number(order.totalQuote)} 
+                              amount={Number((order.unitQuote ?? 0) + (order.shippingPrice ?? 0))} 
                               currency="USD"
                               variant="inline"
                               size="lg"
@@ -2326,9 +2334,9 @@ export default function MisPedidosPage() {
                           showRefresh={true}
                           className="border-green-200"
                         />
-                      ) : selectedOrder.status === 'quoted' && typeof selectedOrder.totalQuote !== 'undefined' && selectedOrder.totalQuote !== null ? (
+                      ) : selectedOrder.status === 'quoted' ? (
                         <PriceDisplay 
-                          amount={Number(selectedOrder.totalQuote)} 
+                          amount={Number((selectedOrder.unitQuote ?? 0) + (selectedOrder.shippingPrice ?? 0))} 
                           currency="USD"
                           variant="card"
                           size="lg"

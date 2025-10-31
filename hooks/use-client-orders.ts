@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 export interface ClientOrder {
   id: string;
   productName: string;
+  // Presupuesto estimado calculado: unitQuote + shippingPrice
   estimatedBudget: number;
   totalQuote: number;
   state: number;
@@ -23,10 +24,24 @@ export function useClientOrders() {
       if (!clientId) return [];
       const { data, error } = await supabase
         .from('orders')
-        .select('id, productName, estimatedBudget, totalQuote, state')
+        // Traemos los campos necesarios y calculamos estimatedBudget en el cliente
+        .select('id, productName, totalQuote, state, unitQuote, shippingPrice')
         .eq('client_id', clientId);
       if (error) throw error;
-      return data || [];
+      // Mapear para exponer estimatedBudget = unitQuote + shippingPrice
+      const mapped = (data || []).map((row: any) => {
+        const unit = Number(row?.unitQuote ?? 0);
+        const ship = Number(row?.shippingPrice ?? 0);
+        const estimatedBudget = unit + ship;
+        return {
+          id: row.id,
+          productName: row.productName,
+          estimatedBudget,
+          totalQuote: Number(row?.totalQuote ?? 0),
+          state: row.state,
+        } as ClientOrder;
+      });
+      return mapped;
     },
     { enabled: !!clientId }
   );
