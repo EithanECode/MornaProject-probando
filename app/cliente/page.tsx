@@ -333,7 +333,7 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">${totalGastado}</div>
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">${totalGastado.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                   <p className="text-xs text-blue-700">{t('client.dashboard.totalInvestment')}</p>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                     <div className="bg-blue-500 h-2 rounded-full" style={{width: `100%`}}></div>
