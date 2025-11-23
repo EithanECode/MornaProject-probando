@@ -26,7 +26,10 @@ export function useChatMessages({ conversationUserId, currentUserId, currentUser
         }
 
         try {
-            setLoading(true);
+            // Solo mostrar loading si NO hay mensajes aún (primera carga)
+            if (messages.length === 0) {
+                setLoading(true);
+            }
             setError(null);
 
             const { data, error: fetchError } = await supabase
@@ -46,7 +49,7 @@ export function useChatMessages({ conversationUserId, currentUserId, currentUser
         } finally {
             setLoading(false);
         }
-    }, [conversationUserId, currentUserId, supabase]);
+    }, [conversationUserId, currentUserId, supabase, messages.length]);
 
     // Enviar mensaje
     const sendMessage = useCallback(async (payload: SendMessagePayload) => {
@@ -62,6 +65,27 @@ export function useChatMessages({ conversationUserId, currentUserId, currentUser
             // Determinar rol del receptor
             const receiverRole = currentUserRole === 'admin' ? 'china' : 'admin';
 
+            // Crear mensaje optimista (se muestra instantáneamente)
+            const optimisticMessage: ChatMessage = {
+                id: `temp-${Date.now()}`, // ID temporal
+                sender_id: currentUserId,
+                sender_role: currentUserRole,
+                receiver_id: payload.receiver_id,
+                receiver_role: receiverRole,
+                message: payload.message || null,
+                file_url: payload.file_url || null,
+                file_name: payload.file_name || null,
+                file_type: payload.file_type || null,
+                file_size: payload.file_size || null,
+                read: false,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            };
+
+            // Agregar mensaje optimísticamente (aparece instantáneamente)
+            setMessages(prev => [...prev, optimisticMessage]);
+
+            // Guardar en BD en segundo plano
             const { data: newMessage, error: insertError } = await supabase
                 .from('chat_messages')
                 .insert({
@@ -80,11 +104,15 @@ export function useChatMessages({ conversationUserId, currentUserId, currentUser
                 .single();
 
             if (insertError) {
+                // Si falla, quitar el mensaje optimista
+                setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
                 throw insertError;
             }
 
-            // Agregar el mensaje nuevo a la lista
-            setMessages(prev => [...prev, newMessage]);
+            // Reemplazar mensaje temporal con el real (tiene ID de BD)
+            setMessages(prev =>
+                prev.map(msg => msg.id === optimisticMessage.id ? newMessage : msg)
+            );
 
             return true;
         } catch (err) {
