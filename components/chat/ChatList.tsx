@@ -3,9 +3,26 @@
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Search, Loader2, MessageCircle } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Search, Loader2, MessageCircle, MoreVertical, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { ChatConversation } from '@/lib/types/chat';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -17,10 +34,16 @@ interface ChatListProps {
     currentUserId: string | null;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 export function ChatList({ onSelectConversation, selectedUserId, currentUserId }: ChatListProps) {
     const [conversations, setConversations] = useState<ChatConversation[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
+    const [deleting, setDeleting] = useState(false);
     const supabase = getSupabaseBrowserClient();
 
     useEffect(() => {
@@ -66,7 +89,7 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
 
                         conversationsMap.set(chinaUserId, {
                             user_id: chinaUserId,
-                            user_email: '', // Lo obtendremos después
+                            user_email: '',
                             user_name: 'Usuario',
                             last_message: msg.message,
                             last_message_time: msg.created_at,
@@ -106,10 +129,58 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
         return () => clearInterval(interval);
     }, [currentUserId, supabase]);
 
+    // Función para eliminar conversación
+    const handleDeleteConversation = async () => {
+        if (!conversationToDelete || !currentUserId) return;
+
+        try {
+            setDeleting(true);
+
+            // Eliminar todos los mensajes de esta conversación
+            const { error } = await supabase
+                .from('chat_messages')
+                .delete()
+                .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${conversationToDelete}),and(sender_id.eq.${conversationToDelete},receiver_id.eq.${currentUserId})`);
+
+            if (error) {
+                console.error('Error deleting conversation:', error);
+                return;
+            }
+
+            // Actualizar lista local
+            setConversations(prev => prev.filter(conv => conv.user_id !== conversationToDelete));
+
+            // Resetear página si es necesario
+            const newTotalPages = Math.ceil((conversations.length - 1) / ITEMS_PER_PAGE);
+            if (currentPage > newTotalPages && newTotalPages > 0) {
+                setCurrentPage(newTotalPages);
+            }
+
+            console.log('✅ Conversación eliminada');
+        } catch (error) {
+            console.error('Error deleting conversation:', error);
+        } finally {
+            setDeleting(false);
+            setDeleteDialogOpen(false);
+            setConversationToDelete(null);
+        }
+    };
+
     const filteredConversations = conversations.filter((conv) =>
         conv.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         conv.user_email.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    // Calcular paginación
+    const totalPages = Math.ceil(filteredConversations.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const paginatedConversations = filteredConversations.slice(startIndex, endIndex);
+
+    // Resetear página cuando cambia el filtro
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery]);
 
     if (loading) {
         return (
@@ -135,8 +206,8 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
 
             {/* Lista */}
             <ScrollArea className="h-[500px] pr-4">
-                {filteredConversations.length === 0 ? (
-                    <div className="text-center py-12">
+                {paginatedConversations.length === 0 ? (
+                    <div className="text-center py-12 animate-in fade-in duration-300">
                         <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                         <p className="text-sm text-slate-500">
                             {searchQuery ? 'No se encontraron conversaciones' : 'No hay conversaciones aún'}
@@ -144,57 +215,157 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
                     </div>
                 ) : (
                     <div className="space-y-2">
-                        {filteredConversations.map((conv) => (
-                            <button
+                        {paginatedConversations.map((conv) => (
+                            <div
                                 key={conv.user_id}
-                                onClick={() => onSelectConversation(conv.user_id, conv.user_name)}
-                                className={`w-full p-4 rounded-xl transition-all duration-300 text-left group ${selectedUserId === conv.user_id
-                                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 shadow-md'
-                                    : 'bg-white hover:bg-slate-50 border-2 border-slate-100 hover:border-slate-200 hover:shadow-sm'
+                                className={`relative rounded-xl transition-all duration-300 group ${selectedUserId === conv.user_id
+                                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 shadow-md'
+                                        : 'bg-white hover:bg-slate-50 border-2 border-slate-100 hover:border-slate-200 hover:shadow-sm'
                                     }`}
                             >
-                                <div className="flex items-start gap-3">
-                                    <div className="relative">
-                                        <Avatar className="w-12 h-12 border-2 border-white shadow-sm">
-                                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold">
-                                                {conv.user_name.charAt(0).toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        {conv.unread_count > 0 && (
-                                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                                                <span className="text-[10px] text-white font-bold">{conv.unread_count}</span>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <h3 className="font-semibold text-slate-800 truncate group-hover:text-blue-600 transition-colors">
-                                                {conv.user_name}
-                                            </h3>
-                                            {conv.last_message_time && (
-                                                <span className="text-xs text-slate-400 shrink-0 ml-2">
-                                                    {format(new Date(conv.last_message_time), 'HH:mm', { locale: es })}
-                                                </span>
+                                <button
+                                    onClick={() => onSelectConversation(conv.user_id, conv.user_name)}
+                                    className="w-full p-4 text-left"
+                                >
+                                    <div className="flex items-start gap-3">
+                                        <div className="relative">
+                                            <Avatar className="w-12 h-12 border-2 border-white shadow-sm">
+                                                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold">
+                                                    {conv.user_name.charAt(0).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            {conv.unread_count > 0 && (
+                                                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                                                    <span className="text-[10px] text-white font-bold">{conv.unread_count}</span>
+                                                </div>
                                             )}
                                         </div>
 
-                                        <p className="text-xs text-slate-500 truncate mb-2">
-                                            {conv.user_email}
-                                        </p>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <h3 className="font-semibold text-slate-800 truncate group-hover:text-blue-600 transition-colors">
+                                                    {conv.user_name}
+                                                </h3>
+                                            </div>
 
-                                        {conv.last_message && (
-                                            <p className="text-sm text-slate-600 truncate">
-                                                {conv.last_file_url ? '📎 Archivo adjunto' : conv.last_message}
+                                            <p className="text-xs text-slate-500 truncate mb-2">
+                                                {conv.user_email}
                                             </p>
-                                        )}
+
+                                            {/* Mensaje con hora inline */}
+                                            {conv.last_message && (
+                                                <p className="text-sm text-slate-600 truncate flex items-center gap-2">
+                                                    <span className="flex-1 truncate">
+                                                        {conv.last_file_url ? '📎 Archivo adjunto' : conv.last_message}
+                                                    </span>
+                                                    {conv.last_message_time && (
+                                                        <>
+                                                            <span className="text-slate-400">•</span>
+                                                            <span className="text-xs text-slate-400 shrink-0">
+                                                                {format(new Date(conv.last_message_time), 'HH:mm', { locale: es })}
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
+                                </button>
+
+                                {/* Menú de 3 puntos */}
+                                <div className="absolute top-4 right-4">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-8 w-8 p-0 hover:bg-slate-200 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <MoreVertical className="h-4 w-4 text-slate-600" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-48">
+                                            <DropdownMenuItem
+                                                className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setConversationToDelete(conv.user_id);
+                                                    setDeleteDialogOpen(true);
+                                                }}
+                                            >
+                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                Eliminar conversación
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
-                            </button>
+                            </div>
                         ))}
                     </div>
                 )}
             </ScrollArea>
+
+            {/* Paginación */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+                    <p className="text-sm text-slate-600">
+                        Página {currentPage} de {totalPages}
+                    </p>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="h-8"
+                        >
+                            <ChevronLeft className="h-4 w-4 mr-1" />
+                            Anterior
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                            className="h-8"
+                        >
+                            Siguiente
+                            <ChevronRight className="h-4 w-4 ml-1" />
+                        </Button>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de confirmación para eliminar */}
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>¿Eliminar conversación?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Esta acción eliminará permanentemente todos los mensajes de esta conversación.
+                            No se puede deshacer.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDeleteConversation}
+                            disabled={deleting}
+                            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                        >
+                            {deleting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Eliminando...
+                                </>
+                            ) : (
+                                'Eliminar'
+                            )}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
