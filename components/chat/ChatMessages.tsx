@@ -1,0 +1,94 @@
+"use client";
+
+import { useEffect, useRef } from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { MessageBubble } from './MessageBubble';
+import { TypingIndicator } from './TypingIndicator';
+import type { ChatMessage } from '@/lib/types/chat';
+import { Loader2, MessageCircle } from 'lucide-react';
+
+interface ChatMessagesProps {
+    messages: ChatMessage[];
+    currentUserId: string;
+    isOtherUserTyping: boolean;
+    otherUserName?: string;
+    loading?: boolean;
+}
+
+export function ChatMessages({
+    messages,
+    currentUserId,
+    isOtherUserTyping,
+    otherUserName,
+    loading,
+}: ChatMessagesProps) {
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const bottomRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages, isOtherUserTyping]);
+
+    if (loading) {
+        return (
+            <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 to-white">
+                <div className="text-center">
+                    <Loader2 className="w-10 h-10 animate-spin text-blue-500 mx-auto mb-3" />
+                    <p className="text-sm text-slate-500">Cargando mensajes...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (messages.length === 0) {
+        return (
+            <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 to-white p-8">
+                <div className="text-center max-w-sm">
+                    <div className="p-4 bg-blue-100 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                        <MessageCircle className="w-10 h-10 text-blue-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-700 mb-2">
+                        No hay mensajes aún
+                    </h3>
+                    <p className="text-sm text-slate-500">
+                        Envía un mensaje para iniciar la conversación
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <ScrollArea className="flex-1 bg-gradient-to-br from-slate-50 to-white">
+            <div ref={scrollRef} className="p-4 md:p-6 space-y-1">
+                {messages.map((msg, index) => (
+                    <div
+                        key={msg.id}
+                        style={{
+                            animationDelay: `${index * 50}ms`,
+                        }}
+                    >
+                        <MessageBubble
+                            message={msg.message}
+                            fileUrl={msg.file_url}
+                            fileName={msg.file_name}
+                            fileType={msg.file_type}
+                            timestamp={msg.created_at}
+                            isSent={msg.sender_id === currentUserId}
+                            isRead={msg.read}
+                            senderName={msg.sender_id !== currentUserId ? otherUserName : undefined}
+                        />
+                    </div>
+                ))}
+
+                {isOtherUserTyping && (
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <TypingIndicator userName={otherUserName} />
+                    </div>
+                )}
+
+                <div ref={bottomRef} />
+            </div>
+        </ScrollArea>
+    );
+}

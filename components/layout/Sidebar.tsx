@@ -5,18 +5,19 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
-  LayoutDashboard, 
-  Package, 
-  MessageCircle, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Package,
+  MessageCircle,
+  Settings,
   LogOut,
   Users,
   BarChart3,
   CreditCard,
   Shield,
   BadgeDollarSign,
-  Boxes
+  Boxes,
+  MessageSquare
 } from 'lucide-react';
 import VenezuelaFlag from '@/components/ui/common/VenezuelaFlag';
 import PitaLogo from '@/components/ui/common/PitaLogo';
@@ -90,7 +91,7 @@ const CLIENT_MENU_ITEMS = [
   {
     id: 'orders',
     icon: Package,
-  badge: null,
+    badge: null,
     color: 'text-orange-500',
     path: '/cliente/mis-pedidos'
   }
@@ -124,9 +125,16 @@ const CHINA_MENU_ITEMS = [
   {
     id: 'orders',
     icon: Package,
-  badge: null,
+    badge: null,
     color: 'text-orange-500',
     path: '/china/pedidos'
+  },
+  {
+    id: 'chat',
+    icon: MessageSquare,
+    badge: null,
+    color: 'text-orange-500',
+    path: '/china/chat'
   }
 ];
 
@@ -183,6 +191,14 @@ const getAdminMenuItems = (t: (key: string) => string) => [
     path: '/admin/validacion-pagos'
   },
   {
+    id: 'chat',
+    label: t && typeof t === 'function' ? t('sidebar.chat') : 'Chat',
+    icon: MessageSquare,
+    badge: null,
+    color: 'text-orange-500',
+    path: '/admin/chat'
+  },
+  {
     id: 'gestion',
     label: t && typeof t === 'function' ? t('sidebar.management') : 'Gestión',
     icon: Settings,
@@ -194,12 +210,12 @@ const getAdminMenuItems = (t: (key: string) => string) => [
 
 // Función para obtener los items del bottom según el rol
 const getBottomItemsByRole = (role?: string) => {
-  const basePath = role === 'admin' ? '/admin' : 
-                   role === 'venezuela' ? '/venezuela' : 
-                   role === 'china' ? '/china' : 
-                   role === 'pagos' ? '/pagos' : 
-                   '/cliente';
-  
+  const basePath = role === 'admin' ? '/admin' :
+    role === 'venezuela' ? '/venezuela' :
+      role === 'china' ? '/china' :
+        role === 'pagos' ? '/pagos' :
+          '/cliente';
+
   return [
     {
       id: 'settings',
@@ -266,7 +282,7 @@ const getUserInfoByRole = (role?: string) => {
 const useScreenSize = () => {
   const [screenWidth, setScreenWidth] = useState(0);
 
-    useEffect(() => {
+  useEffect(() => {
     const updateScreenWidth = () => {
       setScreenWidth(window.innerWidth);
     };
@@ -311,10 +327,10 @@ const SidebarMenuItem = memo(function SidebarMenuItem({
             w-full flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`) : (isExpanded ? 'space-x-3 px-4 py-3' : `justify-center ${responsiveConfig.buttonPadding}`)} rounded-xl
             transition-all duration-120 ease-out group relative
             active:scale-95 will-change-transform
-            ${isActive 
-              ? 'bg-gradient-to-r from-blue-600/25 to-indigo-600/25 text-white shadow-md border border-blue-500/30' 
-              : 'text-slate-400 hover:text-white hover:bg-slate-700/40'
-            }
+            ${isActive
+            ? 'bg-gradient-to-r from-blue-600/25 to-indigo-600/25 text-white shadow-md border border-blue-500/30'
+            : 'text-slate-400 hover:text-white hover:bg-slate-700/40'
+          }
           `}
       >
         {/* Indicador activo */}
@@ -325,7 +341,7 @@ const SidebarMenuItem = memo(function SidebarMenuItem({
         `} />
 
         <div className={`${responsiveConfig.iconContainerSize} flex items-center justify-center rounded-lg`}>
-          <Icon 
+          <Icon
             className={`${responsiveConfig.iconSize} ${item.color} transition-all duration-150 ease-out ${isActive ? 'scale-105' : 'scale-100'}`}
           />
         </div>
@@ -430,9 +446,9 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     setVzlaPendingPayments(0);
   }, [userRole, vzlaCtx?.vzlaId]);
 
-    // Get dynamic user info from context if available
+  // Get dynamic user info from context if available
   let userInfo: { name: string; email: string; flag?: string; userImage?: string } = getUserInfoByRole(userRole);
-  
+
   if (userRole === 'client' && clientCtx) {
     if (clientCtx.clientName || clientCtx.clientEmail) {
       userInfo = {
@@ -470,7 +486,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       };
     }
   }
-  
+
   // Reset image error when user info changes
   useEffect(() => {
     setImageError(false);
@@ -480,9 +496,9 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       preloadImg.src = `${userInfo.userImage}?t=${Date.now()}`;
     }
   }, [userInfo.userImage]);
-  
+
   // === Realtime hooks for dynamic updates ===
-  
+
   // Admin realtime
   useRealtimeAdmin(
     () => {
@@ -553,7 +569,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   // China profile realtime
   useEffect(() => {
     if (userRole !== 'china' || !chinaCtx?.chinaId) return;
-    
+
     const supabase = getSupabaseBrowserClient();
     const profileChannel = supabase
       .channel(`china-profile-${chinaCtx.chinaId}`)
@@ -620,7 +636,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   // Venezuela profile realtime
   useEffect(() => {
     if (userRole !== 'venezuela' || !vzlaCtx?.vzlaId) return;
-    
+
     const supabase = getSupabaseBrowserClient();
     const profileChannel = supabase
       .channel(`vzla-profile-${vzlaCtx.vzlaId}`)
@@ -719,7 +735,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       setClientActiveOrders(null);
       return;
     }
-    
+
     const supabase = getSupabaseBrowserClient();
     const ordersChannel = supabase
       .channel(`client-orders-${clientCtx.clientId}`)
@@ -812,7 +828,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       setClientPendingPayments(null);
       return;
     }
-    
+
     const supabase = getSupabaseBrowserClient();
     const paymentsChannel = supabase
       .channel(`client-payments-${clientCtx.clientId}`)
@@ -858,7 +874,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       supabase.removeChannel(paymentsChannel);
     };
   }, [userRole, clientCtx?.clientId]);
-  
+
   // Reset image error when user info changes
   useEffect(() => {
     setImageError(false);
@@ -868,7 +884,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
       preloadImg.src = `${userInfo.userImage}?t=${Date.now()}`;
     }
   }, [userInfo.userImage]);
-  
+
   const pathname = usePathname();
   const activeItem = useActivePage(menuItems, userRole, pathname);
   const [imageError, setImageError] = useState(false);
@@ -1012,20 +1028,20 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
     const isMediumScreen = screenWidth < 1600;
 
     // Cálculos específicos por breakpoint
-    const sidebarWidth = isMobile 
+    const sidebarWidth = isMobile
       ? (isMobileMenuOpen ? 'w-[min(18rem,calc(100vw-16px))]' : 'w-16')
       : isTablet
         ? (isExpanded ? 'w-64' : 'w-20')
-        : isExpanded 
+        : isExpanded
           ? (screenWidth < 1440 ? 'w-64' : 'w-72')
           : 'w-20';
-    
+
     const iconSize = 'w-4 h-4';
     // Aumentar ligeramente el tamaño del logo en pantallas <1440px cuando está expandido
     const logoSize: 'sm' | 'md' | 'lg' | 'xl' = isExpanded ? (screenWidth < 1440 ? 'md' : 'md') : 'md';
     const padding = isExpanded ? 'p-4' : 'p-2';
     const buttonPadding = isExpanded ? 'px-4 py-3' : 'p-2';
-    
+
     return {
       sidebarWidth,
       iconSize,
@@ -1057,7 +1073,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
   useEffect(() => {
     const isMobile = screenWidth < 768;
     const isTablet = screenWidth >= 768 && screenWidth < 1024;
-    
+
     if (isMobile) {
       // En mobile, isExpanded debe seguir a isMobileMenuOpen
       setIsExpanded(isMobileMenuOpen || false);
@@ -1119,11 +1135,11 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
 
   return (
     <>
-      
+
       {/* Overlay para móviles: sólo cubre el espacio visible a la derecha para dejar un borde clicable */}
-    {responsiveConfig.isMobile && isMobileMenuOpen && (
-  <div 
-      className="fixed top-0 right-0 h-full z-[45]"
+      {responsiveConfig.isMobile && isMobileMenuOpen && (
+        <div
+          className="fixed top-0 right-0 h-full z-[45]"
           style={{
             // El sidebar en móvil ocupa min(288px, 100vw-16px). El overlay ocupa el resto.
             width: 'max(0px, calc(100vw - min(18rem, 100vw - 16px)))',
@@ -1133,13 +1149,13 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         />
       )}
       {responsiveConfig.isTablet && isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-[45] pointer-events-auto"
           onClick={onMobileMenuClose}
         />
       )}
-      
-      <div 
+
+      <div
         className={`
           fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 
           border-r border-slate-700/50 shadow-2xl backdrop-blur-sm z-50
@@ -1157,10 +1173,10 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         onMouseLeave={handleMouseLeave}
       >
         {/* Header */}
-                  <div className={`${responsiveConfig.padding} border-b border-slate-700/50 flex-shrink-0`}>
-            <div className={`flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : (isExpanded ? 'space-x-3' : 'justify-center')}`}>
-              <PitaLogo size={responsiveConfig.logoSize} animated={true} />
-              <div className={`
+        <div className={`${responsiveConfig.padding} border-b border-slate-700/50 flex-shrink-0`}>
+          <div className={`flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : (isExpanded ? 'space-x-3' : 'justify-center')}`}>
+            <PitaLogo size={responsiveConfig.logoSize} animated={true} />
+            <div className={`
                 transition-all duration-150 ease-out overflow-hidden
                 ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
               `}>
@@ -1174,7 +1190,7 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
         </div>
 
         {/* Scrollable content (nav + bottom) */}
-        <div className={`flex-1 overflow-y-auto sidebar-scrollbar momentum-scroll touch-pan-y overscroll-contain`}> 
+        <div className={`flex-1 overflow-y-auto sidebar-scrollbar momentum-scroll touch-pan-y overscroll-contain`}>
           {/* Navigation (no render en mobile/tablet si cerrado para reducir trabajo) */}
           {(!isMobileOrTablet || isMobileMenuOpen) && (
             <nav className={`${responsiveConfig.padding} space-y-2`}>
@@ -1183,99 +1199,99 @@ export default function Sidebar({ isExpanded, setIsExpanded, isMobileMenuOpen = 
           )}
 
           {/* Bottom Section */}
-          <div className={`mt-2 ${responsiveConfig.padding} border-t border-slate-700/50 space-y-4`}>        
-          {/* User Profile */}
-          <div className={`flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : 'space-x-3'} ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
-            <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center overflow-hidden`}>
-              {userInfo.userImage && !imageError ? (
-                <Image
-                  src={userInfo.userImage} // URL estable para permitir cache entre navegaciones
-                  alt="Foto de perfil"
-                  width={40}
-                  height={40}
-                  className="w-full h-full object-cover rounded-full"
-                  onError={() => setImageError(true)}
-                  placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
-                />
-              ) : userRole === 'client' ? (
-                <VenezuelaFlag size={"sm"} animated={true} />
-              ) : (
-                <span className="text-lg">{userInfo.flag}</span>
-              )}
-            </div>
-            <div className={`
+          <div className={`mt-2 ${responsiveConfig.padding} border-t border-slate-700/50 space-y-4`}>
+            {/* User Profile */}
+            <div className={`flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3' : 'justify-center') : 'space-x-3'} ${responsiveConfig.userPadding} rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-150 ease-out`}>
+              <div className={`${responsiveConfig.userContainerSize} bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center overflow-hidden`}>
+                {userInfo.userImage && !imageError ? (
+                  <Image
+                    src={userInfo.userImage} // URL estable para permitir cache entre navegaciones
+                    alt="Foto de perfil"
+                    width={40}
+                    height={40}
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => setImageError(true)}
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
+                  />
+                ) : userRole === 'client' ? (
+                  <VenezuelaFlag size={"sm"} animated={true} />
+                ) : (
+                  <span className="text-lg">{userInfo.flag}</span>
+                )}
+              </div>
+              <div className={`
               transition-all duration-150 ease-out overflow-hidden
               ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
             `}>
-              <div className="whitespace-nowrap">
-                <p className={`font-medium text-white ${responsiveConfig.userTextSize}`}>
-                  {userInfo.name}
-                </p>
-                <p className={`text-slate-400 ${responsiveConfig.userSubtextSize}`}>
-                  {userInfo.email}
-                </p>
+                <div className="whitespace-nowrap">
+                  <p className={`font-medium text-white ${responsiveConfig.userTextSize}`}>
+                    {userInfo.name}
+                  </p>
+                  <p className={`text-slate-400 ${responsiveConfig.userSubtextSize}`}>
+                    {userInfo.email}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Settings */}
-          {(() => {
-            const bottomItems = getBottomItemsByRole(userRole);
-            
-            return bottomItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = item.path === pathname;
-              
-              return (
-                <Link
-                  key={item.id}
-                  href={item.path}
-                  prefetch={true}
-                  className={`
+            {/* Settings */}
+            {(() => {
+              const bottomItems = getBottomItemsByRole(userRole);
+
+              return bottomItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = item.path === pathname;
+
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.path}
+                    prefetch={true}
+                    className={`
                     w-full flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : 'justify-center p-2') : 'space-x-3 px-4 py-3'} rounded-xl transition-all duration-150 ease-out group
-                    ${isActive 
-                      ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-white shadow-lg border border-blue-500/30' 
-                      : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
-                    }
+                    ${isActive
+                        ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-white shadow-lg border border-blue-500/30'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                      }
                   `}
-                >
-                  <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-slate-600/50`}>
-                    <Icon className={`${responsiveConfig.iconSize} ${item.color} transition-all duration-150 ease-out ${isActive ? 'scale-105' : 'scale-100'}`} />
-                  </div>
-                  <div className={`
+                  >
+                    <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-slate-600/50`}>
+                      <Icon className={`${responsiveConfig.iconSize} ${item.color} transition-all duration-150 ease-out ${isActive ? 'scale-105' : 'scale-100'}`} />
+                    </div>
+                    <div className={`
                     transition-all duration-150 ease-out overflow-hidden
                     ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
                   `}>
-                    <span suppressHydrationWarning className="font-medium whitespace-nowrap">{t('sidebar.' + item.id) ?? item.id}</span>
-                  </div>
-                </Link>
-              );
-            });
-          })()}
+                      <span suppressHydrationWarning className="font-medium whitespace-nowrap">{t('sidebar.' + item.id) ?? item.id}</span>
+                    </div>
+                  </Link>
+                );
+              });
+            })()}
 
-          {/* Logout */}
-          <button
-            className={`w-full flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : 'justify-center p-2') : 'space-x-3 px-4 py-3'} rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ease-out group border border-red-500/20`}
-            onClick={() => {
-              // Elimina el token del almacenamiento local
-              localStorage.removeItem('token');
-              sessionStorage.removeItem('token');
-              // Limpia cookie de rol y redirige al login
-              document.cookie = 'role=; Path=/; Max-Age=0; SameSite=Lax';
-              window.location.href = '/login-register';
-            }}
-          >
-            <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-red-500/20`}>
-              <LogOut className={responsiveConfig.iconSize} />
-            </div>
-            <div className={`
+            {/* Logout */}
+            <button
+              className={`w-full flex items-center ${(responsiveConfig.isMobile || responsiveConfig.isTablet) ? (isMobileMenuOpen ? 'space-x-3 px-4 py-3' : 'justify-center p-2') : 'space-x-3 px-4 py-3'} rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ease-out group border border-red-500/20`}
+              onClick={() => {
+                // Elimina el token del almacenamiento local
+                localStorage.removeItem('token');
+                sessionStorage.removeItem('token');
+                // Limpia cookie de rol y redirige al login
+                document.cookie = 'role=; Path=/; Max-Age=0; SameSite=Lax';
+                window.location.href = '/login-register';
+              }}
+            >
+              <div className={`${screenWidth < 1366 ? 'w-6 h-6' : 'w-8 h-8'} flex items-center justify-center rounded-lg group-hover:bg-red-500/20`}>
+                <LogOut className={responsiveConfig.iconSize} />
+              </div>
+              <div className={`
               transition-all duration-150 ease-out overflow-hidden
               ${responsiveConfig.isMobile ? (isMobileMenuOpen ? 'w-auto opacity-100' : 'w-0 opacity-0') : (isExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0')}
             `}>
-              <span className="font-medium whitespace-nowrap">{t('sidebar.logout')}</span>
-            </div>
-          </button>
+                <span className="font-medium whitespace-nowrap">{t('sidebar.logout')}</span>
+              </div>
+            </button>
           </div>
         </div>
       </div>

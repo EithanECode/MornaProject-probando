@@ -7,13 +7,13 @@
       "confirmPassword": "Confirmar Contraseña",
       "fullName": "Nombre completo",
       "fullNamePlaceholder": "Tu nombre",
-  "fieldRequired": "Este campo es obligatorio",
-  "maxLengthExceeded": "No debe exceder {{max}} caracteres",
-  "descriptionMax": "La descripción no debe exceder {{max}} caracteres",
-  "moneyMaxDigits": "No más de {{max}} cifras enteras",
-  "moneyInvalidFormat": "Formato de monto inválido (use hasta 2 decimales)",
-  "moneyRequired": "El monto es obligatorio",
-  "quantityRangeHint": "Cantidad válida: {{min}}–{{max}}.",
+      "fieldRequired": "Este campo es obligatorio",
+      "maxLengthExceeded": "No debe exceder {{max}} caracteres",
+      "descriptionMax": "La descripción no debe exceder {{max}} caracteres",
+      "moneyMaxDigits": "No más de {{max}} cifras enteras",
+      "moneyInvalidFormat": "Formato de monto inválido (use hasta 2 decimales)",
+      "moneyRequired": "El monto es obligatorio",
+      "quantityRangeHint": "Cantidad válida: {{min}}–{{max}}.",
       "emailPlaceholder": "usuario@correo.com",
       "passwordPlaceholder": "********",
       "login": "Iniciar Sesión",
@@ -22,7 +22,7 @@
       "loadingRegister": "Creando cuenta...",
       "forgotPassword": "¿Olvidaste tu contraseña?",
       "passwordRequired": "La contraseña es obligatoria",
-  "fillRequiredFields": "Por favor completa los campos requeridos.",
+      "fillRequiredFields": "Por favor completa los campos requeridos.",
       "invalidEmail": "Correo electrónico inválido",
       "invalidEmailAlt": "El correo electrónico no es válido.",
       "nameInvalid": "El nombre debe tener al menos 3 letras y solo caracteres válidos.",
@@ -108,13 +108,25 @@
   },
   "passwordResetSide": {
     "slides": [
-      { "title": "Seguridad Garantizada", "desc": "Tu información está protegida con encriptación de nivel bancario" },
-      { "title": "Acceso Inmediato", "desc": "Restablece tu contraseña sin esperar códigos de verificación" },
-      { "title": "Recuperación por Email", "desc": "Utiliza tu correo electrónico para un acceso seguro" },
-      { "title": "Proceso Sencillo", "desc": "Restablece tu contraseña en solo 2 pasos" }
+      {
+        "title": "Seguridad Garantizada",
+        "desc": "Tu información está protegida con encriptación de nivel bancario"
+      },
+      {
+        "title": "Acceso Inmediato",
+        "desc": "Restablece tu contraseña sin esperar códigos de verificación"
+      },
+      {
+        "title": "Recuperación por Email",
+        "desc": "Utiliza tu correo electrónico para un acceso seguro"
+      },
+      {
+        "title": "Proceso Sencillo",
+        "desc": "Restablece tu contraseña en solo 2 pasos"
+      }
     ]
   },
-  "sidebar":{
+  "sidebar": {
     "dashboard": "Panel",
     "users": "Usuarios",
     "usuarios": "Usuarios",
@@ -133,6 +145,7 @@
     "tracking": "Seguimiento",
     "profile": "Perfil",
     "logout": "Cerrar sesión",
+    "chat": "Chat",
     "dashboardAdmin": "Panel de Administración",
     "dashboardClient": "Panel de Cliente",
     "dashboardChina": "Panel de China",
@@ -445,7 +458,7 @@
         "productDescriptionPlaceholder": "Describe detalladamente el producto que deseas importar...",
         "quantity": "Cantidad",
         "invalidQuantity": "La cantidad debe ser un número mayor que cero.",
-  "quantityRangeHint": "Cantidad válida: {{min}}–{{max}}.",
+        "quantityRangeHint": "Cantidad válida: {{min}}–{{max}}.",
         "specifications": "Especificaciones Técnicas",
         "specificationsPlaceholder": "Color, talla, modelo, características específicas, etc.",
         "requestType": "Tipo de Solicitud",
@@ -476,15 +489,15 @@
         "estimatedBudget": "Presupuesto Estimado (USD)",
         "estimatedBudgetPlaceholder": "Ej: 500",
         "invalidBudget": "El presupuesto estimado debe ser un monto válido.",
-  "max7DigitsHint": "(máx 7 cifras)",
+        "max7DigitsHint": "(máx 7 cifras)",
         "summaryTitle": "Resumen de tu Solicitud",
         "almostReady": "¡Casi listo!",
         "reviewMessage": "Tu solicitud será revisada por nuestro equipo y recibirás una cotización en las próximas 48 horas.",
         "transitioning": "Transicionando...",
         "previous": "Anterior",
         "next": "Siguiente",
-  "createOrder": "Crear Pedido",
-  "creatingOrder": "Creando pedido...",
+        "createOrder": "Crear Pedido",
+        "creatingOrder": "Creando pedido...",
         "dialogDescription": "Sigue los pasos para crear tu solicitud de importación",
         "stepTitles": {
           "productInfo": "Información del Producto",
@@ -947,7 +960,7 @@
       "productDescriptionPlaceholder": "Describe detalladamente el producto que deseas importar...",
       "quantity": "Cantidad",
       "invalidQuantity": "La cantidad debe ser un número mayor que cero.",
-  "quantityRangeHint": "Cantidad válida: {{min}}–{{max}}.",
+      "quantityRangeHint": "Cantidad válida: {{min}}–{{max}}.",
       "specifications": "Especificaciones Técnicas",
       "specificationsPlaceholder": "Color, talla, modelo, características específicas, etc.",
       "requestType": "Tipo de Solicitud",
@@ -978,7 +991,7 @@
       "estimatedBudget": "Presupuesto Estimado (USD)",
       "estimatedBudgetPlaceholder": "Ej: 500",
       "invalidBudget": "El presupuesto estimado debe ser un monto válido.",
-  "max7DigitsHint": "(máx 7 cifras)",
+      "max7DigitsHint": "(máx 7 cifras)",
       "summaryTitle": "Resumen de tu Solicitud",
       "almostReady": "¡Casi listo!",
       "reviewMessage": "Tu solicitud será revisada por nuestro equipo y recibirás una cotización en las próximas 24 horas.",
@@ -1030,7 +1043,7 @@
     },
     "trackingModal": {
       "trackingNumber": "Número de Seguimiento",
-  "carrier": "Empresa de encomienda",
+      "carrier": "Empresa de encomienda",
       "estimatedDelivery": "Entrega estimada",
       "currentStatus": "Estado actual",
       "historyTitle": "Historial de seguimiento",
@@ -1053,17 +1066,17 @@
     "confirm": "Confirmar",
     "accept": "Aceptar",
     "close": "Cerrar",
-  "actionCannotBeUndone": "Esta acción no se puede deshacer.",
+    "actionCannotBeUndone": "Esta acción no se puede deshacer.",
     "loading": "Cargando...",
     "error": "Error",
-  "success": "Éxito",
-  "language": "Idioma",
-  "selectLanguage": "Selecciona un idioma",
-  "chinese": "Chino",
-  "english": "Inglés",
-  "spanish": "Español",
-  "dias": "días",
-  "eta": "Tiempo estimado"
+    "success": "Éxito",
+    "language": "Idioma",
+    "selectLanguage": "Selecciona un idioma",
+    "chinese": "Chino",
+    "english": "Inglés",
+    "spanish": "Español",
+    "dias": "días",
+    "eta": "Tiempo estimado"
   },
   "admin": {
     "configuration": {
@@ -1244,18 +1257,18 @@
       },
       "messages": {
         "profileUpdated": "Perfil actualizado",
-  "profileUpdatedDesc": "Los cambios se han guardado correctamente.",
+        "profileUpdatedDesc": "Los cambios se han guardado correctamente.",
         "passwordUpdated": "Contraseña actualizada",
         "passwordUpdatedDesc": "Tu contraseña se ha cambiado exitosamente.",
         "passwordMismatch": "Las contraseñas no coinciden.",
         "notificationsUpdated": "Notificaciones actualizadas",
         "notificationsUpdatedDesc": "Tus preferencias de notificación se han guardado.",
         "securityUpdated": "Configuración de seguridad actualizada",
-  "securityUpdatedDesc": "Los cambios de seguridad se han aplicado correctamente.",
-  "photoUpdated": "Foto actualizada con éxito",
-  "photoUpdatedDesc": "Tu foto de perfil ha sido actualizada.",
-  "photoDeleted": "Foto eliminada",
-  "photoDeletedDesc": "Tu foto de perfil ha sido eliminada."
+        "securityUpdatedDesc": "Los cambios de seguridad se han aplicado correctamente.",
+        "photoUpdated": "Foto actualizada con éxito",
+        "photoUpdatedDesc": "Tu foto de perfil ha sido actualizada.",
+        "photoDeleted": "Foto eliminada",
+        "photoDeletedDesc": "Tu foto de perfil ha sido eliminada."
       }
     },
     "dashboard": {
@@ -1336,7 +1349,7 @@
         "Cliente": "Cliente",
         "Empleado China": "Empleado China",
         "Empleado Vzla": "Empleado Vzla",
-  "Pagos": "Validador de pagos",
+        "Pagos": "Validador de pagos",
         "Admin": "Admin"
       },
       "status": {
@@ -1382,12 +1395,12 @@
         "changesSaved": "Cambios guardados",
         "changesSavedDesc": "La información del usuario ha sido actualizada.",
         "errorSaving": "Error al guardar",
-  "couldNotSave": "No se pudo guardar",
-  "userDeleted": "Usuario eliminado",
-  "userDeletedDesc": "Se eliminó {{name}}. Puedes deshacer.",
-  "undo": "Deshacer",
-  "errorDeleting": "Error al eliminar",
-  "couldNotDelete": "No se pudo eliminar"
+        "couldNotSave": "No se pudo guardar",
+        "userDeleted": "Usuario eliminado",
+        "userDeletedDesc": "Se eliminó {{name}}. Puedes deshacer.",
+        "undo": "Deshacer",
+        "errorDeleting": "Error al eliminar",
+        "couldNotDelete": "No se pudo eliminar"
       },
       "common": {
         "loading": "Cargando...",
@@ -1403,8 +1416,8 @@
     "orders": {
       "title": "Gestión de Pedidos",
       "subtitle": "Administra y rastrea todos los pedidos",
-  "chinaTabLabel": "China",
-  "vzlaTabLabel": "Venezuela",
+      "chinaTabLabel": "China",
+      "vzlaTabLabel": "Venezuela",
       "listTitle": "Lista de Pedidos",
       "listDescription": "{{count}} pedidos encontrados",
       "search": "Buscar pedidos...",
@@ -1425,7 +1438,7 @@
       },
       "table": {
         "id": "ID",
-  "date": "Fecha",
+        "date": "Fecha",
         "client": "Cliente",
         "description": "Descripción",
         "status": "Estado",
@@ -1468,7 +1481,7 @@
         "progress": "Progreso",
         "currentStep": "Paso actual",
         "client": "Cliente",
-        "assignedTo": "Asignado a:", 
+        "assignedTo": "Asignado a:",
         "elapsedTime": "Tiempo transcurrido",
         "currentStatus": "Estado",
         "orderDescription": "Descripción",
@@ -1525,8 +1538,8 @@
         "deliveryVenezuela": "Entrega en Venezuela",
         "estimatedBudget": "Presupuesto estimado",
         "estimatedBudgetPlaceholder": "Ej.: 500",
-  "invalidBudget": "El presupuesto estimado debe ser un monto válido.",
-  "max7DigitsHint": "(máx 7 cifras)",
+        "invalidBudget": "El presupuesto estimado debe ser un monto válido.",
+        "max7DigitsHint": "(máx 7 cifras)",
         "estimatedBudgetUsd": "Presupuesto Estimado (USD)",
         "selectClient": "Selecciona un cliente",
         "selectDelivery": "Selecciona cómo quieres recibir tu pedido",
@@ -1537,7 +1550,7 @@
         "client": "Cliente",
         "clientId": "ID Cliente",
         "userName": "Nombre de Usuario",
-        "daysElapsed":"Días transcurridos",
+        "daysElapsed": "Días transcurridos",
         "followSteps": "Sigue los pasos para crear el pedido"
       },
       "steps": {
@@ -1561,21 +1574,21 @@
         "createOrder": "Crear Pedido"
       },
       "pagination": {
-  "previous": "Anterior",
-  "prev": "Anterior",
-  "next": "Siguiente",
-  "showing": "Mostrando",
-  "to": "a",
-  "of": "de",
-  "results": "resultados",
-  "perPage": "por página"
+        "previous": "Anterior",
+        "prev": "Anterior",
+        "next": "Siguiente",
+        "showing": "Mostrando",
+        "to": "a",
+        "of": "de",
+        "results": "resultados",
+        "perPage": "por página"
       },
       "time": {
         "days": "{{count}} días"
       },
       "alerts": {
-  "onlyImages": "Solo se permiten imágenes JPG, JPEG, PNG o WEBP.",
-  "imageTooLarge": "La imagen no debe pesar más de {{maxMB}} MB."
+        "onlyImages": "Solo se permiten imágenes JPG, JPEG, PNG o WEBP.",
+        "imageTooLarge": "La imagen no debe pesar más de {{maxMB}} MB."
       },
       "messages": {
         "createError": "No se pudo crear el pedido.",
@@ -1634,7 +1647,7 @@
           "processing": "Procesando",
           "readyToPack": "Listo para empaquetar",
           "inBox": "En caja",
-          "inTransit":"En tránsito",
+          "inTransit": "En tránsito",
           "inContainer": "En contenedor",
           "shippedVzla": "Enviado a Venezuela",
           "pending": "Pendiente",
@@ -1753,7 +1766,6 @@
             "etaLabel": "Fecha estimada de llegada",
             "cancel": "Cancelar",
             "confirm": "Enviar"
-
           },
           "createContainer": {
             "title": "Crear contenedor",
@@ -1923,9 +1935,9 @@
         "marginsDiscounts": "Márgenes y Descuentos",
         "profitabilityConfig": "Configuración de rentabilidad",
         "profitMargin": "Margen de ganancia (%)",
-        "usdDiscount": "Descuento por pago en USD (%)"
-  ,"lastSaved": "Guardado:"
-  ,"changeMadeBy": "Cambios realizados por {{userName}} el {{date}}"
+        "usdDiscount": "Descuento por pago en USD (%)",
+        "lastSaved": "Guardado:",
+        "changeMadeBy": "Cambios realizados por {{userName}} el {{date}}"
       },
       "notifications": {
         "notificationSystem": "Sistema de notificaciones",
@@ -2001,11 +2013,11 @@
     }
   },
   "header": {
-  "notifications": "Notificaciones",
-  "markAllAsRead": "Marcar todo como leído",
-  "viewAll": "Ver todas",
-  "clear": "Limpiar",
-  "noNotifications": "Sin notificaciones"
+    "notifications": "Notificaciones",
+    "markAllAsRead": "Marcar todo como leído",
+    "viewAll": "Ver todas",
+    "clear": "Limpiar",
+    "noNotifications": "Sin notificaciones"
   },
   "venezuela": {
     "dashboard": {
@@ -2153,7 +2165,7 @@
       "containersBadges": {
         "new": "Nuevo",
         "inTransit": "En tránsito",
-  "traveling": "Viajando",
+        "traveling": "Viajando",
         "received": "Recibido",
         "state": "Est.{{num}}"
       },
@@ -2174,7 +2186,7 @@
           "quantity": "Cantidad",
           "description": "Descripción",
           "specifications": "Especificaciones",
-          "url":"URL del producto"
+          "url": "URL del producto"
         },
         "placeholders": {
           "title": "Título del pedido",
@@ -2658,9 +2670,18 @@
       "desc2": "Confirma, audita y monitorea el flujo de verificación."
     },
     "stats": {
-      "pending": { "label": "Pendientes", "help": "A la espera de validación" },
-      "completed": { "label": "Confirmados", "help": "Pagos validados" },
-      "totalAmount": { "label": "Monto Total", "help": "USD procesados" }
+      "pending": {
+        "label": "Pendientes",
+        "help": "A la espera de validación"
+      },
+      "completed": {
+        "label": "Confirmados",
+        "help": "Pagos validados"
+      },
+      "totalAmount": {
+        "label": "Monto Total",
+        "help": "USD procesados"
+      }
     },
     "quickActions": {
       "title": "Acciones Rápidas",
@@ -2679,7 +2700,7 @@
     "ordersPlaced": "Pedidos realizados",
     "inTransit": "En Tránsito",
     "activeShipmentsShort": "Envíos activos",
-  "totalHandled": "Total Gestionados",
+    "totalHandled": "Total Gestionados",
     "totalInvestment": "Inversión total",
     "completed": "Completados",
     "ordersDelivered": "Pedidos entregados",
@@ -2878,19 +2899,19 @@
           "containerNamePlaceholder": "Ingresa el nombre del contenedor"
         },
         "sendContainer": {
-            "title": "Enviar contenedor #CONT-{{id}}",
-            "subtitle": "Agrega la información de envío del contenedor",
-            "trackingLink": "Link de seguimiento",
-            "trackingLinkPlaceholder": "Ingrese el link de seguimiento",
-            "trackingNumber": "Número de seguimiento",
-            "trackingNumberPlaceholder": "Ingrese el número de seguimiento",
-            "courierCompany": "Empresa de encomienda",
-            "courierCompanyPlaceholder": "Ingrese la empresa de encomienda",
-            "etaDate": "Fecha estimada de llegada",
-            "cancel": "Cancelar",
-            "confirm": "Enviar",
-            "sending": "Enviando..."
-          },
+          "title": "Enviar contenedor #CONT-{{id}}",
+          "subtitle": "Agrega la información de envío del contenedor",
+          "trackingLink": "Link de seguimiento",
+          "trackingLinkPlaceholder": "Ingrese el link de seguimiento",
+          "trackingNumber": "Número de seguimiento",
+          "trackingNumberPlaceholder": "Ingrese el número de seguimiento",
+          "courierCompany": "Empresa de encomienda",
+          "courierCompanyPlaceholder": "Ingrese la empresa de encomienda",
+          "etaDate": "Fecha estimada de llegada",
+          "cancel": "Cancelar",
+          "confirm": "Enviar",
+          "sending": "Enviando..."
+        },
         "containerBoxes": {
           "title": "Cajas del contenedor #CONT-{{id}}",
           "loading": "Cargando cajas...",
@@ -3014,8 +3035,7 @@
       "previous": "Anterior",
       "next": "Siguiente"
     }
-  }
-  ,
+  },
   "notifications": {
     "client": {
       "orderCreated": {
