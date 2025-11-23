@@ -9,10 +9,11 @@ import { useChatUpload } from '@/hooks/use-chat-upload';
 interface ChatInputProps {
     onSendMessage: (message: string, fileData?: { url: string; name: string; type: string; size: number }) => Promise<void>;
     onTyping: () => void;
+    onStopTyping?: () => void;
     disabled?: boolean;
 }
 
-export function ChatInput({ onSendMessage, onTyping, disabled }: ChatInputProps) {
+export function ChatInput({ onSendMessage, onTyping, onStopTyping, disabled }: ChatInputProps) {
     const [message, setMessage] = useState('');
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [sending, setSending] = useState(false);
@@ -26,6 +27,11 @@ export function ChatInput({ onSendMessage, onTyping, disabled }: ChatInputProps)
 
         try {
             setSending(true);
+
+            // Detener indicador de "escribiendo..." inmediatamente
+            if (onStopTyping) {
+                onStopTyping();
+            }
 
             let fileData;
             if (selectedFile) {

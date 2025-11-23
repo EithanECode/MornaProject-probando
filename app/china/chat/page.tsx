@@ -70,7 +70,7 @@ export default function ChinaChatPage() {
         loading,
         sending,
         sendMessage,
-        refetch,
+        addMessage,
     } = useChatMessages({
         conversationUserId: adminId,
         currentUserId: chinaId ?? null,
@@ -82,14 +82,19 @@ export default function ChinaChatPage() {
         conversationUserId: adminId,
     });
 
+    // Callback estable para nuevos mensajes
+    const handleNewMessage = useCallback((message: ChatMessage) => {
+        console.log('📨 Mensaje recibido en china, sender:', message.sender_id, 'admin:', adminId);
+        if (message.sender_id === adminId) {
+            console.log('✅ Agregando mensaje al estado');
+            addMessage(message);
+        }
+    }, [adminId, addMessage]);
+
     // Realtime: escuchar nuevos mensajes
     useChatRealtime({
         currentUserId: chinaId ?? null,
-        onNewMessage: (message: ChatMessage) => {
-            if (message.sender_id === adminId) {
-                refetch();
-            }
-        },
+        onNewMessage: handleNewMessage,
     });
 
     const handleSendMessage = useCallback(
@@ -193,6 +198,7 @@ export default function ChinaChatPage() {
                                     <ChatInput
                                         onSendMessage={handleSendMessage}
                                         onTyping={notifyTyping}
+                                        onStopTyping={stopTyping}
                                         disabled={sending}
                                     />
                                 </div>

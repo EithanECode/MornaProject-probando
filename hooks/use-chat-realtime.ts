@@ -21,6 +21,8 @@ export function useChatRealtime({
     useEffect(() => {
         if (!currentUserId) return;
 
+        console.log('🔌 Configurando Realtime para mensajes, userId:', currentUserId);
+
         const channel = supabase
             .channel(`chat-messages-${currentUserId}`)
             .on(
@@ -33,10 +35,13 @@ export function useChatRealtime({
                 },
                 (payload) => {
                     const newMessage = payload.new as ChatMessage;
-                    console.log('📨 Nuevo mensaje recibido:', newMessage);
+                    console.log('📨 Nuevo mensaje recibido en Realtime:', newMessage);
 
                     if (onNewMessage) {
+                        console.log('✅ Llamando a onNewMessage callback');
                         onNewMessage(newMessage);
+                    } else {
+                        console.warn('⚠️ onNewMessage callback no está definido');
                     }
                 }
             )
@@ -58,9 +63,12 @@ export function useChatRealtime({
                     }
                 }
             )
-            .subscribe();
+            .subscribe((status) => {
+                console.log('📡 Estado de suscripción Realtime:', status);
+            });
 
         return () => {
+            console.log('🔌 Desconectando canal Realtime');
             supabase.removeChannel(channel);
         };
     }, [currentUserId, onNewMessage, onMessageRead, supabase]);

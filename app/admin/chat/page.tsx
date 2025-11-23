@@ -42,7 +42,7 @@ export default function AdminChatPage() {
         loading,
         sending,
         sendMessage,
-        refetch,
+        addMessage,
     } = useChatMessages({
         conversationUserId: selectedUserId,
         currentUserId: adminId ?? null,
@@ -54,14 +54,19 @@ export default function AdminChatPage() {
         conversationUserId: selectedUserId,
     });
 
+    // Callback estable para nuevos mensajes
+    const handleNewMessage = useCallback((message: ChatMessage) => {
+        console.log('📨 Mensaje recibido en admin, sender:', message.sender_id, 'selected:', selectedUserId);
+        if (message.sender_id === selectedUserId) {
+            console.log('✅ Agregando mensaje al estado');
+            addMessage(message);
+        }
+    }, [selectedUserId, addMessage]);
+
     // Realtime: escuchar nuevos mensajes
     useChatRealtime({
         currentUserId: adminId ?? null,
-        onNewMessage: (message: ChatMessage) => {
-            if (message.sender_id === selectedUserId) {
-                refetch();
-            }
-        },
+        onNewMessage: handleNewMessage,
     });
 
     const handleSelectConversation = useCallback((userId: string, userName: string) => {
@@ -190,6 +195,7 @@ export default function AdminChatPage() {
                                         <ChatInput
                                             onSendMessage={handleSendMessage}
                                             onTyping={notifyTyping}
+                                            onStopTyping={stopTyping}
                                             disabled={sending}
                                         />
                                     </div>

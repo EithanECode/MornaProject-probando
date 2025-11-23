@@ -154,6 +154,17 @@ export function useChatMessages({ conversationUserId, currentUserId, currentUser
         }
     }, [currentUserId, supabase]);
 
+    // Agregar mensaje recibido por Realtime (sin refetch)
+    const addMessage = useCallback((message: ChatMessage) => {
+        setMessages(prev => {
+            // Evitar duplicados
+            if (prev.some(m => m.id === message.id)) {
+                return prev;
+            }
+            return [...prev, message];
+        });
+    }, []);
+
     // Cargar mensajes al montar o cuando cambie la conversación
     useEffect(() => {
         loadMessages();
@@ -173,6 +184,7 @@ export function useChatMessages({ conversationUserId, currentUserId, currentUser
         error,
         sendMessage,
         markAsRead,
+        addMessage,
         refetch: loadMessages,
     };
 }
