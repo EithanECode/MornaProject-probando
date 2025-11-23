@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
-import type { TypingPayload } from '@/lib/types/chat';
 
 interface UseChatTypingOptions {
     currentUserId: string | null;
@@ -11,93 +10,117 @@ interface UseChatTypingOptions {
 
 export function useChatTyping({ currentUserId, conversationUserId }: UseChatTypingOptions) {
     const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
-    const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+    const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const channelRef = useRef<any>(null);
     const supabase = getSupabaseBrowserClient();
 
-    // Enviar estado de "escribiendo..."
-    const setTyping = useCallback(async (isTyping: boolean) => {
-        if (!currentUserId || !conversationUserId) return;
-
-        try {
-            await supabase
-                .from('chat_typing_status')
-                .upsert({
-                    user_id: currentUserId,
-                    typing_to_id: conversationUserId,
-                    is_typing: isTyping,
-                    updated_at: new Date().toISOString(),
-                }, {
-                    onConflict: 'user_id,typing_to_id',
-                });
-        } catch (err) {
-            console.error('Error setting typing status:', err);
-        }
-    }, [currentUserId, conversationUserId, supabase]);
-
-    // Notificar que el usuario está escribiendo (con timeout automático)
+    // Notificar que el usuario está escribiendo (usando Broadcast - NO toca BD)
     const notifyTyping = useCallback(() => {
-        // Limpiar timeout anterior
-        if (typingTimeout) {
-            clearTimeout(typingTimeout);
+        if (!currentUserId || !conversationUserId || !channelRef.current) {
+            console.log('⚠️ No se puede notificar typing: falta info o canal');
+            return;
         }
 
-        // Enviar estado de "escribiendo"
-        setTyping(true);
+        // Limpiar timeout anterior
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
 
-        // Auto-limpiar después de 3 segundos
-        const timeout = setTimeout(() => {
-            setTyping(false);
-        }, 3000);
+        // Debounce: solo enviar broadcast cada 1 segundo para evitar spam
+        const now = Date.now();
+        const lastBroadcast = (window as any).__lastTypingBroadcast || 0;
 
-        setTypingTimeout(timeout);
-    }, [setTyping, typingTimeout]);
+        if (now - lastBroadcast > 1000) {
+            console.log('⌨️ Enviando broadcast de typing');
+
+            // Enviar mensaje broadcast (efímero, no se guarda en BD)
+            channelRef.current.send({
+                type: 'broadcast',
+                event: 'typing',
+                payload: {
+                    userId: currentUserId,
+                    isTyping: true,
+                    timestamp: now,
+                },
+            });
+
+            (window as any).__lastTypingBroadcast = now;
+        }
+
+        // Auto-limpiar después de 1.5 segundos de inactividad
+        typingTimeoutRef.current = setTimeout(() => {
+            console.log('⏱️ Timeout: dejó de escribir, enviando typing:false');
+            if (channelRef.current) {
+                channelRef.current.send({
+                    type: 'broadcast',
+                    event: 'typing',
+                    payload: {
+                        userId: currentUserId,
+                        isTyping: false,
+                        timestamp: Date.now(),
+                    },
+                });
+                (window as any).__lastTypingBroadcast = 0;
+            }
+        }, 1500);
+    }, [currentUserId, conversationUserId]);
 
     // Detener indicador de "escribiendo"
     const stopTyping = useCallback(() => {
-        if (typingTimeout) {
-            clearTimeout(typingTimeout);
-            setTypingTimeout(null);
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+            typingTimeoutRef.current = null;
         }
-        setTyping(false);
-    }, [setTyping, typingTimeout]);
 
-    // Escuchar estado de typing del otro usuario
+        if (channelRef.current && currentUserId) {
+            channelRef.current.send({
+                type: 'broadcast',
+                event: 'typing',
+                payload: {
+                    userId: currentUserId,
+                    isTyping: false,
+                    timestamp: Date.now(),
+                },
+            });
+        }
+    }, [currentUserId]);
+
+    // Configurar canal de broadcast para escuchar typing del otro usuario
     useEffect(() => {
         if (!currentUserId || !conversationUserId) {
             setIsOtherUserTyping(false);
             return;
         }
 
-        const channel = supabase
-            .channel(`typing-status-${currentUserId}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'chat_typing_status',
-                    filter: `typing_to_id=eq.${currentUserId}`,
-                },
-                (payload) => {
-                    const typingStatus = payload.new as any;
+        console.log('🔌 Configurando canal broadcast para typing');
 
-                    // Solo mostrar si es del usuario con quien estamos chateando
-                    if (typingStatus.user_id === conversationUserId) {
-                        setIsOtherUserTyping(typingStatus.is_typing);
+        // Crear canal único para esta conversación
+        const channelName = `chat:${[currentUserId, conversationUserId].sort().join('-')}`;
 
-                        // Auto-ocultar después de 5 segundos si no hay actualización
-                        if (typingStatus.is_typing) {
-                            setTimeout(() => {
-                                setIsOtherUserTyping(false);
-                            }, 5000);
-                        }
-                    }
+        const channel = supabase.channel(channelName);
+        channelRef.current = channel;
+
+        // Escuchar eventos de typing
+        channel
+            .on('broadcast', { event: 'typing' }, (payload) => {
+                console.log('📡 Broadcast recibido:', payload);
+
+                const { userId, isTyping } = payload.payload;
+
+                // Solo mostrar si es del otro usuario
+                if (userId === conversationUserId) {
+                    console.log(`${isTyping ? '✍️' : '🛑'} Otro usuario ${isTyping ? 'está' : 'dejó de'} escribir`);
+                    setIsOtherUserTyping(isTyping);
                 }
-            )
-            .subscribe();
+            })
+            .subscribe((status) => {
+                console.log('📡 Estado del canal broadcast:', status);
+            });
 
         return () => {
+            console.log('🔌 Desconectando canal broadcast');
             supabase.removeChannel(channel);
+            channelRef.current = null;
             stopTyping();
         };
     }, [currentUserId, conversationUserId, supabase, stopTyping]);
@@ -105,12 +128,12 @@ export function useChatTyping({ currentUserId, conversationUserId }: UseChatTypi
     // Limpiar al desmontar
     useEffect(() => {
         return () => {
-            if (typingTimeout) {
-                clearTimeout(typingTimeout);
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
             }
             stopTyping();
         };
-    }, [typingTimeout, stopTyping]);
+    }, [stopTyping]);
 
     return {
         isOtherUserTyping,
