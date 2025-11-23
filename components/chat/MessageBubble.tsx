@@ -51,8 +51,8 @@ export const MessageBubble = memo(function MessageBubble({
 
                 <div
                     className={`rounded-2xl px-4 py-2.5 shadow-sm transition-all duration-200 hover:shadow-md ${isSent
-                            ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-md'
-                            : 'bg-white border border-slate-200 text-slate-800 rounded-bl-md'
+                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-md'
+                        : 'bg-white border border-slate-200 text-slate-800 rounded-bl-md'
                         }`}
                 >
                     {/* Archivo adjunto */}
@@ -80,8 +80,8 @@ export const MessageBubble = memo(function MessageBubble({
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isSent
-                                            ? 'bg-blue-600/50 hover:bg-blue-600/70'
-                                            : 'bg-slate-100 hover:bg-slate-200'
+                                        ? 'bg-blue-600/50 hover:bg-blue-600/70'
+                                        : 'bg-slate-100 hover:bg-slate-200'
                                         }`}
                                 >
                                     <div className={`p-2 rounded-lg ${isSent ? 'bg-white/20' : 'bg-blue-100'}`}>
@@ -107,7 +107,7 @@ export const MessageBubble = memo(function MessageBubble({
 
                     {/* Mensaje de texto */}
                     {message && (
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-all">
                             {message}
                         </p>
                     )}
