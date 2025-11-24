@@ -175,13 +175,13 @@ export default function ChinaChatPage() {
                 <div className="p-4 md:p-5 lg:p-6">
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg">
-                            <CardHeader className="border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                            <CardHeader className="px-5.2 py-2 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-blue-500 rounded-full">
                                         <Shield className="h-5 w-5 text-white" />
                                     </div>
                                     <div>
-                                        <CardTitle className="text-lg font-semibold">{adminName}</CardTitle>
+                                        <CardTitle className="text-base font-semibold">{adminName}</CardTitle>
                                         <p className="text-xs text-slate-600">Administrador del Sistema</p>
                                     </div>
                                 </div>

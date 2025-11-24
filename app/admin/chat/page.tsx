@@ -158,27 +158,26 @@ export default function AdminChatPage() {
 
                     {/* Vista: Chat Abierto */}
                     {view === 'chat' && (
-                        <div className="animate-in fade-in slide-in-from-right-4 duration-500 space-y-4">
-                            {/* Botón Volver */}
-                            <Button
-                                variant="outline"
-                                onClick={handleBackToList}
-                                className="flex items-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-all"
-                            >
-                                <ArrowLeft className="h-4 w-4" />
-                                <span className="hidden sm:inline">Volver a conversaciones</span>
-                                <span className="sm:hidden">Volver</span>
-                            </Button>
-
+                        <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                             {/* Card del Chat */}
                             <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg">
-                                <CardHeader className="border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                                <CardHeader className="px-2.5 py-2 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                                     <div className="flex items-center gap-3">
+                                        {/* Botón Volver */}
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={handleBackToList}
+                                            className="h-8 w-8 p-0 hover:bg-blue-100 transition-all"
+                                        >
+                                            <ArrowLeft className="h-4 w-4" />
+                                        </Button>
+
                                         <div className="p-2 bg-blue-500 rounded-full">
                                             <MessageSquare className="h-5 w-5 text-white" />
                                         </div>
                                         <div>
-                                            <CardTitle className="text-lg font-semibold">{selectedUserName}</CardTitle>
+                                            <CardTitle className="text-base font-semibold">{selectedUserName}</CardTitle>
                                             <p className="text-xs text-slate-600">Usuario China</p>
                                         </div>
                                     </div>
