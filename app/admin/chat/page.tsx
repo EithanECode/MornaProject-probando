@@ -183,7 +183,7 @@ export default function AdminChatPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-0">
-                                    <div className="flex flex-col h-[calc(100vh-20rem)] md:h-[600px]">
+                                    <div className="flex flex-col h-[calc(100vh-12rem)]">
                                         <ChatMessages
                                             messages={messages}
                                             currentUserId={adminId || ''}

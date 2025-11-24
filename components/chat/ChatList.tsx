@@ -236,7 +236,7 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
             </div>
 
             {/* Lista */}
-            <ScrollArea className="h-[500px] pr-4">
+            <ScrollArea className="h-[calc(100vh-20rem)] pr-4">
                 {paginatedConversations.length === 0 ? (
                     <div className="text-center py-12 animate-in fade-in duration-300">
                         <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
