@@ -59,6 +59,17 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
 
                 console.log('🔍 Cargando conversaciones para admin:', currentUserId);
 
+                // Obtener conversaciones ocultas por el usuario con su fecha
+                const { data: hiddenConversations } = await supabase
+                    .from('chat_hidden_conversations')
+                    .select('hidden_user_id, created_at')
+                    .eq('user_id', currentUserId);
+
+                const hiddenMap = new Map(
+                    hiddenConversations?.map(h => [h.hidden_user_id, new Date(h.created_at)]) || []
+                );
+                console.log('🙈 Conversaciones ocultas:', hiddenMap.size);
+
                 // Obtener todos los mensajes donde el admin es sender o receiver
                 const { data: messages, error: messagesError } = await supabase
                     .from('chat_messages')
@@ -80,6 +91,24 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
 
                 for (const msg of messages || []) {
                     const chinaUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
+
+                    // Verificar si está oculta y si el último mensaje es más reciente que el ocultado
+                    const hiddenDate = hiddenMap.get(chinaUserId);
+                    if (hiddenDate) {
+                        const lastMessageDate = new Date(msg.created_at);
+                        // Si el último mensaje es anterior al ocultado, saltar esta conversación
+                        if (lastMessageDate <= hiddenDate) {
+                            continue;
+                        }
+                        // Si hay mensajes nuevos después de ocultar, des-ocultar automáticamente
+                        console.log('🔓 Des-ocultando conversación con mensajes nuevos:', chinaUserId);
+                        supabase
+                            .from('chat_hidden_conversations')
+                            .delete()
+                            .eq('user_id', currentUserId)
+                            .eq('hidden_user_id', chinaUserId)
+                            .then(() => console.log('✅ Conversación des-ocultada'));
+                    }
 
                     if (!conversationsMap.has(chinaUserId)) {
                         // Contar mensajes no leídos
@@ -129,25 +158,27 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
         return () => clearInterval(interval);
     }, [currentUserId, supabase]);
 
-    // Función para eliminar conversación
+    // Función para ocultar conversación (solo para el usuario actual)
     const handleDeleteConversation = async () => {
         if (!conversationToDelete || !currentUserId) return;
 
         try {
             setDeleting(true);
 
-            // Eliminar todos los mensajes de esta conversación
+            // Insertar en tabla de conversaciones ocultas
             const { error } = await supabase
-                .from('chat_messages')
-                .delete()
-                .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${conversationToDelete}),and(sender_id.eq.${conversationToDelete},receiver_id.eq.${currentUserId})`);
+                .from('chat_hidden_conversations')
+                .insert({
+                    user_id: currentUserId,
+                    hidden_user_id: conversationToDelete,
+                });
 
             if (error) {
-                console.error('Error deleting conversation:', error);
+                console.error('Error hiding conversation:', error);
                 return;
             }
 
-            // Actualizar lista local
+            // Actualizar lista local (remover de la vista)
             setConversations(prev => prev.filter(conv => conv.user_id !== conversationToDelete));
 
             // Resetear página si es necesario
@@ -156,9 +187,9 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
                 setCurrentPage(newTotalPages);
             }
 
-            console.log('✅ Conversación eliminada');
+            console.log('✅ Conversación ocultada');
         } catch (error) {
-            console.error('Error deleting conversation:', error);
+            console.error('Error hiding conversation:', error);
         } finally {
             setDeleting(false);
             setDeleteDialogOpen(false);
@@ -219,8 +250,8 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
                             <div
                                 key={conv.user_id}
                                 className={`relative rounded-xl transition-all duration-300 group ${selectedUserId === conv.user_id
-                                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 shadow-md'
-                                        : 'bg-white hover:bg-slate-50 border-2 border-slate-100 hover:border-slate-200 hover:shadow-sm'
+                                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 shadow-md'
+                                    : 'bg-white hover:bg-slate-50 border-2 border-slate-100 hover:border-slate-200 hover:shadow-sm'
                                     }`}
                             >
                                 <button
