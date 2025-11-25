@@ -906,20 +906,6 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                         </SelectContent>
                       </Select>
                     </div>
-                    <Separator />
-                    <div className="space-y-2">
-                      <Label>{t('admin.configuration.preferences.theme.interfaceDensity')}</Label>
-                      <Select defaultValue="comfortable">
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecciona la densidad" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="compact">{t('admin.configuration.preferences.theme.densities.compact')}</SelectItem>
-                          <SelectItem value="comfortable">{t('admin.configuration.preferences.theme.densities.comfortable')}</SelectItem>
-                          <SelectItem value="spacious">{t('admin.configuration.preferences.theme.densities.spacious')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
                   </CardContent>
                   </Card>
                 </div>

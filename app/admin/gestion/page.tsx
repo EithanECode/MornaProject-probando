@@ -928,7 +928,7 @@ export default function ConfiguracionPage() {
           </Alert>
 
           <Tabs defaultValue="shipping" className="space-y-6 md:space-y-8">
-            <TabsList className={`grid w-full grid-cols-1 md:grid-cols-3 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm place-items-center`}>
+            <TabsList className={`grid w-full grid-cols-1 md:grid-cols-2 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm place-items-center`}>
               <TabsTrigger value="shipping" className="flex items-center space-x-2 text-xs md:text-sm">
                 <Package className="w-4 h-4" />
                 <span>{t('admin.management.tabs.shipping')}</span>
@@ -936,10 +936,6 @@ export default function ConfiguracionPage() {
               <TabsTrigger value="financial" className="flex items-center space-x-2 text-xs md:text-sm">
                 <DollarSign className="w-4 h-4" />
                 <span>{t('admin.management.tabs.financial')}</span>
-              </TabsTrigger>
-              <TabsTrigger value="notifications" className="flex items-center space-x-2 text-xs md:text-sm">
-                <Bell className="w-4 h-4" />
-                <span>{t('admin.management.tabs.notifications')}</span>
               </TabsTrigger>
             </TabsList>
 
@@ -1351,37 +1347,6 @@ export default function ConfiguracionPage() {
                   </AlertDescription>
                 </Alert>
               </div>
-            </TabsContent>
-
-            {/* TAB: Notificaciones */}
-            {/* TAB: Notificaciones */}
-            <TabsContent value="notifications" className="space-y-6 md:space-y-8">
-              <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
-                <CardHeader>
-                  <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
-                    <Bell className="w-5 h-5 mr-2 text-red-600 dark:text-red-400" />
-                    {t('admin.management.notifications.notificationSystem')}
-                  </CardTitle>
-                  <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
-                    {t('admin.management.notifications.description')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="alertDays" className="text-sm md:text-base">{t('admin.management.notifications.alertAfterDays')}</Label>
-                    <Input
-                      id="alertDays"
-                      type="number"
-                      min={0}
-                      max={365}
-                      value={config.alertsAfterDays ?? ''}
-                      onChange={(e) => updateConfig('alertsAfterDays', Number(e.target.value))}
-                      disabled={isLoading}
-                    />
-                    <p className={`text-xs text-slate-500 dark:text-slate-400`}>{t('admin.management.notifications.alertAfterDaysHelp')}</p>
-                  </div>
-                </CardContent>
-              </Card>
             </TabsContent>
 
             {/* Opción Seguridad eliminada */}
