@@ -88,44 +88,25 @@ interface User {
   createdAt: string; // ISO
 }
 
-const ROLE_COLORS: Record<UserRole, string> = {
-  // Usar un hover más claro y un ligero ring para no oscurecer el fondo al pasar el mouse
-  'Cliente': [
-    'bg-slate-100 text-slate-800 border-slate-200',
-    'hover:bg-slate-50 group-hover:bg-slate-50',
-    'hover:border-slate-300 group-hover:border-slate-300',
-    'group-hover:ring-1 group-hover:ring-slate-200',
-    'transition-colors duration-200'
-  ].join(' '),
-  'Empleado China': [
-    'bg-red-100 text-red-800 border-red-200',
-    'hover:bg-red-50 group-hover:bg-red-50',
-    'hover:border-red-300 group-hover:border-red-300',
-    'group-hover:ring-1 group-hover:ring-red-200',
-    'transition-colors duration-200'
-  ].join(' '),
-  'Empleado Vzla': [
-    'bg-blue-100 text-blue-800 border-blue-200',
-    'hover:bg-blue-50 group-hover:bg-blue-50',
-    'hover:border-blue-300 group-hover:border-blue-300',
-    'group-hover:ring-1 group-hover:ring-blue-200',
-    'transition-colors duration-200'
-  ].join(' '),
-  'Pagos': [
-    'bg-amber-100 text-amber-800 border-amber-200',
-    'hover:bg-amber-50 group-hover:bg-amber-50',
-    'hover:border-amber-300 group-hover:border-amber-300',
-    'group-hover:ring-1 group-hover:ring-amber-200',
-    'transition-colors duration-200'
-  ].join(' '),
-  'Admin': [
-    'bg-purple-100 text-purple-800 border-purple-200',
-    'hover:bg-purple-50 group-hover:bg-purple-50',
-    'hover:border-purple-300 group-hover:border-purple-300',
-    'group-hover:ring-1 group-hover:ring-purple-200',
-    'transition-colors duration-200'
-  ].join(' '),
+const ROLE_COLORS_LIGHT: Record<UserRole, string> = {
+  'Cliente': 'bg-slate-100 text-slate-800 border-slate-200',
+  'Empleado China': 'bg-red-100 text-red-800 border-red-200',
+  'Empleado Vzla': 'bg-blue-100 text-blue-800 border-blue-200',
+  'Pagos': 'bg-amber-100 text-amber-800 border-amber-200',
+  'Admin': 'bg-purple-100 text-purple-800 border-purple-200',
 };
+
+const ROLE_COLORS_DARK: Record<UserRole, string> = {
+  'Cliente': 'bg-slate-700 text-slate-200 border-slate-600',
+  'Empleado China': 'bg-red-900/30 text-red-300 border-red-700',
+  'Empleado Vzla': 'bg-blue-900/30 text-blue-300 border-blue-700',
+  'Pagos': 'bg-amber-900/30 text-amber-300 border-amber-700',
+  'Admin': 'bg-purple-900/30 text-purple-300 border-purple-700',
+};
+
+function getRoleColors(role: UserRole, isDark: boolean): string {
+  return isDark ? ROLE_COLORS_DARK[role] : ROLE_COLORS_LIGHT[role];
+}
 
 export default function UsuariosPage() {
   const { t } = useTranslation();
@@ -512,12 +493,12 @@ export default function UsuariosPage() {
         />
 
         <div className="p-4 md:p-5 lg:p-6 space-y-4 md:space-y-5 lg:space-y-6">
-          <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300">
+          <Card className={`shadow-lg border-0 ${mounted && theme === 'dark' ? 'bg-slate-800/70 dark:border-slate-700' : 'bg-white/70'} backdrop-blur-sm hover:shadow-xl transition-shadow duration-300`}>
             <CardHeader className="pb-3">
               {/* Layout ajustado: en móvil apilar título y controles; en >=sm distribución horizontal */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <CardTitle className="text-lg md:text-xl flex items-center text-black w-full sm:w-auto">
-                  <Users className="w-4 h-4 md:w-5 md:h-5 mr-2 text-blue-600" />
+                <CardTitle className={`text-lg md:text-xl flex items-center ${mounted && theme === 'dark' ? 'text-white' : 'text-black'} w-full sm:w-auto`}>
+                  <Users className={`w-4 h-4 md:w-5 md:h-5 mr-2 ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                   {t('admin.users.listTitle')}
                 </CardTitle>
                 {/* Toolbar: en móvil columna a ancho completo */}
@@ -528,15 +509,15 @@ export default function UsuariosPage() {
                       placeholder={t('admin.users.search')}
                       value={searchTerm}
                       onChange={(e) => handleSearchChange(e.target.value)}
-                      className="px-3 h-10 w-full sm:w-56 md:w-64 bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                      className={`px-3 h-10 w-full sm:w-56 md:w-64 ${mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : 'bg-white/80 border-slate-300'} backdrop-blur-sm focus:border-blue-500 focus:ring-blue-500 text-sm`}
                     />
                   </div>
                   {/* Filtro Rol */}
                   <div className="w-full sm:w-auto">
                     <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
-                      <SelectTrigger className="h-10 w-full sm:w-48 md:w-56 px-3 whitespace-nowrap bg-white/80 backdrop-blur-sm border-slate-300 focus:border-blue-500 text-sm">
+                      <SelectTrigger className={`h-10 w-full sm:w-48 md:w-56 px-3 whitespace-nowrap ${mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : 'bg-white/80 border-slate-300'} backdrop-blur-sm focus:border-blue-500 text-sm`}>
                         <div className="flex items-center gap-2 truncate">
-                          <Filter className="w-4 h-4 mr-2 text-slate-400" />
+                          <Filter className={`w-4 h-4 mr-2 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-400'}`} />
                           <SelectValue placeholder={t('admin.users.filters.role')} />
                         </div>
                       </SelectTrigger>
@@ -650,8 +631,8 @@ export default function UsuariosPage() {
             </CardHeader>
             <CardContent className="overflow-x-hidden">
               {usersLoading && (
-                <div className="hidden lg:block rounded-xl border border-slate-200 bg-white/50 backdrop-blur-sm overflow-hidden mb-4">
-                  <div className="divide-y divide-slate-100">
+                <div className={`hidden lg:block rounded-xl border ${mounted && theme === 'dark' ? 'border-slate-700 bg-slate-800/50' : 'border-slate-200 bg-white/50'} backdrop-blur-sm overflow-hidden mb-4`}>
+                  <div className={`divide-y ${mounted && theme === 'dark' ? 'divide-slate-700' : 'divide-slate-100'}`}>
                     {Array.from({ length: 6 }).map((_, i) => (
                       <div key={i} className="flex items-center gap-4 py-4 px-6 animate-fade-in">
                         <Skeleton className="h-12 w-12 rounded-full" />
@@ -674,7 +655,7 @@ export default function UsuariosPage() {
               {usersLoading && (
                 <div className="lg:hidden space-y-3 mb-4">
                   {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 p-4">
+                    <div key={i} className={`${mounted && theme === 'dark' ? 'bg-slate-800/80 dark:border-slate-700' : 'bg-white/80 border-slate-200'} backdrop-blur-sm rounded-xl border p-4`}>
                       <div className="flex items-center gap-4">
                         <Skeleton className="h-12 w-12 rounded-full" />
                         <div className="flex-1 space-y-2">
@@ -696,30 +677,30 @@ export default function UsuariosPage() {
                             {!usersLoading && (
                             <>
                             {/* Vista Desktop - Tabla */}
-                            <div className="hidden lg:block rounded-xl border border-slate-200 bg-white/50 backdrop-blur-sm overflow-x-auto">
+                            <div className={`hidden lg:block rounded-xl border ${mounted && theme === 'dark' ? 'border-slate-700 bg-slate-800/50' : 'border-slate-200 bg-white/50'} backdrop-blur-sm overflow-x-auto`}>
                               <div className="min-h-[400px] transition-all duration-700 ease-in-out">
                                 <table className="w-full table-fixed min-w-full">
-                                  <thead className="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-slate-200">
+                                  <thead className={`bg-gradient-to-r ${mounted && theme === 'dark' ? 'from-slate-800 to-slate-700 border-slate-600' : 'from-slate-50 to-blue-50 border-slate-200'} border-b`}>
                                     <tr>
-                                      <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '40%'}}>
+                                      <th className={`text-left py-4 px-6 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} font-semibold`} style={{width: '40%'}}>
                                         <div className="flex items-center gap-2">
                                           <Users className="w-4 h-4" />
 {t('admin.users.table.user')}
                                         </div>
                                       </th>
-                                      <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
+                                      <th className={`text-left py-4 px-6 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} font-semibold`} style={{width: '15%'}}>
                                         <div className="flex items-center gap-2">
                                           <Shield className="w-4 h-4" />
 {t('admin.users.table.role')}
                                         </div>
                                       </th>
-                                      <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
+                                      <th className={`text-left py-4 px-6 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} font-semibold`} style={{width: '15%'}}>
                                         <div className="flex items-center gap-2">
                                           <Calendar className="w-4 h-4" />
 {t('admin.users.table.createdAt')}
                                         </div>
                                       </th>
-                                      <th className="text-left py-4 px-6 text-slate-700 font-semibold" style={{width: '15%'}}>
+                                      <th className={`text-left py-4 px-6 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} font-semibold`} style={{width: '15%'}}>
                                         <div className="flex items-center gap-2">
                                           <Settings className="w-4 h-4" />
 {t('admin.users.table.actions')}
@@ -727,11 +708,11 @@ export default function UsuariosPage() {
                                       </th>
                                     </tr>
                                   </thead>
-                                  <tbody className="divide-y divide-slate-100">
+                                  <tbody className={`divide-y ${mounted && theme === 'dark' ? 'divide-slate-700' : 'divide-slate-100'}`}>
                   {pagedUsers.map((user, index) => (
                                       <tr 
                     key={user.id}
-                    className={`hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-300 ease-out group ${flashUserId === user.id ? 'animate-[pulse_1.2s_ease-in-out_2] bg-green-50/70' : ''}`}
+                    className={`${mounted && theme === 'dark' ? 'hover:bg-slate-700/50' : 'hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50'} transition-all duration-300 ease-out group ${flashUserId === user.id ? (mounted && theme === 'dark' ? 'animate-[pulse_1.2s_ease-in-out_2] bg-green-900/30' : 'animate-[pulse_1.2s_ease-in-out_2] bg-green-50/70') : ''}`}
                                         style={didInitialAnimate ? undefined : {
                                           animationDelay: `${index * 30}ms`,
                                           animationName: 'fadeInUp',
@@ -742,8 +723,8 @@ export default function UsuariosPage() {
                                       >
                                         <td className="py-4 px-6" style={{width: '40%'}}>
                                           <div className="flex items-center gap-4">
-                                            <Avatar className="h-12 w-12 ring-2 ring-slate-100 group-hover:ring-blue-200 transition-all duration-200 flex-shrink-0">
-                                              <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-800 font-semibold">
+                                            <Avatar className={`h-12 w-12 ring-2 ${mounted && theme === 'dark' ? 'ring-slate-700 group-hover:ring-blue-600' : 'ring-slate-100 group-hover:ring-blue-200'} transition-all duration-200 flex-shrink-0`}>
+                                              <AvatarFallback className={`bg-gradient-to-br ${mounted && theme === 'dark' ? 'from-blue-900/50 to-blue-800/50 text-blue-300' : 'from-blue-100 to-blue-200 text-blue-800'} font-semibold`}>
                                                 {user.fullName
                                                   .split(' ')
                                                   .map((n) => n[0])
@@ -752,24 +733,24 @@ export default function UsuariosPage() {
                                               </AvatarFallback>
                                             </Avatar>
                                             <div className="min-w-0 flex-1">
-                                              <div className="font-semibold text-slate-900 group-hover:text-blue-900 transition-colors truncate">{user.fullName}</div>
-                                              <div className="text-sm text-slate-600 flex items-center gap-1 truncate">
+                                              <div className={`font-semibold ${mounted && theme === 'dark' ? 'text-white group-hover:text-blue-300' : 'text-slate-900 group-hover:text-blue-900'} transition-colors truncate`}>{user.fullName}</div>
+                                              <div className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'} flex items-center gap-1 truncate`}>
                                                 <Mail className="w-3 h-3 flex-shrink-0" />
                                                 <span className="truncate">{user.email}</span>
                                               </div>
-                                              <div className="text-xs text-slate-400 font-mono truncate">{user.id}</div>
+                                              <div className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'} font-mono truncate`}>{user.id}</div>
                                             </div>
                                           </div>
                                         </td>
                                         <td className="py-4 px-6" style={{width: '15%'}}>
-                                          <Badge className={`${ROLE_COLORS[user.role]} border font-medium px-3 py-1`}>
+                                          <Badge className={`${getRoleColors(user.role, mounted && theme === 'dark')} border font-medium px-3 py-1`}>
                                             {t(`admin.users.roles.${user.role}` as any)}
                                           </Badge>
                                         </td>
                                         <td className="py-4 px-6" style={{width: '15%'}}>
                                           <div className="flex items-center gap-2">
-                                            <Calendar className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                                            <span className="truncate">{user.createdAt ? new Date(user.createdAt).toLocaleDateString('es-VE') : '—'}</span>
+                                            <Calendar className={`w-4 h-4 ${mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'} flex-shrink-0`} />
+                                            <span className={`truncate ${mounted && theme === 'dark' ? 'text-slate-300' : ''}`}>{user.createdAt ? new Date(user.createdAt).toLocaleDateString('es-VE') : '—'}</span>
                                           </div>
                                         </td>
                                         <td className="py-4 px-6" style={{width: '15%'}}>
@@ -778,7 +759,7 @@ export default function UsuariosPage() {
                                               variant="ghost"
                                               size="sm"
                                               onClick={() => handleOpenEdit(user)}
-                                              className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                                              className={`h-8 w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-blue-900/30 hover:text-blue-300' : 'hover:bg-blue-100 hover:text-blue-700'} transition-all duration-200`}
                                             >
                                               <Edit3 className="w-4 h-4" />
                                             </Button>
@@ -798,7 +779,7 @@ export default function UsuariosPage() {
                                               variant="ghost"
                                               size="sm"
                                               onClick={() => handleRequestDelete(user)}
-                                              className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
+                                              className={`h-8 w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-red-900/30 hover:text-red-300' : 'hover:bg-red-100 hover:text-red-700'} transition-all duration-200`}
                                             >
                                               <Trash2 className="w-4 h-4" />
                                             </Button>
@@ -820,7 +801,7 @@ export default function UsuariosPage() {
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleOpenEdit(user); } }}
                   role="button"
                   tabIndex={0}
-                  className={`bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 p-4 md:p-5 hover:shadow-lg transition-all duration-300 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 ${flashUserId === user.id ? 'animate-[pulse_1.2s_ease-in-out_2] ring-2 ring-green-300/60' : ''}`}
+                  className={`${mounted && theme === 'dark' ? 'bg-slate-800/80 dark:border-slate-700' : 'bg-white/80 border-slate-200'} backdrop-blur-sm rounded-xl border p-4 md:p-5 hover:shadow-lg transition-all duration-300 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 ${flashUserId === user.id ? (mounted && theme === 'dark' ? 'animate-[pulse_1.2s_ease-in-out_2] ring-2 ring-green-600/60' : 'animate-[pulse_1.2s_ease-in-out_2] ring-2 ring-green-300/60') : ''}`}
                                   style={didInitialAnimate ? undefined : {
                                     animationDelay: `${index * 25}ms`,
                                     animationName: 'fadeInUp',
@@ -831,8 +812,8 @@ export default function UsuariosPage() {
                                 >
                                                                                                         <div className="flex flex-col gap-3 md:gap-4 w-full">
                                      <div className="flex items-center gap-3 md:gap-4 w-full">
-                                       <Avatar className="h-12 w-12 md:h-14 md:w-14 ring-2 ring-slate-100 group-hover:ring-blue-200 transition-all duration-200 flex-shrink-0">
-                                         <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-800 font-semibold text-sm md:text-base">
+                                       <Avatar className={`h-12 w-12 md:h-14 md:w-14 ring-2 ${mounted && theme === 'dark' ? 'ring-slate-700 group-hover:ring-blue-600' : 'ring-slate-100 group-hover:ring-blue-200'} transition-all duration-200 flex-shrink-0`}>
+                                         <AvatarFallback className={`bg-gradient-to-br ${mounted && theme === 'dark' ? 'from-blue-900/50 to-blue-800/50 text-blue-300' : 'from-blue-100 to-blue-200 text-blue-800'} font-semibold text-sm md:text-base`}>
                                            {user.fullName
                                              .split(' ')
                                              .map((n) => n[0])
@@ -841,41 +822,41 @@ export default function UsuariosPage() {
                                          </AvatarFallback>
                                        </Avatar>
                                        <div className="min-w-0 flex-1">
-                                         <div className="font-semibold text-slate-900 group-hover:text-blue-900 transition-colors text-sm md:text-base">{user.fullName}</div>
-                                         <div className="text-xs md:text-sm text-slate-600 flex items-center gap-1 mt-1">
+                                         <div className={`font-semibold ${mounted && theme === 'dark' ? 'text-white group-hover:text-blue-300' : 'text-slate-900 group-hover:text-blue-900'} transition-colors text-sm md:text-base`}>{user.fullName}</div>
+                                         <div className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'} flex items-center gap-1 mt-1`}>
                                            <Mail className="w-3 h-3 flex-shrink-0" />
                                            <span className="truncate">{user.email}</span>
                                          </div>
-                                         <div className="text-xs text-slate-400 font-mono mt-1">{user.id}</div>
+                                         <div className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'} font-mono mt-1`}>{user.id}</div>
                                        </div>
                                      </div>
                                      <div className="flex flex-col gap-2 w-full">
                                        <div className="flex items-center gap-1 md:gap-2 flex-wrap">
-                                        <Badge className={`${ROLE_COLORS[user.role]} border font-medium px-2 py-1 text-xs pointer-events-none select-none`}>
+                                        <Badge className={`${getRoleColors(user.role, mounted && theme === 'dark')} border font-medium px-2 py-1 text-xs pointer-events-none select-none`}>
                                           {t(`admin.users.roles.${user.role}` as any)}
                                         </Badge>
                                         {user.status === 'activo' ? (
-                                          <Badge className="bg-green-100 text-green-800 border border-green-200 font-medium px-2 py-1 text-xs pointer-events-none select-none">
+                                          <Badge className={`${mounted && theme === 'dark' ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-green-800 border-green-200'} font-medium px-2 py-1 text-xs pointer-events-none select-none`}>
                                             <CheckCircle className="w-3 h-3 mr-1" /> {t('admin.users.status.active')}
                                           </Badge>
                                         ) : (
-                                          <Badge className="bg-red-100 text-red-800 border border-red-200 font-medium px-2 py-1 text-xs pointer-events-none select-none">
+                                          <Badge className={`${mounted && theme === 'dark' ? 'bg-red-900/30 text-red-300 border-red-700' : 'bg-red-100 text-red-800 border-red-200'} font-medium px-2 py-1 text-xs pointer-events-none select-none`}>
                                             <XCircle className="w-3 h-3 mr-1" /> {t('admin.users.status.inactive')}
                                           </Badge>
                                         )}
                                        </div>
-                                       <div className="flex items-center gap-1 text-xs text-slate-500">
+                                       <div className={`flex items-center gap-1 text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                                          <Calendar className="w-3 h-3" />
                                          <span>{new Date(user.createdAt).toLocaleDateString('es-VE')}</span>
                                        </div>
                                      </div>
                                    </div>
-                                                                    <div className="flex items-center justify-end gap-1 md:gap-2 mt-3 md:mt-4 pt-3 md:pt-4 border-t border-slate-100 w-full" onClick={(e) => e.stopPropagation()}>
+                                                                    <div className={`flex items-center justify-end gap-1 md:gap-2 mt-3 md:mt-4 pt-3 md:pt-4 border-t ${mounted && theme === 'dark' ? 'border-slate-700' : 'border-slate-100'} w-full`} onClick={(e) => e.stopPropagation()}>
                                                                       <Button
                                                                         variant="ghost"
                                                                         size="sm"
                                                                         onClick={(e) => { e.stopPropagation(); handleOpenEdit(user); }}
-                                                                        className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                                                                        className={`h-7 w-7 md:h-8 md:w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-blue-900/30 hover:text-blue-300' : 'hover:bg-blue-100 hover:text-blue-700'} transition-all duration-200`}
                                                                       >
                                                                         <Edit3 className="w-3 h-3 md:w-4 md:h-4" />
                                                                       </Button>
@@ -883,7 +864,7 @@ export default function UsuariosPage() {
                                                                         variant="ghost"
                                                                         size="sm"
                                                                         onClick={(e) => { e.stopPropagation(); handleRequestDelete(user); }}
-                                                                        className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
+                                                                        className={`h-7 w-7 md:h-8 md:w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-red-900/30 hover:text-red-300' : 'hover:bg-red-100 hover:text-red-700'} transition-all duration-200`}
                                                                       >
                                                                         <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
                                                                       </Button>
@@ -896,7 +877,7 @@ export default function UsuariosPage() {
                             {filteredUsers.length === 0 && (
                               <div className="text-center py-12 md:py-16">
                                 <div 
-                                  className="flex flex-col items-center gap-3 md:gap-4 text-slate-500"
+                                  className={`flex flex-col items-center gap-3 md:gap-4 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}
                                   style={didInitialAnimate ? undefined : {
                                     animationName: 'fadeInUp',
                                     animationDuration: '0.45s',
@@ -904,7 +885,7 @@ export default function UsuariosPage() {
                                     animationFillMode: 'forwards'
                                   }}
                                 >
-                                  <Users className="w-10 h-10 md:w-12 md:h-12 text-slate-300" />
+                                  <Users className={`w-10 h-10 md:w-12 md:h-12 ${mounted && theme === 'dark' ? 'text-slate-600' : 'text-slate-300'}`} />
                                   <p className="text-base md:text-lg font-medium">{t('admin.users.empty.noUsersFound')}</p>
                                   <p className="text-xs md:text-sm">{t('admin.users.empty.tryAdjustFilters')}</p>
                                 </div>
@@ -920,7 +901,7 @@ export default function UsuariosPage() {
                                     <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
                                       <ChevronLeft className="w-4 h-4" />
                                     </Button>
-                                    <span className="text-xs text-slate-600 w-14 text-center">{page}/{totalPages}</span>
+                                    <span className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'} w-14 text-center`}>{page}/{totalPages}</span>
                                     <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
                                       <ChevronRight className="w-4 h-4" />
                                     </Button>

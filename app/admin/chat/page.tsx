@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,12 +17,19 @@ import { useNotifications } from '@/hooks/use-notifications';
 import { MessageSquare, ArrowLeft, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { ChatMessage } from '@/lib/types/chat';
+import { useTheme } from 'next-themes';
 
 export default function AdminChatPage() {
     const [sidebarExpanded, setSidebarExpanded] = useState(true);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { adminId } = useAdminContext();
     const router = useRouter();
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+    
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Estado de navegación: 'list' o 'chat'
     const [view, setView] = useState<'list' | 'chat'>('list');
@@ -102,7 +109,7 @@ export default function AdminChatPage() {
     );
 
     return (
-        <div className="min-h-screen flex overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className={`min-h-screen flex overflow-x-hidden ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
             <Sidebar
                 isExpanded={sidebarExpanded}
                 setIsExpanded={setSidebarExpanded}
@@ -131,15 +138,15 @@ export default function AdminChatPage() {
                     {/* Vista: Lista de Conversaciones */}
                     {view === 'list' && (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+                            <Card className={`${mounted && theme === 'dark' ? 'bg-slate-800/70 dark:border-slate-700' : 'bg-white/80 border-slate-200'} backdrop-blur-sm hover:shadow-lg transition-shadow`}>
                                 <CardHeader>
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <CardTitle className="text-lg md:text-xl font-semibold flex items-center gap-2">
-                                                <Users className="h-5 w-5 text-blue-600" />
+                                            <CardTitle className={`text-lg md:text-xl font-semibold flex items-center gap-2 ${mounted && theme === 'dark' ? 'text-white' : ''}`}>
+                                                <Users className={`h-5 w-5 ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                                                 Conversaciones Activas
                                             </CardTitle>
-                                            <p className="text-xs md:text-sm text-slate-600 mt-1">
+                                            <p className={`text-xs md:text-sm mt-1 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                                                 Selecciona una conversación para comenzar a chatear
                                             </p>
                                         </div>
@@ -160,15 +167,15 @@ export default function AdminChatPage() {
                     {view === 'chat' && (
                         <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                             {/* Card del Chat */}
-                            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg">
-                                <CardHeader className="px-2.5 py-2 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                            <Card className={`${mounted && theme === 'dark' ? 'bg-slate-800/70 dark:border-slate-700' : 'bg-white/80 border-slate-200'} backdrop-blur-sm shadow-lg`}>
+                                <CardHeader className={`px-2.5 py-2 border-b ${mounted && theme === 'dark' ? 'border-slate-700 bg-gradient-to-r from-slate-800 to-slate-700' : 'border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50'}`}>
                                     <div className="flex items-center gap-3">
                                         {/* Botón Volver */}
                                         <Button
                                             variant="ghost"
                                             size="sm"
                                             onClick={handleBackToList}
-                                            className="h-8 w-8 p-0 hover:bg-blue-100 transition-all"
+                                            className={`h-8 w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-slate-700' : 'hover:bg-blue-100'} transition-all`}
                                         >
                                             <ArrowLeft className="h-4 w-4" />
                                         </Button>
@@ -177,8 +184,8 @@ export default function AdminChatPage() {
                                             <MessageSquare className="h-5 w-5 text-white" />
                                         </div>
                                         <div>
-                                            <CardTitle className="text-base font-semibold">{selectedUserName}</CardTitle>
-                                            <p className="text-xs text-slate-600">Usuario China</p>
+                                            <CardTitle className={`text-base font-semibold ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{selectedUserName}</CardTitle>
+                                            <p className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Usuario China</p>
                                         </div>
                                     </div>
                                 </CardHeader>

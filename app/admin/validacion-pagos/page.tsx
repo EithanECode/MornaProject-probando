@@ -963,7 +963,7 @@ const PaymentValidationDashboard: React.FC = () => {
           <div className="p-4 md:p-5 lg:p-6">
             {/* Error visible */}
             {error && (
-              <div className="mb-4 md:mb-6 flex items-start justify-between gap-3 rounded-lg border border-red-300 bg-red-50 p-3 text-red-800">
+              <div className={`mb-4 md:mb-6 flex items-start justify-between gap-3 rounded-lg border ${mounted && theme === 'dark' ? 'border-red-800 bg-red-900/30' : 'border-red-300 bg-red-50'} p-3 ${mounted && theme === 'dark' ? 'text-red-200' : 'text-red-800'}`}>
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="mt-0.5" size={18} />
                   <div>

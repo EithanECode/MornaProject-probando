@@ -233,21 +233,21 @@ export default function VenezuelaOrdersTabContent() {
   function getBoxBadge(stateNum?: number) {
     const s = Number(stateNum ?? 0);
     const base = 'border';
-    if (s <= 1) return { label: t('chinese.ordersPage.boxBadges.new'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
-    if (s === 2) return { label: t('chinese.ordersPage.boxBadges.packed'), className: `${base} bg-green-100 text-green-800 border-green-200` };
-    if (s === 3) return { label: t('chinese.ordersPage.boxBadges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
-    if (s >= 4) return { label: t('chinese.ordersPage.boxBadges.shipped'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
-    return { label: t('chinese.ordersPage.boxBadges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    if (s <= 1) return { label: t('chinese.ordersPage.boxBadges.new'), className: `${base} bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-700` };
+    if (s === 2) return { label: t('chinese.ordersPage.boxBadges.packed'), className: `${base} bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-700` };
+    if (s === 3) return { label: t('chinese.ordersPage.boxBadges.inContainer'), className: `${base} bg-cyan-100 dark:bg-cyan-900/30 text-cyan-800 dark:text-cyan-300 border-cyan-200 dark:border-cyan-700` };
+    if (s >= 4) return { label: t('chinese.ordersPage.boxBadges.shipped'), className: `${base} bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700` };
+    return { label: t('chinese.ordersPage.boxBadges.state', { num: s }), className: `${base} bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700` };
   }
   // Lógica de badges de contenedores replicada exactamente de app/venezuela/pedidos/page.tsx
   function getContainerBadge(stateNum?: number) {
     // Reutilizamos las mismas keys de China para evitar traducir de nuevo
     const s = Number(stateNum ?? 0);
     const base = 'border';
-    if (s <= 1) return { label: t('chinese.ordersPage.containerBadges.new'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
-    if (s === 2) return { label: t('chinese.ordersPage.containerBadges.loading'), className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
-    if (s >= 3) return { label: t('chinese.ordersPage.containerBadges.shipped'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
-    return { label: t('chinese.ordersPage.containerBadges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    if (s <= 1) return { label: t('chinese.ordersPage.containerBadges.new'), className: `${base} bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-700` };
+    if (s === 2) return { label: t('chinese.ordersPage.containerBadges.loading'), className: `${base} bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-700` };
+    if (s >= 3) return { label: t('chinese.ordersPage.containerBadges.shipped'), className: `${base} bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700` };
+    return { label: t('chinese.ordersPage.containerBadges.state', { num: s }), className: `${base} bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700` };
   }
   
 
@@ -618,7 +618,7 @@ export default function VenezuelaOrdersTabContent() {
         <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+              <CardTitle className={`text-lg font-semibold flex items-center gap-2 ${mounted && theme === 'dark' ? 'text-white' : ''}`}>
                 <Boxes className="h-5 w-5" /> {t('venezuela.pedidos.tabs.boxes')}
               </CardTitle>
               <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
@@ -628,9 +628,9 @@ export default function VenezuelaOrdersTabContent() {
           </CardHeader>
           <CardContent>
       {boxes.length === 0 ? (
-              <div className="text-center py-10 text-sm text-slate-500">{t('venezuela.pedidos.emptyBoxesTitle')}</div>
+              <div className={`text-center py-10 text-sm text-slate-500 dark:text-slate-400`}>{t('venezuela.pedidos.emptyBoxesTitle')}</div>
       ) : filteredBoxesList.length === 0 ? (
-              <div className="text-center py-10 text-sm text-slate-500">{t('venezuela.pedidos.emptyBoxesDesc')}</div>
+              <div className={`text-center py-10 text-sm text-slate-500 dark:text-slate-400`}>{t('venezuela.pedidos.emptyBoxesDesc')}</div>
             ) : (
               <div className="space-y-3">
         {(() => { const total=filteredBoxesList.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, boxesPage); return filteredBoxesList.slice(start,end).map((box, idx) => {
@@ -639,12 +639,12 @@ export default function VenezuelaOrdersTabContent() {
                   const stateNum = (box.state ?? 1) as number;
                   const countKey = box.box_id ?? box.boxes_id ?? box.id ?? id;
                   return (
-                    <div key={`${id}`} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300">
+                    <div key={`${id}`} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600 hover:shadow-md transition-all duration-300`}>
                       <div className="min-w-0 flex items-center gap-4">
-                        <div className="p-3 bg-indigo-100 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600" /></div>
+                        <div className={`p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg`}><Boxes className={`h-5 w-5 text-indigo-600 dark:text-indigo-400`} /></div>
                         <div className="space-y-1">
-                          <h3 className="font-semibold text-slate-900 truncate">#BOX-{id}</h3>
-                          <div className="flex flex-wrap gap-4 text-xs text-slate-500">
+                          <h3 className={`font-semibold text-slate-900 dark:text-white truncate`}>#BOX-{id}</h3>
+                          <div className={`flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400`}>
                             <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created ? new Date(created).toLocaleString('es-ES') : '—'}</span>
                             <span className="flex items-center gap-1"><List className="h-3 w-3" />{t('venezuela.pedidos.labels.ordersCount')} {orderCountsByBoxMain[countKey as any] ?? 0}</span>
                           </div>
@@ -715,7 +715,7 @@ export default function VenezuelaOrdersTabContent() {
         <Card className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-700">
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+              <CardTitle className={`text-lg font-semibold flex items-center gap-2 ${mounted && theme === 'dark' ? 'text-white' : ''}`}>
                 <Boxes className="h-5 w-5" /> {t('venezuela.pedidos.tabs.containers')}
               </CardTitle>
               <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
@@ -725,9 +725,9 @@ export default function VenezuelaOrdersTabContent() {
           </CardHeader>
           <CardContent>
       {containers.length === 0 ? (
-              <div className="text-center py-10 text-sm text-slate-500">{t('venezuela.pedidos.emptyContainersTitle')}</div>
+              <div className={`text-center py-10 text-sm text-slate-500 dark:text-slate-400`}>{t('venezuela.pedidos.emptyContainersTitle')}</div>
       ) : filteredContainersList.length === 0 ? (
-              <div className="text-center py-10 text-sm text-slate-500">{t('venezuela.pedidos.emptyContainersDesc')}</div>
+              <div className={`text-center py-10 text-sm text-slate-500 dark:text-slate-400`}>{t('venezuela.pedidos.emptyContainersDesc')}</div>
             ) : (
               <div className="space-y-3">
     {(() => { const total=filteredContainersList.length; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, containersPage); return filteredContainersList.slice(start,end).map((container, idx) => {
@@ -735,12 +735,12 @@ export default function VenezuelaOrdersTabContent() {
                   const created = container.creation_date ?? container.created_at ?? '';
                   const stateNum = (container.state ?? 1) as number;
                   return (
-          <div key={`${id}`} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300">
+          <div key={`${id}`} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600 hover:shadow-md transition-all duration-300`}>
             <div className="min-w-0 flex items-center gap-4">
-                        <div className="p-3 bg-indigo-100 rounded-lg"><Boxes className="h-5 w-5 text-indigo-600" /></div>
+                        <div className={`p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg`}><Boxes className={`h-5 w-5 text-indigo-600 dark:text-indigo-400`} /></div>
                         <div className="space-y-1">
-              <h3 className="font-semibold text-slate-900 truncate">#CONT-{id}</h3>
-              <div className="flex flex-wrap gap-4 text-xs text-slate-500">
+              <h3 className={`font-semibold text-slate-900 dark:text-white truncate`}>#CONT-{id}</h3>
+              <div className={`flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400`}>
                             <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{created ? new Date(created).toLocaleString('es-ES') : '—'}</span>
                           </div>
                         </div>

@@ -27,6 +27,7 @@ import type { ChatConversation } from '@/lib/types/chat';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 
 interface ChatListProps {
     onSelectConversation: (userId: string, userName: string) => void;
@@ -45,6 +46,12 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
     const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
     const supabase = getSupabaseBrowserClient();
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+    
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         const loadConversations = async () => {
@@ -225,13 +232,13 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
         <div className="space-y-4">
             {/* Buscador */}
             <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`} />
                 <Input
                     type="text"
                     placeholder="Buscar conversación..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-slate-50 border-slate-200 focus:border-blue-300 focus:ring-blue-200 transition-all"
+                    className={`pl-10 ${mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : 'bg-slate-50 border-slate-200'} focus:border-blue-300 focus:ring-blue-200 transition-all`}
                 />
             </div>
 
@@ -239,8 +246,8 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
             <ScrollArea className="h-[calc(100vh-20rem)] pr-4">
                 {paginatedConversations.length === 0 ? (
                     <div className="text-center py-12 animate-in fade-in duration-300">
-                        <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                        <p className="text-sm text-slate-500">
+                        <MessageCircle className={`w-12 h-12 ${mounted && theme === 'dark' ? 'text-slate-600' : 'text-slate-300'} mx-auto mb-3`} />
+                        <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                             {searchQuery ? 'No se encontraron conversaciones' : 'No hay conversaciones aún'}
                         </p>
                     </div>
@@ -250,8 +257,8 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
                             <div
                                 key={conv.user_id}
                                 className={`relative rounded-xl transition-all duration-300 group ${selectedUserId === conv.user_id
-                                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 shadow-md'
-                                    : 'bg-white hover:bg-slate-50 border-2 border-slate-100 hover:border-slate-200 hover:shadow-sm'
+                                    ? (mounted && theme === 'dark' ? 'bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border-2 border-blue-600 shadow-md' : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 shadow-md')
+                                    : (mounted && theme === 'dark' ? 'bg-slate-800 hover:bg-slate-700 border-2 border-slate-700 hover:border-slate-600 hover:shadow-sm' : 'bg-white hover:bg-slate-50 border-2 border-slate-100 hover:border-slate-200 hover:shadow-sm')
                                     }`}
                             >
                                 <button
@@ -274,25 +281,25 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
 
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between mb-1">
-                                                <h3 className="font-semibold text-slate-800 truncate group-hover:text-blue-600 transition-colors">
+                                                <h3 className={`font-semibold truncate transition-colors ${mounted && theme === 'dark' ? 'text-white group-hover:text-blue-300' : 'text-slate-800 group-hover:text-blue-600'}`}>
                                                     {conv.user_name}
                                                 </h3>
                                             </div>
 
-                                            <p className="text-xs text-slate-500 truncate mb-2">
+                                            <p className={`text-xs truncate mb-2 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                                                 {conv.user_email}
                                             </p>
 
                                             {/* Mensaje con hora inline */}
                                             {conv.last_message && (
-                                                <p className="text-sm text-slate-600 truncate flex items-center gap-2">
+                                                <p className={`text-sm truncate flex items-center gap-2 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                                                     <span className="flex-1 truncate">
                                                         {conv.last_file_url ? '📎 Archivo adjunto' : conv.last_message}
                                                     </span>
                                                     {conv.last_message_time && (
                                                         <>
-                                                            <span className="text-slate-400">•</span>
-                                                            <span className="text-xs text-slate-400 shrink-0">
+                                                            <span className={mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}>•</span>
+                                                            <span className={`text-xs shrink-0 ${mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>
                                                                 {format(new Date(conv.last_message_time), 'HH:mm', { locale: es })}
                                                             </span>
                                                         </>
@@ -310,10 +317,10 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className="h-8 w-8 p-0 hover:bg-slate-200 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                className={`h-8 w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-slate-700' : 'hover:bg-slate-200'} opacity-0 group-hover:opacity-100 transition-opacity`}
                                                 onClick={(e) => e.stopPropagation()}
                                             >
-                                                <MoreVertical className="h-4 w-4 text-slate-600" />
+                                                <MoreVertical className={`h-4 w-4 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`} />
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="w-48">
@@ -339,8 +346,8 @@ export function ChatList({ onSelectConversation, selectedUserId, currentUserId }
 
             {/* Paginación */}
             {totalPages > 1 && (
-                <div className="flex items-center justify-between pt-4 border-t border-slate-200">
-                    <p className="text-sm text-slate-600">
+                <div className={`flex items-center justify-between pt-4 border-t ${mounted && theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}>
+                    <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                         Página {currentPage} de {totalPages}
                     </p>
                     <div className="flex gap-2">

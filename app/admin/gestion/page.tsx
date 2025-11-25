@@ -865,7 +865,7 @@ export default function ConfiguracionPage() {
                   variant="ghost"
                   size="sm"
                   onClick={handleMobileMenuToggle}
-                  className="lg:hidden p-2 hover:bg-slate-100 transition-colors"
+                  className={`lg:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors`}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -920,15 +920,15 @@ export default function ConfiguracionPage() {
 
   <div className={`w-full max-w-none space-y-6 md:space-y-8 ${mounted && theme === 'dark' ? 'bg-slate-900' : ''}`}>
           {/* Alert de advertencia */}
-          <Alert className="border-orange-200 bg-orange-50">
-            <AlertTriangle className="h-4 w-4 text-orange-600" />
-            <AlertDescription className="text-orange-800">
+          <Alert className={`border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-900/30`}>
+            <AlertTriangle className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+            <AlertDescription className={`text-orange-800 dark:text-orange-200`}>
               <strong>{t('admin.management.warning.title')}</strong> {t('admin.management.warning.description')}
             </AlertDescription>
           </Alert>
 
           <Tabs defaultValue="shipping" className="space-y-6 md:space-y-8">
-            <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 bg-white/60 backdrop-blur-sm place-items-center">
+            <TabsList className={`grid w-full grid-cols-1 md:grid-cols-3 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm place-items-center`}>
               <TabsTrigger value="shipping" className="flex items-center space-x-2 text-xs md:text-sm">
                 <Package className="w-4 h-4" />
                 <span>{t('admin.management.tabs.shipping')}</span>
@@ -947,13 +947,13 @@ export default function ConfiguracionPage() {
             <TabsContent value="shipping" className="space-y-6 md:space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 {/* Envío Aéreo */}
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
                   <CardHeader>
-                    <CardTitle className="flex items-center text-black text-base md:text-lg">
-                      <Plane className="w-5 h-5 mr-2 text-blue-600" />
+                    <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
+                      <Plane className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
 {t('admin.management.shipping.airExpress')}
                     </CardTitle>
-                    <CardDescription className="text-black text-sm">
+                    <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
 {t('admin.management.shipping.airDescription')}
                     </CardDescription>
                   </CardHeader>
@@ -961,7 +961,7 @@ export default function ConfiguracionPage() {
                     <div className="space-y-2">
                       <Label htmlFor="airRate" className="text-sm md:text-base">{t('admin.management.shipping.ratePerKg')}</Label>
                       <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                        <DollarSign className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500 w-4 h-4`} />
                         <Input
                           id="airRate"
                           type="number"
@@ -972,7 +972,7 @@ export default function ConfiguracionPage() {
                           className="pl-10"
                         />
                       </div>
-                      <p className="text-xs text-slate-500">{t('admin.management.shipping.costPerKg')}</p>
+                      <p className={`text-xs text-slate-500 dark:text-slate-400`}>{t('admin.management.shipping.costPerKg')}</p>
                     </div>
                     
                     <Separator />
@@ -982,13 +982,13 @@ export default function ConfiguracionPage() {
                 </Card>
 
                 {/* Envío Marítimo */}
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
                   <CardHeader>
-                    <CardTitle className="flex items-center text-black text-base md:text-lg">
-                      <Ship className="w-5 h-5 mr-2 text-teal-600" />
+                    <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
+                      <Ship className="w-5 h-5 mr-2 text-teal-600 dark:text-teal-400" />
 {t('admin.management.shipping.seaEconomic')}
                     </CardTitle>
-                    <CardDescription className="text-black text-sm">
+                    <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
                       {t('admin.management.shipping.seaDescription')}
                     </CardDescription>
                   </CardHeader>
@@ -996,7 +996,7 @@ export default function ConfiguracionPage() {
                     <div className="space-y-2">
                       <Label htmlFor="seaRate" className="text-sm md:text-base">{t('admin.management.shipping.ratePerCubicMeter')}</Label>
                       <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                        <DollarSign className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500 w-4 h-4`} />
                         <Input
                           id="seaRate"
                           type="number"
@@ -1007,7 +1007,7 @@ export default function ConfiguracionPage() {
                           className="pl-10"
                         />
                       </div>
-                      <p className="text-xs text-slate-500">{t('admin.management.shipping.costPerCubicMeter')}</p>
+                      <p className={`text-xs text-slate-500 dark:text-slate-400`}>{t('admin.management.shipping.costPerCubicMeter')}</p>
                     </div>
                     
                     <Separator />
@@ -1022,21 +1022,21 @@ export default function ConfiguracionPage() {
             <TabsContent value="financial" className="space-y-6 md:space-y-8">
               <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 {/* Tarjeta Venezuela */}
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
                   <CardHeader>
-                    <CardTitle className="flex items-center text-black text-base md:text-lg">
-                      <Globe className="w-5 h-5 mr-2 text-green-600" />
+                    <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
+                      <Globe className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
                       {t('admin.management.financial.venezuelaRateTitle') !== 'admin.management.financial.venezuelaRateTitle' ? t('admin.management.financial.venezuelaRateTitle') : 'Tasa Venezuela'}
                     </CardTitle>
-                    <CardDescription className="text-black text-sm">
+                    <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
                       {t('admin.management.financial.venezuelaRateDesc') !== 'admin.management.financial.venezuelaRateDesc' ? t('admin.management.financial.venezuelaRateDesc') : 'Valor de cambio USD → Bs'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="space-y-3 p-4 border border-green-200 rounded-lg bg-green-50/50">
+                    <div className={`space-y-3 p-4 border border-green-200 dark:border-green-800 rounded-lg bg-green-50/50 dark:bg-green-900/20`}>
                       <div className="flex items-center gap-2">
                         <span className="text-lg">🇻🇪</span>
-                        <Label className="text-sm font-semibold text-green-800">{t('admin.management.financial.veRateLabel')}</Label>
+                        <Label className={`text-sm font-semibold text-green-800 dark:text-green-300`}>{t('admin.management.financial.veRateLabel')}</Label>
                       </div>
                       <div className="relative">
                         <Input
@@ -1054,13 +1054,13 @@ export default function ConfiguracionPage() {
                           size="sm"
                           onClick={refreshRate}
                           disabled={isLoading || exchangeRateLoading}
-                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100"
+                          className={`absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-slate-700`}
                           title="Actualizar tasa desde BCV"
                         >
                           {exchangeRateLoading ? (
-                            <RefreshCw className="h-4 w-4 animate-spin text-black" />
+                            <RefreshCw className={`h-4 w-4 animate-spin text-black dark:text-white`} />
                           ) : (
-                            <RefreshCw className="h-4 w-4 text-black" />
+                            <RefreshCw className={`h-4 w-4 text-black dark:text-white`} />
                           )}
                         </Button>
                       </div>
@@ -1087,7 +1087,7 @@ export default function ConfiguracionPage() {
                         />
                       </div>
                       {exchangeRateLastUpdated && (
-                        <div className="text-xs text-gray-600 mt-2">
+                        <div className={`text-xs text-gray-600 dark:text-slate-400 mt-2`}>
                           <div className="flex items-center justify-between">
                             <span>{t('admin.management.financial.updated')}</span>
                             <Badge variant="secondary" className="text-xs">
@@ -1106,21 +1106,21 @@ export default function ConfiguracionPage() {
                   </CardContent>
                 </Card>
                 {/* Tarjeta China */}
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
                   <CardHeader>
-                    <CardTitle className="flex items-center text-black text-base md:text-lg">
-                      <Globe className="w-5 h-5 mr-2 text-green-600" />
+                    <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
+                      <Globe className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
                       {t('admin.management.financial.chinaRateTitle') !== 'admin.management.financial.chinaRateTitle' ? t('admin.management.financial.chinaRateTitle') : 'Tasa China'}
                     </CardTitle>
-                    <CardDescription className="text-black text-sm">
+                    <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
                       {t('admin.management.financial.chinaRateDesc') !== 'admin.management.financial.chinaRateDesc' ? t('admin.management.financial.chinaRateDesc') : 'Valor de cambio USD → CNY'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="space-y-3 p-4 border border-red-200 rounded-lg bg-red-50/50">
+                    <div className={`space-y-3 p-4 border border-red-200 dark:border-red-800 rounded-lg bg-red-50/50 dark:bg-red-900/20`}>
                       <div className="flex items-center gap-2">
                         <span className="text-lg">🇨🇳</span>
-                        <Label className="text-sm font-semibold text-red-800">{t('admin.management.financial.cnRateLabel')}</Label>
+                        <Label className={`text-sm font-semibold text-red-800 dark:text-red-300`}>{t('admin.management.financial.cnRateLabel')}</Label>
                       </div>
                       <div className="relative">
                         <Input
@@ -1143,13 +1143,13 @@ export default function ConfiguracionPage() {
                           size="sm"
                           onClick={refreshRateCNY}
                           disabled={isLoading || exchangeRateLoadingCNY}
-                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100"
+                          className={`absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-slate-700`}
                           title="Actualizar tasa desde API"
                         >
                           {exchangeRateLoadingCNY ? (
-                            <RefreshCw className="h-4 w-4 animate-spin text-black" />
+                            <RefreshCw className={`h-4 w-4 animate-spin text-black dark:text-white`} />
                           ) : (
-                            <RefreshCw className="h-4 w-4 text-black" />
+                            <RefreshCw className={`h-4 w-4 text-black dark:text-white`} />
                           )}
                         </Button>
                       </div>
@@ -1176,7 +1176,7 @@ export default function ConfiguracionPage() {
                         />
                       </div>
                       {exchangeRateLastUpdatedCNY && (
-                        <div className="text-xs text-gray-600 mt-2">
+                        <div className={`text-xs text-gray-600 dark:text-slate-400 mt-2`}>
                           <div className="flex items-center justify-between">
                             <span>{t('admin.management.financial.updated')}</span>
                             <Badge variant="secondary" className="text-xs">
@@ -1199,21 +1199,21 @@ export default function ConfiguracionPage() {
               {/* Segunda fila: Tasa Binance y Margen de Ganancia */}
               <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6">
                 {/* Tarjeta Binance */}
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
                   <CardHeader>
-                    <CardTitle className="flex items-center text-black text-base md:text-lg">
-                      <Globe className="w-5 h-5 mr-2 text-green-600" />
+                    <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
+                      <Globe className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
                       {t('admin.management.financial.binanceRateTitle')}
                     </CardTitle>
-                    <CardDescription className="text-black text-sm">
+                    <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
                       {t('admin.management.financial.binanceRateDesc')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="space-y-3 p-4 border border-orange-200 rounded-lg bg-orange-50/50">
+                    <div className={`space-y-3 p-4 border border-orange-200 dark:border-orange-800 rounded-lg bg-orange-50/50 dark:bg-orange-900/20`}>
                       <div className="flex items-center gap-2">
                         <span className="text-lg">🪙</span>
-                        <Label className="text-sm font-semibold text-orange-800">{t('admin.management.financial.binanceRateLabel')}</Label>
+                        <Label className={`text-sm font-semibold text-orange-800 dark:text-orange-300`}>{t('admin.management.financial.binanceRateLabel')}</Label>
                       </div>
                       <div className="relative">
                         <Input
@@ -1233,14 +1233,14 @@ export default function ConfiguracionPage() {
                           title="Edita manualmente la tasa de Binance P2P (consulta en binance.com/es/p2p)"
                         />
                       </div>
-                      <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-xs text-blue-800">
+                      <div className={`mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg`}>
+                        <p className={`text-xs text-blue-800 dark:text-blue-200`}>
                           💡 <strong>{t('admin.management.financial.binanceConsejo')}</strong>{' '}
                           <a 
                             href="https://p2p.binance.com/es/trade/VES/USDT" 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="underline hover:text-blue-600"
+                            className={`underline hover:text-blue-600 dark:hover:text-blue-400`}
                           >
                             {t('admin.management.financial.binanceConsejoLink')}
                           </a>
@@ -1249,16 +1249,16 @@ export default function ConfiguracionPage() {
                       </div>
 
                       {/* Calculadora de Conversión USDT → VES */}
-                      <div className="mt-4 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg">
+                      <div className={`mt-4 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border border-orange-200 dark:border-orange-800 rounded-lg`}>
                         <div className="flex items-center gap-2 mb-3">
-                          <Calculator className="w-5 h-5 text-orange-600" />
-                          <h4 className="text-sm font-semibold text-orange-900">{t('admin.management.financial.calculadoraTitle')}</h4>
+                          <Calculator className={`w-5 h-5 text-orange-600 dark:text-orange-400`} />
+                          <h4 className={`text-sm font-semibold text-orange-900 dark:text-orange-200`}>{t('admin.management.financial.calculadoraTitle')}</h4>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {/* Input USDT */}
                           <div className="space-y-2">
-                            <Label htmlFor="usdtCalc" className="text-xs text-orange-800">{t('admin.management.financial.calculadoraCantidadUSDT')}</Label>
+                            <Label htmlFor="usdtCalc" className={`text-xs text-orange-800 dark:text-orange-300`}>{t('admin.management.financial.calculadoraCantidadUSDT')}</Label>
                             <div className="relative">
                               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-600 font-semibold">₮</span>
                               <Input
@@ -1275,10 +1275,10 @@ export default function ConfiguracionPage() {
 
                           {/* Output VES */}
                           <div className="space-y-2">
-                            <Label className="text-xs text-orange-800">{t('admin.management.financial.calculadoraEquivalenteVES')}</Label>
+                            <Label className={`text-xs text-orange-800 dark:text-orange-300`}>{t('admin.management.financial.calculadoraEquivalenteVES')}</Label>
                             <div className="relative">
-                              <div className="flex items-center h-10 px-3 bg-white border border-orange-300 rounded-md">
-                                <span className="text-lg font-bold text-orange-600">
+                              <div className={`flex items-center h-10 px-3 bg-white dark:bg-slate-700 border border-orange-300 dark:border-orange-700 rounded-md`}>
+                                <span className={`text-lg font-bold text-orange-600 dark:text-orange-400`}>
                                   {(usdtAmount * config.binanceRate).toLocaleString('es-VE', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
@@ -1290,8 +1290,8 @@ export default function ConfiguracionPage() {
                         </div>
 
                         {/* Info adicional */}
-                        <div className="mt-3 pt-3 border-t border-orange-200">
-                          <p className="text-xs text-orange-700">
+                        <div className={`mt-3 pt-3 border-t border-orange-200 dark:border-orange-800`}>
+                          <p className={`text-xs text-orange-700 dark:text-orange-300`}>
                             📊 {t('admin.management.financial.calculadoraUsandoTasa')} <span className="font-semibold">{config.binanceRate} Bs/USDT</span>
                           </p>
                         </div>
@@ -1301,13 +1301,13 @@ export default function ConfiguracionPage() {
                 </Card>
 
                 {/* Tarjeta Margen de Ganancia (movida aquí) */}
-                <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
                   <CardHeader>
-                    <CardTitle className="flex items-center text-black text-base md:text-lg">
-                      <Percent className="w-5 h-5 mr-2 text-purple-600" />
+                    <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
+                      <Percent className="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" />
                       {t('admin.management.financial.profitMarginTitle')}
                     </CardTitle>
-                    <CardDescription className="text-black text-sm">
+                    <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
                       {t('admin.management.financial.profitabilityConfig')}
                     </CardDescription>
                   </CardHeader>
@@ -1335,7 +1335,7 @@ export default function ConfiguracionPage() {
                           disabled={isLoading}
                       />
                       {(config.profitMargin < 0 || config.profitMargin > 100) && (
-                        <p className="text-xs text-red-600">El margen debe estar entre 0% y 100%.</p>
+                        <p className={`text-xs text-red-600 dark:text-red-400`}>El margen debe estar entre 0% y 100%.</p>
                       )}
                     </div>
                   </CardContent>
@@ -1344,9 +1344,9 @@ export default function ConfiguracionPage() {
 
               {/* Alert azul debajo de las tasas */}
               <div className="mt-4">
-                <Alert className="border-blue-200 bg-blue-50">
-                  <CheckCircle className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-700">
+                <Alert className={`border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30`}>
+                  <CheckCircle className={`h-4 w-4 text-blue-600 dark:text-blue-400`} />
+                  <AlertDescription className={`text-blue-700 dark:text-blue-200`}>
                     <div dangerouslySetInnerHTML={{ __html: t('admin.management.financial.configurationAlert') }} />
                   </AlertDescription>
                 </Alert>
@@ -1356,13 +1356,13 @@ export default function ConfiguracionPage() {
             {/* TAB: Notificaciones */}
             {/* TAB: Notificaciones */}
             <TabsContent value="notifications" className="space-y-6 md:space-y-8">
-              <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+              <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-black text-base md:text-lg">
-                    <Bell className="w-5 h-5 mr-2 text-red-600" />
+                  <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
+                    <Bell className="w-5 h-5 mr-2 text-red-600 dark:text-red-400" />
                     {t('admin.management.notifications.notificationSystem')}
                   </CardTitle>
-                  <CardDescription className="text-black text-sm">
+                  <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
                     {t('admin.management.notifications.description')}
                   </CardDescription>
                 </CardHeader>
@@ -1378,7 +1378,7 @@ export default function ConfiguracionPage() {
                       onChange={(e) => updateConfig('alertsAfterDays', Number(e.target.value))}
                       disabled={isLoading}
                     />
-                    <p className="text-xs text-slate-500">{t('admin.management.notifications.alertAfterDaysHelp')}</p>
+                    <p className={`text-xs text-slate-500 dark:text-slate-400`}>{t('admin.management.notifications.alertAfterDaysHelp')}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -1388,38 +1388,38 @@ export default function ConfiguracionPage() {
           </Tabs>
 
           {/* Panel de Resumen */}
-          <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+          <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
             <CardHeader>
-              <CardTitle className="flex items-center text-black text-base md:text-lg">
-                <Calculator className="w-5 h-5 mr-2 text-blue-600" />
+              <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
+                <Calculator className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
                 {t('admin.management.summary.title')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
-                <div className="text-center p-3 bg-white rounded-lg">
-                  <p className="text-slate-600">{t('admin.management.summary.airShipping')}</p>
-                  <p className="font-bold text-blue-600">{formatCurrency(config.airShippingRate)}/kg</p>
+                <div className={`text-center p-3 bg-white dark:bg-slate-700 rounded-lg`}>
+                  <p className={`text-slate-600 dark:text-slate-300`}>{t('admin.management.summary.airShipping')}</p>
+                  <p className={`font-bold text-blue-600 dark:text-blue-400`}>{formatCurrency(config.airShippingRate)}/kg</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg">
-                  <p className="text-slate-600">{t('admin.management.summary.seaShipping')}</p>
-                  <p className="font-bold text-teal-600">{formatCurrency(config.seaShippingRate)}/m³</p>
+                <div className={`text-center p-3 bg-white dark:bg-slate-700 rounded-lg`}>
+                  <p className={`text-slate-600 dark:text-slate-300`}>{t('admin.management.summary.seaShipping')}</p>
+                  <p className={`font-bold text-teal-600 dark:text-teal-400`}>{formatCurrency(config.seaShippingRate)}/m³</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg">
-                  <p className="text-slate-600">🇻🇪 USD → Bs</p>
-                  <p className="font-bold text-green-600">{config.auto_update_exchange_rate ? (currentExchangeRate || config.usdRate) : config.usdRate} Bs</p>
+                <div className={`text-center p-3 bg-white dark:bg-slate-700 rounded-lg`}>
+                  <p className={`text-slate-600 dark:text-slate-300`}>🇻🇪 USD → Bs</p>
+                  <p className={`font-bold text-green-600 dark:text-green-400`}>{config.auto_update_exchange_rate ? (currentExchangeRate || config.usdRate) : config.usdRate} Bs</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg">
-                  <p className="text-slate-600">🇨🇳 USD → CNY</p>
-                  <p className="font-bold text-red-600">{config.auto_update_exchange_rate_cny ? (currentExchangeRateCNY || config.cnyRate) : config.cnyRate} CNY</p>
+                <div className={`text-center p-3 bg-white dark:bg-slate-700 rounded-lg`}>
+                  <p className={`text-slate-600 dark:text-slate-300`}>🇨🇳 USD → CNY</p>
+                  <p className={`font-bold text-red-600 dark:text-red-400`}>{config.auto_update_exchange_rate_cny ? (currentExchangeRateCNY || config.cnyRate) : config.cnyRate} CNY</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg">
-                  <p className="text-slate-600">🪙 USDT → VES</p>
-                  <p className="font-bold text-orange-600">{config.binanceRate} Bs</p>
+                <div className={`text-center p-3 bg-white dark:bg-slate-700 rounded-lg`}>
+                  <p className={`text-slate-600 dark:text-slate-300`}>🪙 USDT → VES</p>
+                  <p className={`font-bold text-orange-600 dark:text-orange-400`}>{config.binanceRate} Bs</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg">
-                  <p className="text-slate-600">{t('admin.management.summary.margin')}</p>
-                  <p className="font-bold text-purple-600">{config.profitMargin}%</p>
+                <div className={`text-center p-3 bg-white dark:bg-slate-700 rounded-lg`}>
+                  <p className={`text-slate-600 dark:text-slate-300`}>{t('admin.management.summary.margin')}</p>
+                  <p className={`font-bold text-purple-600 dark:text-purple-400`}>{config.profitMargin}%</p>
               </div>
             </div>
             </CardContent>

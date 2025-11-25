@@ -1,11 +1,12 @@
 "use client";
 
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Check, CheckCheck, FileText, Download } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
 
 interface MessageBubbleProps {
     message: string | null;
@@ -30,6 +31,12 @@ export const MessageBubble = memo(function MessageBubble({
 }: MessageBubbleProps) {
     const isImage = fileType?.startsWith('image/');
     const isPDF = fileType === 'application/pdf';
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+    
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     return (
         <div
@@ -46,13 +53,13 @@ export const MessageBubble = memo(function MessageBubble({
 
             <div className={`flex flex-col ${isSent ? 'items-end' : 'items-start'} max-w-[85%] md:max-w-[70%]`}>
                 {!isSent && senderName && (
-                    <span className="text-xs text-slate-500 mb-1 px-2 font-medium">{senderName}</span>
+                    <span className={`text-xs mb-1 px-2 font-medium ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{senderName}</span>
                 )}
 
                 <div
                     className={`rounded-2xl px-4 py-2.5 shadow-sm transition-all duration-200 hover:shadow-md ${isSent
                         ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-md'
-                        : 'bg-white border border-slate-200 text-slate-800 rounded-bl-md'
+                        : (mounted && theme === 'dark' ? 'bg-slate-800 border-slate-700 text-white rounded-bl-md' : 'bg-white border border-slate-200 text-slate-800 rounded-bl-md')
                         }`}
                 >
                     {/* Archivo adjunto */}
@@ -81,25 +88,25 @@ export const MessageBubble = memo(function MessageBubble({
                                     rel="noopener noreferrer"
                                     className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${isSent
                                         ? 'bg-blue-600/50 hover:bg-blue-600/70'
-                                        : 'bg-slate-100 hover:bg-slate-200'
+                                        : (mounted && theme === 'dark' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-100 hover:bg-slate-200')
                                         }`}
                                 >
-                                    <div className={`p-2 rounded-lg ${isSent ? 'bg-white/20' : 'bg-blue-100'}`}>
+                                    <div className={`p-2 rounded-lg ${isSent ? 'bg-white/20' : (mounted && theme === 'dark' ? 'bg-blue-900/30' : 'bg-blue-100')}`}>
                                         {isPDF ? (
-                                            <FileText className={`w-5 h-5 ${isSent ? 'text-white' : 'text-blue-600'}`} />
+                                            <FileText className={`w-5 h-5 ${isSent ? 'text-white' : (mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-600')}`} />
                                         ) : (
-                                            <Download className={`w-5 h-5 ${isSent ? 'text-white' : 'text-blue-600'}`} />
+                                            <Download className={`w-5 h-5 ${isSent ? 'text-white' : (mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-600')}`} />
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className={`text-sm font-medium truncate ${isSent ? 'text-white' : 'text-slate-800'}`}>
+                                        <p className={`text-sm font-medium truncate ${isSent ? 'text-white' : (mounted && theme === 'dark' ? 'text-white' : 'text-slate-800')}`}>
                                             {fileName || 'Archivo'}
                                         </p>
-                                        <p className={`text-xs ${isSent ? 'text-blue-100' : 'text-slate-500'}`}>
+                                        <p className={`text-xs ${isSent ? 'text-blue-100' : (mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500')}`}>
                                             Clic para descargar
                                         </p>
                                     </div>
-                                    <Download className={`w-4 h-4 shrink-0 ${isSent ? 'text-white' : 'text-slate-400'}`} />
+                                    <Download className={`w-4 h-4 shrink-0 ${isSent ? 'text-white' : (mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-400')}`} />
                                 </a>
                             )}
                         </div>
@@ -114,7 +121,7 @@ export const MessageBubble = memo(function MessageBubble({
 
                     {/* Timestamp y estado de lectura */}
                     <div className={`flex items-center gap-1.5 mt-1.5 ${isSent ? 'justify-end' : 'justify-start'}`}>
-                        <span className={`text-[11px] ${isSent ? 'text-blue-100' : 'text-slate-400'}`}>
+                        <span className={`text-[11px] ${isSent ? 'text-blue-100' : (mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400')}`}>
                             {format(new Date(timestamp), 'HH:mm', { locale: es })}
                         </span>
                         {isSent && (

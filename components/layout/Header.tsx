@@ -5,6 +5,7 @@ import { Bell, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useTheme } from 'next-themes';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,8 +57,14 @@ export default function Header({
   notificationsUserId,
 }: HeaderProps) {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const handleMenuToggle = () => {
     onMenuToggle?.();
   };
@@ -101,7 +108,7 @@ export default function Header({
   const effectiveItems = (baseItems || []).filter((n) => (n.unread === undefined ? true : !!n.unread));
 
   return (
-  <header className="bg-white/90 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+  <header className={`${mounted && theme === 'dark' ? 'bg-slate-800/90 dark:border-slate-700' : 'bg-white/90 border-slate-200'} backdrop-blur-sm border-b sticky top-0 z-40 shadow-sm`}>
       <div className="px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Left Section */}
@@ -111,7 +118,7 @@ export default function Header({
               variant="ghost"
               size="sm"
               onClick={handleMenuToggle}
-              className="lg:hidden p-2 hover:bg-slate-100 transition-colors"
+              className={`lg:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors`}
             >
               <Menu className="w-5 h-5" />
             </Button>
@@ -119,8 +126,8 @@ export default function Header({
             {/* Title Section */}
             {!hideTitle && (
               <div className={showTitleOnMobile ? "block" : "hidden sm:block"}>
-                <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{title}</h1>
-                <p className="text-xs sm:text-sm text-slate-600">{subtitle}</p>
+                <h1 className={`text-xl sm:text-2xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{title}</h1>
+                <p className={`text-xs sm:text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{subtitle}</p>
               </div>
             )}
           </div>
@@ -133,7 +140,7 @@ export default function Header({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="relative hidden sm:flex hover:bg-slate-50 transition-colors"
+                  className={`relative hidden sm:flex hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors`}
                 >
                   <Bell className="w-4 h-4 mr-2" />
                   <span className="hidden md:inline">{t('header.notifications')}</span>
@@ -153,7 +160,7 @@ export default function Header({
                       {effectiveItems.map((n) => (
                         <DropdownMenuItem
                           key={n.id}
-                          className={`flex flex-col items-start gap-0.5 ${n.unread ? 'bg-slate-50' : ''} ${n.href ? 'cursor-pointer hover:bg-slate-100' : ''}`}
+                          className={`flex flex-col items-start gap-0.5 ${n.unread ? (mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-50') : ''} ${n.href ? `cursor-pointer ${mounted && theme === 'dark' ? 'hover:bg-slate-600' : 'hover:bg-slate-100'}` : ''}`}
                           onSelect={(e) => {
                             if (n.href) {
                               e.preventDefault();
@@ -166,15 +173,15 @@ export default function Header({
                             }
                           }}
                         >
-                          <span className={`text-sm ${n.unread ? 'font-semibold' : 'font-medium'}`}>{n.title}</span>
+                          <span className={`text-sm ${mounted && theme === 'dark' ? 'text-white' : ''} ${n.unread ? 'font-semibold' : 'font-medium'}`}>{n.title}</span>
                           {n.description && (
-                            <span className="text-xs text-slate-500">{n.description}</span>
+                            <span className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{n.description}</span>
                           )}
                         </DropdownMenuItem>
                       ))}
                     </div>
                   ) : (
-                    <div className="px-3 py-6 text-sm text-center text-slate-500">
+                    <div className={`px-3 py-6 text-sm text-center ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                       {t('header.noNotifications') || 'Sin notificaciones'}
                     </div>
                   )}
@@ -198,7 +205,7 @@ export default function Header({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="relative sm:hidden hover:bg-slate-50 transition-colors"
+                  className={`relative sm:hidden hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors`}
                 >
                   <Bell className="w-4 h-4" />
                   {effectiveNotifications > 0 && (
@@ -217,7 +224,7 @@ export default function Header({
                       {effectiveItems.map((n) => (
                         <DropdownMenuItem
                           key={n.id}
-                          className={`flex flex-col items-start gap-0.5 ${n.unread ? 'bg-slate-50' : ''} ${n.href ? 'cursor-pointer hover:bg-slate-100' : ''}`}
+                          className={`flex flex-col items-start gap-0.5 ${n.unread ? (mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-50') : ''} ${n.href ? `cursor-pointer ${mounted && theme === 'dark' ? 'hover:bg-slate-600' : 'hover:bg-slate-100'}` : ''}`}
                           onSelect={(e) => {
                             if (n.href) {
                               e.preventDefault();
@@ -230,15 +237,15 @@ export default function Header({
                             }
                           }}
                         >
-                          <span className={`text-sm ${n.unread ? 'font-semibold' : 'font-medium'}`}>{n.title}</span>
+                          <span className={`text-sm ${mounted && theme === 'dark' ? 'text-white' : ''} ${n.unread ? 'font-semibold' : 'font-medium'}`}>{n.title}</span>
                           {n.description && (
-                            <span className="text-xs text-slate-500">{n.description}</span>
+                            <span className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{n.description}</span>
                           )}
                         </DropdownMenuItem>
                       ))}
                     </div>
                   ) : (
-                    <div className="px-3 py-6 text-sm text-center text-slate-500">
+                    <div className={`px-3 py-6 text-sm text-center ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                       {t('header.noNotifications') || 'Sin notificaciones'}
                     </div>
                   )}

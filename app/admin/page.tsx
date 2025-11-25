@@ -39,6 +39,7 @@ import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRouter } from 'next/navigation';
 import { useNotifications } from '@/hooks/use-notifications';
+import { useTheme } from 'next-themes';
 
 export default function AdminDashboard() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -47,6 +48,7 @@ export default function AdminDashboard() {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const { adminId } = useAdminContext();
+  const { theme } = useTheme();
 
   // Notificaciones (ejemplo)
   const { uiItems: notificationsList, unreadCount, markAllAsRead } = useNotifications({ role: 'admin', userId: adminId, limit: 10, enabled: true });
@@ -106,28 +108,29 @@ export default function AdminDashboard() {
   };
 
   const getActivityColor = (type: string) => {
+    const isDark = mounted && theme === 'dark';
     switch (type) {
-      case 'user': return 'text-blue-600 bg-blue-100';
-      case 'payment': return 'text-green-600 bg-green-100';
-      case 'alert': return 'text-red-600 bg-red-100';
-      case 'config': return 'text-purple-600 bg-purple-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'user': return isDark ? 'text-blue-300 bg-blue-900/30' : 'text-blue-600 bg-blue-100';
+      case 'payment': return isDark ? 'text-green-300 bg-green-900/30' : 'text-green-600 bg-green-100';
+      case 'alert': return isDark ? 'text-red-300 bg-red-900/30' : 'text-red-600 bg-red-100';
+      case 'config': return isDark ? 'text-purple-300 bg-purple-900/30' : 'text-purple-600 bg-purple-100';
+      default: return isDark ? 'text-gray-300 bg-gray-800' : 'text-gray-600 bg-gray-100';
     }
   };
 
   if (!mounted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className={`min-h-screen flex items-center justify-center ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+          <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${mounted && theme === 'dark' ? 'border-blue-400' : 'border-blue-600'} mx-auto`}></div>
+          <p className={`mt-4 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>Cargando...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className={`min-h-screen flex overflow-x-hidden ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
       <Sidebar 
         isExpanded={sidebarExpanded} 
         setIsExpanded={setSidebarExpanded}
@@ -178,48 +181,48 @@ export default function AdminDashboard() {
           <div className="space-y-8">
             {/* Estadísticas Principales */}
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className={`${mounted && theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-blue-50 border-blue-200'} hover:shadow-lg transition-all duration-300 group`}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-blue-800">{t('admin.dashboard.stats.totalUsers')}</CardTitle>
+                  <CardTitle className={`text-xs md:text-sm font-medium ${mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-800'}`}>{t('admin.dashboard.stats.totalUsers')}</CardTitle>
                   <div className="p-1.5 md:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Users className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{totalUsuarios}</div>
-                  <p className="text-xs text-blue-700">{t('admin.dashboard.stats.activeUsers')}</p>
-                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                  <div className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-blue-200' : 'text-blue-900'}`}>{totalUsuarios}</div>
+                  <p className={`text-xs ${mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-700'}`}>{t('admin.dashboard.stats.activeUsers')}</p>
+                  <div className={`mt-2 w-full ${mounted && theme === 'dark' ? 'bg-blue-900/30' : 'bg-blue-200'} rounded-full h-2`}>
                     <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.totalUsers / 100) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-orange-50 border-orange-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className={`${mounted && theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-orange-50 border-orange-200'} hover:shadow-lg transition-all duration-300 group`}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-orange-800">{t('admin.dashboard.stats.activeOrders')}</CardTitle>
+                  <CardTitle className={`text-xs md:text-sm font-medium ${mounted && theme === 'dark' ? 'text-orange-300' : 'text-orange-800'}`}>{t('admin.dashboard.stats.activeOrders')}</CardTitle>
                   <div className="p-1.5 md:p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
                     <Package className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{totalPedidos}</div>
-                  <p className="text-xs text-orange-700">{t('admin.dashboard.stats.inProcess')}</p>
-                  <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
+                  <div className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-orange-200' : 'text-orange-900'}`}>{totalPedidos}</div>
+                  <p className={`text-xs ${mounted && theme === 'dark' ? 'text-orange-300' : 'text-orange-700'}`}>{t('admin.dashboard.stats.inProcess')}</p>
+                  <div className={`mt-2 w-full ${mounted && theme === 'dark' ? 'bg-orange-900/30' : 'bg-orange-200'} rounded-full h-2`}>
                     <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(stats.activeOrders / 200) * 100}%`}}></div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+              <Card className={`${mounted && theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-blue-50 border-blue-200'} hover:shadow-lg transition-all duration-300 group`}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xs md:text-sm font-medium text-blue-800">{t('admin.dashboard.stats.totalRevenue')}</CardTitle>
+                  <CardTitle className={`text-xs md:text-sm font-medium ${mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-800'}`}>{t('admin.dashboard.stats.totalRevenue')}</CardTitle>
                   <div className="p-1.5 md:p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                     <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{totalIngresos}$</div>
-                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                  <div className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-blue-200' : 'text-blue-900'}`}>{totalIngresos}$</div>
+                  <div className={`mt-2 w-full ${mounted && theme === 'dark' ? 'bg-blue-900/30' : 'bg-blue-200'} rounded-full h-2`}>
                     <div className="bg-blue-500 h-2 rounded-full" style={{width: '85%'}}></div>
                   </div>
                 </CardContent>
@@ -229,35 +232,35 @@ export default function AdminDashboard() {
             
 
             {/* Acciones Rápidas */}
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+            <Card className={`${mounted && theme === 'dark' ? 'bg-slate-800/70 dark:border-slate-700' : 'bg-white/80 border-slate-200'} backdrop-blur-sm hover:shadow-lg transition-shadow`}>
               <CardHeader>
-                <CardTitle className="text-lg md:text-xl font-semibold">{t('admin.dashboard.quickActions.title')}</CardTitle>
-                <p className="text-xs md:text-sm text-slate-600">{t('admin.dashboard.quickActions.subtitle')}</p>
+                <CardTitle className={`text-lg md:text-xl font-semibold ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{t('admin.dashboard.quickActions.title')}</CardTitle>
+                <p className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('admin.dashboard.quickActions.subtitle')}</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   <Link href="/admin/usuarios">
-                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
-                      <div className="p-2 md:p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                        <Users className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
+                    <Button variant="outline" className={`h-20 md:h-24 flex flex-col gap-2 md:gap-3 ${mounted && theme === 'dark' ? 'hover:bg-blue-900/30 hover:border-blue-700 dark:border-slate-700' : 'hover:bg-blue-50 hover:border-blue-300'} transition-all duration-300 group w-full`}>
+                      <div className={`p-2 md:p-3 ${mounted && theme === 'dark' ? 'bg-blue-900/30 group-hover:bg-blue-800/40' : 'bg-blue-100 group-hover:bg-blue-200'} rounded-lg transition-colors`}>
+                        <Users className={`h-6 w-6 md:h-8 md:w-8 ${mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-600'}`} />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.manageUsers')}</span>
+                      <span className={`text-xs md:text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-200' : ''}`}>{t('admin.dashboard.quickActions.manageUsers')}</span>
                     </Button>
                   </Link>
                   <Link href="/admin/configuracion">
-                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-orange-50 hover:border-orange-300 transition-all duration-300 group w-full">
-                      <div className="p-2 md:p-3 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors">
-                        <Settings className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
+                    <Button variant="outline" className={`h-20 md:h-24 flex flex-col gap-2 md:gap-3 ${mounted && theme === 'dark' ? 'hover:bg-orange-900/30 hover:border-orange-700 dark:border-slate-700' : 'hover:bg-orange-50 hover:border-orange-300'} transition-all duration-300 group w-full`}>
+                      <div className={`p-2 md:p-3 ${mounted && theme === 'dark' ? 'bg-orange-900/30 group-hover:bg-orange-800/40' : 'bg-orange-100 group-hover:bg-orange-200'} rounded-lg transition-colors`}>
+                        <Settings className={`h-6 w-6 md:h-8 md:w-8 ${mounted && theme === 'dark' ? 'text-orange-300' : 'text-orange-600'}`} />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.configuration')}</span>
+                      <span className={`text-xs md:text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-200' : ''}`}>{t('admin.dashboard.quickActions.configuration')}</span>
                     </Button>
                   </Link>
                   <Link href="/admin/pedidos">
-                    <Button variant="outline" className="h-20 md:h-24 flex flex-col gap-2 md:gap-3 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 group w-full">
-                      <div className="p-2 md:p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                        <Package className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
+                    <Button variant="outline" className={`h-20 md:h-24 flex flex-col gap-2 md:gap-3 ${mounted && theme === 'dark' ? 'hover:bg-blue-900/30 hover:border-blue-700 dark:border-slate-700' : 'hover:bg-blue-50 hover:border-blue-300'} transition-all duration-300 group w-full`}>
+                      <div className={`p-2 md:p-3 ${mounted && theme === 'dark' ? 'bg-blue-900/30 group-hover:bg-blue-800/40' : 'bg-blue-100 group-hover:bg-blue-200'} rounded-lg transition-colors`}>
+                        <Package className={`h-6 w-6 md:h-8 md:w-8 ${mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-600'}`} />
                       </div>
-                      <span className="text-xs md:text-sm font-medium">{t('admin.dashboard.quickActions.orders')}</span>
+                      <span className={`text-xs md:text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-200' : ''}`}>{t('admin.dashboard.quickActions.orders')}</span>
                     </Button>
                   </Link>
                 </div>

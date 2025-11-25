@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import type { ChatMessage } from '@/lib/types/chat';
 import { Loader2, MessageCircle } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 interface ChatMessagesProps {
     messages: ChatMessage[];
@@ -24,6 +25,12 @@ export function ChatMessages({
 }: ChatMessagesProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+    
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -31,10 +38,10 @@ export function ChatMessages({
 
     if (loading) {
         return (
-            <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 to-white">
+            <div className={`flex-1 flex items-center justify-center ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 to-white'}`}>
                 <div className="text-center">
-                    <Loader2 className="w-10 h-10 animate-spin text-blue-500 mx-auto mb-3" />
-                    <p className="text-sm text-slate-500">Cargando mensajes...</p>
+                    <Loader2 className={`w-10 h-10 animate-spin ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-500'} mx-auto mb-3`} />
+                    <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>Cargando mensajes...</p>
                 </div>
             </div>
         );
@@ -42,15 +49,15 @@ export function ChatMessages({
 
     if (messages.length === 0) {
         return (
-            <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 to-white p-8">
+            <div className={`flex-1 flex items-center justify-center ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 to-white'} p-8`}>
                 <div className="text-center max-w-sm">
-                    <div className="p-4 bg-blue-100 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-                        <MessageCircle className="w-10 h-10 text-blue-600" />
+                    <div className={`p-4 ${mounted && theme === 'dark' ? 'bg-blue-900/30' : 'bg-blue-100'} rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center`}>
+                        <MessageCircle className={`w-10 h-10 ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-700 mb-2">
+                    <h3 className={`text-lg font-semibold mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-700'}`}>
                         No hay mensajes aún
                     </h3>
-                    <p className="text-sm text-slate-500">
+                    <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                         Envía un mensaje para iniciar la conversación
                     </p>
                 </div>
@@ -59,7 +66,7 @@ export function ChatMessages({
     }
 
     return (
-        <ScrollArea className="flex-1 bg-gradient-to-br from-slate-50 to-white">
+        <ScrollArea className={`flex-1 ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 to-white'}`}>
             <div ref={scrollRef} className="p-4 md:p-6 space-y-1">
                 {messages.map((msg, index) => (
                     <div
