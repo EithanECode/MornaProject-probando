@@ -15,6 +15,7 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { MessageSquare, Loader2, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { ChatMessage } from '@/lib/types/chat';
+import { useTheme } from 'next-themes';
 
 export default function ChinaChatPage() {
     const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -24,6 +25,12 @@ export default function ChinaChatPage() {
     const [adminId, setAdminId] = useState<string | null>(null);
     const [adminName, setAdminName] = useState<string>('Administrador');
     const [loadingAdmin, setLoadingAdmin] = useState(true);
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+    
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Notificaciones
     const { uiItems: notificationsList, unreadCount, markAllAsRead } = useNotifications({
@@ -119,10 +126,10 @@ export default function ChinaChatPage() {
 
     if (loadingAdmin) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+            <div className={`min-h-screen flex items-center justify-center ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Cargando chat...</p>
+                    <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${mounted && theme === 'dark' ? 'border-blue-400' : 'border-blue-600'} mx-auto`}></div>
+                    <p className={`mt-4 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>Cargando chat...</p>
                 </div>
             </div>
         );
@@ -130,14 +137,14 @@ export default function ChinaChatPage() {
 
     if (!adminId) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <Card className="max-w-md">
+            <div className={`min-h-screen flex items-center justify-center ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
+                <Card className={`max-w-md ${mounted && theme === 'dark' ? 'bg-slate-800/70 dark:border-slate-700' : ''}`}>
                     <CardContent className="p-8 text-center">
-                        <MessageSquare className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-slate-700 mb-2">
+                        <MessageSquare className={`w-16 h-16 ${mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'} mx-auto mb-4`} />
+                        <h3 className={`text-xl font-semibold mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-700'}`}>
                             No se encontró el administrador
                         </h3>
-                        <p className="text-slate-500">
+                        <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>
                             No se pudo conectar con el administrador
                         </p>
                     </CardContent>
@@ -147,7 +154,7 @@ export default function ChinaChatPage() {
     }
 
     return (
-        <div className="min-h-screen flex overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className={`min-h-screen flex overflow-x-hidden ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
             <Sidebar
                 isExpanded={sidebarExpanded}
                 setIsExpanded={setSidebarExpanded}
@@ -174,15 +181,15 @@ export default function ChinaChatPage() {
 
                 <div className="p-4 md:p-5 lg:p-6">
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg">
-                            <CardHeader className="px-5.2 py-2 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <Card className={`${mounted && theme === 'dark' ? 'bg-slate-800/70 dark:border-slate-700' : 'bg-white/80 border-slate-200'} backdrop-blur-sm shadow-lg`}>
+                            <CardHeader className={`px-5.2 py-2 border-b ${mounted && theme === 'dark' ? 'border-slate-700 bg-gradient-to-r from-slate-800 to-slate-700' : 'border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50'}`}>
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-blue-500 rounded-full">
                                         <Shield className="h-5 w-5 text-white" />
                                     </div>
                                     <div>
-                                        <CardTitle className="text-base font-semibold">{adminName}</CardTitle>
-                                        <p className="text-xs text-slate-600">Administrador del Sistema</p>
+                                        <CardTitle className={`text-base font-semibold ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{adminName}</CardTitle>
+                                        <p className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Administrador del Sistema</p>
                                     </div>
                                 </div>
                             </CardHeader>

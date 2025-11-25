@@ -52,6 +52,7 @@ import { useRealtimeChina } from '@/hooks/use-realtime-china';
 import { getSupabaseBrowserClient as _getClient } from '@/lib/supabase/client';
 import { useNotifications } from '@/hooks/use-notifications';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
 
 // Tipos
 interface Pedido {
@@ -149,42 +150,45 @@ export default function PedidosChina() {
   // Badges estandarizados para pedidos según estado numérico
   function getOrderBadge(stateNum?: number) {
     const s = Number(stateNum ?? 0);
+    const isDark = mounted && theme === 'dark';
     // Colores utilitarios tailwind para Badges
     const base = 'border';
-    if (s <= 0 || isNaN(s)) return { label: t('chinese.ordersPage.badges.unknown'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
-    if (s === 3) return { label: t('chinese.ordersPage.badges.quoted'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
-    if (s === 4) return { label: t('chinese.ordersPage.badges.processing'), className: `${base} bg-purple-100 text-purple-800 border-purple-200` };
-    if (s === 5) return { label: t('chinese.ordersPage.badges.readyToPack'), className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
-    if (s === 6) return { label: t('chinese.ordersPage.badges.inBox'), className: `${base} bg-indigo-100 text-indigo-800 border-indigo-200` };
-  if (s === 7 || s === 8) return { label: t('chinese.ordersPage.badges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
-  if (s === 9) return { label: t('chinese.ordersPage.badges.shippedVzla'), className: `${base} bg-green-100 text-green-800 border-green-200` };
-  if (s === 10) return { label: t('chinese.ordersPage.badges.inVenezuela'), className: `${base} bg-yellow-100 text-yellow-800 border-yellow-200` };
-  if (s === 11) return { label: t('chinese.ordersPage.badges.inBoxVzla'), className: `${base} bg-orange-100 text-orange-800 border-orange-200` };
-  if (s === 12) return { label: t('chinese.ordersPage.badges.readyVzla'), className: `${base} bg-lime-100 text-lime-800 border-lime-200` };
-  if (s === 13) return { label: t('chinese.ordersPage.badges.delivered'), className: `${base} bg-emerald-100 text-emerald-800 border-emerald-200` };
-  if (s > 13) return { label: t('chinese.ordersPage.badges.shippedVzla'), className: `${base} bg-green-100 text-green-800 border-green-200` };
-    return { label: t('chinese.ordersPage.badges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    if (s <= 0 || isNaN(s)) return { label: t('chinese.ordersPage.badges.unknown'), className: `${base} ${isDark ? 'bg-gray-800 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-800 border-gray-200'}` };
+    if (s === 3) return { label: t('chinese.ordersPage.badges.quoted'), className: `${base} ${isDark ? 'bg-blue-900/30 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-800 border-blue-200'}` };
+    if (s === 4) return { label: t('chinese.ordersPage.badges.processing'), className: `${base} ${isDark ? 'bg-purple-900/30 text-purple-300 border-purple-700' : 'bg-purple-100 text-purple-800 border-purple-200'}` };
+    if (s === 5) return { label: t('chinese.ordersPage.badges.readyToPack'), className: `${base} ${isDark ? 'bg-amber-900/30 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-800 border-amber-200'}` };
+    if (s === 6) return { label: t('chinese.ordersPage.badges.inBox'), className: `${base} ${isDark ? 'bg-indigo-900/30 text-indigo-300 border-indigo-700' : 'bg-indigo-100 text-indigo-800 border-indigo-200'}` };
+  if (s === 7 || s === 8) return { label: t('chinese.ordersPage.badges.inContainer'), className: `${base} ${isDark ? 'bg-cyan-900/30 text-cyan-300 border-cyan-700' : 'bg-cyan-100 text-cyan-800 border-cyan-200'}` };
+  if (s === 9) return { label: t('chinese.ordersPage.badges.shippedVzla'), className: `${base} ${isDark ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-green-800 border-green-200'}` };
+  if (s === 10) return { label: t('chinese.ordersPage.badges.inVenezuela'), className: `${base} ${isDark ? 'bg-yellow-900/30 text-yellow-300 border-yellow-700' : 'bg-yellow-100 text-yellow-800 border-yellow-200'}` };
+  if (s === 11) return { label: t('chinese.ordersPage.badges.inBoxVzla'), className: `${base} ${isDark ? 'bg-orange-900/30 text-orange-300 border-orange-700' : 'bg-orange-100 text-orange-800 border-orange-200'}` };
+  if (s === 12) return { label: t('chinese.ordersPage.badges.readyVzla'), className: `${base} ${isDark ? 'bg-lime-900/30 text-lime-300 border-lime-700' : 'bg-lime-100 text-lime-800 border-lime-200'}` };
+  if (s === 13) return { label: t('chinese.ordersPage.badges.delivered'), className: `${base} ${isDark ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-800 border-emerald-200'}` };
+  if (s > 13) return { label: t('chinese.ordersPage.badges.shippedVzla'), className: `${base} ${isDark ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-green-800 border-green-200'}` };
+    return { label: t('chinese.ordersPage.badges.state', { num: s }), className: `${base} ${isDark ? 'bg-gray-800 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-800 border-gray-200'}` };
   }
 
   // Badges estandarizados para cajas
   function getBoxBadge(stateNum?: number) {
     const s = Number(stateNum ?? 0);
+    const isDark = mounted && theme === 'dark';
     const base = 'border';
-    if (s <= 1) return { label: t('chinese.ordersPage.boxBadges.new'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
-    if (s === 2) return { label: t('chinese.ordersPage.boxBadges.packed'), className: `${base} bg-green-100 text-green-800 border-green-200` };
-    if (s === 3) return { label: t('chinese.ordersPage.boxBadges.inContainer'), className: `${base} bg-cyan-100 text-cyan-800 border-cyan-200` };
-    if (s >= 4) return { label: t('chinese.ordersPage.boxBadges.shipped'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
-    return { label: t('chinese.ordersPage.boxBadges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    if (s <= 1) return { label: t('chinese.ordersPage.boxBadges.new'), className: `${base} ${isDark ? 'bg-blue-900/30 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-800 border-blue-200'}` };
+    if (s === 2) return { label: t('chinese.ordersPage.boxBadges.packed'), className: `${base} ${isDark ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-green-800 border-green-200'}` };
+    if (s === 3) return { label: t('chinese.ordersPage.boxBadges.inContainer'), className: `${base} ${isDark ? 'bg-cyan-900/30 text-cyan-300 border-cyan-700' : 'bg-cyan-100 text-cyan-800 border-cyan-200'}` };
+    if (s >= 4) return { label: t('chinese.ordersPage.boxBadges.shipped'), className: `${base} ${isDark ? 'bg-gray-800 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-800 border-gray-200'}` };
+    return { label: t('chinese.ordersPage.boxBadges.state', { num: s }), className: `${base} ${isDark ? 'bg-gray-800 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-800 border-gray-200'}` };
   }
 
   // Badges estandarizados para contenedores
   function getContainerBadge(stateNum?: number) {
     const s = Number(stateNum ?? 0);
+    const isDark = mounted && theme === 'dark';
     const base = 'border';
-    if (s <= 1) return { label: t('chinese.ordersPage.containerBadges.new'), className: `${base} bg-blue-100 text-blue-800 border-blue-200` };
-    if (s === 2) return { label: t('chinese.ordersPage.containerBadges.loading'), className: `${base} bg-amber-100 text-amber-800 border-amber-200` };
-    if (s >= 3) return { label: t('chinese.ordersPage.containerBadges.shipped'), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
-    return { label: t('chinese.ordersPage.containerBadges.state', { num: s }), className: `${base} bg-gray-100 text-gray-800 border-gray-200` };
+    if (s <= 1) return { label: t('chinese.ordersPage.containerBadges.new'), className: `${base} ${isDark ? 'bg-blue-900/30 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-800 border-blue-200'}` };
+    if (s === 2) return { label: t('chinese.ordersPage.containerBadges.loading'), className: `${base} ${isDark ? 'bg-amber-900/30 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-800 border-amber-200'}` };
+    if (s >= 3) return { label: t('chinese.ordersPage.containerBadges.shipped'), className: `${base} ${isDark ? 'bg-gray-800 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-800 border-gray-200'}` };
+    return { label: t('chinese.ordersPage.containerBadges.state', { num: s }), className: `${base} ${isDark ? 'bg-gray-800 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-800 border-gray-200'}` };
   }
 
   // Fetch pedidos reales filtrando por asignedEChina
@@ -275,6 +279,7 @@ export default function PedidosChina() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<'pedidos' | 'cajas' | 'contenedores'>('pedidos');
+  const { theme } = useTheme();
   const [creatingBox, setCreatingBox] = useState(false);
   const [boxes, setBoxes] = useState<BoxItem[]>([]);
   const [boxesLoading, setBoxesLoading] = useState(false);
@@ -1561,17 +1566,17 @@ export default function PedidosChina() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className={`min-h-screen flex items-center justify-center ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">{t('chinese.ordersPage.loading')}</p>
+          <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${mounted && theme === 'dark' ? 'border-blue-400' : 'border-blue-600'} mx-auto`}></div>
+          <p className={`mt-4 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-gray-600'}`}>{t('chinese.ordersPage.loading')}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className={`min-h-screen flex overflow-x-hidden ${mounted && theme === 'dark' ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
       <Sidebar
         isExpanded={sidebarExpanded}
         setIsExpanded={setSidebarExpanded}
@@ -1695,7 +1700,7 @@ export default function PedidosChina() {
           </div>
 
           {/* Header unificado + contenido dinámico */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
+          <Card className={`${mounted && theme === 'dark' ? 'bg-slate-800/70 dark:border-slate-700' : 'bg-white/80 border-slate-200'} backdrop-blur-sm`}>
             <CardHeader className="py-3">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -1711,10 +1716,10 @@ export default function PedidosChina() {
                         placeholder={t('chinese.ordersPage.filters.searchClientPlaceholder')}
                         value={filtroCliente}
                         onChange={(e) => setFiltroCliente(e.target.value)}
-                        className="h-10 w-full sm:w-64 px-3"
+                        className={`h-10 w-full sm:w-64 px-3 ${mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : ''}`}
                       />
                       <Select value={filtroEstado} onValueChange={setFiltroEstado}>
-                        <SelectTrigger className="h-10 w-full sm:w-56 px-3 whitespace-nowrap truncate">
+                        <SelectTrigger className={`h-10 w-full sm:w-56 px-3 whitespace-nowrap truncate ${mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : ''}`}>
                           <SelectValue placeholder="Estado" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1733,7 +1738,7 @@ export default function PedidosChina() {
                         placeholder={t('chinese.ordersPage.filters.searchBoxPlaceholder')}
                         value={filtroCaja}
                         onChange={(e) => setFiltroCaja(e.target.value)}
-                        className="h-10 w-full sm:w-64 px-3"
+                        className={`h-10 w-full sm:w-64 px-3 ${mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : ''}`}
                       />
                       <Button
                         size="sm"
@@ -1751,7 +1756,7 @@ export default function PedidosChina() {
                         placeholder={t('chinese.ordersPage.filters.searchContainerPlaceholder')}
                         value={filtroContenedor}
                         onChange={(e) => setFiltroContenedor(e.target.value)}
-                        className="h-10 w-full sm:w-64 px-3"
+                        className={`h-10 w-full sm:w-64 px-3 ${mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : ''}`}
                       />
                       <Button
                         size="sm"
@@ -1773,25 +1778,25 @@ export default function PedidosChina() {
                   {pedidosFiltrados.map((pedido) => (
                     <div
                       key={pedido.id}
-                      className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300"
+                      className={`flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 justify-between p-4 rounded-xl ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'} border hover:shadow-md transition-all duration-300`}
                     >
                       {/* Columna izquierda */}
                       <div className="flex items-start sm:items-center gap-4 flex-1 min-w-0">
-                        <div className="p-3 bg-blue-100 rounded-lg shrink-0">
-                          <Package className="h-5 w-5 text-blue-600" />
+                        <div className={`p-3 rounded-lg shrink-0 ${mounted && theme === 'dark' ? 'bg-blue-900/30' : 'bg-blue-100'}`}>
+                          <Package className={`h-5 w-5 ${mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-600'}`} />
                         </div>
                         <div className="space-y-1 w-full min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="font-semibold text-slate-900 text-sm sm:text-base">#ORD-{pedido.id}</h3>
+                            <h3 className={`font-semibold text-sm sm:text-base ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#ORD-{pedido.id}</h3>
                             {/* Badge estado principal: forzamos 'Pendiente' explícito para state 2 */}
                             {pedido.numericState === 2 ? (
-                              <Badge className={`hidden sm:inline-block border bg-yellow-100 text-yellow-800 border-yellow-200`}>{t('chinese.ordersPage.filters.pending')}</Badge>
+                              <Badge className={`hidden sm:inline-block border ${mounted && theme === 'dark' ? 'bg-yellow-900/30 text-yellow-300 border-yellow-700' : 'bg-yellow-100 text-yellow-800 border-yellow-200'}`}>{t('chinese.ordersPage.filters.pending')}</Badge>
                             ) : (
                               <Badge className={`hidden sm:inline-block ${getOrderBadge(pedido.numericState).className}`}>{getOrderBadge(pedido.numericState).label}</Badge>
                             )}
                           </div>
-                          <p className="text-xs sm:text-sm text-slate-600 truncate max-w-full">{pedido.producto}</p>
-                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] sm:text-xs text-slate-500">
+                          <p className={`text-xs sm:text-sm truncate max-w-full ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{pedido.producto}</p>
+                          <div className={`flex flex-wrap gap-x-4 gap-y-1 text-[11px] sm:text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                             <span className="flex items-center gap-1 min-w-[110px]">
                               <User className="h-3 w-3" /> {pedido.cliente}
                             </span>
@@ -1825,7 +1830,7 @@ export default function PedidosChina() {
                       <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
                         <div className="hidden sm:block">
                           {pedido.numericState === 2 ? (
-                            <Badge className={`border bg-yellow-100 text-yellow-800 border-yellow-200`}>{t('chinese.ordersPage.filters.pending')}</Badge>
+                            <Badge className={`border ${mounted && theme === 'dark' ? 'bg-yellow-900/30 text-yellow-300 border-yellow-700' : 'bg-yellow-100 text-yellow-800 border-yellow-200'}`}>{t('chinese.ordersPage.filters.pending')}</Badge>
                           ) : (
                             <Badge className={`${getOrderBadge(pedido.numericState).className}`}>{getOrderBadge(pedido.numericState).label}</Badge>
                           )}
@@ -1838,7 +1843,7 @@ export default function PedidosChina() {
                               variant="inline"
                               className="text-sm font-semibold text-green-600"
                             />
-                            <div className="text-xs text-slate-500">
+                            <div className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                               Total: <PriceDisplayWithCNY
                                 amount={pedido.precio}
                                 currency="USD"
@@ -1949,9 +1954,9 @@ export default function PedidosChina() {
                   ))}
                   {pedidosFiltrados.length === 0 && (
                     <div className="text-center py-12">
-                      <Package className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-slate-900 mb-2">{t('chinese.ordersPage.orders.notFoundTitle')}</h3>
-                      <p className="text-slate-500">{t('chinese.ordersPage.orders.notFoundSubtitle')}</p>
+                    <Package className={`h-12 w-12 mx-auto mb-4 ${mounted && theme === 'dark' ? 'text-slate-600' : 'text-slate-400'}`} />
+                    <h3 className={`text-lg font-medium mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.orders.notFoundTitle')}</h3>
+                    <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>{t('chinese.ordersPage.orders.notFoundSubtitle')}</p>
                     </div>
                   )}
                 </div>
@@ -1962,15 +1967,15 @@ export default function PedidosChina() {
               <>
                 {boxes.length === 0 ? (
                   <div className="text-center py-12">
-                    <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('chinese.ordersPage.boxes.noneTitle')}</h3>
-                    <p className="text-slate-500">{t('chinese.ordersPage.boxes.noneSubtitle')}</p>
+                    <Boxes className={`h-12 w-12 mx-auto mb-4 ${mounted && theme === 'dark' ? 'text-slate-600' : 'text-slate-400'}`} />
+                    <h3 className={`text-lg font-medium mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.boxes.noneTitle')}</h3>
+                    <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>{t('chinese.ordersPage.boxes.noneSubtitle')}</p>
                   </div>
                 ) : cajasFiltradas.length === 0 ? (
                   <div className="text-center py-12">
-                    <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('chinese.ordersPage.boxes.notFoundTitle')}</h3>
-                    <p className="text-slate-500">{t('chinese.ordersPage.boxes.notFoundSubtitle')}</p>
+                    <Boxes className={`h-12 w-12 mx-auto mb-4 ${mounted && theme === 'dark' ? 'text-slate-600' : 'text-slate-400'}`} />
+                    <h3 className={`text-lg font-medium mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.boxes.notFoundTitle')}</h3>
+                    <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>{t('chinese.ordersPage.boxes.notFoundSubtitle')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -1980,20 +1985,20 @@ export default function PedidosChina() {
                       const created = box.creation_date ?? box.created_at ?? '';
                       const stateNum = (box.state ?? 1) as number;
                       return (
-                      <div key={`${id}`} className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300">
+                      <div key={`${id}`} className={`flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 justify-between p-4 rounded-xl ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'} border hover:shadow-md transition-all duration-300`}>
                         <div className="flex items-start sm:items-center gap-4 flex-1 min-w-0">
-                          <div className="p-3 bg-indigo-100 rounded-lg shrink-0">
-                            <Boxes className="h-5 w-5 text-indigo-600" />
+                          <div className={`p-3 rounded-lg shrink-0 ${mounted && theme === 'dark' ? 'bg-indigo-900/30' : 'bg-indigo-100'}`}>
+                            <Boxes className={`h-5 w-5 ${mounted && theme === 'dark' ? 'text-indigo-300' : 'text-indigo-600'}`} />
                           </div>
                           <div className="space-y-1 w-full min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
-                              <h3 className="font-semibold text-slate-900 text-sm sm:text-base">#BOX-{id}</h3>
+                              <h3 className={`font-semibold text-sm sm:text-base ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#BOX-{id}</h3>
                               {box?.name && (
-                                <span className="text-xs sm:text-sm text-slate-600 truncate max-w-full">{String((box as any).name)}</span>
+                                <span className={`text-xs sm:text-sm truncate max-w-full ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{String((box as any).name)}</span>
                               )}
                               <Badge className={`hidden sm:inline-block ${getBoxBadge(stateNum).className}`}>{getBoxBadge(stateNum).label}</Badge>
                             </div>
-                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] sm:text-xs text-slate-500">
+                            <div className={`flex flex-wrap gap-x-4 gap-y-1 text-[11px] sm:text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" /> {created ? new Date(created).toLocaleString('es-ES') : '—'}
                               </span>
@@ -2104,7 +2109,7 @@ export default function PedidosChina() {
                   </div>
                 )}
                 {boxesLoading && (
-                  <p className="text-center text-sm text-slate-500 mt-4">{t('chinese.ordersPage.boxes.loading')}</p>
+                  <p className={`text-center text-sm mt-4 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{t('chinese.ordersPage.boxes.loading')}</p>
                 )}
               </>
           )}
@@ -2112,9 +2117,9 @@ export default function PedidosChina() {
               <>
                   {containers.length === 0 ? (
                     <div className="text-center py-12">
-                      <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-slate-900 mb-2">{t('chinese.ordersPage.containers.noneTitle')}</h3>
-                      <p className="text-slate-500">{t('chinese.ordersPage.containers.noneSubtitle')}</p>
+                      <Boxes className={`h-12 w-12 mx-auto mb-4 ${mounted && theme === 'dark' ? 'text-slate-600' : 'text-slate-400'}`} />
+                      <h3 className={`text-lg font-medium mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.containers.noneTitle')}</h3>
+                      <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>{t('chinese.ordersPage.containers.noneSubtitle')}</p>
                     </div>
                   ) : containers.filter((c, idx) => {
                       if (!filtroContenedor) return true;
@@ -2122,9 +2127,9 @@ export default function PedidosChina() {
                       return String(id).toLowerCase().includes(filtroContenedor.toLowerCase());
                     }).length === 0 ? (
                     <div className="text-center py-12">
-                      <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-slate-900 mb-2">{t('chinese.ordersPage.containers.notFoundTitle')}</h3>
-                      <p className="text-slate-500">{t('chinese.ordersPage.containers.notFoundSubtitle')}</p>
+                      <Boxes className={`h-12 w-12 mx-auto mb-4 ${mounted && theme === 'dark' ? 'text-slate-600' : 'text-slate-400'}`} />
+                      <h3 className={`text-lg font-medium mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.containers.notFoundTitle')}</h3>
+                      <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>{t('chinese.ordersPage.containers.notFoundSubtitle')}</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -2137,20 +2142,20 @@ export default function PedidosChina() {
                         const created = container.creation_date ?? container.created_at ?? '';
                         const stateNum = (container.state ?? 1) as number;
                         return (
-                          <div key={`${id}`} className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300">
+                          <div key={`${id}`} className={`flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 justify-between p-4 rounded-xl ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'} border hover:shadow-md transition-all duration-300`}>
                             <div className="flex items-start sm:items-center gap-4 flex-1 min-w-0">
-                              <div className="p-3 bg-indigo-100 rounded-lg shrink-0">
-                                <Boxes className="h-5 w-5 text-indigo-600" />
+                              <div className={`p-3 rounded-lg shrink-0 ${mounted && theme === 'dark' ? 'bg-indigo-900/30' : 'bg-indigo-100'}`}>
+                                <Boxes className={`h-5 w-5 ${mounted && theme === 'dark' ? 'text-indigo-300' : 'text-indigo-600'}`} />
                               </div>
                               <div className="space-y-1 w-full min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <h3 className="font-semibold text-slate-900 text-sm sm:text-base">#CONT-{id}</h3>
+                                  <h3 className={`font-semibold text-sm sm:text-base ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#CONT-{id}</h3>
                                   {container?.name && (
-                                    <span className="text-xs sm:text-sm text-slate-600 truncate max-w-full">{String((container as any).name)}</span>
+                                    <span className={`text-xs sm:text-sm truncate max-w-full ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{String((container as any).name)}</span>
                                   )}
                                   <Badge className={`hidden sm:inline-block ${getContainerBadge(stateNum).className}`}>{getContainerBadge(stateNum).label}</Badge>
                                 </div>
-                                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] sm:text-xs text-slate-500">
+                                <div className={`flex flex-wrap gap-x-4 gap-y-1 text-[11px] sm:text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                                   <span className="flex items-center gap-1">
                                     <Calendar className="h-3 w-3" /> {created ? new Date(created).toLocaleString('es-ES') : '—'}
                                   </span>
@@ -2230,19 +2235,19 @@ export default function PedidosChina() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
             <div
               ref={modalEnviarContenedorRef}
-              className={`bg-white rounded-2xl p-6 max-w-md mx-4 w-full transition-all duration-300 ${
+              className={`${mounted && theme === 'dark' ? 'bg-slate-800' : 'bg-white'} rounded-2xl p-6 max-w-md mx-4 w-full transition-all duration-300 ${
                 isModalEnviarContenedorClosing
                   ? 'translate-y-full scale-95 opacity-0'
                   : 'animate-in slide-in-from-bottom-4 duration-300'
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.sendContainer.title')}</h3>
-                <Button variant="ghost" size="sm" onClick={closeModalEnviarContenedor} className="h-8 w-8 p-0">
-                  <span className="text-2xl">×</span>
+                <h3 className={`text-lg font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.modals.sendContainer.title')}</h3>
+                <Button variant="ghost" size="sm" onClick={closeModalEnviarContenedor} className={`h-8 w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-slate-700' : ''}`}>
+                  <span className={`text-2xl ${mounted && theme === 'dark' ? 'text-white' : ''}`}>×</span>
                 </Button>
               </div>
-              <p className="text-slate-600 mb-4">{t('chinese.ordersPage.modals.sendContainer.subtitle')}</p>
+              <p className={`mb-4 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('chinese.ordersPage.modals.sendContainer.subtitle')}</p>
               {/* Helper local para validar URL */}
               {/** Nota: validación simple usando URL constructor */}
               <form
@@ -2282,42 +2287,46 @@ export default function PedidosChina() {
                 className="space-y-4"
               >
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.sendContainer.trackingLink')}</label>
+                  <label className={`block text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.sendContainer.trackingLink')}</label>
                   <Input
                     value={sendTrackingLink}
                     onChange={(e) => setSendTrackingLink(e.target.value)}
                     placeholder={t('chinese.ordersPage.modals.sendContainer.trackingLinkPlaceholder')}
                     type="url"
                     required
+                    className={mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : ''}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.sendContainer.trackingNumber')}</label>
+                  <label className={`block text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.sendContainer.trackingNumber')}</label>
                   <Input
                     value={sendTrackingNumber}
                     onChange={(e) => setSendTrackingNumber(e.target.value.slice(0,50))}
                     placeholder={t('chinese.ordersPage.modals.sendContainer.trackingNumberPlaceholder')}
                     maxLength={50}
                     required
+                    className={mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : ''}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.sendContainer.courierCompany')}</label>
+                  <label className={`block text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.sendContainer.courierCompany')}</label>
                   <Input
                     value={sendCourierCompany}
                     onChange={(e) => setSendCourierCompany(e.target.value.slice(0,50))}
                     placeholder={t('chinese.ordersPage.modals.sendContainer.courierCompanyPlaceholder')}
                     maxLength={50}
                     required
+                    className={mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : ''}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.sendContainer.etaDate')}</label>
+                  <label className={`block text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.sendContainer.etaDate')}</label>
                   <Input
                     type="date"
                     value={sendEtaDate}
                     onChange={(e) => setSendEtaDate(e.target.value)}
                     required
+                    className={mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : ''}
                   />
                 </div>
                 <div className="flex justify-end gap-3 pt-2">
@@ -2345,21 +2354,21 @@ export default function PedidosChina() {
            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
              <div 
                ref={modalCotizarRef}
-               className={`bg-white rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ${
+               className={`${mounted && theme === 'dark' ? 'bg-slate-800' : 'bg-white'} rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ${
                  isModalCotizarClosing 
                    ? 'translate-y-full scale-95 opacity-0' 
                    : 'animate-in slide-in-from-bottom-4 duration-300'
                }`}
              >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-slate-900">{t('chinese.ordersPage.modals.quote.title')}</h3>
+                <h3 className={`text-xl font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.modals.quote.title')}</h3>
                                  <Button
                    variant="ghost"
                    size="sm"
                    onClick={closeModalCotizar}
-                   className="h-8 w-8 p-0"
+                   className={`h-8 w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-slate-700' : ''}`}
                  >
-                   <span className="text-2xl">×</span>
+                   <span className={`text-2xl ${mounted && theme === 'dark' ? 'text-white' : ''}`}>×</span>
                  </Button>
               </div>
               <form onSubmit={e => {
@@ -2374,41 +2383,41 @@ export default function PedidosChina() {
                   cotizarPedido(modalCotizar.pedido, precio, precioEnvio, altura, anchura, largo, peso);
                 }
               }} className="space-y-6">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                <div className={`p-4 rounded-lg border ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-blue-900/20 to-indigo-900/20 border-blue-700' : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'}`}>
+                  <h4 className={`font-semibold mb-3 flex items-center gap-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                     <Package className="h-4 w-4" />
                     {t('chinese.ordersPage.modals.quote.summaryTitle')}
                   </h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.client')}</p>
-                      <p className="text-slate-600">{modalCotizar.pedido?.cliente}</p>
+                      <p className={`font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.quote.client')}</p>
+                      <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}>{modalCotizar.pedido?.cliente}</p>
                     </div>
                     <div>
-                      <p className="font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.product')}</p>
-                      <p className="text-slate-600">{modalCotizar.pedido?.producto}</p>
+                      <p className={`font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.quote.product')}</p>
+                      <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}>{modalCotizar.pedido?.producto}</p>
                     </div>
                     <div>
-                      <p className="font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.quantity')}</p>
-                      <p className="text-slate-600">{modalCotizar.pedido?.cantidad}</p>
+                      <p className={`font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.quote.quantity')}</p>
+                      <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}>{modalCotizar.pedido?.cantidad}</p>
                     </div>
                     <div>
-                      <p className="font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.specifications')}</p>
-                      <p className="text-slate-600">{modalCotizar.pedido?.especificaciones || t('chinese.ordersPage.modals.quote.specificationsNA')}</p>
+                      <p className={`font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.quote.specifications')}</p>
+                      <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}>{modalCotizar.pedido?.especificaciones || t('chinese.ordersPage.modals.quote.specificationsNA')}</p>
                     </div>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.unitPriceLabel')}</label>
+                  <label className={`block text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.quote.unitPriceLabel')}</label>
                                     <div className="relative">
-                                     <span className="absolute left-3 top-3 text-slate-500">¥</span>
+                                     <span className={`absolute left-3 top-3 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>¥</span>
                       <input
                         type="text"
                         name="precio"
                         inputMode="decimal"
                         required
                         value={modalCotizar.precioUnitarioInput ?? ''}
-                        className={`w-full pl-8 pr-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.precioUnitario && modalCotizar.precioUnitario>0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                        className={`w-full pl-8 pr-4 py-3 rounded-lg focus:outline-none transition-colors border ${mounted && theme === 'dark' ? 'bg-slate-700 text-white border-slate-600' : ''} ${modalCotizar.precioUnitario && modalCotizar.precioUnitario>0 ? (mounted && theme === 'dark' ? 'focus:ring-2 focus:ring-blue-600 focus:border-blue-600' : 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500') : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
                         placeholder={t('chinese.ordersPage.modals.quote.unitPricePlaceholder')}
                onChange={e => {
                  // Aceptar coma o punto como separador decimal y permitir punto final temporal
@@ -2422,20 +2431,20 @@ export default function PedidosChina() {
                  setModalCotizar(prev => ({ ...prev, precioUnitario: numero, precioUnitarioInput: cleaned }));
                }}
                       />
-                     <p className={`mt-1 text-xs ${modalCotizar.precioUnitario && modalCotizar.precioUnitario>0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.precioUnitario && modalCotizar.precioUnitario>0 ? 'Máx 7 dígitos enteros' : 'Ingresa un precio mayor a 0'}</p>
+                     <p className={`mt-1 text-xs ${modalCotizar.precioUnitario && modalCotizar.precioUnitario>0 ? (mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500') : 'text-red-500'}`}>{modalCotizar.precioUnitario && modalCotizar.precioUnitario>0 ? 'Máx 7 dígitos enteros' : 'Ingresa un precio mayor a 0'}</p>
                    </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.shippingPriceLabel')}</label>
+                  <label className={`block text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.quote.shippingPriceLabel')}</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-3 text-slate-500">¥</span>
+                    <span className={`absolute left-3 top-3 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>¥</span>
                     <input
                       type="text"
                       name="precioEnvio"
                       inputMode="decimal"
                       required
                       value={modalCotizar.precioEnvioInput ?? ''}
-                      className={`w-full pl-8 pr-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.precioEnvio !== undefined && modalCotizar.precioEnvio >= 0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                      className={`w-full pl-8 pr-4 py-3 rounded-lg focus:outline-none transition-colors border ${mounted && theme === 'dark' ? 'bg-slate-700 text-white border-slate-600' : ''} ${modalCotizar.precioEnvio !== undefined && modalCotizar.precioEnvio >= 0 ? (mounted && theme === 'dark' ? 'focus:ring-2 focus:ring-blue-600 focus:border-blue-600' : 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500') : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
                       placeholder={t('chinese.ordersPage.modals.quote.shippingPricePlaceholder')}
                 onChange={e => {
                 // Aceptar coma o punto como separador decimal y permitir punto final temporal
@@ -2448,12 +2457,12 @@ export default function PedidosChina() {
                 setModalCotizar(prev => ({ ...prev, precioEnvio: numero, precioEnvioInput: cleaned }));
                 }}
                     />
-                    <p className={`mt-1 text-xs ${modalCotizar.precioEnvio !== undefined && modalCotizar.precioEnvio >= 0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.precioEnvio !== undefined && modalCotizar.precioEnvio >= 0 ? 'Máx 7 dígitos enteros' : 'Ingresa un precio válido'}</p>
+                    <p className={`mt-1 text-xs ${modalCotizar.precioEnvio !== undefined && modalCotizar.precioEnvio >= 0 ? (mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500') : 'text-red-500'}`}>{modalCotizar.precioEnvio !== undefined && modalCotizar.precioEnvio >= 0 ? 'Máx 7 dígitos enteros' : 'Ingresa un precio válido'}</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.heightLabel')}</label>
+                    <label className={`block text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.quote.heightLabel')}</label>
                     <div className="relative">
                       <input
                         type="text"
@@ -2461,7 +2470,7 @@ export default function PedidosChina() {
                         inputMode="decimal"
                         required
                         value={modalCotizar.alturaInput ?? ''}
-                        className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.altura && modalCotizar.altura > 0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                        className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${mounted && theme === 'dark' ? 'bg-slate-700 text-white border-slate-600' : ''} ${modalCotizar.altura && modalCotizar.altura > 0 ? (mounted && theme === 'dark' ? 'focus:ring-2 focus:ring-blue-600 focus:border-blue-600' : 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500') : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
                         placeholder={t('chinese.ordersPage.modals.quote.heightPlaceholder')}
                          onChange={e => {
                            // Aceptar coma o punto como separador decimal y permitir punto final temporal
@@ -2474,12 +2483,12 @@ export default function PedidosChina() {
                            setModalCotizar(prev => ({ ...prev, altura: numero, alturaInput: cleaned }));
                          }}
                       />
-                      <span className="absolute right-3 top-3 text-slate-500 text-sm">cm</span>
-                      <p className={`mt-1 text-xs ${modalCotizar.altura && modalCotizar.altura > 0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.altura && modalCotizar.altura > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa una altura mayor a 0'}</p>
+                      <span className={`absolute right-3 top-3 text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>cm</span>
+                      <p className={`mt-1 text-xs ${modalCotizar.altura && modalCotizar.altura > 0 ? (mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500') : 'text-red-500'}`}>{modalCotizar.altura && modalCotizar.altura > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa una altura mayor a 0'}</p>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.widthLabel')}</label>
+                    <label className={`block text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.quote.widthLabel')}</label>
                     <div className="relative">
                       <input
                         type="text"
@@ -2487,7 +2496,7 @@ export default function PedidosChina() {
                         inputMode="decimal"
                         required
                         value={modalCotizar.anchuraInput ?? ''}
-                        className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.anchura && modalCotizar.anchura > 0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                        className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${mounted && theme === 'dark' ? 'bg-slate-700 text-white border-slate-600' : ''} ${modalCotizar.anchura && modalCotizar.anchura > 0 ? (mounted && theme === 'dark' ? 'focus:ring-2 focus:ring-blue-600 focus:border-blue-600' : 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500') : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
                         placeholder={t('chinese.ordersPage.modals.quote.widthPlaceholder')}
                          onChange={e => {
                            // Aceptar coma o punto como separador decimal y permitir punto final temporal
@@ -2500,12 +2509,12 @@ export default function PedidosChina() {
                            setModalCotizar(prev => ({ ...prev, anchura: numero, anchuraInput: cleaned }));
                          }}
                       />
-                      <span className="absolute right-3 top-3 text-slate-500 text-sm">cm</span>
-                      <p className={`mt-1 text-xs ${modalCotizar.anchura && modalCotizar.anchura > 0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.anchura && modalCotizar.anchura > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa una anchura mayor a 0'}</p>
+                      <span className={`absolute right-3 top-3 text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>cm</span>
+                      <p className={`mt-1 text-xs ${modalCotizar.anchura && modalCotizar.anchura > 0 ? (mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500') : 'text-red-500'}`}>{modalCotizar.anchura && modalCotizar.anchura > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa una anchura mayor a 0'}</p>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.lengthLabel')}</label>
+                    <label className={`block text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.quote.lengthLabel')}</label>
                     <div className="relative">
                       <input
                         type="text"
@@ -2513,7 +2522,7 @@ export default function PedidosChina() {
                         inputMode="decimal"
                         required
                         value={modalCotizar.largoInput ?? ''}
-                        className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.largo && modalCotizar.largo > 0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                        className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${mounted && theme === 'dark' ? 'bg-slate-700 text-white border-slate-600' : ''} ${modalCotizar.largo && modalCotizar.largo > 0 ? (mounted && theme === 'dark' ? 'focus:ring-2 focus:ring-blue-600 focus:border-blue-600' : 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500') : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
                         placeholder={t('chinese.ordersPage.modals.quote.lengthPlaceholder')}
                          onChange={e => {
                            // Aceptar coma o punto como separador decimal y permitir punto final temporal
@@ -2526,13 +2535,13 @@ export default function PedidosChina() {
                            setModalCotizar(prev => ({ ...prev, largo: numero, largoInput: cleaned }));
                          }}
                       />
-                      <span className="absolute right-3 top-3 text-slate-500 text-sm">cm</span>
-                      <p className={`mt-1 text-xs ${modalCotizar.largo && modalCotizar.largo > 0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.largo && modalCotizar.largo > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa un largo mayor a 0'}</p>
+                      <span className={`absolute right-3 top-3 text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>cm</span>
+                      <p className={`mt-1 text-xs ${modalCotizar.largo && modalCotizar.largo > 0 ? (mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500') : 'text-red-500'}`}>{modalCotizar.largo && modalCotizar.largo > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa un largo mayor a 0'}</p>
                     </div>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.weightLabel')}</label>
+                  <label className={`block text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.quote.weightLabel')}</label>
                   <div className="relative">
                     <input
                       type="text"
@@ -2540,7 +2549,7 @@ export default function PedidosChina() {
                       inputMode="decimal"
                       required
                       value={modalCotizar.pesoInput ?? ''}
-                      className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${modalCotizar.peso && modalCotizar.peso > 0 ? 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
+                      className={`w-full pr-12 pl-4 py-3 rounded-lg focus:outline-none transition-colors border ${mounted && theme === 'dark' ? 'bg-slate-700 text-white border-slate-600' : ''} ${modalCotizar.peso && modalCotizar.peso > 0 ? (mounted && theme === 'dark' ? 'focus:ring-2 focus:ring-blue-600 focus:border-blue-600' : 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500') : 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'}`}
                       placeholder={t('chinese.ordersPage.modals.quote.weightPlaceholder')}
                 onChange={e => {
                 // Aceptar coma o punto como separador decimal y permitir punto final temporal
@@ -2553,22 +2562,22 @@ export default function PedidosChina() {
                 setModalCotizar(prev => ({ ...prev, peso: numero, pesoInput: cleaned }));
                 }}
                     />
-                    <span className="absolute right-3 top-3 text-slate-500 text-sm">kg</span>
-                    <p className={`mt-1 text-xs ${modalCotizar.peso && modalCotizar.peso > 0 ? 'text-slate-500' : 'text-red-500'}`}>{modalCotizar.peso && modalCotizar.peso > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa un peso mayor a 0'}</p>
+                    <span className={`absolute right-3 top-3 text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>kg</span>
+                    <p className={`mt-1 text-xs ${modalCotizar.peso && modalCotizar.peso > 0 ? (mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500') : 'text-red-500'}`}>{modalCotizar.peso && modalCotizar.peso > 0 ? 'Máx 7 dígitos enteros' : 'Ingresa un peso mayor a 0'}</p>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">{t('chinese.ordersPage.modals.quote.totalToPay')}</label>
-                  <div className="px-4 py-3 border border-slate-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50">
+                  <label className={`block text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('chinese.ordersPage.modals.quote.totalToPay')}</label>
+                  <div className={`px-4 py-3 border rounded-lg ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-green-900/20 to-emerald-900/20 border-green-700' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-slate-200'}`}>
                     {(() => {
                       const totalCNY = ((modalCotizar.precioUnitario || 0) * (modalCotizar.pedido?.cantidad || 0)) + (modalCotizar.precioEnvio || 0);
                       const totalUSD = cnyRate && cnyRate > 0 ? totalCNY / cnyRate : 0;
                       return (
                         <div className="space-y-1">
-                          <div className="text-green-600 font-bold">
+                          <div className={`font-bold ${mounted && theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
                             {`¥${totalCNY.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                           </div>
-                          <div className="text-sm text-slate-600">
+                          <div className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
                             {cnyLoading ? '...' : `≈ $${totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                           </div>
                         </div>
@@ -2607,23 +2616,23 @@ export default function PedidosChina() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
             <div
               ref={modalEmpaquetarCajaRef}
-              className={`bg-white rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[85vh] overflow-y-auto transition-all duration-300 ${
+              className={`${mounted && theme === 'dark' ? 'bg-slate-800' : 'bg-white'} rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[85vh] overflow-y-auto transition-all duration-300 ${
                 isModalEmpaquetarCajaClosing ? 'translate-y-full scale-95 opacity-0' : 'animate-in slide-in-from-bottom-4 duration-300'
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.selectContainerForBox.title', { id: String(modalEmpaquetarCaja.boxId ?? '') })}</h3>
-                <Button variant="ghost" size="sm" onClick={closeModalEmpaquetarCaja} className="h-8 w-8 p-0">
-                  <span className="text-2xl">×</span>
+                <h3 className={`text-lg font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.modals.selectContainerForBox.title', { id: String(modalEmpaquetarCaja.boxId ?? '') })}</h3>
+                <Button variant="ghost" size="sm" onClick={closeModalEmpaquetarCaja} className={`h-8 w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-slate-700' : ''}`}>
+                  <span className={`text-2xl ${mounted && theme === 'dark' ? 'text-white' : ''}`}>×</span>
                 </Button>
               </div>
               {containersLoading ? (
-                <p className="text-center text-sm text-slate-500 py-6">{t('chinese.ordersPage.modals.selectContainerForBox.loading')}</p>
+                <p className={`text-center text-sm py-6 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{t('chinese.ordersPage.modals.selectContainerForBox.loading')}</p>
               ) : containers.length === 0 ? (
                 <div className="text-center py-12">
-                  <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                  <h4 className="text-base font-medium text-slate-900 mb-2">{t('chinese.ordersPage.modals.selectContainerForBox.noneTitle')}</h4>
-                  <p className="text-slate-500">{t('chinese.ordersPage.modals.selectContainerForBox.noneSubtitle')}</p>
+                  <Boxes className={`h-12 w-12 mx-auto mb-4 ${mounted && theme === 'dark' ? 'text-slate-600' : 'text-slate-400'}`} />
+                  <h4 className={`text-base font-medium mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.modals.selectContainerForBox.noneTitle')}</h4>
+                  <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>{t('chinese.ordersPage.modals.selectContainerForBox.noneSubtitle')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -2632,19 +2641,19 @@ export default function PedidosChina() {
                     const created = container.creation_date ?? container.created_at ?? '';
                     const stateNum = (container.state ?? 1) as number;
                     return (
-                      <div key={`${id}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
+                      <div key={`${id}`} className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-slate-700 to-slate-600 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'} border`}>
                         <div className="flex items-start sm:items-center gap-4 w-full sm:w-auto">
-                          <div className="p-3 bg-indigo-100 rounded-lg">
-                            <Boxes className="h-5 w-5 text-indigo-600" />
+                          <div className={`p-3 rounded-lg ${mounted && theme === 'dark' ? 'bg-indigo-900/30' : 'bg-indigo-100'}`}>
+                            <Boxes className={`h-5 w-5 ${mounted && theme === 'dark' ? 'text-indigo-300' : 'text-indigo-600'}`} />
                           </div>
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-semibold text-slate-900">#CONT-{id}</h3>
+                              <h3 className={`font-semibold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#CONT-{id}</h3>
                               {container?.name && (
-                                <span className="text-xs text-slate-600 truncate max-w-full">{String((container as any).name)}</span>
+                                <span className={`text-xs truncate max-w-full ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{String((container as any).name)}</span>
                               )}
                             </div>
-                            <div className="flex items-center gap-4 text-xs text-slate-500">
+                            <div className={`flex items-center gap-4 text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
                                 {created ? new Date(created).toLocaleString('es-ES') : '—'}
@@ -2725,23 +2734,23 @@ export default function PedidosChina() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
             <div
               ref={modalVerPedidosContRef}
-              className={`bg-white rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ${
+              className={`${mounted && theme === 'dark' ? 'bg-slate-800' : 'bg-white'} rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ${
                 isModalVerPedidosContClosing ? 'translate-y-full scale-95 opacity-0' : 'animate-in slide-in-from-bottom-4 duration-300'
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.containerBoxes.title', { id: String(modalVerPedidosCont.containerId ?? '') })}</h3>
-                <Button variant="ghost" size="sm" onClick={closeModalVerPedidosCont} className="h-8 w-8 p-0">
-                  <span className="text-2xl">×</span>
+                <h3 className={`text-lg font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.modals.containerBoxes.title', { id: String(modalVerPedidosCont.containerId ?? '') })}</h3>
+                <Button variant="ghost" size="sm" onClick={closeModalVerPedidosCont} className={`h-8 w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-slate-700' : ''}`}>
+                  <span className={`text-2xl ${mounted && theme === 'dark' ? 'text-white' : ''}`}>×</span>
                 </Button>
               </div>
               {boxesByContainerLoading ? (
-                <p className="text-center text-sm text-slate-500 py-6">{t('chinese.ordersPage.modals.containerBoxes.loading')}</p>
+                <p className={`text-center text-sm py-6 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{t('chinese.ordersPage.modals.containerBoxes.loading')}</p>
               ) : boxesByContainer.length === 0 ? (
                 <div className="text-center py-12">
-                  <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                  <h4 className="text-base font-medium text-slate-900 mb-2">{t('chinese.ordersPage.modals.containerBoxes.noneTitle')}</h4>
-                  <p className="text-slate-500">{t('chinese.ordersPage.modals.containerBoxes.noneSubtitle')}</p>
+                  <Boxes className={`h-12 w-12 mx-auto mb-4 ${mounted && theme === 'dark' ? 'text-slate-600' : 'text-slate-400'}`} />
+                  <h4 className={`text-base font-medium mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.modals.containerBoxes.noneTitle')}</h4>
+                  <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>{t('chinese.ordersPage.modals.containerBoxes.noneSubtitle')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -2750,22 +2759,22 @@ export default function PedidosChina() {
                     const created = box.creation_date ?? box.created_at ?? '';
                     const stateNum = (box.state ?? 1) as number;
                     return (
-                      <div key={`${id}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
+                      <div key={`${id}`} className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-slate-700 to-slate-600 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'} border`}>
                         <div className="flex items-start sm:items-center gap-4 w-full sm:w-auto">
-                          <div className="p-3 bg-indigo-100 rounded-lg">
-                            <Boxes className="h-5 w-5 text-indigo-600" />
+                          <div className={`p-3 rounded-lg ${mounted && theme === 'dark' ? 'bg-indigo-900/30' : 'bg-indigo-100'}`}>
+                            <Boxes className={`h-5 w-5 ${mounted && theme === 'dark' ? 'text-indigo-300' : 'text-indigo-600'}`} />
                           </div>
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
+                              <h3 className={`font-semibold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#BOX-{id}</h3>
                               {box?.name && (
-                                <span className="text-xs text-slate-600 truncate max-w-full">{String((box as any).name)}</span>
+                                <span className={`text-xs truncate max-w-full ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{String((box as any).name)}</span>
                               )}
                               {box?.name && (
-                                <span className="text-xs text-slate-600 truncate max-w-full">{String((box as any).name)}</span>
+                                <span className={`text-xs truncate max-w-full ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{String((box as any).name)}</span>
                               )}
                             </div>
-                            <div className="flex items-center gap-4 text-xs text-slate-500">
+                            <div className={`flex items-center gap-4 text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
                                 {created ? new Date(created).toLocaleString('es-ES') : '—'}
@@ -2949,38 +2958,38 @@ export default function PedidosChina() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
             <div
               ref={modalVerPedidosRef}
-              className={`bg-white rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ${
+              className={`${mounted && theme === 'dark' ? 'bg-slate-800' : 'bg-white'} rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ${
                 isModalVerPedidosClosing ? 'translate-y-full scale-95 opacity-0' : 'animate-in slide-in-from-bottom-4 duration-300'
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.boxOrders.title', { id: String(modalVerPedidos.boxId ?? '') })}</h3>
-                <Button variant="ghost" size="sm" onClick={closeModalVerPedidos} className="h-8 w-8 p-0">
-                  <span className="text-2xl">×</span>
+                <h3 className={`text-lg font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.modals.boxOrders.title', { id: String(modalVerPedidos.boxId ?? '') })}</h3>
+                <Button variant="ghost" size="sm" onClick={closeModalVerPedidos} className={`h-8 w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-slate-700' : ''}`}>
+                  <span className={`text-2xl ${mounted && theme === 'dark' ? 'text-white' : ''}`}>×</span>
                 </Button>
               </div>
               {ordersByBoxLoading ? (
-                <p className="text-center text-sm text-slate-500 py-6">{t('chinese.ordersPage.modals.boxOrders.loading')}</p>
+                <p className={`text-center text-sm py-6 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{t('chinese.ordersPage.modals.boxOrders.loading')}</p>
               ) : ordersByBox.length === 0 ? (
                 <div className="text-center py-12">
-                  <Package className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                  <h4 className="text-base font-medium text-slate-900 mb-2">{t('chinese.ordersPage.modals.boxOrders.noneTitle')}</h4>
-                  <p className="text-slate-500">{t('chinese.ordersPage.modals.boxOrders.noneSubtitle')}</p>
+                  <Package className={`h-12 w-12 mx-auto mb-4 ${mounted && theme === 'dark' ? 'text-slate-600' : 'text-slate-400'}`} />
+                  <h4 className={`text-base font-medium mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.modals.boxOrders.noneTitle')}</h4>
+                  <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>{t('chinese.ordersPage.modals.boxOrders.noneSubtitle')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {ordersByBox.map((pedido) => (
-                    <div key={pedido.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
+                    <div key={pedido.id} className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-slate-700 to-slate-600 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'} border`}>
                       <div className="flex items-start sm:items-center gap-4 w-full sm:w-auto">
-                        <div className="p-3 bg-blue-100 rounded-lg">
-                          <Package className="h-5 w-5 text-blue-600" />
+                        <div className={`p-3 rounded-lg ${mounted && theme === 'dark' ? 'bg-blue-900/30' : 'bg-blue-100'}`}>
+                          <Package className={`h-5 w-5 ${mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-600'}`} />
                         </div>
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-slate-900">#ORD-{pedido.id}</h3>
+                            <h3 className={`font-semibold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#ORD-{pedido.id}</h3>
                           </div>
-                          <p className="text-sm text-slate-600">{pedido.producto}</p>
-                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+                          <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{pedido.producto}</p>
+                          <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                             <span className="flex items-center gap-1">
                               <User className="h-3 w-3" />
                               {pedido.cliente}
@@ -3011,7 +3020,7 @@ export default function PedidosChina() {
                               toast({ title: 'Sin PDF', description: 'No hay PDF disponible para este pedido.' });
                             }
                           }}
-                          className="flex items-center gap-1"
+                          className={`flex items-center gap-1 ${mounted && theme === 'dark' ? 'dark:border-slate-700 dark:hover:bg-slate-700' : ''}`}
                         >
                           <Eye className="h-4 w-4" />
                           <span className="hidden sm:inline">{t('chinese.ordersPage.orders.view')}</span>
@@ -3030,23 +3039,23 @@ export default function PedidosChina() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
             <div
               ref={modalEmpaquetarRef}
-              className={`bg-white rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[85vh] overflow-y-auto transition-all duration-300 ${
+              className={`${mounted && theme === 'dark' ? 'bg-slate-800' : 'bg-white'} rounded-2xl p-6 max-w-2xl mx-4 w-full max-h-[85vh] overflow-y-auto transition-all duration-300 ${
                 isModalEmpaquetarClosing ? 'translate-y-full scale-95 opacity-0' : 'animate-in slide-in-from-bottom-4 duration-300'
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.selectBoxForOrder.title', { id: modalEmpaquetar?.pedidoId })}</h3>
-                <Button variant="ghost" size="sm" onClick={closeModalEmpaquetar} className="h-8 w-8 p-0">
-                  <span className="text-2xl">×</span>
+                <h3 className={`text-lg font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.modals.selectBoxForOrder.title', { id: modalEmpaquetar?.pedidoId })}</h3>
+                <Button variant="ghost" size="sm" onClick={closeModalEmpaquetar} className={`h-8 w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-slate-700' : ''}`}>
+                  <span className={`text-2xl ${mounted && theme === 'dark' ? 'text-white' : ''}`}>×</span>
                 </Button>
               </div>
               {boxesLoading ? (
-                <p className="text-center text-sm text-slate-500 py-6">{t('chinese.ordersPage.modals.selectBoxForOrder.loading')}</p>
+                <p className={`text-center text-sm py-6 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{t('chinese.ordersPage.modals.selectBoxForOrder.loading')}</p>
               ) : boxes.length === 0 ? (
                 <div className="text-center py-12">
-                  <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                  <h4 className="text-base font-medium text-slate-900 mb-2">{t('chinese.ordersPage.modals.selectBoxForOrder.noneTitle')}</h4>
-                  <p className="text-slate-500">{t('chinese.ordersPage.modals.selectBoxForOrder.noneSubtitle')}</p>
+                  <Boxes className={`h-12 w-12 mx-auto mb-4 ${mounted && theme === 'dark' ? 'text-slate-600' : 'text-slate-400'}`} />
+                  <h4 className={`text-base font-medium mb-2 ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.modals.selectBoxForOrder.noneTitle')}</h4>
+                  <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>{t('chinese.ordersPage.modals.selectBoxForOrder.noneSubtitle')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -3055,16 +3064,16 @@ export default function PedidosChina() {
                     const created = box.creation_date ?? box.created_at ?? '';
                     const stateNum = (box.state ?? 1) as number;
                     return (
-                      <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
+                      <div key={`${id}`} className={`flex items-center justify-between p-4 rounded-xl ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-slate-700 to-slate-600 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'} border`}>
                         <div className="flex items-center gap-4">
-                          <div className="p-3 bg-indigo-100 rounded-lg">
-                            <Boxes className="h-5 w-5 text-indigo-600" />
+                          <div className={`p-3 rounded-lg ${mounted && theme === 'dark' ? 'bg-indigo-900/30' : 'bg-indigo-100'}`}>
+                            <Boxes className={`h-5 w-5 ${mounted && theme === 'dark' ? 'text-indigo-300' : 'text-indigo-600'}`} />
                           </div>
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-semibold text-slate-900">#BOX-{id}</h3>
+                              <h3 className={`font-semibold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#BOX-{id}</h3>
                             </div>
-                            <div className="flex items-center gap-4 text-xs text-slate-500">
+                            <div className={`flex items-center gap-4 text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
                                 {created ? new Date(created).toLocaleString('es-ES') : '—'}
@@ -3105,17 +3114,17 @@ export default function PedidosChina() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
             <div
               ref={modalEtiquetaRef}
-              className={`bg-white rounded-2xl p-6 max-w-md mx-4 w-full transition-all duration-300 ${
+              className={`${mounted && theme === 'dark' ? 'bg-slate-800' : 'bg-white'} rounded-2xl p-6 max-w-md mx-4 w-full transition-all duration-300 ${
                 isModalEtiquetaClosing ? 'translate-y-full scale-95 opacity-0' : 'animate-in slide-in-from-bottom-4 duration-300'
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-900">{t('chinese.ordersPage.modals.labelWarning.title', { defaultValue: 'Generar Etiqueta' })}</h3>
-                <Button variant="ghost" size="sm" onClick={() => { closeModalEtiqueta(); setTimeout(()=>{ setModalEmpaquetar(prev=> ({...prev, open:true})); },350); }} className="h-8 w-8 p-0">
-                  <span className="text-2xl">×</span>
+                <h3 className={`text-lg font-bold ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('chinese.ordersPage.modals.labelWarning.title', { defaultValue: 'Generar Etiqueta' })}</h3>
+                <Button variant="ghost" size="sm" onClick={() => { closeModalEtiqueta(); setTimeout(()=>{ setModalEmpaquetar(prev=> ({...prev, open:true})); },350); }} className={`h-8 w-8 p-0 ${mounted && theme === 'dark' ? 'hover:bg-slate-700' : ''}`}>
+                  <span className={`text-2xl ${mounted && theme === 'dark' ? 'text-white' : ''}`}>×</span>
                 </Button>
               </div>
-              <p className="text-slate-600 mb-4 text-sm">
+              <p className={`mb-4 text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                 {t('chinese.ordersPage.modals.labelWarning.description', { defaultValue: 'Asegúrate de poner la etiqueta al producto antes de empaquetar.' })}
               </p>
               <div className="flex flex-wrap justify-end gap-3">
