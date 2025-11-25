@@ -874,11 +874,11 @@ export default function VenezuelaPedidosPage() {
           </div>
           {/* Contenido por pestaña */}
           {activeTab === 'pedidos' && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
+            <Card className={`backdrop-blur-sm ${theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-white/80 border-slate-200'}`}>
               <CardHeader className="pb-3">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                    <Package className="h-5 w-5 text-black" />
+                  <CardTitle className={`text-xl font-semibold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : ''}`}>
+                    <Package className={`h-5 w-5 ${theme === 'dark' ? 'text-blue-400' : 'text-black'}`} />
                     {t('venezuela.pedidos.tabs.ordersList', { defaultValue: 'Lista de pedidos' })}
                   </CardTitle>
                   <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
@@ -886,13 +886,13 @@ export default function VenezuelaPedidosPage() {
                       placeholder={t('venezuela.pedidos.searchPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="h-10 w-full sm:w-64 px-3"
+                      className={`h-10 w-full sm:w-64 px-3 ${theme === 'dark' ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
                     />
                     <Select value={statusFilter} onValueChange={setStatusFilter as any}>
-                      <SelectTrigger className="h-10 w-full sm:w-56 px-3 whitespace-nowrap truncate">
+                      <SelectTrigger className={`h-10 w-full sm:w-56 px-3 whitespace-nowrap truncate ${theme === 'dark' ? 'bg-slate-700 border-slate-600 text-white' : ''}`}>
                         <SelectValue placeholder={t('venezuela.pedidos.filters.status')} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className={theme === 'dark' ? 'bg-slate-800 border-slate-700' : ''}>
                         <SelectItem value="all">{t('venezuela.pedidos.filters.all')}</SelectItem>
                         <SelectItem value="pending">{t('venezuela.pedidos.filters.pending')}</SelectItem>
                         <SelectItem value="reviewing">{t('venezuela.pedidos.filters.reviewing')}</SelectItem>
@@ -905,14 +905,14 @@ export default function VenezuelaPedidosPage() {
               </CardHeader>
               <CardContent>
                 {loading ? (
-                  <div className="p-10 text-center text-sm text-slate-600">{t('venezuela.pedidos.loadingOrders')}</div>
+                  <div className={`p-10 text-center text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('venezuela.pedidos.loadingOrders')}</div>
                 ) : error ? (
-                  <div className="p-10 text-center text-sm text-red-600">{error}</div>
+                  <div className={`p-10 text-center text-sm ${theme === 'dark' ? 'text-red-300' : 'text-red-600'}`}>{error}</div>
                 ) : filteredOrders.length === 0 ? (
                   <div className="p-10 text-center">
-                    <Package className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">{t('venezuela.pedidos.emptyOrdersTitle')}</h3>
-                    <p className="text-slate-600">{t('venezuela.pedidos.emptyOrdersDesc')}</p>
+                    <Package className={`w-16 h-16 mx-auto mb-4 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('venezuela.pedidos.emptyOrdersTitle')}</h3>
+                    <p className={theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>{t('venezuela.pedidos.emptyOrdersDesc')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -921,13 +921,13 @@ export default function VenezuelaPedidosPage() {
                       return (
                         <div
                           key={order.id}
-                          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300"
+                          className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl border hover:shadow-md transition-all duration-300 ${theme === 'dark' ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'}`}
                         >
                           <div className="min-w-0 flex items-center gap-4">
-                            <div className="p-3 bg-blue-100 rounded-lg"><Package className="h-5 w-5 text-blue-600" /></div>
+                            <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900/30' : 'bg-blue-100'}`}><Package className={`h-5 w-5 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} /></div>
                             <div className="min-w-0 space-y-1">
-                              <h3 className="font-semibold text-slate-900 truncate">#ORD-{String(order.id)} • {order.clientName}</h3>
-                              <div className="flex flex-wrap gap-4 text-xs text-slate-500">
+                              <h3 className={`font-semibold truncate ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#ORD-{String(order.id)} • {order.clientName}</h3>
+                              <div className={`flex flex-wrap gap-4 text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                                 <span className="truncate">{t('venezuela.pedidos.labels.quantity')}: {order.quantity}</span>
                                 <span className="truncate">{t('venezuela.pedidos.labels.deliveryType')}: {order.deliveryType}</span>
                                 <span className="truncate">{t('venezuela.pedidos.labels.shippingType')}: {order.shippingType}</span>
@@ -935,17 +935,17 @@ export default function VenezuelaPedidosPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-                            {stateNum === 13 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200">{t('venezuela.pedidos.badges.delivered')}</Badge>)}
-                            {stateNum === 12 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200">{t('venezuela.pedidos.badges.readyToDeliver')}</Badge>)}
-                            {stateNum === 11 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200">{t('venezuela.pedidos.badges.received')}</Badge>)}
-                            {stateNum === 10 && (<Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 hover:ring-1 hover:ring-indigo-200">{t('venezuela.pedidos.badges.customs')}</Badge>)}
-                            {stateNum === 9 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200">{t('venezuela.pedidos.badges.arrivedVzla')}</Badge>)}
-                            {stateNum === 8 && (<Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200">{t('venezuela.pedidos.badges.onWayVzla')}</Badge>)}
-                            {stateNum === 1 && (<Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200">{t('venezuela.pedidos.badges.pending')}</Badge>)}
-                            {stateNum === 2 && (<Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200">{t('venezuela.pedidos.badges.reviewing')}</Badge>)}
-                            {stateNum === 3 && (<Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-50 hover:border-purple-300 hover:ring-1 hover:ring-purple-200">{t('venezuela.pedidos.badges.quoted')}</Badge>)}
-                            {stateNum === 4 && (<Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200">{t('venezuela.pedidos.badges.processing')}</Badge>)}
-                            {(stateNum >= 5 && stateNum <= 7) && (<Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200">{t('venezuela.pedidos.badges.inProcess')}</Badge>)}
+                            {stateNum === 13 && (<Badge className={theme === 'dark' ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200'}>{t('venezuela.pedidos.badges.delivered')}</Badge>)}
+                            {stateNum === 12 && (<Badge className={theme === 'dark' ? 'bg-blue-900/30 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200'}>{t('venezuela.pedidos.badges.readyToDeliver')}</Badge>)}
+                            {stateNum === 11 && (<Badge className={theme === 'dark' ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200'}>{t('venezuela.pedidos.badges.received')}</Badge>)}
+                            {stateNum === 10 && (<Badge className={theme === 'dark' ? 'bg-indigo-900/30 text-indigo-300 border-indigo-700' : 'bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 hover:ring-1 hover:ring-indigo-200'}>{t('venezuela.pedidos.badges.customs')}</Badge>)}
+                            {stateNum === 9 && (<Badge className={theme === 'dark' ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200'}>{t('venezuela.pedidos.badges.arrivedVzla')}</Badge>)}
+                            {stateNum === 8 && (<Badge className={theme === 'dark' ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200'}>{t('venezuela.pedidos.badges.onWayVzla')}</Badge>)}
+                            {stateNum === 1 && (<Badge className={theme === 'dark' ? 'bg-yellow-900/30 text-yellow-300 border-yellow-700' : 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200'}>{t('venezuela.pedidos.badges.pending')}</Badge>)}
+                            {stateNum === 2 && (<Badge className={theme === 'dark' ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200'}>{t('venezuela.pedidos.badges.reviewing')}</Badge>)}
+                            {stateNum === 3 && (<Badge className={theme === 'dark' ? 'bg-purple-900/30 text-purple-300 border-purple-700' : 'bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-50 hover:border-purple-300 hover:ring-1 hover:ring-purple-200'}>{t('venezuela.pedidos.badges.quoted')}</Badge>)}
+                            {stateNum === 4 && (<Badge className={theme === 'dark' ? 'bg-blue-900/30 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200'}>{t('venezuela.pedidos.badges.processing')}</Badge>)}
+                            {(stateNum >= 5 && stateNum <= 7) && (<Badge className={theme === 'dark' ? 'bg-gray-800/50 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200'}>{t('venezuela.pedidos.badges.inProcess')}</Badge>)}
 
                             <Button
                               variant="outline"
@@ -1095,8 +1095,8 @@ export default function VenezuelaPedidosPage() {
                   </div>
                 )}
                 {(() => { const total = sortedOrders.length; if (total===0) return null; const totalPages=Math.max(1, Math.ceil(total/ITEMS_PER_PAGE)); const { start, end } = getPageSlice(total, ordersPage); const pages=getVisiblePages(totalPages, ordersPage); return (
-                  <div className="mt-4 pt-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <p className="text-xs sm:text-sm text-slate-600">{t('admin.orders.pagination.showing', { defaultValue: 'Mostrando' })} {Math.min(total, start + 1)} {t('admin.orders.pagination.to', { defaultValue: 'a' })} {end} {t('admin.orders.pagination.of', { defaultValue: 'de' })} {total} {t('admin.orders.pagination.results', { defaultValue: 'resultados' })}</p>
+                  <div className={`mt-4 pt-4 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}>
+                    <p className={`text-xs sm:text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('admin.orders.pagination.showing', { defaultValue: 'Mostrando' })} {Math.min(total, start + 1)} {t('admin.orders.pagination.to', { defaultValue: 'a' })} {end} {t('admin.orders.pagination.of', { defaultValue: 'de' })} {total} {t('admin.orders.pagination.results', { defaultValue: 'resultados' })}</p>
                     <div className="flex items-center gap-1 justify-end flex-wrap">
                       <Button variant="outline" size="sm" disabled={ordersPage<=1} onClick={()=>setOrdersPage(p=>Math.max(1,p-1))}>{t('admin.orders.pagination.prev', { defaultValue: 'Anterior' })}</Button>
                       {pages[0] > 1 && (<><Button variant="outline" size="sm" onClick={()=>setOrdersPage(1)}>1</Button><span className="px-1 text-slate-400">…</span></>)}
@@ -1111,11 +1111,11 @@ export default function VenezuelaPedidosPage() {
           )}
 
           {activeTab === 'cajas' && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+            <Card className={`backdrop-blur-sm hover:shadow-lg transition-shadow ${theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-white/80 border-slate-200'}`}>
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                    <Boxes className="h-5 w-5" />
+                  <CardTitle className={`text-xl font-semibold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : ''}`}>
+                    <Boxes className={`h-5 w-5 ${theme === 'dark' ? 'text-indigo-400' : ''}`} />
                     {t('venezuela.pedidos.tabs.boxes')}
                   </CardTitle>
                   <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
@@ -1123,7 +1123,7 @@ export default function VenezuelaPedidosPage() {
                       placeholder={t('venezuela.pedidos.filters.searchBoxPlaceholder')}
                       value={filtroCaja}
                       onChange={(e) => setFiltroCaja(e.target.value)}
-                      className="h-10 w-full sm:w-64 px-3"
+                      className={`h-10 w-full sm:w-64 px-3 ${theme === 'dark' ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
                     />
                     {/* Botón de refrescar eliminado: realtime activo */}
                   </div>
@@ -1132,9 +1132,9 @@ export default function VenezuelaPedidosPage() {
               <CardContent>
                 {boxes.length === 0 ? (
                   <div className="text-center py-12">
-                    <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('venezuela.pedidos.emptyBoxesTitle')}</h3>
-                    <p className="text-slate-500">{t('venezuela.pedidos.emptyBoxesDesc')}</p>
+                    <Boxes className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('venezuela.pedidos.emptyBoxesTitle')}</h3>
+                    <p className={theme === 'dark' ? 'text-slate-300' : 'text-slate-500'}>{t('venezuela.pedidos.emptyBoxesDesc')}</p>
                   </div>
                 ) : boxes.filter((b, idx) => {
                   if (!filtroCaja) return true;
@@ -1142,9 +1142,9 @@ export default function VenezuelaPedidosPage() {
                   return String(id).toLowerCase().includes(filtroCaja.toLowerCase());
                 }).length === 0 ? (
                   <div className="text-center py-12">
-                    <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('venezuela.pedidos.emptyBoxesSearchTitle')}</h3>
-                    <p className="text-slate-500">{t('venezuela.pedidos.emptyBoxesSearchDesc')}</p>
+                    <Boxes className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('venezuela.pedidos.emptyBoxesSearchTitle')}</h3>
+                    <p className={theme === 'dark' ? 'text-slate-300' : 'text-slate-500'}>{t('venezuela.pedidos.emptyBoxesSearchDesc')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -1162,16 +1162,16 @@ export default function VenezuelaPedidosPage() {
                       const stateNum = (box.state ?? 1) as number;
                       const countKey = box.box_id ?? box.boxes_id ?? box.id ?? id;
                       return (
-        <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300 min-w-0 overflow-hidden flex-wrap gap-3 md:flex-nowrap">
+        <div key={`${id}`} className={`flex items-center justify-between p-4 rounded-xl border hover:shadow-md transition-all duration-300 min-w-0 overflow-hidden flex-wrap gap-3 md:flex-nowrap ${theme === 'dark' ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'}`}>
           <div className="flex items-center gap-4 min-w-0">
-                            <div className="p-3 bg-indigo-100 rounded-lg">
-                              <Boxes className="h-5 w-5 text-indigo-600" />
+                            <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-indigo-900/30' : 'bg-indigo-100'}`}>
+                              <Boxes className={`h-5 w-5 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}`} />
                             </div>
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-slate-900 truncate">#BOX-{id}</h3>
+            <h3 className={`font-semibold truncate ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#BOX-{id}</h3>
                               </div>
-                              <div className="flex items-center gap-4 text-xs text-slate-500">
+                              <div className={`flex items-center gap-4 text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                                 <span className="flex items-center gap-1"><List className="h-3 w-3" />{t('venezuela.pedidos.labels.orders')} {orderCountsByBoxMain[countKey as any] ?? 0}</span>
                               </div>
                             </div>
@@ -1179,16 +1179,16 @@ export default function VenezuelaPedidosPage() {
           <div className="flex items-center gap-3 w-full sm:w-auto justify-end shrink-0">
                             <Badge className={`border ${
                               stateNum === 1
-                                ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50 transition-colors'
+                                ? theme === 'dark' ? 'bg-blue-900/30 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 transition-colors'
                                 : stateNum === 2
-                                ? 'bg-green-100 text-blue-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50 transition-colors'
+                                ? theme === 'dark' ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-blue-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 transition-colors'
                                 : stateNum === 3
-                                ? 'bg-green-100 text-blue-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50 transition-colors'
+                                ? theme === 'dark' ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-blue-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 transition-colors'
                                 : stateNum === 4
-                                ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50 transition-colors'
+                                ? theme === 'dark' ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 transition-colors'
                                 : stateNum === 5 || stateNum === 6
-                                ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50 transition-colors'
-                                : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50 transition-colors'
+                                ? theme === 'dark' ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 transition-colors'
+                                : theme === 'dark' ? 'bg-gray-800/50 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 transition-colors'
                             }`}>
                               {stateNum === 1 ? t('venezuela.pedidos.boxesBadges.new') : stateNum === 2 ? t('venezuela.pedidos.boxesBadges.ready') : stateNum === 3 ? t('venezuela.pedidos.boxesBadges.inContainer') : stateNum === 4 ? t('venezuela.pedidos.boxesBadges.traveling') : stateNum === 5 ? t('venezuela.pedidos.boxesBadges.received') : stateNum === 6 ? t('venezuela.pedidos.boxesBadges.completed') : t('venezuela.pedidos.boxesBadges.state', { num: stateNum })}
                             </Badge>
@@ -1226,7 +1226,6 @@ export default function VenezuelaPedidosPage() {
                                     alert((e as Error).message || t('venezuela.pedidos.errors.boxUpdate'));
                                   }
                                 }}
-                                className="text-emerald-700 border-emerald-300 hover:bg-emerald-50"
                                 title={stateNum === 4 ? t('venezuela.pedidos.tooltips.markBoxReceivedAir') : t('venezuela.pedidos.tooltips.markBoxReceived')}
                               >
                                 <CheckCircle className="h-4 w-4" />
@@ -1275,18 +1274,18 @@ export default function VenezuelaPedidosPage() {
                   );
                 })()}
                 {boxesLoading && (
-                  <p className="text-center text-sm text-slate-500 mt-4">{t('venezuela.pedidos.loadingBoxes')}</p>
+                  <p className={`text-center text-sm mt-4 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>{t('venezuela.pedidos.loadingBoxes')}</p>
                 )}
               </CardContent>
             </Card>
           )}
 
           {activeTab === 'contenedores' && (
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+            <Card className={`backdrop-blur-sm hover:shadow-lg transition-shadow ${theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-white/80 border-slate-200'}`}>
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                    <Boxes className="h-5 w-5" />
+                  <CardTitle className={`text-xl font-semibold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : ''}`}>
+                    <Boxes className={`h-5 w-5 ${theme === 'dark' ? 'text-indigo-400' : ''}`} />
                     {t('venezuela.pedidos.tabs.containers')}
                   </CardTitle>
                   <div className="w-full sm:w-auto flex items-center justify-end gap-2 md:gap-3 flex-wrap">
@@ -1294,7 +1293,7 @@ export default function VenezuelaPedidosPage() {
                       placeholder={t('venezuela.pedidos.filters.searchContainerPlaceholder')}
                       value={filtroContenedor}
                       onChange={(e) => setFiltroContenedor(e.target.value)}
-                      className="h-10 w-full sm:w-64 px-3"
+                      className={`h-10 w-full sm:w-64 px-3 ${theme === 'dark' ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
                     />
                     {/* Botón de refrescar eliminado: realtime activo */}
                   </div>
@@ -1303,9 +1302,9 @@ export default function VenezuelaPedidosPage() {
               <CardContent>
                 {containers.length === 0 ? (
                   <div className="text-center py-12">
-                    <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('venezuela.pedidos.emptyContainersTitle')}</h3>
-                    <p className="text-slate-500">{t('venezuela.pedidos.emptyContainersDesc')}</p>
+                    <Boxes className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('venezuela.pedidos.emptyContainersTitle')}</h3>
+                    <p className={theme === 'dark' ? 'text-slate-300' : 'text-slate-500'}>{t('venezuela.pedidos.emptyContainersDesc')}</p>
                   </div>
                 ) : containers.filter((c, idx) => {
                   if (!filtroContenedor) return true;
@@ -1313,9 +1312,9 @@ export default function VenezuelaPedidosPage() {
                   return String(id).toLowerCase().includes(filtroContenedor.toLowerCase());
                 }).length === 0 ? (
                   <div className="text-center py-12">
-                    <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">{t('venezuela.pedidos.emptyContainersSearchTitle')}</h3>
-                    <p className="text-slate-500">{t('venezuela.pedidos.emptyContainersSearchDesc')}</p>
+                    <Boxes className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('venezuela.pedidos.emptyContainersSearchTitle')}</h3>
+                    <p className={theme === 'dark' ? 'text-slate-300' : 'text-slate-500'}>{t('venezuela.pedidos.emptyContainersSearchDesc')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -1332,28 +1331,28 @@ export default function VenezuelaPedidosPage() {
                       const created = container.creation_date ?? container.created_at ?? '';
                       const stateNum = (container.state ?? 1) as number;
                       return (
-                        <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300 min-w-0">
+                        <div key={`${id}`} className={`flex items-center justify-between p-4 rounded-xl border hover:shadow-md transition-all duration-300 min-w-0 ${theme === 'dark' ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'}`}>
                           <div className="flex items-center gap-4">
-                            <div className="p-3 bg-indigo-100 rounded-lg">
-                              <Boxes className="h-5 w-5 text-indigo-600" />
+                            <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-indigo-900/30' : 'bg-indigo-100'}`}>
+                              <Boxes className={`h-5 w-5 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}`} />
                             </div>
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
-                                <h3 className="font-semibold text-slate-900">#CONT-{id}</h3>
+                                <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#CONT-{id}</h3>
                               </div>
-                              <div className="flex items-center gap-4 text-xs text-slate-500">
+                              <div className={`flex items-center gap-4 text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                               </div>
                             </div>
                           </div>
                           <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                             <Badge className={`border ${
                               stateNum === 1
-                                ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50 transition-colors'
+                                ? theme === 'dark' ? 'bg-blue-900/30 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 transition-colors'
                                 : stateNum === 2
-                                ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-yellow-700/50 transition-colors'
+                                ? theme === 'dark' ? 'bg-yellow-900/30 text-yellow-300 border-yellow-700' : 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300 hover:ring-1 hover:ring-yellow-200 transition-colors'
                                 : stateNum === 4
-                                ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50 transition-colors'
-                                : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50 transition-colors'
+                                ? theme === 'dark' ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 transition-colors'
+                                : theme === 'dark' ? 'bg-gray-800/50 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 transition-colors'
                             }`}>
                               {stateNum === 1
                                 ? t('venezuela.pedidos.containersBadges.new')
@@ -1422,20 +1421,20 @@ export default function VenezuelaPedidosPage() {
                   const { start, end } = getPageSlice(total, containersPage);
                   const pages = getVisiblePages(totalPages, containersPage);
                   return (
-                    <div className="mt-4 pt-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <p className="text-xs sm:text-sm text-slate-600">{t('admin.orders.pagination.showing', { defaultValue: 'Mostrando' })} {Math.min(total, start + 1)} {t('admin.orders.pagination.to', { defaultValue: 'a' })} {end} {t('admin.orders.pagination.of', { defaultValue: 'de' })} {total} {t('admin.orders.pagination.results', { defaultValue: 'resultados' })}</p>
+                    <div className={`mt-4 pt-4 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}>
+                      <p className={`text-xs sm:text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('admin.orders.pagination.showing', { defaultValue: 'Mostrando' })} {Math.min(total, start + 1)} {t('admin.orders.pagination.to', { defaultValue: 'a' })} {end} {t('admin.orders.pagination.of', { defaultValue: 'de' })} {total} {t('admin.orders.pagination.results', { defaultValue: 'resultados' })}</p>
                       <div className="flex items-center gap-1 justify-end flex-wrap">
                         <Button variant="outline" size="sm" disabled={containersPage<=1} onClick={()=>setContainersPage(p=>Math.max(1,p-1))}>{t('admin.orders.pagination.prev', { defaultValue: 'Anterior' })}</Button>
-                        {pages[0] > 1 && (<><Button variant="outline" size="sm" onClick={()=>setContainersPage(1)}>1</Button><span className="px-1 text-slate-400">…</span></>)}
+                        {pages[0] > 1 && (<><Button variant="outline" size="sm" onClick={()=>setContainersPage(1)}>1</Button><span className={`px-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>…</span></>)}
                         {pages.map(p => (<Button key={p} variant={p===containersPage? 'default':'outline'} size="sm" onClick={()=>setContainersPage(p)}>{p}</Button>))}
-                        {pages[pages.length-1] < totalPages && (<><span className="px-1 text-slate-400">…</span><Button variant="outline" size="sm" onClick={()=>setContainersPage(totalPages)}>{totalPages}</Button></>)}
+                        {pages[pages.length-1] < totalPages && (<><span className={`px-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>…</span><Button variant="outline" size="sm" onClick={()=>setContainersPage(totalPages)}>{totalPages}</Button></>)}
                         <Button variant="outline" size="sm" disabled={containersPage>=totalPages} onClick={()=>setContainersPage(p=>Math.min(totalPages,p+1))}>{t('admin.orders.pagination.next', { defaultValue: 'Siguiente' })}</Button>
                       </div>
                     </div>
                   );
                 })()}
                 {containersLoading && (
-                  <p className="text-center text-sm text-slate-500 mt-4">{t('venezuela.pedidos.loadingContainers')}</p>
+                  <p className={`text-center text-sm mt-4 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>{t('venezuela.pedidos.loadingContainers')}</p>
                 )}
               </CardContent>
             </Card>
@@ -1502,48 +1501,68 @@ export default function VenezuelaPedidosPage() {
             </div>
           )}
           {modalVerPedidos.open && (
-            <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setModalVerPedidos({ open: false })}>
-              <div className="bg-white rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setModalVerPedidos({ open: false })}>
+              <div
+                className={`rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto border ${
+                  theme === 'dark' ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+                }`}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-slate-900">{t('venezuela.pedidos.modalOrdersTitle', { boxId: String(modalVerPedidos.boxId ?? '') })}</h3>
-                  <Button variant="ghost" size="sm" onClick={() => setModalVerPedidos({ open: false })} className="h-8 w-8 p-0">✕</Button>
+                  <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                    {t('venezuela.pedidos.modalOrdersTitle', { boxId: String(modalVerPedidos.boxId ?? '') })}
+                  </h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setModalVerPedidos({ open: false })}
+                    className={`h-8 w-8 p-0 ${theme === 'dark' ? 'text-slate-300 hover:bg-slate-700' : ''}`}
+                  >
+                    ✕
+                  </Button>
                 </div>
                 {ordersByBoxLoading ? (
-                  <p className="text-center text-sm text-slate-500 py-6">{t('venezuela.pedidos.loadingOrders')}</p>
+                  <p className={`text-center text-sm py-6 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>{t('venezuela.pedidos.loadingOrders')}</p>
                 ) : ordersByBox.length === 0 ? (
                   <div className="text-center py-12">
-                    <Package className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h4 className="text-base font-medium text-slate-900 mb-2">{t('venezuela.pedidos.modalOrdersEmptyTitle')}</h4>
-                    <p className="text-slate-500">{t('venezuela.pedidos.modalOrdersEmptyDesc')}</p>
+                    <Package className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <h4 className={`text-base font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('venezuela.pedidos.modalOrdersEmptyTitle')}</h4>
+                    <p className={theme === 'dark' ? 'text-slate-300' : 'text-slate-500'}>{t('venezuela.pedidos.modalOrdersEmptyDesc')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {ordersByBox.map((o) => (
-                      <div key={o.id} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
+                      <div
+                        key={o.id}
+                        className={`flex items-center justify-between p-4 rounded-xl border ${
+                          theme === 'dark' ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'
+                        }`}
+                      >
                         <div className="flex items-center gap-4">
-                          <div className="p-3 bg-blue-100 rounded-lg">
-                            <Package className="h-5 w-5 text-blue-600" />
+                          <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900/30' : 'bg-blue-100'}`}>
+                            <Package className={`h-5 w-5 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                           </div>
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-semibold text-slate-900">#ORD-{o.id}</h3>
+                              <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#ORD-{o.id}</h3>
                             </div>
-                            <p className="text-sm text-slate-600">{o.productName}</p>
+                            <p className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{o.productName}</p>
                           </div>
                         </div>
                         <Button
                           variant="outline"
                           size="icon"
-              onClick={() => {
+                          className={theme === 'dark' ? 'border-slate-600 text-white hover:bg-slate-700' : ''}
+                          onClick={() => {
                             if (o.pdfRoutes) {
                               const win = window.open(o.pdfRoutes, '_blank');
-                if (!win) alert(t('venezuela.pedidos.pdf.openError'));
+                              if (!win) alert(t('venezuela.pedidos.pdf.openError'));
                             } else {
-                alert(t('venezuela.pedidos.pdf.notAvailable'));
+                              alert(t('venezuela.pedidos.pdf.notAvailable'));
                             }
                           }}
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className={`h-4 w-4 ${theme === 'dark' ? 'text-blue-300' : ''}`} />
                         </Button>
                       </div>
                     ))}
@@ -1554,19 +1573,33 @@ export default function VenezuelaPedidosPage() {
           )}
 
           {modalVerCajas.open && (
-            <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setModalVerCajas({ open: false })}>
-              <div className="bg-white rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setModalVerCajas({ open: false })}>
+              <div
+                className={`rounded-2xl p-6 max-w-3xl mx-4 w-full max-h-[90vh] overflow-y-auto border ${
+                  theme === 'dark' ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+                }`}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-slate-900">{t('venezuela.pedidos.modalBoxesTitle', { containerId: String(modalVerCajas.containerId ?? '') })}</h3>
-                  <Button variant="ghost" size="sm" onClick={() => setModalVerCajas({ open: false })} className="h-8 w-8 p-0">✕</Button>
+                  <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                    {t('venezuela.pedidos.modalBoxesTitle', { containerId: String(modalVerCajas.containerId ?? '') })}
+                  </h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setModalVerCajas({ open: false })}
+                    className={`h-8 w-8 p-0 ${theme === 'dark' ? 'text-slate-300 hover:bg-slate-700' : ''}`}
+                  >
+                    ✕
+                  </Button>
                 </div>
                 {boxesByContainerLoading ? (
-                  <p className="text-center text-sm text-slate-500 py-6">{t('venezuela.pedidos.loadingBoxes')}</p>
+                  <p className={`text-center text-sm py-6 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>{t('venezuela.pedidos.loadingBoxes')}</p>
                 ) : boxesByContainer.length === 0 ? (
                   <div className="text-center py-12">
-                    <Boxes className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h4 className="text-base font-medium text-slate-900 mb-2">{t('venezuela.pedidos.modalBoxesEmptyTitle')}</h4>
-                    <p className="text-slate-500">{t('venezuela.pedidos.modalBoxesEmptyDesc')}</p>
+                    <Boxes className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <h4 className={`text-base font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{t('venezuela.pedidos.modalBoxesEmptyTitle')}</h4>
+                    <p className={theme === 'dark' ? 'text-slate-300' : 'text-slate-500'}>{t('venezuela.pedidos.modalBoxesEmptyDesc')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -1575,30 +1608,40 @@ export default function VenezuelaPedidosPage() {
                       const created = box.creation_date ?? box.created_at ?? '';
                       const stateNum = (box.state ?? 1) as number;
                       return (
-        <div key={`${id}`} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 min-w-0 overflow-hidden flex-wrap gap-3 md:flex-nowrap">
-          <div className="flex items-center gap-4 min-w-0">
-                            <div className="p-3 bg-indigo-100 rounded-lg">
-                              <Boxes className="h-5 w-5 text-indigo-600" />
+                        <div
+                          key={`${id}`}
+                          className={`flex items-center justify-between p-4 rounded-xl border min-w-0 overflow-hidden flex-wrap gap-3 md:flex-nowrap ${
+                            theme === 'dark' ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'
+                          }`}
+                        >
+                          <div className="flex items-center gap-4 min-w-0">
+                            <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-indigo-900/30' : 'bg-indigo-100'}`}>
+                              <Boxes className={`h-5 w-5 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}`} />
                             </div>
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-slate-900 truncate">#BOX-{id}</h3>
+                                <h3 className={`font-semibold truncate ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>#BOX-{id}</h3>
                               </div>
-                              <div className="flex items-center gap-4 text-xs text-slate-500">
-                                <span className="flex items-center gap-1"><List className="h-3 w-3" />{t('venezuela.pedidos.labels.orders')} {orderCountsByBox[id as any] ?? 0}</span>
+                              <div className={`flex items-center gap-4 text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                                <span className="flex items-center gap-1">
+                                  <List className="h-3 w-3" />
+                                  {t('venezuela.pedidos.labels.orders')} {orderCountsByBox[id as any] ?? 0}
+                                </span>
                               </div>
                             </div>
                           </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-end shrink-0">
-                            <Badge className={`border ${
-                              stateNum === 1
-                                ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-blue-700/50 transition-colors'
-                                : stateNum === 2
-                                ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-green-700/50 transition-colors'
-                                : stateNum === 5 || stateNum === 6
-                                ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-emerald-700/50 transition-colors'
-                                : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 dark:hover:brightness-125 dark:hover:ring-1 dark:hover:ring-gray-700/50 transition-colors'
-                            }`}>
+                          <div className="flex items-center gap-3 w-full sm:w-auto justify-end shrink-0">
+                            <Badge
+                              className={`border ${
+                                stateNum === 1
+                                  ? theme === 'dark' ? 'bg-blue-900/30 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:border-blue-300 hover:ring-1 hover:ring-blue-200'
+                                  : stateNum === 2
+                                  ? theme === 'dark' ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:border-green-300 hover:ring-1 hover:ring-green-200'
+                                  : stateNum === 5 || stateNum === 6
+                                  ? theme === 'dark' ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:ring-1 hover:ring-emerald-200'
+                                  : theme === 'dark' ? 'bg-gray-800/50 text-gray-300 border-gray-700' : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:ring-1 hover:ring-gray-200'
+                              }`}
+                            >
                               {stateNum === 1 ? t('venezuela.pedidos.boxesBadges.new') : stateNum === 2 ? t('venezuela.pedidos.boxesBadges.ready') : stateNum === 5 ? t('venezuela.pedidos.boxesBadges.received') : stateNum === 6 ? t('venezuela.pedidos.boxesBadges.completed') : t('venezuela.pedidos.boxesBadges.state', { num: stateNum })}
                             </Badge>
                             {/* Botón Recibido en modal: visible cuando boxes.state === 5 o (state === 4 y tiene pedidos air) */}
@@ -1606,6 +1649,7 @@ export default function VenezuelaPedidosPage() {
                               <Button
                                 variant="outline"
                                 size="icon"
+                                className={theme === 'dark' ? 'border-emerald-600 text-emerald-300 hover:bg-emerald-900/20' : 'text-emerald-700 border-emerald-300 hover:bg-emerald-50'}
                                 onClick={async () => {
                                   const nextState = 6;
                                   try {
@@ -1638,7 +1682,6 @@ export default function VenezuelaPedidosPage() {
                                     alert((e as Error).message || t('venezuela.pedidos.errors.boxUpdate'));
                                   }
                                 }}
-                                className="text-emerald-700 border-emerald-300 hover:bg-emerald-50"
                                 title={stateNum === 4 ? t('venezuela.pedidos.tooltips.markBoxReceivedAir') : t('venezuela.pedidos.tooltips.markBoxReceived')}
                               >
                                 <CheckCircle className="h-4 w-4" />
@@ -1647,14 +1690,14 @@ export default function VenezuelaPedidosPage() {
                             <Button
                               variant="outline"
                               size="icon"
-                              className=""
+                              className={theme === 'dark' ? 'border-slate-600 text-white hover:bg-slate-700' : ''}
                               onClick={() => {
                                 const boxId = box.box_id ?? box.boxes_id ?? box.id;
                                 setModalVerPedidos({ open: true, boxId });
                                 if (boxId !== undefined) fetchOrdersByBoxId(boxId as any);
                               }}
                             >
-                              <List className="h-4 w-4" />
+                              <List className={`h-4 w-4 ${theme === 'dark' ? 'text-blue-300' : ''}`} />
                             </Button>
                           </div>
                         </div>
