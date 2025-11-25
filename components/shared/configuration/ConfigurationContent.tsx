@@ -105,7 +105,6 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
     email: roleData.email,
     telefono: roleData.telefono,
     idioma: language,
-    zonaHoraria: 'America/Caracas',
     fotoPerfil: null as File | null,
   fotoPreview: null as string | null,
   fotoVersion: 0 // para controlar cache busting sólo cuando cambie
@@ -846,59 +845,9 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
 
             {/* Tab Preferencias */}
             <TabsContent value="preferencias" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="bg-white/80 backdrop-blur-sm border-slate-200 dark:bg-slate-800/80 dark:border-slate-700">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Globe className="w-5 h-5" />
-                      {t('admin.configuration.preferences.regional.title')}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="zonaHoraria">{t('admin.configuration.preferences.timezone.title')}</Label>
-                      <Select value={formData.zonaHoraria} onValueChange={(value) => handleInputChange('zonaHoraria', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('admin.configuration.preferences.timezone.placeholder')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="America/Caracas">Caracas (UTC-4)</SelectItem>
-                          <SelectItem value="America/New_York">Nueva York (UTC-5)</SelectItem>
-                          <SelectItem value="America/Los_Angeles">Los Ángeles (UTC-8)</SelectItem>
-                          <SelectItem value="Europe/Madrid">Madrid (UTC+1)</SelectItem>
-                          <SelectItem value="Asia/Shanghai">Shanghai (UTC+8)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="formatoFecha">{t('admin.configuration.preferences.dateFormat.title')}</Label>
-                      <Select defaultValue="dd/mm/yyyy">
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('admin.configuration.preferences.dateFormat.placeholder')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="dd/mm/yyyy">DD/MM/YYYY</SelectItem>
-                          <SelectItem value="mm/dd/yyyy">MM/DD/YYYY</SelectItem>
-                          <SelectItem value="yyyy-mm-dd">YYYY-MM-DD</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="formatoHora">{t('admin.configuration.preferences.timeFormat.title')}</Label>
-                      <Select defaultValue="24h">
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('admin.configuration.preferences.timeFormat.placeholder')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="24h">{t('admin.configuration.preferences.timeFormat.24h')}</SelectItem>
-                          <SelectItem value="12h">{t('admin.configuration.preferences.timeFormat.12h')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/80 backdrop-blur-sm border-slate-200 dark:bg-slate-800/80 dark:border-slate-700">
+              <div className="flex justify-center">
+                <div className="w-full max-w-2xl">
+                  <Card className="bg-white/80 backdrop-blur-sm border-slate-200 dark:bg-slate-800/80 dark:border-slate-700">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Palette className="w-5 h-5" />
@@ -972,7 +921,8 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                       </Select>
                     </div>
                   </CardContent>
-                </Card>
+                  </Card>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
