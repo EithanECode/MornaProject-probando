@@ -617,14 +617,15 @@ export default function MisPedidosPage() {
 
   // Helpers específicos para el modal de tracking (colores simples)
   const getTrackingStatusColor = (status: string) => {
+    const isDark = mounted && theme === 'dark';
     switch (status) {
-  case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200 transition-colors hover:bg-yellow-50 hover:ring-1 hover:ring-yellow-200';
-  case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200 transition-colors hover:bg-blue-50 hover:ring-1 hover:ring-blue-200';
-  case 'shipped': return 'bg-orange-100 text-orange-800 border-orange-200 transition-colors hover:bg-orange-50 hover:ring-1 hover:ring-orange-200';
-  case 'in-transit': return 'bg-orange-100 text-orange-800 border-orange-200 transition-colors hover:bg-orange-50 hover:ring-1 hover:ring-orange-200';
-  case 'delivered': return 'bg-green-100 text-green-800 border-green-200 transition-colors hover:bg-green-50 hover:ring-1 hover:ring-green-200';
-  case 'cancelled': return 'bg-red-100 text-red-800 border-red-200 transition-colors hover:bg-red-50 hover:ring-1 hover:ring-red-200';
-  default: return 'bg-gray-100 text-gray-800 border-gray-200 transition-colors hover:bg-gray-50 hover:ring-1 hover:ring-gray-200';
+      case 'pending': return isDark ? 'bg-yellow-900/30 text-yellow-300 border-yellow-700 transition-colors hover:bg-yellow-900/50 hover:ring-1 hover:ring-yellow-500/20' : 'bg-yellow-100 text-yellow-800 border-yellow-200 transition-colors hover:bg-yellow-50 hover:ring-1 hover:ring-yellow-200';
+      case 'processing': return isDark ? 'bg-blue-900/30 text-blue-300 border-blue-700 transition-colors hover:bg-blue-900/50 hover:ring-1 hover:ring-blue-500/20' : 'bg-blue-100 text-blue-800 border-blue-200 transition-colors hover:bg-blue-50 hover:ring-1 hover:ring-blue-200';
+      case 'shipped': return isDark ? 'bg-orange-900/30 text-orange-300 border-orange-700 transition-colors hover:bg-orange-900/50 hover:ring-1 hover:ring-orange-500/20' : 'bg-orange-100 text-orange-800 border-orange-200 transition-colors hover:bg-orange-50 hover:ring-1 hover:ring-orange-200';
+      case 'in-transit': return isDark ? 'bg-orange-900/30 text-orange-300 border-orange-700 transition-colors hover:bg-orange-900/50 hover:ring-1 hover:ring-orange-500/20' : 'bg-orange-100 text-orange-800 border-orange-200 transition-colors hover:bg-orange-50 hover:ring-1 hover:ring-orange-200';
+      case 'delivered': return isDark ? 'bg-green-900/30 text-green-300 border-green-700 transition-colors hover:bg-green-900/50 hover:ring-1 hover:ring-green-500/20' : 'bg-green-100 text-green-800 border-green-200 transition-colors hover:bg-green-50 hover:ring-1 hover:ring-green-200';
+      case 'cancelled': return isDark ? 'bg-red-900/30 text-red-300 border-red-700 transition-colors hover:bg-red-900/50 hover:ring-1 hover:ring-red-500/20' : 'bg-red-100 text-red-800 border-red-200 transition-colors hover:bg-red-50 hover:ring-1 hover:ring-red-200';
+      default: return isDark ? 'bg-gray-800 text-gray-300 border-gray-700 transition-colors hover:bg-gray-700 hover:ring-1 hover:ring-gray-500/20' : 'bg-gray-100 text-gray-800 border-gray-200 transition-colors hover:bg-gray-50 hover:ring-1 hover:ring-gray-200';
     }
   };
 
@@ -800,14 +801,15 @@ export default function MisPedidosPage() {
 
   // Color de badge basado en status (se usa en lista y modal detalles)
   const getStatusColor = (status: string) => {
+    const isDark = mounted && theme === 'dark';
     switch (status) {
-      case 'pending': return 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm';
-      case 'quoted': return 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm';
-      case 'processing': return 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm';
-      case 'shipped': return 'bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800 border-orange-300 shadow-sm';
-      case 'delivered': return 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-sm';
-      case 'cancelled': return 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm';
-      default: return 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-sm';
+      case 'pending': return isDark ? 'bg-gradient-to-r from-yellow-900/30 to-yellow-800/30 text-yellow-300 border-yellow-700 shadow-sm' : 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-300 shadow-sm';
+      case 'quoted': return isDark ? 'bg-gradient-to-r from-green-900/30 to-green-800/30 text-green-300 border-green-700 shadow-sm' : 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-300 shadow-sm';
+      case 'processing': return isDark ? 'bg-gradient-to-r from-blue-900/30 to-blue-800/30 text-blue-300 border-blue-700 shadow-sm' : 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300 shadow-sm';
+      case 'shipped': return isDark ? 'bg-gradient-to-r from-orange-900/30 to-orange-800/30 text-orange-300 border-orange-700 shadow-sm' : 'bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800 border-orange-300 shadow-sm';
+      case 'delivered': return isDark ? 'bg-gradient-to-r from-emerald-900/30 to-emerald-800/30 text-emerald-300 border-emerald-700 shadow-sm' : 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-sm';
+      case 'cancelled': return isDark ? 'bg-gradient-to-r from-red-900/30 to-red-800/30 text-red-300 border-red-700 shadow-sm' : 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-300 shadow-sm';
+      default: return isDark ? 'bg-gradient-to-r from-slate-700 to-slate-600 text-slate-300 border-slate-600 shadow-sm' : 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-sm';
     }
   };
 
@@ -1554,25 +1556,25 @@ export default function MisPedidosPage() {
         
         <div className="p-4 md:p-5 lg:p-6 space-y-6 md:space-y-6 lg:space-y-8">
           {/* Header de la página */}
-          <div className="bg-gradient-to-r from-blue-500 via-blue-600 to-orange-500 rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden">
+          <div className={`rounded-xl p-4 md:p-6 lg:p-8 text-white relative overflow-hidden ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-blue-900 via-blue-800 to-orange-900' : 'bg-gradient-to-r from-blue-500 via-blue-600 to-orange-500'}`}>
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
                 <div>
                   <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">{t('client.recentOrders.title')}</h1>
-                  <p className="text-green-100 text-sm md:text-base lg:text-lg">{t('client.dashboard.panel')}</p>
-                  <p className="text-green-200 mt-2 text-xs md:text-sm">{t('client.recentOrders.subtitle')}</p>
+                  <p className={`text-sm md:text-base lg:text-lg ${mounted && theme === 'dark' ? 'text-green-200' : 'text-green-100'}`}>{t('client.dashboard.panel')}</p>
+                  <p className={`mt-2 text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-green-300' : 'text-green-200'}`}>{t('client.recentOrders.subtitle')}</p>
                 </div>
                 
                 <div className="grid grid-cols-2 md:flex md:items-center md:space-x-4 gap-4">
                   <div className="text-center">
                     <div className="text-2xl md:text-3xl lg:text-4xl font-bold">{stats.total}</div>
-                    <p className="text-green-100 text-xs md:text-sm">{t('client.dashboard.totalOrders')}</p>
+                    <p className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-green-200' : 'text-green-100'}`}>{t('client.dashboard.totalOrders')}</p>
                   </div>
                   <div className="hidden md:block w-px h-12 md:h-16 bg-white/20"></div>
                   <div className="text-center">
                     <div className="text-2xl md:text-3xl lg:text-4xl font-bold">${stats.totalSpent.toLocaleString()}</div>
-                    <p className="text-green-100 text-xs md:text-sm">{t('client.dashboard.totalSpent')}</p>
+                    <p className={`text-xs md:text-sm ${mounted && theme === 'dark' ? 'text-green-200' : 'text-green-100'}`}>{t('client.dashboard.totalSpent')}</p>
                   </div>
                 </div>
               </div>
@@ -1588,7 +1590,7 @@ export default function MisPedidosPage() {
                   {t('client.quickActions.newOrder')}
                 </Button>
               </DialogTrigger>
-              <DialogContent ref={modalRef} className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-orange-50">
+              <DialogContent ref={modalRef} className={`max-w-4xl max-h-[90vh] overflow-y-auto ${mounted && theme === 'dark' ? 'bg-slate-800' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-orange-50'}`}>
                 <DialogHeader className="text-center pb-6">
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
@@ -1596,7 +1598,7 @@ export default function MisPedidosPage() {
                       ✨ {t('client.quickActions.newOrder')}
                     </DialogTitle>
                   </div>
-                  <DialogDescription className="text-lg text-slate-600 mt-2">
+                  <DialogDescription className={`text-lg mt-2 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                     {t('client.recentOrders.newOrder.dialogDescription')}
                   </DialogDescription>
                 </DialogHeader>
@@ -1606,11 +1608,11 @@ export default function MisPedidosPage() {
                   isTransitioning ? 'opacity-75' : 'opacity-100'
                 }`}>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-slate-700">{t('client.recentOrders.newOrder.step', { current: currentStep, total: 3 })}</span>
-                    <span className="font-bold text-blue-600">{t('client.recentOrders.newOrder.percentComplete', { percent: Math.round((currentStep / 3) * 100) })}</span>
+                    <span className={`font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('client.recentOrders.newOrder.step', { current: currentStep, total: 3 })}</span>
+                    <span className={`font-bold ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>{t('client.recentOrders.newOrder.percentComplete', { percent: Math.round((currentStep / 3) * 100) })}</span>
                   </div>
                   <div className="relative">
-                    <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                    <div className={`w-full rounded-full h-3 overflow-hidden ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-200'}`}>
                       <div 
                         className="h-full bg-gradient-to-r from-blue-500 to-orange-500 rounded-full transition-all duration-500 ease-out relative"
                         style={{ width: `${(currentStep / 3) * 100}%` }}
@@ -1625,12 +1627,12 @@ export default function MisPedidosPage() {
                           <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                             step <= currentStep 
                               ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg scale-110' 
-                              : 'bg-slate-300 text-slate-600'
+                              : (mounted && theme === 'dark' ? 'bg-slate-700 text-slate-400' : 'bg-slate-300 text-slate-600')
                           }`}>
                             {step < currentStep ? '✓' : step}
                           </div>
                           <span className={`text-xs mt-1 transition-colors duration-300 ${
-                            step <= currentStep ? 'text-blue-600 font-medium' : 'text-slate-500'
+                            step <= currentStep ? (mounted && theme === 'dark' ? 'text-blue-400 font-medium' : 'text-blue-600 font-medium') : (mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500')
                           }`}>
                             {step === 1 ? t('client.recentOrders.newOrder.productTab') : step === 2 ? t('client.recentOrders.newOrder.shippingTab') : t('client.recentOrders.newOrder.summaryTab')}
                           </span>
@@ -1677,11 +1679,11 @@ export default function MisPedidosPage() {
                   }`}>
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-orange-500 rounded-lg blur-lg opacity-10 animate-pulse"></div>
-                      <div className="relative bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-slate-200/50">
+                      <div className={`relative backdrop-blur-sm rounded-lg p-6 border ${mounted && theme === 'dark' ? 'bg-slate-700/80 border-slate-600' : 'bg-white/80 border-slate-200/50'}`}>
                         <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2">
                           {getStepTitle(currentStep)}
                         </h3>
-                        <p className="text-slate-600">{getStepDescription(currentStep)}</p>
+                        <p className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>{getStepDescription(currentStep)}</p>
                       </div>
                     </div>
                   </div>
@@ -1690,8 +1692,8 @@ export default function MisPedidosPage() {
                   {currentStep === 1 && (
                     <div className="space-y-8">
                       <div className="space-y-3">
-                        <Label htmlFor="productName" className="text-sm font-semibold text-slate-700 flex items-center">
-                          <Package className="w-4 h-4 mr-2 text-blue-600" />
+                        <Label htmlFor="productName" className={`text-sm font-semibold flex items-center ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+                          <Package className={`w-4 h-4 mr-2 ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                           {t('client.recentOrders.newOrder.productName')}<span className="text-red-500 ml-1">*</span>
                         </Label>
                         <div className="relative group">
@@ -1701,16 +1703,16 @@ export default function MisPedidosPage() {
                             onChange={(e) => setNewOrderData({ ...newOrderData, productName: e.target.value.slice(0, NAME_MAX) })}
                             placeholder={t('client.recentOrders.newOrder.productNamePlaceholder')}
                             maxLength={NAME_MAX}
-                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300 ${attemptedStep1 && !newOrderData.productName.trim() ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 backdrop-blur-sm group-hover:border-blue-300 ${mounted && theme === 'dark' ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white/80 border-slate-200'} ${attemptedStep1 && !newOrderData.productName.trim() ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                           />
-                          <p className="text-xs text-slate-500 mt-1">{newOrderData.productName.length}/{NAME_MAX}</p>
+                          <p className={`text-xs mt-1 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{newOrderData.productName.length}/{NAME_MAX}</p>
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-orange-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
 
                       <div className="space-y-3">
-                        <Label htmlFor="description" className="text-sm font-semibold text-slate-700 flex items-center">
-                          <FileText className="w-4 h-4 mr-2 text-blue-600" />
+                        <Label htmlFor="description" className={`text-sm font-semibold flex items-center ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+                          <FileText className={`w-4 h-4 mr-2 ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                           {t('client.recentOrders.newOrder.productDescription')}<span className="text-red-500 ml-1">*</span>
                         </Label>
                         <div className="relative group">
@@ -1721,16 +1723,16 @@ export default function MisPedidosPage() {
                             placeholder={t('client.recentOrders.newOrder.productDescriptionPlaceholder')}
                             rows={4}
                             maxLength={DESCRIPTION_MAX}
-                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300 ${attemptedStep1 && !newOrderData.description.trim() ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 backdrop-blur-sm group-hover:border-blue-300 ${mounted && theme === 'dark' ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white/80 border-slate-200'} ${attemptedStep1 && !newOrderData.description.trim() ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                           />
-                          <p className="text-xs text-slate-500 mt-1">{newOrderData.description.length}/{DESCRIPTION_MAX}</p>
+                          <p className={`text-xs mt-1 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{newOrderData.description.length}/{DESCRIPTION_MAX}</p>
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-orange-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                       </div>
 
                       <div className="space-y-3">
-                        <Label htmlFor="quantity" className="text-sm font-semibold text-slate-700 flex items-center">
-                          <Hash className="w-4 h-4 mr-2 text-blue-600" />
+                        <Label htmlFor="quantity" className={`text-sm font-semibold flex items-center ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+                          <Hash className={`w-4 h-4 mr-2 ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                           {t('client.recentOrders.newOrder.quantity')}<span className="text-red-500 ml-1">*</span>
                         </Label>
                         <div className="relative group">
@@ -1749,7 +1751,7 @@ export default function MisPedidosPage() {
                                 setNewOrderData({ ...newOrderData, quantity: next });
                               }
                             }}
-                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300 ${attemptedStep1 && (!isValidQuantity(newOrderData.quantity) || newOrderData.quantity <= 0) ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 backdrop-blur-sm group-hover:border-blue-300 ${mounted && theme === 'dark' ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white/80 border-slate-200'} ${attemptedStep1 && (!isValidQuantity(newOrderData.quantity) || newOrderData.quantity <= 0) ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                           />
                           {(!isValidQuantity(newOrderData.quantity) || newOrderData.quantity <= 0) && (
                             <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidQuantity')} ({QTY_MIN}–{QTY_MAX})</p>
@@ -1759,8 +1761,8 @@ export default function MisPedidosPage() {
                       </div>
 
                       <div className="space-y-3">
-                        <Label htmlFor="specifications" className="text-sm font-semibold text-slate-700 flex items-center">
-                          <Settings className="w-4 h-4 mr-2 text-blue-600" />
+                        <Label htmlFor="specifications" className={`text-sm font-semibold flex items-center ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+                          <Settings className={`w-4 h-4 mr-2 ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                           {t('client.recentOrders.newOrder.specifications')}
                         </Label>
                         <div className="relative group">
@@ -1770,7 +1772,7 @@ export default function MisPedidosPage() {
                             onChange={(e) => setNewOrderData({ ...newOrderData, specifications: e.target.value })}
                             placeholder={t('client.recentOrders.newOrder.specificationsPlaceholder')}
                             rows={3}
-                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 group-hover:border-blue-300`}
+                            className={`transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 backdrop-blur-sm group-hover:border-blue-300 ${mounted && theme === 'dark' ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white/80 border-slate-200'}`}
                           />
                           {/* Validación eliminada porque ya no hay tipo de solicitud */}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-orange-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -1786,7 +1788,7 @@ export default function MisPedidosPage() {
                           value={newOrderData.productUrl || ''}
                           onChange={(e) => setNewOrderData({ ...newOrderData, productUrl: e.target.value })}
                           placeholder={t('client.recentOrders.newOrder.productUrlPlaceholder')}
-                          className={`transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm border-slate-200 ${attemptedStep1 && (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                          className={`transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 backdrop-blur-sm ${mounted && theme === 'dark' ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white/80 border-slate-200'} ${attemptedStep1 && (!newOrderData.productUrl || !isValidUrl(newOrderData.productUrl)) ? 'border-red-500 ring-1 ring-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                         />
                         {newOrderData.productUrl && !isValidUrl(newOrderData.productUrl) && (
                           <p className="text-xs text-red-500 mt-1">{t('client.recentOrders.newOrder.invalidUrl')}</p>
@@ -1798,27 +1800,27 @@ export default function MisPedidosPage() {
 
                       {/* Foto del producto (siempre visible) */}
                       <div className="space-y-3">
-                        <Label className="text-sm font-semibold text-slate-700 flex items-center">
-                          <ImageIcon className="w-4 h-4 mr-2 text-blue-600" />
+                        <Label className={`text-sm font-semibold flex items-center ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+                          <ImageIcon className={`w-4 h-4 mr-2 ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                           {t('client.recentOrders.newOrder.productImage')}<span className="text-red-500 ml-1">*</span>
                         </Label>
                         {newOrderData.productImage ? (
                           <div className="relative">
-                            <div className="border-2 border-slate-200 rounded-xl overflow-hidden bg-white">
+                            <div className={`border-2 rounded-xl overflow-hidden ${mounted && theme === 'dark' ? 'border-slate-600 bg-slate-700' : 'border-slate-200 bg-white'}`}>
                               <img
                                 src={URL.createObjectURL(newOrderData.productImage)}
                                 alt={t('client.recentOrders.newOrder.productImage')}
                                 className="w-full h-48 object-cover"
                               />
                               <div className="p-3 flex gap-2">
-                                <Button variant="outline" size="sm" onClick={() => document.getElementById('imageUpload')?.click()}>
+                                <Button variant="outline" size="sm" onClick={() => document.getElementById('imageUpload')?.click()} className={mounted && theme === 'dark' ? 'dark:border-slate-600 dark:hover:bg-slate-700' : ''}>
                                   <Upload className="w-4 h-4 mr-1" />{t('client.recentOrders.newOrder.change')}
                                 </Button>
                                 <Button
                                   variant="outline"
                                   size="sm"
                                   onClick={() => setNewOrderData({ ...newOrderData, productImage: undefined })}
-                                  className="text-red-600"
+                                  className={`text-red-600 ${mounted && theme === 'dark' ? 'dark:border-slate-600 dark:hover:bg-slate-700' : ''}`}
                                 >
                                   <X className="w-4 h-4 mr-1" />{t('client.recentOrders.newOrder.delete')}
                                 </Button>
@@ -1828,13 +1830,13 @@ export default function MisPedidosPage() {
                           </div>
                         ) : (
                           <div
-                            className={`border-2 border-dashed rounded-xl p-8 text-center bg-white ${isDragOver ? 'border-blue-500 bg-blue-50' : 'border-slate-300'}`}
+                            className={`border-2 border-dashed rounded-xl p-8 text-center ${mounted && theme === 'dark' ? (isDragOver ? 'border-blue-500 bg-blue-900/20' : 'border-slate-600 bg-slate-700') : (isDragOver ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-white')}`}
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
                           >
-                            <p className="text-sm text-slate-600 mb-4">{t('client.recentOrders.newOrder.dragDrop')}</p>
-                            <Button variant="outline" onClick={() => document.getElementById('imageUpload')?.click()}>
+                            <p className={`text-sm mb-4 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{t('client.recentOrders.newOrder.dragDrop')}</p>
+                            <Button variant="outline" onClick={() => document.getElementById('imageUpload')?.click()} className={mounted && theme === 'dark' ? 'dark:border-slate-600 dark:hover:bg-slate-700' : ''}>
                               <Upload className="w-4 h-4 mr-2" />{t('client.recentOrders.newOrder.selectImage')}
                             </Button>
                             <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
@@ -1848,13 +1850,19 @@ export default function MisPedidosPage() {
                   {currentStep === 2 && (
                     <div className="space-y-6">
                       <div className="space-y-4">
-                        <Label>{t('client.recentOrders.newOrder.deliveryType')}</Label>
+                        <Label className={mounted && theme === 'dark' ? 'text-slate-300' : ''}>{t('client.recentOrders.newOrder.deliveryType')}</Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div
                             className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                              newOrderData.deliveryType === 'air'
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-slate-200 hover:border-slate-300'
+                              mounted && theme === 'dark' ? (
+                                newOrderData.deliveryType === 'air'
+                                  ? 'border-blue-500 bg-blue-900/20'
+                                  : 'border-slate-600 hover:border-slate-500 bg-slate-700'
+                              ) : (
+                                newOrderData.deliveryType === 'air'
+                                  ? 'border-blue-500 bg-blue-50'
+                                  : 'border-slate-200 hover:border-slate-300'
+                              )
                             }`}
                             onClick={() => setNewOrderData({ ...newOrderData, deliveryType: 'air' })}
                             onMouseEnter={() => setHoveredDeliveryOption('air')}
@@ -1870,15 +1878,21 @@ export default function MisPedidosPage() {
                                   autoplay={hoveredDeliveryOption === 'air'}
                                 />
                               </div>
-                              <p className="font-medium">{t('client.recentOrders.newOrder.air')}</p>
-                              <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.airDesc')}</p>
+                              <p className={`font-medium ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{t('client.recentOrders.newOrder.air')}</p>
+                              <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{t('client.recentOrders.newOrder.airDesc')}</p>
                             </div>
                           </div>
                           <div
                             className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                              newOrderData.deliveryType === 'maritime'
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-slate-200 hover:border-slate-300'
+                              mounted && theme === 'dark' ? (
+                                newOrderData.deliveryType === 'maritime'
+                                  ? 'border-blue-500 bg-blue-900/20'
+                                  : 'border-slate-600 hover:border-slate-500 bg-slate-700'
+                              ) : (
+                                newOrderData.deliveryType === 'maritime'
+                                  ? 'border-blue-500 bg-blue-50'
+                                  : 'border-slate-200 hover:border-slate-300'
+                              )
                             }`}
                             onClick={() => setNewOrderData({ ...newOrderData, deliveryType: 'maritime' })}
                             onMouseEnter={() => setHoveredDeliveryOption('maritime')}
@@ -1894,17 +1908,17 @@ export default function MisPedidosPage() {
                                   autoplay={hoveredDeliveryOption === 'maritime'}
                                 />
                               </div>
-                              <p className="font-medium">{t('client.recentOrders.newOrder.maritime')}</p>
-                              <p className="text-sm text-slate-600">{t('client.recentOrders.newOrder.maritimeDesc')}</p>
+                              <p className={`font-medium ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{t('client.recentOrders.newOrder.maritime')}</p>
+                              <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{t('client.recentOrders.newOrder.maritimeDesc')}</p>
                             </div>
                           </div>
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="deliveryVenezuela">{t('client.recentOrders.newOrder.deliveryVenezuela')}</Label>
+                        <Label htmlFor="deliveryVenezuela" className={mounted && theme === 'dark' ? 'text-slate-300' : ''}>{t('client.recentOrders.newOrder.deliveryVenezuela')}</Label>
                         <Select value={newOrderData.deliveryVenezuela} onValueChange={(value) => setNewOrderData({ ...newOrderData, deliveryVenezuela: value })}>
-                          <SelectTrigger>
+                          <SelectTrigger className={mounted && theme === 'dark' ? 'bg-slate-700 border-slate-600 text-white' : ''}>
                             <SelectValue placeholder={t('client.recentOrders.newOrder.deliveryVenezuelaPlaceholder')} />
                           </SelectTrigger>
                           <SelectContent>
@@ -1919,21 +1933,21 @@ export default function MisPedidosPage() {
                   {/* Step 3: Resumen y Confirmación */}
                   {currentStep === 3 && (
                     <div className="space-y-6">
-                      <div className="bg-slate-50 rounded-lg p-6 space-y-4">
-                        <h4 className="font-semibold text-lg">{t('client.recentOrders.newOrder.summaryTitle')}</h4>
+                      <div className={`rounded-lg p-6 space-y-4 ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-50'}`}>
+                        <h4 className={`font-semibold text-lg ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{t('client.recentOrders.newOrder.summaryTitle')}</h4>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.productName')}</p>
-                            <p className="font-medium">{newOrderData.productName}</p>
+                            <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.newOrder.productName')}</p>
+                            <p className={`font-medium ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{newOrderData.productName}</p>
                           </div>
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.quantity')}</p>
-                            <p className="font-medium">{newOrderData.quantity}</p>
+                            <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.newOrder.quantity')}</p>
+                            <p className={`font-medium ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{newOrderData.quantity}</p>
                           </div>
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.deliveryType')}</p>
-                            <p className="font-medium">
+                            <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.newOrder.deliveryType')}</p>
+                            <p className={`font-medium ${mounted && theme === 'dark' ? 'text-white' : ''}`}>
                               {/* doorToDoor deprecated: removed */}
                               {newOrderData.deliveryType === 'air' && t('client.recentOrders.newOrder.air')}
                               {newOrderData.deliveryType === 'maritime' && t('client.recentOrders.newOrder.maritime')}
@@ -1942,24 +1956,24 @@ export default function MisPedidosPage() {
                         </div>
 
                         <div className="space-y-2">
-                          <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.productDescription')}</p>
-                          <p className="text-sm">{newOrderData.description}</p>
+                          <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.newOrder.productDescription')}</p>
+                          <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : ''}`}>{newOrderData.description}</p>
                         </div>
 
                         {newOrderData.specifications && (
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.newOrder.specifications')}</p>
-                            <p className="text-sm">{newOrderData.specifications}</p>
+                            <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.newOrder.specifications')}</p>
+                            <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : ''}`}>{newOrderData.specifications}</p>
                           </div>
                         )}
                       </div>
 
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className={`border rounded-lg p-4 ${mounted && theme === 'dark' ? 'bg-blue-900/20 border-blue-700' : 'bg-blue-50 border-blue-200'}`}>
                         <div className="flex items-start space-x-3">
-                          <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5" />
+                          <CheckCircle className={`w-5 h-5 mt-0.5 ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                           <div>
-                            <p className="font-medium text-blue-900">{t('client.recentOrders.newOrder.almostReady')}</p>
-                            <p className="text-sm text-blue-700">
+                            <p className={`font-medium ${mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-900'}`}>{t('client.recentOrders.newOrder.almostReady')}</p>
+                            <p className={`text-sm ${mounted && theme === 'dark' ? 'text-blue-200' : 'text-blue-700'}`}>
                               {t('client.recentOrders.newOrder.reviewMessage')}
                             </p>
                           </div>
@@ -1970,12 +1984,12 @@ export default function MisPedidosPage() {
                 </div>
 
                 {/* Enhanced Navigation Buttons */}
-                <div className="flex justify-between pt-8 border-t border-slate-200/50">
+                <div className={`flex justify-between pt-8 border-t ${mounted && theme === 'dark' ? 'border-slate-700' : 'border-slate-200/50'}`}>
                   <Button
                     variant="outline"
                     onClick={handlePrevStep}
                     disabled={currentStep === 1 || isTransitioning}
-                    className="transition-all duration-300 hover:bg-slate-50 hover:shadow-md transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`transition-all duration-300 hover:shadow-md transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${mounted && theme === 'dark' ? 'hover:bg-slate-700 border-slate-600' : 'hover:bg-slate-50'}`}
                   >
                     {isTransitioning ? (
                       <div className="flex items-center">
@@ -2036,104 +2050,104 @@ export default function MisPedidosPage() {
 
           {/* Estadísticas */}
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
-            <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+            <Card className={`hover:shadow-lg transition-all duration-300 group ${mounted && theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-blue-50 border-blue-200'}`}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-blue-800">{t('client.dashboard.totalOrders')}</CardTitle>
-                <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                <CardTitle className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-white' : 'text-blue-800'}`}>{t('client.dashboard.totalOrders')}</CardTitle>
+                <div className={`p-2 rounded-lg group-hover:scale-110 transition-transform ${mounted && theme === 'dark' ? 'bg-blue-600' : 'bg-blue-500'}`}>
                   <Package className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.total}</div>
-                <p className="text-xs text-blue-700">{t('client.recentOrders.table.id')}</p>
-                <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full" style={{width: '100%'}}></div>
+                <div className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-900'}`}>{stats.total}</div>
+                <p className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-blue-700'}`}>{t('client.recentOrders.table.id')}</p>
+                <div className={`mt-2 w-full rounded-full h-2 ${mounted && theme === 'dark' ? 'bg-blue-900/50' : 'bg-blue-200'}`}>
+                  <div className={`h-2 rounded-full ${mounted && theme === 'dark' ? 'bg-blue-500' : 'bg-blue-500'}`} style={{width: '100%'}}></div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-orange-50 border-orange-200 hover:shadow-lg transition-all duration-300 group">
+            <Card className={`hover:shadow-lg transition-all duration-300 group ${mounted && theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-orange-50 border-orange-200'}`}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-orange-800">{t('client.recentOrders.statuses.pending')}</CardTitle>
-                <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
+                <CardTitle className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-white' : 'text-orange-800'}`}>{t('client.recentOrders.statuses.pending')}</CardTitle>
+                <div className={`p-2 rounded-lg group-hover:scale-110 transition-transform ${mounted && theme === 'dark' ? 'bg-orange-600' : 'bg-orange-500'}`}>
                   <Clock className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{stats.pending}</div>
-                <p className="text-xs text-orange-700">{t('client.recentOrders.statuses.pending')}</p>
-                <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
-                  <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(stats.pending / stats.total) * 100}%`}}></div>
+                <div className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-orange-300' : 'text-orange-900'}`}>{stats.pending}</div>
+                <p className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-orange-700'}`}>{t('client.recentOrders.statuses.pending')}</p>
+                <div className={`mt-2 w-full rounded-full h-2 ${mounted && theme === 'dark' ? 'bg-orange-900/50' : 'bg-orange-200'}`}>
+                  <div className={`h-2 rounded-full ${mounted && theme === 'dark' ? 'bg-orange-500' : 'bg-orange-500'}`} style={{width: `${(stats.pending / stats.total) * 100}%`}}></div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+            <Card className={`hover:shadow-lg transition-all duration-300 group ${mounted && theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-blue-50 border-blue-200'}`}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-blue-800">{t('client.recentOrders.statuses.processing')}</CardTitle>
-                <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                <CardTitle className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-white' : 'text-blue-800'}`}>{t('client.recentOrders.statuses.processing')}</CardTitle>
+                <div className={`p-2 rounded-lg group-hover:scale-110 transition-transform ${mounted && theme === 'dark' ? 'bg-blue-600' : 'bg-blue-500'}`}>
                   <Truck className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">{stats.processing}</div>
-                <p className="text-xs text-blue-700">{t('client.recentOrders.statuses.processing')}</p>
-                <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(stats.processing / stats.total) * 100}%`}}></div>
+                <div className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-900'}`}>{stats.processing}</div>
+                <p className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-blue-700'}`}>{t('client.recentOrders.statuses.processing')}</p>
+                <div className={`mt-2 w-full rounded-full h-2 ${mounted && theme === 'dark' ? 'bg-blue-900/50' : 'bg-blue-200'}`}>
+                  <div className={`h-2 rounded-full ${mounted && theme === 'dark' ? 'bg-blue-500' : 'bg-blue-500'}`} style={{width: `${(stats.processing / stats.total) * 100}%`}}></div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-orange-50 border-orange-200 hover:shadow-lg transition-all duration-300 group">
+            <Card className={`hover:shadow-lg transition-all duration-300 group ${mounted && theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-orange-50 border-orange-200'}`}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-orange-800">{t('client.recentOrders.statuses.shipped')}</CardTitle>
-                <div className="p-2 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
+                <CardTitle className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-white' : 'text-orange-800'}`}>{t('client.recentOrders.statuses.shipped')}</CardTitle>
+                <div className={`p-2 rounded-lg group-hover:scale-110 transition-transform ${mounted && theme === 'dark' ? 'bg-orange-600' : 'bg-orange-500'}`}>
                   <MapPin className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-900">{stats.shipped}</div>
-                <p className="text-xs text-orange-700">{t('client.recentOrders.statuses.shipped')}</p>
-                <div className="mt-2 w-full bg-orange-200 rounded-full h-2">
-                  <div className="bg-orange-500 h-2 rounded-full" style={{width: `${(stats.shipped / stats.total) * 100}%`}}></div>
+                <div className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-orange-300' : 'text-orange-900'}`}>{stats.shipped}</div>
+                <p className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-orange-700'}`}>{t('client.recentOrders.statuses.shipped')}</p>
+                <div className={`mt-2 w-full rounded-full h-2 ${mounted && theme === 'dark' ? 'bg-orange-900/50' : 'bg-orange-200'}`}>
+                  <div className={`h-2 rounded-full ${mounted && theme === 'dark' ? 'bg-orange-500' : 'bg-orange-500'}`} style={{width: `${(stats.shipped / stats.total) * 100}%`}}></div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-blue-50 border-blue-200 hover:shadow-lg transition-all duration-300 group">
+            <Card className={`hover:shadow-lg transition-all duration-300 group ${mounted && theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-blue-50 border-blue-200'}`}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-blue-800">{t('client.dashboard.totalSpent')}</CardTitle>
-                <div className="p-2 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                <CardTitle className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-white' : 'text-blue-800'}`}>{t('client.dashboard.totalSpent')}</CardTitle>
+                <div className={`p-2 rounded-lg group-hover:scale-110 transition-transform ${mounted && theme === 'dark' ? 'bg-blue-600' : 'bg-blue-500'}`}>
                   <DollarSign className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-900">${stats.totalSpent.toLocaleString()}</div>
-                <p className="text-xs text-blue-700">{t('client.dashboard.totalInvestment')}</p>
-                <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full" style={{width: '100%'}}></div>
+                <div className={`text-xl md:text-2xl lg:text-3xl font-bold ${mounted && theme === 'dark' ? 'text-blue-300' : 'text-blue-900'}`}>${stats.totalSpent.toLocaleString()}</div>
+                <p className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-blue-700'}`}>{t('client.dashboard.totalInvestment')}</p>
+                <div className={`mt-2 w-full rounded-full h-2 ${mounted && theme === 'dark' ? 'bg-blue-900/50' : 'bg-blue-200'}`}>
+                  <div className={`h-2 rounded-full ${mounted && theme === 'dark' ? 'bg-blue-500' : 'bg-blue-500'}`} style={{width: '100%'}}></div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Filtros y búsqueda - barra compacta y alineada a la derecha */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+          <Card className={`backdrop-blur-sm hover:shadow-lg transition-shadow ${mounted && theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-white/80 border-slate-200'}`}>
             <CardHeader className="py-3">
               <div className="flex items-center justify-between gap-2">
-                <CardTitle className="text-base md:text-lg font-semibold">{t('client.recentOrders.filter')}</CardTitle>
+                <CardTitle className={`text-base md:text-lg font-semibold ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{t('client.recentOrders.filter')}</CardTitle>
                 <div className="flex items-center gap-2">
                   <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 ${mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`} />
                     <Input
                       placeholder={t('client.recentOrders.search')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="h-10 pl-8 w-56 md:w-64 transition-colors"
+                      className={`h-10 pl-8 w-56 md:w-64 transition-colors ${mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : ''}`}
                     />
                   </div>
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="h-10 w-40 md:w-48">
+                    <SelectTrigger className={`h-10 w-40 md:w-48 ${mounted && theme === 'dark' ? 'bg-slate-700 dark:border-slate-600 dark:text-white' : ''}`}>
                       <Filter className="w-4 h-4 mr-2" />
                       <SelectValue placeholder={t('client.recentOrders.filter')} />
                     </SelectTrigger>
@@ -2153,37 +2167,51 @@ export default function MisPedidosPage() {
           </Card>
 
           {/* Lista de pedidos */}
-          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-shadow">
+          <Card className={`backdrop-blur-sm hover:shadow-lg transition-shadow ${mounted && theme === 'dark' ? 'bg-slate-800/70 border-slate-700' : 'bg-white/80 border-slate-200'}`}>
             <CardHeader>
-              <CardTitle className="text-xl font-semibold">{t('client.recentOrders.title')}</CardTitle>
-              <p className="text-sm text-slate-600">{t('client.recentOrders.subtitle')}</p>
+              <CardTitle className={`text-xl font-semibold ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{t('client.recentOrders.title')}</CardTitle>
+              <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.subtitle')}</p>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {filteredOrders.map((order) => (
-                  <div key={order.id} className="p-4 md:p-6 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all duration-300 group">
+                  <div key={order.id} className={`p-4 md:p-6 rounded-xl border hover:shadow-md transition-all duration-300 group ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-slate-700 to-slate-600 border-slate-600' : 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200'}`}>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6 mb-4">
                       <div className="flex items-center gap-4 md:gap-6">
                         <div className="flex flex-col">
-                          <p className="font-bold text-sm md:text-base text-slate-800">{order.id}</p>
-                          <p className="text-sm text-slate-600 font-medium">{order.product}</p>
+                          <p className={`font-bold text-sm md:text-base ${mounted && theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>{order.id}</p>
+                          <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{order.product}</p>
                         </div>
                         {/* Un solo badge basado en stateNum; fallback al badge de status si no hay stateNum */}
                         {typeof order.stateNum === 'number' ? (
                           <Badge className={`text-xs md:text-sm font-semibold px-3 py-1 transition-colors hover:brightness-110 hover:ring-1 ${
-                            order.stateNum === -1 ? 'bg-red-100 text-red-800 border-red-200 hover:bg-red-50 hover:ring-red-200 dark:hover:ring-red-500/20' :
-                            order.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
-                            order.stateNum === 12 ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200 dark:hover:ring-gray-500/20' :
-                            order.stateNum === 11 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
-                            order.stateNum === 10 ? 'bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-50 hover:ring-orange-200 dark:hover:ring-orange-500/20' :
-                            // 7 y 8 deben verse igual que 9
-                            (order.stateNum === 7 || order.stateNum === 8 || order.stateNum === 9) ? 'bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-50 hover:ring-cyan-200 dark:hover:ring-cyan-500/20' :
-                            order.stateNum === 6 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
-                            order.stateNum === 5 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
-                            order.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
-                            order.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
-                            order.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
-                            'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20'
+                            mounted && theme === 'dark' ? (
+                              order.stateNum === -1 ? 'bg-red-900/30 text-red-300 border-red-700 hover:bg-red-900/50 hover:ring-red-500/20' :
+                              order.stateNum === 13 ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700 hover:bg-emerald-900/50 hover:ring-emerald-500/20' :
+                              order.stateNum === 12 ? 'bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700 hover:ring-gray-500/20' :
+                              order.stateNum === 11 ? 'bg-green-900/30 text-green-300 border-green-700 hover:bg-green-900/50 hover:ring-green-500/20' :
+                              order.stateNum === 10 ? 'bg-orange-900/30 text-orange-300 border-orange-700 hover:bg-orange-900/50 hover:ring-orange-500/20' :
+                              (order.stateNum === 7 || order.stateNum === 8 || order.stateNum === 9) ? 'bg-cyan-900/30 text-cyan-300 border-cyan-700 hover:bg-cyan-900/50 hover:ring-cyan-500/20' :
+                              order.stateNum === 6 ? 'bg-blue-900/30 text-blue-300 border-blue-700 hover:bg-blue-900/50 hover:ring-blue-500/20' :
+                              order.stateNum === 5 ? 'bg-yellow-900/30 text-yellow-300 border-yellow-700 hover:bg-yellow-900/50 hover:ring-yellow-500/20' :
+                              order.stateNum === 4 ? 'bg-blue-900/30 text-blue-300 border-blue-700 hover:bg-blue-900/50 hover:ring-blue-500/20' :
+                              order.stateNum === 3 ? 'bg-green-900/30 text-green-300 border-green-700 hover:bg-green-900/50 hover:ring-green-500/20' :
+                              order.stateNum === 2 ? 'bg-yellow-900/30 text-yellow-300 border-yellow-700 hover:bg-yellow-900/50 hover:ring-yellow-500/20' :
+                              'bg-yellow-900/30 text-yellow-300 border-yellow-700 hover:bg-yellow-900/50 hover:ring-yellow-500/20'
+                            ) : (
+                              order.stateNum === -1 ? 'bg-red-100 text-red-800 border-red-200 hover:bg-red-50 hover:ring-red-200' :
+                              order.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200' :
+                              order.stateNum === 12 ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200' :
+                              order.stateNum === 11 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200' :
+                              order.stateNum === 10 ? 'bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-50 hover:ring-orange-200' :
+                              (order.stateNum === 7 || order.stateNum === 8 || order.stateNum === 9) ? 'bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-50 hover:ring-cyan-200' :
+                              order.stateNum === 6 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200' :
+                              order.stateNum === 5 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200' :
+                              order.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200' :
+                              order.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200' :
+                              order.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200' :
+                              'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200'
+                            )
                           }`}>
                             {order.stateNum === -1 ? t('client.recentOrders.statuses.paymentRejected') :
                              order.stateNum === 5 ? t('client.recentOrders.statuses.paymentValidated') :
@@ -2206,7 +2234,7 @@ export default function MisPedidosPage() {
                         )}
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] md:text-[11px] uppercase tracking-wide text-slate-500 font-medium">
+                        <p className={`text-[10px] md:text-[11px] uppercase tracking-wide font-medium ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                           {order.status === 'pending' && t('client.recentOrders.budget')}
                           {order.status === 'quoted' && t('client.recentOrders.statuses.quoted')}
                           {order.status !== 'pending' && order.status !== 'quoted' && t('client.recentOrders.table.amount')}
@@ -2219,7 +2247,7 @@ export default function MisPedidosPage() {
                               variant="inline"
                               size="lg"
                               emphasizeBolivars={true}
-                              className="text-slate-800"
+                              className={mounted && theme === 'dark' ? 'text-white' : 'text-slate-800'}
                             />
                           ) : order.status === 'quoted' ? (
                             <PriceDisplay 
@@ -2228,29 +2256,29 @@ export default function MisPedidosPage() {
                               variant="inline"
                               size="lg"
                               emphasizeBolivars={true}
-                              className="text-slate-800"
+                              className={mounted && theme === 'dark' ? 'text-white' : 'text-slate-800'}
                             />
                           ) : (
-                            <span className="text-slate-800">{order.amount}</span>
+                            <span className={mounted && theme === 'dark' ? 'text-white' : 'text-slate-800'}>{order.amount}</span>
                           )}
                         </div>
-                        <p className="text-xs text-slate-600 font-medium">Tracking: {order.tracking || '-'}</p>
+                        <p className={`text-xs font-medium ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>Tracking: {order.tracking || '-'}</p>
                       </div>
                     </div>
                     
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm font-medium">
-                        <span className="text-slate-700">{t('client.recentOrders.progress')}</span>
-                        <span className="text-slate-800">{order.progress}%</span>
+                        <span className={mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}>{t('client.recentOrders.progress')}</span>
+                        <span className={mounted && theme === 'dark' ? 'text-white' : 'text-slate-800'}>{order.progress}%</span>
                       </div>
-                      <div className="w-full bg-slate-200 rounded-full h-2 md:h-3 overflow-hidden">
+                      <div className={`w-full rounded-full h-2 md:h-3 overflow-hidden ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-200'}`}>
                         <div 
                           className={`h-2 md:h-3 rounded-full transition-all duration-500 ${getProgressColor(order.progress)}`} 
                           style={{ width: `${order.progress}%` }}
                         ></div>
                       </div>
                       <div className="flex flex-col md:flex-row md:justify-between gap-3 md:gap-0 text-sm">
-                        <span className="text-slate-600 font-medium">{t('client.recentOrders.estimatedDelivery')}: {order.estimatedDelivery}</span>
+                        <span className={`font-medium ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{t('client.recentOrders.estimatedDelivery')}: {order.estimatedDelivery}</span>
                         <div className="flex gap-2 md:gap-3">
                           {(order.status === 'quoted' || order.stateNum === -1) && (
                             <Button 
@@ -2265,7 +2293,7 @@ export default function MisPedidosPage() {
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="h-7 md:h-8 px-3 md:px-4 text-xs font-semibold border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300"
+                            className={`h-7 md:h-8 px-3 md:px-4 text-xs font-semibold transition-all duration-300 ${mounted && theme === 'dark' ? 'border-slate-600 text-blue-300 hover:bg-slate-700 hover:border-slate-500' : 'border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300'}`}
                             onClick={() => handleViewDetails(order)}
                           >
                             <Eye className="h-3 w-3 mr-1" />
@@ -2274,7 +2302,7 @@ export default function MisPedidosPage() {
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="h-7 md:h-8 px-3 md:px-4 text-xs font-semibold border-orange-200 text-orange-700 hover:bg-orange-50 hover:border-orange-300 transition-all duration-300"
+                            className={`h-7 md:h-8 px-3 md:px-4 text-xs font-semibold transition-all duration-300 ${mounted && theme === 'dark' ? 'border-slate-600 text-orange-300 hover:bg-slate-700 hover:border-slate-500' : 'border-orange-200 text-orange-700 hover:bg-orange-50 hover:border-orange-300'}`}
                             onClick={() => openTrackingModal(order)}
                           >
                             <MapPin className="h-3 w-3 mr-1" />
@@ -2288,11 +2316,11 @@ export default function MisPedidosPage() {
                 
                 {filteredOrders.length === 0 && (
                   <div className="text-center py-12 md:py-16">
-                    <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center">
-                      <Package className="h-8 w-8 md:h-10 md:w-10 text-slate-400" />
+                    <div className={`w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${mounted && theme === 'dark' ? 'bg-gradient-to-br from-slate-700 to-slate-600' : 'bg-gradient-to-br from-slate-100 to-slate-200'}`}>
+                      <Package className={`h-8 w-8 md:h-10 md:w-10 ${mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`} />
                     </div>
-                    <p className="text-slate-500 text-base md:text-lg font-medium">{t('client.recentOrders.noOrders')}</p>
-                    <p className="text-slate-400 text-sm mt-2">Intenta ajustar los filtros de búsqueda</p>
+                    <p className={`text-base md:text-lg font-medium ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{t('client.recentOrders.noOrders')}</p>
+                    <p className={`text-sm mt-2 ${mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>Intenta ajustar los filtros de búsqueda</p>
                   </div>
                 )}
               </div>
@@ -2314,11 +2342,11 @@ export default function MisPedidosPage() {
                 {/* Información básica */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.modal.product')}</p>
-                    <p className="text-lg">{selectedOrder.product}</p>
+                    <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.modal.product')}</p>
+                    <p className={`text-lg ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{selectedOrder.product}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">
+                    <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                       {selectedOrder.status === 'pending' && t('client.recentOrders.budget')}
                       {selectedOrder.status === 'quoted' && t('client.recentOrders.statuses.quoted')}
                       {selectedOrder.status !== 'pending' && selectedOrder.status !== 'quoted' && t('client.recentOrders.modal.amount')}
@@ -2332,7 +2360,7 @@ export default function MisPedidosPage() {
                           size="lg"
                           emphasizeBolivars={true}
                           showRefresh={true}
-                          className="border-green-200"
+                          className={mounted && theme === 'dark' ? 'border-green-700' : 'border-green-200'}
                         />
                       ) : selectedOrder.status === 'quoted' ? (
                         <PriceDisplay 
@@ -2342,29 +2370,42 @@ export default function MisPedidosPage() {
                           size="lg"
                           emphasizeBolivars={true}
                           showRefresh={true}
-                          className="border-green-200"
+                          className={mounted && theme === 'dark' ? 'border-green-700' : 'border-green-200'}
                         />
                       ) : (
-                        <span className="text-green-600">{selectedOrder.amount}</span>
+                        <span className={mounted && theme === 'dark' ? 'text-green-400' : 'text-green-600'}>{selectedOrder.amount}</span>
                       )}
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.modal.status')}</p>
+                    <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.modal.status')}</p>
                     {typeof selectedOrder.stateNum === 'number' ? (
                       <Badge className={`text-xs font-semibold px-3 py-1 transition-colors hover:brightness-110 hover:ring-1 ${
-                        selectedOrder.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:hover:ring-emerald-500/20' :
-                        selectedOrder.stateNum === 12 ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200 dark:hover:ring-gray-500/20' :
-                        selectedOrder.stateNum === 11 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
-                        selectedOrder.stateNum === 10 ? 'bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-50 hover:ring-orange-200 dark:hover:ring-orange-500/20' :
-                        // 7 y 8 deben verse igual que 9
-                        (selectedOrder.stateNum === 7 || selectedOrder.stateNum === 8 || selectedOrder.stateNum === 9) ? 'bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-50 hover:ring-cyan-200 dark:hover:ring-cyan-500/20' :
-                        selectedOrder.stateNum === 6 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
-                        selectedOrder.stateNum === 5 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
-                        selectedOrder.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200 dark:hover:ring-blue-500/20' :
-                        selectedOrder.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200 dark:hover:ring-green-500/20' :
-                        selectedOrder.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20' :
-                        'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200 dark:hover:ring-yellow-500/20'
+                        mounted && theme === 'dark' ? (
+                          selectedOrder.stateNum === 13 ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700 hover:bg-emerald-900/50 hover:ring-emerald-500/20' :
+                          selectedOrder.stateNum === 12 ? 'bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700 hover:ring-gray-500/20' :
+                          selectedOrder.stateNum === 11 ? 'bg-green-900/30 text-green-300 border-green-700 hover:bg-green-900/50 hover:ring-green-500/20' :
+                          selectedOrder.stateNum === 10 ? 'bg-orange-900/30 text-orange-300 border-orange-700 hover:bg-orange-900/50 hover:ring-orange-500/20' :
+                          (selectedOrder.stateNum === 7 || selectedOrder.stateNum === 8 || selectedOrder.stateNum === 9) ? 'bg-cyan-900/30 text-cyan-300 border-cyan-700 hover:bg-cyan-900/50 hover:ring-cyan-500/20' :
+                          selectedOrder.stateNum === 6 ? 'bg-blue-900/30 text-blue-300 border-blue-700 hover:bg-blue-900/50 hover:ring-blue-500/20' :
+                          selectedOrder.stateNum === 5 ? 'bg-yellow-900/30 text-yellow-300 border-yellow-700 hover:bg-yellow-900/50 hover:ring-yellow-500/20' :
+                          selectedOrder.stateNum === 4 ? 'bg-blue-900/30 text-blue-300 border-blue-700 hover:bg-blue-900/50 hover:ring-blue-500/20' :
+                          selectedOrder.stateNum === 3 ? 'bg-green-900/30 text-green-300 border-green-700 hover:bg-green-900/50 hover:ring-green-500/20' :
+                          selectedOrder.stateNum === 2 ? 'bg-yellow-900/30 text-yellow-300 border-yellow-700 hover:bg-yellow-900/50 hover:ring-yellow-500/20' :
+                          'bg-yellow-900/30 text-yellow-300 border-yellow-700 hover:bg-yellow-900/50 hover:ring-yellow-500/20'
+                        ) : (
+                          selectedOrder.stateNum === 13 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-50 hover:ring-emerald-200' :
+                          selectedOrder.stateNum === 12 ? 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-50 hover:ring-gray-200' :
+                          selectedOrder.stateNum === 11 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200' :
+                          selectedOrder.stateNum === 10 ? 'bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-50 hover:ring-orange-200' :
+                          (selectedOrder.stateNum === 7 || selectedOrder.stateNum === 8 || selectedOrder.stateNum === 9) ? 'bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-50 hover:ring-cyan-200' :
+                          selectedOrder.stateNum === 6 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200' :
+                          selectedOrder.stateNum === 5 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200' :
+                          selectedOrder.stateNum === 4 ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-50 hover:ring-blue-200' :
+                          selectedOrder.stateNum === 3 ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-green-200' :
+                          selectedOrder.stateNum === 2 ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200' :
+                          'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-yellow-200'
+                        )
                       }`}>
                         {selectedOrder.stateNum === 13 ? t('client.recentOrders.statuses.delivered') :
                          selectedOrder.stateNum === 5 ? t('client.recentOrders.statuses.paymentValidated') :
@@ -2386,32 +2427,32 @@ export default function MisPedidosPage() {
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">{t('client.recentOrders.modal.tracking')}</p>
-                    <p className="text-sm font-mono">{selectedOrder.tracking}</p>
+                    <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.modal.tracking')}</p>
+                    <p className={`text-sm font-mono ${mounted && theme === 'dark' ? 'text-slate-400' : ''}`}>{selectedOrder.tracking}</p>
                   </div>
                 </div>
 
                 {/* Descripción */}
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-2">{t('client.recentOrders.modal.description')}</p>
-                  <p className="text-sm text-slate-700">{selectedOrder.description}</p>
+                  <p className={`text-sm font-medium mb-2 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.modal.description')}</p>
+                  <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{selectedOrder.description}</p>
                 </div>
 
                 {/* Progreso */}
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-2">{t('client.recentOrders.progress')}</p>
+                  <p className={`text-sm font-medium mb-2 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.progress')}</p>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                    <div className={`flex justify-between text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : ''}`}>
                       <span>{t('client.recentOrders.modal.currentProgress')}</span>
                       <span>{selectedOrder.progress}%</span>
                     </div>
-                    <div className="w-full bg-slate-200 rounded-full h-3">
+                    <div className={`w-full rounded-full h-3 ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-200'}`}>
                       <div 
                         className={`h-3 rounded-full ${getProgressColor(selectedOrder.progress)}`} 
                         style={{ width: `${selectedOrder.progress}%` }}
                       ></div>
                     </div>
-                    <p className="text-xs text-slate-600">
+                    <p className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
                       {t('client.recentOrders.estimatedDelivery')}: {selectedOrder.estimatedDelivery}
                     </p>
                   </div>
@@ -2420,14 +2461,14 @@ export default function MisPedidosPage() {
                 {/* Documentos */}
                 {selectedOrder.documents && selectedOrder.documents.length > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-2">{t('client.recentOrders.modal.detailsSubtitle')}</p>
+                    <p className={`text-sm font-medium mb-2 ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.modal.detailsSubtitle')}</p>
                     <div className="space-y-2">
                       {selectedOrder.documents.map((doc, index) => (
-                        <div key={index} className="flex items-center gap-2 p-2 bg-slate-50 rounded">
-                          <div className="w-4 h-4 text-blue-600">
+                        <div key={index} className={`flex items-center gap-2 p-2 rounded ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-50'}`}>
+                          <div className={`w-4 h-4 ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>
                             {doc.type === 'image' ? '📷' : '🔗'}
                           </div>
-                          <span className="text-sm">{doc.label}</span>
+                          <span className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : ''}`}>{doc.label}</span>
                           <Button 
                             variant="ghost" 
                             size="sm" 
@@ -2474,7 +2515,7 @@ export default function MisPedidosPage() {
             onClick={closeTrackingModal}
           >
             <div 
-              className={`bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ease-out transform ${
+              className={`rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ease-out transform ${mounted && theme === 'dark' ? 'bg-slate-800' : 'bg-white'} ${
                 isTrackingModalOpen 
                   ? 'scale-100 opacity-100 translate-y-0' 
                   : 'scale-95 opacity-0 translate-y-8'
@@ -2484,13 +2525,14 @@ export default function MisPedidosPage() {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold">{selectedTrackingOrder.product}</h2>
-                    <p className="text-slate-600">{selectedTrackingOrder.id}</p>
+                    <h2 className={`text-2xl font-bold ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{selectedTrackingOrder.product}</h2>
+                    <p className={mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}>{selectedTrackingOrder.id}</p>
                   </div>
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={closeTrackingModal}
+                    className={mounted && theme === 'dark' ? 'border-slate-600 hover:bg-slate-700' : ''}
                   >
                     ✕
                   </Button>
@@ -2499,20 +2541,20 @@ export default function MisPedidosPage() {
                 {/* Información del tracking del contenedor */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.trackingNumber')}</p>
-                    <p className="font-mono font-medium">{tracking_number[String(selectedTrackingOrder.id)] || '—'}</p>
+                    <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.trackingModal.trackingNumber')}</p>
+                    <p className={`font-mono font-medium ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{tracking_number[String(selectedTrackingOrder.id)] || '—'}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.carrier')}</p>
-                    <p className="font-medium">{tracking_company[String(selectedTrackingOrder.id)] || '—'
+                    <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.trackingModal.carrier')}</p>
+                    <p className={`font-medium ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{tracking_company[String(selectedTrackingOrder.id)] || '—'
 }</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.estimatedDelivery')}</p>
-                    <p className="font-medium">{arrive_date[String(selectedTrackingOrder.id)] || '—'}</p>
+                    <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.trackingModal.estimatedDelivery')}</p>
+                    <p className={`font-medium ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{arrive_date[String(selectedTrackingOrder.id)] || '—'}</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-slate-600">{t('client.recentOrders.trackingModal.currentStatus')}</p>
+                    <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{t('client.recentOrders.trackingModal.currentStatus')}</p>
                     <Badge className={getTrackingStatusColor(selectedTrackingOrder.status)}>
                       {t(`client.recentOrders.trackingModal.states.${selectedTrackingOrder.status}`)}
                     </Badge>
@@ -2521,14 +2563,14 @@ export default function MisPedidosPage() {
 
                 {/* Timeline */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">{t('client.recentOrders.trackingModal.historyTitle')}</h3>
+                  <h3 className={`text-lg font-semibold ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{t('client.recentOrders.trackingModal.historyTitle')}</h3>
                   <div className="space-y-4">
                     {selectedTrackingOrder.timeline.map((step, index) => (
                       <div key={step.id} className="flex items-start space-x-4">
                         <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                           step.completed 
                             ? 'bg-green-500 text-white' 
-                            : 'bg-slate-200 text-slate-600'
+                            : (mounted && theme === 'dark' ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-600')
                         }`}>
                           {step.completed ? (
                             <CheckCircle className="w-4 h-4" />
@@ -2537,13 +2579,13 @@ export default function MisPedidosPage() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium">{t(`client.recentOrders.trackingModal.states.${step.status}`)}</p>
-                          <p className="text-sm text-slate-600">{t(`client.recentOrders.trackingModal.states.${step.status}`)}</p>
+                          <p className={`font-medium ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{t(`client.recentOrders.trackingModal.states.${step.status}`)}</p>
+                          <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{t(`client.recentOrders.trackingModal.states.${step.status}`)}</p>
                           <div className="flex items-center space-x-2 mt-1">
-                            <MapPin className="w-3 h-3 text-slate-400" />
-                            <span className="text-xs text-slate-500">{step.location}</span>
-                            <span className="text-xs text-slate-400">•</span>
-                            <span className="text-xs text-slate-500">{step.timestamp}</span>
+                            <MapPin className={`w-3 h-3 ${mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`} />
+                            <span className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{step.location}</span>
+                            <span className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>•</span>
+                            <span className={`text-xs ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{step.timestamp}</span>
                           </div>
                         </div>
                       </div>
@@ -2558,21 +2600,21 @@ export default function MisPedidosPage() {
                   let valid = true;
                   try { new URL(link); } catch { valid = false; }
                   return (
-                    <div className="mt-8 pt-4 border-t">
+                    <div className={`mt-8 pt-4 ${mounted && theme === 'dark' ? 'border-t border-slate-700' : 'border-t'}`}>
                       <div className="flex items-start gap-4 flex-col sm:flex-row sm:items-center">
                         <div className="flex-1">
-                          <h3 className="text-lg font-semibold mb-1">Link de Tracking</h3>
+                          <h3 className={`text-lg font-semibold mb-1 ${mounted && theme === 'dark' ? 'text-white' : ''}`}>Link de Tracking</h3>
                           {valid ? (
                             <a
                               href={link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline break-all text-sm"
+                              className={`break-all text-sm ${mounted && theme === 'dark' ? 'text-blue-400 hover:text-blue-300 hover:underline' : 'text-blue-600 hover:underline'}`}
                             >
                               {link}
                             </a>
                           ) : (
-                            <p className="text-slate-500 break-all text-sm">{link}</p>
+                            <p className={`break-all text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{link}</p>
                           )}
                         </div>
                         {valid && (
@@ -2581,7 +2623,7 @@ export default function MisPedidosPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => setIsTrackingQRModalOpen(true)}
-                            className="flex items-center gap-2 border-blue-300 text-blue-600 hover:bg-blue-50"
+                            className={`flex items-center gap-2 ${mounted && theme === 'dark' ? 'border-slate-600 text-blue-400 hover:bg-slate-700' : 'border-blue-300 text-blue-600 hover:bg-blue-50'}`}
                           >
                             <QrCode className="w-4 h-4" />
                             QR
@@ -2613,19 +2655,19 @@ export default function MisPedidosPage() {
             {selectedOrderForPayment && (
               <div className="space-y-6">
                 {/* Información del pedido */}
-                <div className="bg-gradient-to-r from-blue-50 to-orange-50 p-4 rounded-xl border border-blue-200">
+                <div className={`p-4 rounded-xl border ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600' : 'bg-gradient-to-r from-blue-50 to-orange-50 border-blue-200'}`}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-semibold text-lg">{selectedOrderForPayment.product}</h3>
-                      <p className="text-sm text-slate-600">{selectedOrderForPayment.id}</p>
+                      <h3 className={`font-semibold text-lg ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{selectedOrderForPayment.product}</h3>
+                      <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{selectedOrderForPayment.id}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-green-600">
+                      <p className={`text-2xl font-bold ${mounted && theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
                         {formatPriceWithConversion(selectedOrderForPayment.amount, selectedPaymentMethod)}
                       </p>
-                      <p className="text-xs text-slate-500 mt-1">{t('client.recentOrders.paymentModal.quoteValidUntil', { date: '25/01/2024' })}</p>
+                      <p className={`text-xs mt-1 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{t('client.recentOrders.paymentModal.quoteValidUntil', { date: '25/01/2024' })}</p>
                       {selectedPaymentMethod?.currency === 'BS' && exchangeRateLoading && (
-                        <p className="text-xs text-blue-500 mt-1">Calculando conversión...</p>
+                        <p className={`text-xs mt-1 ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-500'}`}>Calculando conversión...</p>
                       )}
                     </div>
                   </div>
@@ -2638,26 +2680,32 @@ export default function MisPedidosPage() {
                       {paymentMethods.map((method) => (
                         <div
                           key={method.id}
-                          className="p-4 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-blue-300 hover:shadow-md payment-method-card group"
+                          className={`p-4 border-2 rounded-xl cursor-pointer hover:shadow-md payment-method-card group ${mounted && theme === 'dark' ? 'border-slate-600 hover:border-blue-500 bg-slate-800' : 'border-slate-200 hover:border-blue-300'}`}
                           onClick={() => handlePaymentMethodSelect(method)}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                               <div className="text-2xl">{method.icon}</div>
                               <div>
-                                <h4 className="font-semibold">{method.name}</h4>
-                                <p className="text-sm text-slate-600">{method.description}</p>
+                                <h4 className={`font-semibold ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{method.name}</h4>
+                                <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{method.description}</p>
                               </div>
                             </div>
                             <div className="text-right">
                               <Badge className={`${
-                                method.validation === 'automatic' 
-                                  ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-1 hover:ring-green-200 transition-colors' 
-                                  : 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-1 hover:ring-yellow-200 transition-colors'
+                                mounted && theme === 'dark' ? (
+                                  method.validation === 'automatic' 
+                                    ? 'bg-green-900/30 text-green-300 border-green-700 hover:bg-green-900/50 hover:ring-1 hover:ring-green-500/20 transition-colors' 
+                                    : 'bg-yellow-900/30 text-yellow-300 border-yellow-700 hover:bg-yellow-900/50 hover:ring-1 hover:ring-yellow-500/20 transition-colors'
+                                ) : (
+                                  method.validation === 'automatic' 
+                                    ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-50 hover:ring-1 hover:ring-green-200 transition-colors' 
+                                    : 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-50 hover:ring-1 hover:ring-yellow-200 transition-colors'
+                                )
                               }`}>
                                 {method.validation === 'automatic' ? `⚡ ${t('client.recentOrders.paymentModal.automatic')}` : t('client.recentOrders.paymentModal.manual')}
                               </Badge>
-                              <p className="text-xs text-slate-500 mt-1">{method.currency}</p>
+                              <p className={`text-xs mt-1 ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{method.currency}</p>
                             </div>
                           </div>
                         </div>
@@ -2670,70 +2718,70 @@ export default function MisPedidosPage() {
                 {paymentStep === 2 && selectedPaymentMethod && (
                   <div className="space-y-6 payment-step-transition">
                     {/* Método seleccionado */}
-                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
+                    <div className={`p-4 rounded-xl border ${mounted && theme === 'dark' ? 'bg-gradient-to-r from-green-900/20 to-emerald-900/20 border-green-700' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'}`}>
                       <div className="flex items-center gap-3">
                         <div className="text-2xl">{selectedPaymentMethod.icon}</div>
                         <div>
-                          <h4 className="font-semibold">{selectedPaymentMethod.name}</h4>
-                          <p className="text-sm text-slate-600">{selectedPaymentMethod.description}</p>
+                          <h4 className={`font-semibold ${mounted && theme === 'dark' ? 'text-white' : ''}`}>{selectedPaymentMethod.name}</h4>
+                          <p className={`text-sm ${mounted && theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{selectedPaymentMethod.description}</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Información de pago */}
                     <div className="space-y-4 payment-info-card">
-                      <h4 className="font-semibold text-lg">📋 {t('client.recentOrders.paymentModal.paymentInfo')}</h4>
+                      <h4 className={`font-semibold text-lg ${mounted && theme === 'dark' ? 'text-white' : ''}`}>📋 {t('client.recentOrders.paymentModal.paymentInfo')}</h4>
                       
                       {selectedPaymentMethod.id === 'mobile' && (
                         <div className="space-y-3">
-                          <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.phoneNumber')}</p>
-                            <p className="text-lg font-mono font-bold text-blue-600">{selectedPaymentMethod.details?.phoneNumber}</p>
+                          <div className={`p-4 rounded-lg ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-50'}`}>
+                            <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('client.recentOrders.paymentModal.phoneNumber')}</p>
+                            <p className={`text-lg font-mono font-bold ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>{selectedPaymentMethod.details?.phoneNumber}</p>
                           </div>
-                          <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.reference')}</p>
-                            <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.reference}</p>
+                          <div className={`p-4 rounded-lg ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-50'}`}>
+                            <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('client.recentOrders.paymentModal.reference')}</p>
+                            <p className={`text-lg font-mono font-bold ${mounted && theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>{selectedPaymentMethod.details?.reference}</p>
                           </div>
                         </div>
                       )}
 
                       {selectedPaymentMethod.id === 'transfer' && (
                         <div className="space-y-3">
-                          <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.bank')}</p>
-                            <p className="text-lg font-bold text-blue-600">{selectedPaymentMethod.details?.bankName}</p>
+                          <div className={`p-4 rounded-lg ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-50'}`}>
+                            <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('client.recentOrders.paymentModal.bank')}</p>
+                            <p className={`text-lg font-bold ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>{selectedPaymentMethod.details?.bankName}</p>
                           </div>
-                          <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.accountNumber')}</p>
-                            <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.accountNumber}</p>
+                          <div className={`p-4 rounded-lg ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-50'}`}>
+                            <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('client.recentOrders.paymentModal.accountNumber')}</p>
+                            <p className={`text-lg font-mono font-bold ${mounted && theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>{selectedPaymentMethod.details?.accountNumber}</p>
                           </div>
-                          <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.reference')}</p>
-                            <p className="text-lg font-mono font-bold text-orange-600">{selectedPaymentMethod.details?.reference}</p>
+                          <div className={`p-4 rounded-lg ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-50'}`}>
+                            <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('client.recentOrders.paymentModal.reference')}</p>
+                            <p className={`text-lg font-mono font-bold ${mounted && theme === 'dark' ? 'text-orange-400' : 'text-orange-600'}`}>{selectedPaymentMethod.details?.reference}</p>
                           </div>
                         </div>
                       )}
 
                       {(selectedPaymentMethod.id === 'binance' || selectedPaymentMethod.id === 'zelle' || selectedPaymentMethod.id === 'paypal') && (
                         <div className="space-y-3">
-                          <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.email')}</p>
-                            <p className="text-lg font-mono font-bold text-blue-600">{selectedPaymentMethod.details?.email}</p>
+                          <div className={`p-4 rounded-lg ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-50'}`}>
+                            <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('client.recentOrders.paymentModal.email')}</p>
+                            <p className={`text-lg font-mono font-bold ${mounted && theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>{selectedPaymentMethod.details?.email}</p>
                           </div>
-                          <div className="p-4 bg-slate-50 rounded-lg">
-                            <p className="text-sm font-medium text-slate-700">{t('client.recentOrders.paymentModal.reference')}</p>
-                            <p className="text-lg font-mono font-bold text-green-600">{selectedPaymentMethod.details?.reference}</p>
+                          <div className={`p-4 rounded-lg ${mounted && theme === 'dark' ? 'bg-slate-700' : 'bg-slate-50'}`}>
+                            <p className={`text-sm font-medium ${mounted && theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t('client.recentOrders.paymentModal.reference')}</p>
+                            <p className={`text-lg font-mono font-bold ${mounted && theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>{selectedPaymentMethod.details?.reference}</p>
                           </div>
                         </div>
                       )}
 
                       {/* Instrucciones */}
-                      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className={`p-4 border rounded-lg ${mounted && theme === 'dark' ? 'bg-yellow-900/20 border-yellow-700' : 'bg-yellow-50 border-yellow-200'}`}>
                         <div className="flex items-start gap-2">
-                          <div className="text-yellow-600 mt-0.5">⚠️</div>
+                          <div className={`mt-0.5 ${mounted && theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`}>⚠️</div>
                           <div>
-                            <p className="font-medium text-yellow-800">{t('client.recentOrders.paymentModal.importantInstructions')}</p>
-                            <ul className="text-sm text-yellow-700 mt-1 space-y-1">
+                            <p className={`font-medium ${mounted && theme === 'dark' ? 'text-yellow-300' : 'text-yellow-800'}`}>{t('client.recentOrders.paymentModal.importantInstructions')}</p>
+                            <ul className={`text-sm mt-1 space-y-1 ${mounted && theme === 'dark' ? 'text-yellow-200' : 'text-yellow-700'}`}>
                               <li>• {t('client.recentOrders.paymentModal.instructions.exactReference')}</li>
                               <li>• {t('client.recentOrders.paymentModal.instructions.saveReceipt')}</li>
                               <li>• {t('client.recentOrders.paymentModal.instructions.processTime')}</li>
@@ -2749,11 +2797,11 @@ export default function MisPedidosPage() {
                 )}
 
                 {/* Botones de navegación */}
-                <div className="flex gap-3 pt-4 border-t">
+                <div className={`flex gap-3 pt-4 ${mounted && theme === 'dark' ? 'border-t border-slate-700' : 'border-t'}`}>
                   <Button 
                     variant="outline" 
                     onClick={handlePaymentBack}
-                    className="flex-1"
+                    className={`flex-1 ${mounted && theme === 'dark' ? 'border-slate-600 hover:bg-slate-700' : ''}`}
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     {paymentStep === 1 ? t('client.recentOrders.paymentModal.cancel') : t('client.recentOrders.paymentModal.back')}
