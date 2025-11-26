@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import Lottie from "react-lottie";
 import LoginForm from "./LoginForm";
@@ -17,7 +17,13 @@ export default function AuthPage({
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
   const [isReturningFromPasswordReset, setIsReturningFromPasswordReset] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
   const { t } = useTranslation();
+
+  // Evitar problemas de hidratación esperando a que el componente se monte
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Usar el hook optimizado para cargar la animación
   const { animationData: defaultOptions, isLoading, hasError } = useOptimizedLottie({
@@ -90,6 +96,18 @@ export default function AuthPage({
       />
     );
   };
+
+  // Evitar problemas de hidratación: mostrar contenido solo cuando esté montado
+  if (!mounted) {
+    return (
+      <div className="auth-wrapper">
+        <div className="auth-tabs">
+          <button className="auth-tab active">Login</button>
+          <button className="auth-tab">Register</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-wrapper">
