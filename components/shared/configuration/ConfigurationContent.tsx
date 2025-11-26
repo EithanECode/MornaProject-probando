@@ -876,19 +876,10 @@ export default function ConfigurationContent({ role, onUserImageUpdate }: Config
                           <Moon className="w-4 h-4" />
                           {t('admin.configuration.preferences.theme.dark')}
                         </Button>
-                        <Button
-                          variant={mounted && theme === 'system' ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => setTheme('system')}
-                          className="flex-1 min-w-0 flex items-center gap-2"
-                        >
-                          <Monitor className="w-4 h-4" />
-                          {t('admin.configuration.preferences.theme.system')}
-                        </Button>
                       </div>
                       {mounted && (
                         <p className="text-xs text-slate-600 dark:text-slate-400">
-                          {t('admin.configuration.preferences.theme.currentTheme')}: {theme === 'light' ? t('admin.configuration.preferences.theme.light') : theme === 'dark' ? t('admin.configuration.preferences.theme.dark') : t('admin.configuration.preferences.theme.system')}
+                          {t('admin.configuration.preferences.theme.currentTheme')}: {theme === 'light' ? t('admin.configuration.preferences.theme.light') : t('admin.configuration.preferences.theme.dark')}
                         </p>
                       )}
                     </div>

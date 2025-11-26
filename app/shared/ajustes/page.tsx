@@ -811,13 +811,6 @@ export default function AjustesPage() {
                         >
                           Oscuro
                         </Button>
-                        <Button
-                          variant={theme === 'system' ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => setTheme('system')}
-                        >
-                          Sistema
-                        </Button>
                       </div>
                     </div>
                     <Separator />
