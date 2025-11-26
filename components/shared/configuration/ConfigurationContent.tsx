@@ -22,7 +22,6 @@ import {
   Trash2,
   Sun,
   Moon,
-  Monitor,
   Save
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
