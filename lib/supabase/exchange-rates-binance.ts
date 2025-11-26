@@ -6,6 +6,7 @@ export interface ExchangeRateBinance {
   source: string;
   timestamp: string;
   is_fallback: boolean;
+  trade_type?: 'BUY' | 'SELL';
   metadata?: any;
 }
 
@@ -24,7 +25,8 @@ export async function saveBinanceRate(
   rate: number,
   source: string,
   isFallback: boolean,
-  metadata?: any
+  metadata?: any,
+  tradeType: 'BUY' | 'SELL' = 'BUY'
 ): Promise<void> {
   try {
     const supabase = getSupabaseBrowserClient();
@@ -35,6 +37,7 @@ export async function saveBinanceRate(
         rate,
         source,
         is_fallback: isFallback,
+        trade_type: tradeType,
         metadata: metadata || {},
         timestamp: new Date().toISOString()
       });
@@ -44,7 +47,7 @@ export async function saveBinanceRate(
       throw error;
     }
 
-    console.log(`[Binance Rate] Saved: ${rate} VES/USDT from ${source}`);
+    console.log(`[Binance Rate] Saved: ${rate} VES/USDT (${tradeType}) from ${source}`);
   } catch (error) {
     console.error('Error in saveBinanceRate:', error);
     // No lanzar error para no interrumpir el flujo
@@ -54,7 +57,7 @@ export async function saveBinanceRate(
 /**
  * Obtener la última tasa válida de Binance (no fallback, menos de 24h)
  */
-export async function getLatestValidBinanceRate(): Promise<{
+export async function getLatestValidBinanceRate(tradeType: 'BUY' | 'SELL' = 'BUY'): Promise<{
   rate: number;
   timestamp: string;
   source: string;
@@ -67,13 +70,16 @@ export async function getLatestValidBinanceRate(): Promise<{
     const oneDayAgo = new Date();
     oneDayAgo.setHours(oneDayAgo.getHours() - 24);
 
-    const { data, error } = await supabase
+    let query = supabase
       .from('exchange_rates_binance')
       .select('*')
       .eq('is_fallback', false)
+      .eq('trade_type', tradeType)
       .gte('timestamp', oneDayAgo.toISOString())
       .order('timestamp', { ascending: false })
       .limit(1);
+
+    const { data, error } = await query;
 
     if (error) {
       console.error('[Binance Rate] Error fetching from DB:', error);
@@ -81,7 +87,7 @@ export async function getLatestValidBinanceRate(): Promise<{
     }
 
     if (!data || data.length === 0) {
-      console.log('[Binance Rate] No valid rate found in last 24h');
+      console.log(`[Binance Rate] No valid rate found in last 24h for ${tradeType}`);
       return null;
     }
 
@@ -92,7 +98,7 @@ export async function getLatestValidBinanceRate(): Promise<{
     const rateTime = new Date(rateData.timestamp);
     const ageMinutes = Math.floor((now.getTime() - rateTime.getTime()) / (1000 * 60));
 
-    console.log('[Binance Rate] Found valid rate in DB:', rateData.rate, 'from', rateData.source);
+    console.log(`[Binance Rate] Found valid rate in DB (${tradeType}):`, rateData.rate, 'from', rateData.source);
 
     return {
       rate: parseFloat(rateData.rate),
@@ -109,7 +115,7 @@ export async function getLatestValidBinanceRate(): Promise<{
 /**
  * Obtener cualquier tasa de Binance (incluso fallback o antigua)
  */
-export async function getLatestBinanceRate(): Promise<{
+export async function getLatestBinanceRate(tradeType: 'BUY' | 'SELL' = 'BUY'): Promise<{
   rate: number;
   timestamp: string;
   source: string;
@@ -120,12 +126,13 @@ export async function getLatestBinanceRate(): Promise<{
     const { data, error } = await supabase
       .from('exchange_rates_binance')
       .select('*')
+      .eq('trade_type', tradeType)
       .order('timestamp', { ascending: false })
       .limit(1)
       .single();
 
     if (error || !data) {
-      console.log('[Binance Rate] No rate found in database');
+      console.log(`[Binance Rate] No rate found in database for ${tradeType}`);
       return null;
     }
 
@@ -145,17 +152,28 @@ export async function getLatestBinanceRate(): Promise<{
  */
 export async function getBinanceRateHistory(
   limit: number = 20,
-  onlyValid: boolean = false
+  onlyValid: boolean = false,
+  tradeType?: 'BUY' | 'SELL'
 ): Promise<ExchangeRateBinance[]> {
   try {
     const supabase = getSupabaseBrowserClient();
     
-    // Usar la función SQL para obtener el historial
-    const { data, error } = await supabase
-      .rpc('get_binance_rate_history', {
-        result_limit: limit,
-        only_valid: onlyValid
-      });
+    // Si hay función SQL, usarla; si no, query directa
+    let query = supabase
+      .from('exchange_rates_binance')
+      .select('*')
+      .order('timestamp', { ascending: false })
+      .limit(limit);
+
+    if (onlyValid) {
+      query = query.eq('is_fallback', false);
+    }
+
+    if (tradeType) {
+      query = query.eq('trade_type', tradeType);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error('Error fetching Binance rate history:', error);
@@ -167,8 +185,9 @@ export async function getBinanceRateHistory(
       id: item.id,
       rate: parseFloat(item.rate),
       source: item.source,
-      timestamp: item.rate_timestamp,
+      timestamp: item.timestamp,
       is_fallback: item.is_fallback,
+      trade_type: item.trade_type,
       metadata: item.metadata
     }));
   } catch (error) {

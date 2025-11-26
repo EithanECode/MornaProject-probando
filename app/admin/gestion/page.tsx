@@ -1337,7 +1337,9 @@ export default function ConfiguracionPage() {
                       {t('admin.management.financial.binanceRateTitle')} (Compra)
                     </CardTitle>
                     <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
-                      Tasa de compra VES → USDT (5 ofertas más altas)
+                      {t('admin.management.financial.binanceRateBuyDesc') !== 'admin.management.financial.binanceRateBuyDesc' 
+                        ? t('admin.management.financial.binanceRateBuyDesc') 
+                        : 'Tasa de compra VES → USDT (5 ofertas más altas)'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -1482,7 +1484,9 @@ export default function ConfiguracionPage() {
                       {t('admin.management.financial.binanceRateTitle')} (Venta)
                     </CardTitle>
                     <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
-                      Tasa de venta USDT → VES (5 ofertas más altas)
+                      {t('admin.management.financial.binanceRateSellDesc') !== 'admin.management.financial.binanceRateSellDesc' 
+                        ? t('admin.management.financial.binanceRateSellDesc') 
+                        : 'Tasa de venta USDT → VES (5 ofertas más altas)'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -1534,7 +1538,9 @@ export default function ConfiguracionPage() {
                             <WifiOff className="h-4 w-4 text-gray-400" />
                           )}
                           <Label htmlFor="autoUpdateBinanceSell" className="text-xs cursor-pointer">
-                            Actualización automática Binance (Venta)
+                            {t('admin.management.financial.autoUpdateBinanceSell') !== 'admin.management.financial.autoUpdateBinanceSell' 
+                              ? t('admin.management.financial.autoUpdateBinanceSell') 
+                              : 'Actualización automática Binance [Venta]'}
                           </Label>
                         </div>
                         <Switch
@@ -1619,8 +1625,8 @@ export default function ConfiguracionPage() {
               </div>
 
               {/* Tercera fila: Margen de Ganancia (movido aquí) */}
-              <div className="w-full mt-6">
-                <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
+              <div className="w-full mt-6 flex justify-center">
+                <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm max-w-md w-full`}>
                   <CardHeader>
                     <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
                       <Percent className="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" />

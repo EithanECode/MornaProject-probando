@@ -190,7 +190,7 @@ export async function GET(request: NextRequest) {
       await saveBinanceRate(apiRate, apiSource, false, {
         success: true,
         apis_used: ['monitorvenezuela', 'airtm']
-      });
+      }, tradeType);
 
       // Limpiar registros antiguos ocasionalmente (1 de cada 50 requests)
       if (Math.random() < 0.02) {
@@ -209,7 +209,7 @@ export async function GET(request: NextRequest) {
 
     // 3. APIs fallaron, intentar usar última tasa válida de BD
     console.log('[Binance Rate API] APIs failed, checking database for last valid rate...');
-    const lastValidRate = await getLatestValidBinanceRate();
+    const lastValidRate = await getLatestValidBinanceRate(tradeType);
 
     if (lastValidRate) {
       console.log(`[Binance Rate API] Using last valid rate from DB: ${lastValidRate.rate} VES/USDT (${lastValidRate.age_minutes} min ago)`);
@@ -219,7 +219,7 @@ export async function GET(request: NextRequest) {
         fallback_reason: 'APIs failed',
         original_error: apiError?.message,
         age_minutes: lastValidRate.age_minutes
-      });
+      }, tradeType);
 
       return NextResponse.json({
         success: true,
@@ -235,7 +235,7 @@ export async function GET(request: NextRequest) {
 
     // 4. No hay tasa válida en BD, usar cualquier tasa (incluso fallback anterior)
     console.log('[Binance Rate API] No valid rates in DB, checking for any rate...');
-    const anyLastRate = await getLatestBinanceRate();
+    const anyLastRate = await getLatestBinanceRate(tradeType);
 
     if (anyLastRate) {
       console.log(`[Binance Rate API] Using any last rate from DB: ${anyLastRate.rate} VES/USDT`);
@@ -258,7 +258,7 @@ export async function GET(request: NextRequest) {
     await saveBinanceRate(defaultRate, 'Hardcoded Default', true, {
       fallback_reason: 'No rates available in APIs or database',
       api_error: apiError?.message
-    });
+    }, tradeType);
 
     return NextResponse.json({
       success: true,
@@ -287,7 +287,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { manualRate, forceRefresh } = body;
+    const { manualRate, forceRefresh, tradeType = 'BUY' } = body;
+    const tradeTypeValue = (tradeType as 'BUY' | 'SELL') || 'BUY';
 
     // Si hay tasa manual, guardarla y usarla
     if (manualRate && isValidBinanceRate(parseFloat(manualRate))) {
@@ -297,7 +298,7 @@ export async function POST(request: NextRequest) {
       await saveBinanceRate(rate, 'Manual', false, {
         manual_update: true,
         updated_by: 'admin_user'
-      });
+      }, tradeTypeValue);
 
       return NextResponse.json({
         success: true,
@@ -311,13 +312,13 @@ export async function POST(request: NextRequest) {
 
     // Si no hay tasa manual, obtener de API y guardar
     try {
-      const apiRate = await fetchBinanceRate();
+      const apiRate = await fetchBinanceRate(tradeTypeValue);
       
       // Guardar tasa de API en BD
-      await saveBinanceRate(apiRate, 'Monitor Venezuela (Manual Refresh)', false, {
+      await saveBinanceRate(apiRate, 'Binance P2P (Manual Refresh)', false, {
         manual_refresh: true,
         force_refresh: forceRefresh || false
-      });
+      }, tradeTypeValue);
 
       return NextResponse.json({
         success: true,
@@ -329,7 +330,7 @@ export async function POST(request: NextRequest) {
       });
     } catch (apiError: any) {
       // Si falla API, usar última tasa válida de BD
-      const lastValidRate = await getLatestValidBinanceRate();
+      const lastValidRate = await getLatestValidBinanceRate(tradeTypeValue);
       
       if (lastValidRate) {
         return NextResponse.json({
