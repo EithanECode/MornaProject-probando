@@ -18,13 +18,15 @@ interface UseExchangeRateBinanceOptions {
   autoUpdate?: boolean;
   interval?: number; // en milisegundos
   onRateUpdate?: (rate: number) => void;
+  tradeType?: 'BUY' | 'SELL'; // Tipo de operación: BUY (compra) o SELL (venta)
 }
 
 export function useExchangeRateBinance(options: UseExchangeRateBinanceOptions = {}) {
   const {
     autoUpdate = false,
     interval = 30 * 60 * 1000, // 30 minutos por defecto
-    onRateUpdate
+    onRateUpdate,
+    tradeType = 'BUY' // Por defecto BUY (compra)
   } = options;
 
   const [rate, setRate] = useState<number | null>(null);
@@ -61,12 +63,14 @@ export function useExchangeRateBinance(options: UseExchangeRateBinanceOptions = 
     setError(null);
 
     try {
-      const response = await fetch('/api/exchange-rate/binance', {
+      // Agregar parámetros force=true y tradeType para evitar usar caché de BD
+      const response = await fetch(`/api/exchange-rate/binance?force=true&tradeType=${tradeType}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        signal: abortControllerRef.current.signal
+        signal: abortControllerRef.current.signal,
+        cache: 'no-store' // Evitar caché del navegador
       });
 
       const data: ExchangeRateBinanceResponse = await response.json();

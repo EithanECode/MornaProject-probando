@@ -39,6 +39,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useExchangeRate } from '@/hooks/useExchangeRate';
+import { useExchangeRateBinance } from '@/hooks/useExchangeRateBinance';
 import { useRealtimeBusinessConfig } from '@/hooks/use-realtime-business-config';
 import ExchangeRateManager from '@/components/admin/ExchangeRateManager';
 import { useTimeTranslations } from '@/hooks/useTimeTranslations';
@@ -53,6 +54,7 @@ interface BusinessConfig {
   usdRate: number;
   cnyRate: number;
   binanceRate: number;
+  binanceRateSell: number;
   profitMargin: number;
   // usdDiscountPercent eliminado
 
@@ -72,6 +74,7 @@ interface BusinessConfig {
   auto_update_exchange_rate: boolean;
   auto_update_exchange_rate_cny: boolean;
   auto_update_binance_rate: boolean;
+  auto_update_binance_rate_sell: boolean;
 }
 
 export default function ConfiguracionPage() {
@@ -120,6 +123,7 @@ export default function ConfiguracionPage() {
     usdRate: 36.25,
     cnyRate: 7.25,
     binanceRate: 299.51,
+    binanceRateSell: 299.51,
     profitMargin: 25,
     maxQuotationsPerMonth: 5,
     maxModificationsPerOrder: 2,
@@ -129,7 +133,8 @@ export default function ConfiguracionPage() {
     sessionTimeout: 60,
   auto_update_exchange_rate: false,
   auto_update_exchange_rate_cny: false,
-  auto_update_binance_rate: false
+  auto_update_binance_rate: false,
+  auto_update_binance_rate_sell: false
   });
   
   // Referencia al estado base para detectar cambios
@@ -157,6 +162,7 @@ export default function ConfiguracionPage() {
       ['usdRate', 'usd_rate'],
       ['cnyRate', 'cny_rate'],
       ['binanceRate', 'binance_rate'],
+      ['binanceRateSell', 'binance_rate_sell'],
       ['profitMargin', 'profit_margin'],
       ['airShippingRate', 'air_shipping_rate'],
       ['seaShippingRate', 'sea_shipping_rate'],
@@ -164,7 +170,8 @@ export default function ConfiguracionPage() {
       // switches (ya están en snake en UI)
       ['auto_update_exchange_rate', 'auto_update_exchange_rate'],
       ['auto_update_exchange_rate_cny', 'auto_update_exchange_rate_cny'],
-      ['auto_update_binance_rate', 'auto_update_binance_rate']
+      ['auto_update_binance_rate', 'auto_update_binance_rate'],
+      ['auto_update_binance_rate_sell', 'auto_update_binance_rate_sell']
     ];
     let changed = false;
     mapPairs.forEach(([uiKey, dbKey]) => {
@@ -400,6 +407,62 @@ export default function ConfiguracionPage() {
   console.log('[Admin] CNY Switch State - config.auto_update_exchange_rate_cny:', config.auto_update_exchange_rate_cny);
   console.log('[Admin] CNY Switch State - config.cnyRate:', config.cnyRate);
 
+  // Memoizar el valor de autoUpdate Binance para evitar loops infinitos
+  const autoUpdateBinance = useMemo(() => config.auto_update_binance_rate, [config.auto_update_binance_rate]);
+
+  // Callback temporal para actualizar la tasa Binance (se actualizará después de definir scheduleAutoPersist)
+  const handleBinanceRateUpdateTemp = useCallback((newRate: number) => {
+    setConfig(prev => {
+      if (prev.binanceRate === newRate) return prev;
+      return { ...prev, binanceRate: newRate };
+    });
+    setBaselineVersion(v => v + 1);
+  }, []);
+
+  // Hook para manejo de tasa de cambio Binance
+  const {
+    rate: currentExchangeRateBinance,
+    loading: exchangeRateLoadingBinance,
+    error: exchangeRateErrorBinance,
+    lastUpdated: exchangeRateLastUpdatedBinance,
+    source: exchangeRateSourceBinance,
+    refreshRate: refreshRateBinance,
+    getTimeSinceUpdate: getTimeSinceUpdateBinance,
+    isAutoUpdating: isAutoUpdatingBinance
+  } = useExchangeRateBinance({
+    autoUpdate: autoUpdateBinance,
+    interval: 30 * 60 * 1000, // 30 minutos
+    onRateUpdate: handleBinanceRateUpdateTemp,
+    tradeType: 'BUY' // Tasa de compra
+  });
+
+  // Hook para tasa de VENTA (SELL) de Binance
+  const handleBinanceRateUpdateSellTemp = useCallback((newRate: number) => {
+    setConfig(prev => {
+      if (prev.binanceRateSell === newRate) return prev;
+      return { ...prev, binanceRateSell: newRate };
+    });
+    setBaselineVersion(v => v + 1);
+  }, []);
+
+  const autoUpdateBinanceSell = useMemo(() => config.auto_update_binance_rate_sell, [config.auto_update_binance_rate_sell]);
+
+  const {
+    rate: currentExchangeRateBinanceSell,
+    loading: exchangeRateLoadingBinanceSell,
+    error: exchangeRateErrorBinanceSell,
+    lastUpdated: exchangeRateLastUpdatedBinanceSell,
+    source: exchangeRateSourceBinanceSell,
+    refreshRate: refreshRateBinanceSell,
+    getTimeSinceUpdate: getTimeSinceUpdateBinanceSell,
+    isAutoUpdating: isAutoUpdatingBinanceSell
+  } = useExchangeRateBinance({
+    autoUpdate: autoUpdateBinanceSell,
+    interval: 30 * 60 * 1000, // 30 minutos
+    onRateUpdate: handleBinanceRateUpdateSellTemp,
+    tradeType: 'SELL' // Tasa de venta
+  });
+
   // Callback para recibir actualizaciones del ExchangeRateManager
   const handleExchangeRateUpdate = useCallback((newRate: number) => {
     console.log('[Admin] Received rate update from ExchangeRateManager:', newRate);
@@ -470,7 +533,8 @@ export default function ConfiguracionPage() {
   // Sin auto-actualización, solo edición manual del campo
   
   // Estado para la calculadora de conversión USDT → VES
-  const [usdtAmount, setUsdtAmount] = useState<number>(100);
+  const [usdtAmount, setUsdtAmount] = useState<number>(100); // Para calculadora de compra
+  const [usdtAmountSell, setUsdtAmountSell] = useState<number>(100); // Para calculadora de venta
   // Nueva función central para traer la config SIEMPRE desde API (fuente única)
   const fetchConfig = useCallback(async () => {
     setIsFetching(true);
@@ -485,6 +549,7 @@ export default function ConfiguracionPage() {
           usdRate: db.usd_rate ?? 36.25,
           cnyRate: db.cny_rate ?? 7.25,
           binanceRate: db.binance_rate ?? 299.51,
+          binanceRateSell: db.binance_rate_sell ?? 299.51,
           profitMargin: db.profit_margin ?? 25,
           maxQuotationsPerMonth: db.max_quotations_per_month ?? 5,
           maxModificationsPerOrder: db.max_modifications_per_order ?? 2,
@@ -494,7 +559,8 @@ export default function ConfiguracionPage() {
           sessionTimeout: db.session_timeout ?? 60,
           auto_update_exchange_rate: db.auto_update_exchange_rate ?? false,
           auto_update_exchange_rate_cny: db.auto_update_exchange_rate_cny ?? false,
-          auto_update_binance_rate: db.auto_update_binance_rate ?? false
+          auto_update_binance_rate: db.auto_update_binance_rate ?? false,
+          auto_update_binance_rate_sell: db.auto_update_binance_rate_sell ?? false
         };
         setConfig(mapped);
         baseConfigRef.current = { ...mapped };
@@ -573,7 +639,9 @@ export default function ConfiguracionPage() {
         cny_rate: config.cnyRate,
         auto_update_exchange_rate_cny: config.auto_update_exchange_rate_cny,
         binance_rate: config.binanceRate,
+        binance_rate_sell: config.binanceRateSell,
         auto_update_binance_rate: config.auto_update_binance_rate,
+        auto_update_binance_rate_sell: config.auto_update_binance_rate_sell,
         profit_margin: config.profitMargin,
         air_shipping_rate: config.airShippingRate,
         sea_shipping_rate: config.seaShippingRate,
@@ -627,7 +695,9 @@ export default function ConfiguracionPage() {
   cnyRate: config.cnyRate,
   auto_update_exchange_rate_cny: config.auto_update_exchange_rate_cny,
   binanceRate: config.binanceRate,
+  binanceRateSell: config.binanceRateSell,
   auto_update_binance_rate: config.auto_update_binance_rate,
+  auto_update_binance_rate_sell: config.auto_update_binance_rate_sell,
   profitMargin: config.profitMargin,
   airShippingRate: config.airShippingRate,
   seaShippingRate: config.seaShippingRate,
@@ -651,6 +721,7 @@ export default function ConfiguracionPage() {
               usdRate: db.usd_rate ?? 36.25,
               cnyRate: db.cny_rate ?? 7.25,
               binanceRate: db.binance_rate ?? 299.51,
+              binanceRateSell: db.binance_rate_sell ?? 299.51,
               profitMargin: db.profit_margin ?? 25,
               maxQuotationsPerMonth: db.max_quotations_per_month ?? 5,
               maxModificationsPerOrder: db.max_modifications_per_order ?? 2,
@@ -660,7 +731,8 @@ export default function ConfiguracionPage() {
               sessionTimeout: db.session_timeout ?? 60,
               auto_update_exchange_rate: db.auto_update_exchange_rate ?? false,
               auto_update_exchange_rate_cny: db.auto_update_exchange_rate_cny ?? false,
-              auto_update_binance_rate: db.auto_update_binance_rate ?? false
+              auto_update_binance_rate: db.auto_update_binance_rate ?? false,
+              auto_update_binance_rate_sell: db.auto_update_binance_rate_sell ?? false
             };
             setConfig(mapped);
             baseConfigRef.current = { ...mapped };
@@ -691,7 +763,7 @@ export default function ConfiguracionPage() {
   // =============================
   const autoPersistingRef = useRef<Record<string, boolean>>({});
   const autoPersistTimersRef = useRef<Record<string, any>>({});
-  const persistAutoRate = useCallback(async (partial: Record<string, any>, fieldKey: 'usdRate' | 'cnyRate') => {
+  const persistAutoRate = useCallback(async (partial: Record<string, any>, fieldKey: 'usdRate' | 'cnyRate' | 'binanceRate' | 'binanceRateSell') => {
     try {
       if (autoPersistingRef.current[fieldKey]) return; // evitar solapamiento
       autoPersistingRef.current[fieldKey] = true;
@@ -707,6 +779,7 @@ export default function ConfiguracionPage() {
         const updated = { ...prev } as any;
         if (typeof partial.usd_rate !== 'undefined') updated.usdRate = partial.usd_rate;
         if (typeof partial.cny_rate !== 'undefined') updated.cnyRate = partial.cny_rate;
+        if (typeof partial.binance_rate !== 'undefined') updated.binanceRate = partial.binance_rate;
         baseConfigRef.current = { ...updated };
         return updated;
       });
@@ -724,7 +797,7 @@ export default function ConfiguracionPage() {
     }
   }, []);
 
-  const scheduleAutoPersist = useCallback((fieldKey: 'usdRate' | 'cnyRate', payload: Record<string, any>) => {
+  const scheduleAutoPersist = useCallback((fieldKey: 'usdRate' | 'cnyRate' | 'binanceRate' | 'binanceRateSell', payload: Record<string, any>) => {
     // Limpiar timer previo
     if (autoPersistTimersRef.current[fieldKey]) {
       clearTimeout(autoPersistTimersRef.current[fieldKey]);
@@ -738,6 +811,67 @@ export default function ConfiguracionPage() {
   // Comparar configuraciones usando ref para evitar loops infinitos
   const configRef = useRef(config);
   configRef.current = config;
+
+  // Callback completo para actualizar la tasa Binance (definido después de scheduleAutoPersist)
+  const handleBinanceRateUpdate = useCallback((newRate: number) => {
+    setConfig(prev => {
+      if (prev.binanceRate === newRate) return prev;
+      return { ...prev, binanceRate: newRate };
+    });
+    // Si el modo auto está activo, persistir inmediatamente (sin esperar botón Guardar)
+    if (configRef.current?.auto_update_binance_rate) {
+      scheduleAutoPersist('binanceRate', { binance_rate: newRate, auto_update_binance_rate: true });
+    } else {
+      // Solo marcar como cambio manual pendiente
+      setBaselineVersion(v => v + 1);
+    }
+  }, [scheduleAutoPersist]);
+
+  // Efecto para forzar actualización inmediata cuando se activa el auto-update o al montar (compra)
+  useEffect(() => {
+    if (config.auto_update_binance_rate && refreshRateBinance) {
+      // Forzar actualización inmediata cuando se activa el switch o al montar con auto-update activo
+      const timer = setTimeout(() => {
+        refreshRateBinance();
+      }, 500); // Pequeño delay para asegurar que el hook esté listo
+      return () => clearTimeout(timer);
+    }
+  }, [config.auto_update_binance_rate, refreshRateBinance]);
+
+  // Efecto para forzar actualización inmediata cuando se activa el auto-update o al montar (venta)
+  useEffect(() => {
+    if (config.auto_update_binance_rate_sell && refreshRateBinanceSell) {
+      // Forzar actualización inmediata cuando se activa el switch o al montar con auto-update activo
+      const timer = setTimeout(() => {
+        refreshRateBinanceSell();
+      }, 700); // Pequeño delay adicional para evitar sobrecarga
+      return () => clearTimeout(timer);
+    }
+  }, [config.auto_update_binance_rate_sell, refreshRateBinanceSell]);
+
+  // Efecto para manejar auto-persistencia cuando cambie la tasa de Binance (compra)
+  useEffect(() => {
+    if (currentExchangeRateBinance !== null && config.auto_update_binance_rate) {
+      // Usar el callback completo para actualizar y persistir
+      handleBinanceRateUpdate(currentExchangeRateBinance);
+    }
+  }, [currentExchangeRateBinance, config.auto_update_binance_rate, handleBinanceRateUpdate]);
+
+  // Efecto para manejar auto-persistencia cuando cambie la tasa de Binance (venta)
+  useEffect(() => {
+    if (currentExchangeRateBinanceSell !== null && config.auto_update_binance_rate_sell) {
+      // Actualizar la tasa de venta
+      setConfig(prev => {
+        if (prev.binanceRateSell === currentExchangeRateBinanceSell) return prev;
+        return { ...prev, binanceRateSell: currentExchangeRateBinanceSell };
+      });
+      if (configRef.current?.auto_update_binance_rate_sell) {
+        scheduleAutoPersist('binanceRateSell', { binance_rate_sell: currentExchangeRateBinanceSell, auto_update_binance_rate_sell: true });
+      } else {
+        setBaselineVersion(v => v + 1);
+      }
+    }
+  }, [currentExchangeRateBinanceSell, config.auto_update_binance_rate_sell, scheduleAutoPersist]);
   
   const hasChanges = useMemo(() => {
     if (!baseConfigRef.current) {
@@ -752,6 +886,7 @@ export default function ConfiguracionPage() {
       'usdRate',
       'cnyRate',
       'binanceRate',
+      'binanceRateSell',
       'profitMargin'
     ];
     for (const field of requiredFields) {
@@ -1199,17 +1334,17 @@ export default function ConfiguracionPage() {
                   <CardHeader>
                     <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
                       <Globe className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
-                      {t('admin.management.financial.binanceRateTitle')}
+                      {t('admin.management.financial.binanceRateTitle')} (Compra)
                     </CardTitle>
                     <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
-                      {t('admin.management.financial.binanceRateDesc')}
+                      Tasa de compra VES → USDT (5 ofertas más altas)
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className={`space-y-3 p-4 border border-orange-200 dark:border-orange-800 rounded-lg bg-orange-50/50 dark:bg-orange-900/20`}>
                       <div className="flex items-center gap-2">
                         <span className="text-lg">🪙</span>
-                        <Label className={`text-sm font-semibold text-orange-800 dark:text-orange-300`}>{t('admin.management.financial.binanceRateLabel')}</Label>
+                        <Label className={`text-sm font-semibold text-orange-800 dark:text-orange-300`}>Tasa Binance P2P</Label>
                       </div>
                       <div className="relative">
                         <Input
@@ -1217,32 +1352,75 @@ export default function ConfiguracionPage() {
                           type="number"
                           step="0.01"
                           min={0}
-                          value={config.binanceRate}
+                          value={config.auto_update_binance_rate ? 
+                            (currentExchangeRateBinance !== null ? parseFloat(currentExchangeRateBinance.toFixed(2)) : '') : 
+                            config.binanceRate}
                           onChange={(e) => {
                             const val = parseFloat(e.target.value) || 0;
                             setConfig(prev => ({ ...prev, binanceRate: val }));
                             setBaselineVersion(v => v + 1);
                           }}
-                          className="pr-12"
-                          disabled={isLoading}
+                          className={exchangeRateErrorBinance ? 'border-red-300 pr-12' : 'pr-12'}
+                          disabled={isLoading || exchangeRateLoadingBinance || config.auto_update_binance_rate}
                           placeholder="299.51"
-                          title="Edita manualmente la tasa de Binance P2P (consulta en binance.com/es/p2p)"
+                          title={config.auto_update_binance_rate ? "Campo bloqueado: Auto-actualización activada" : "Editar tasa manualmente"}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={refreshRateBinance}
+                          disabled={isLoading || exchangeRateLoadingBinance}
+                          className={`absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-slate-700`}
+                          title="Actualizar tasa desde Binance P2P"
+                        >
+                          {exchangeRateLoadingBinance ? (
+                            <RefreshCw className={`h-4 w-4 animate-spin text-black dark:text-white`} />
+                          ) : (
+                            <RefreshCw className={`h-4 w-4 text-black dark:text-white`} />
+                          )}
+                        </Button>
+                      </div>
+                      <div className="flex items-center justify-between space-x-2 mt-2">
+                        <div className="flex items-center space-x-2">
+                          {isAutoUpdatingBinance ? (
+                            <Wifi className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <WifiOff className="h-4 w-4 text-gray-400" />
+                          )}
+                          <Label htmlFor="autoUpdateBinance" className="text-xs cursor-pointer">
+                            {t('admin.management.financial.autoUpdateBinance') !== 'admin.management.financial.autoUpdateBinance' 
+                              ? t('admin.management.financial.autoUpdateBinance') 
+                              : 'Actualización automática Binance'}
+                          </Label>
+                        </div>
+                        <Switch
+                          id="autoUpdateBinance"
+                          checked={config.auto_update_binance_rate}
+                          disabled={isLoading}
+                          onCheckedChange={(checked) => {
+                            if (isLoading) return;
+                            setConfig(prev => ({ ...prev, auto_update_binance_rate: checked }));
+                            setBaselineVersion(v => v + 1);
+                          }}
                         />
                       </div>
-                      <div className={`mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg`}>
-                        <p className={`text-xs text-blue-800 dark:text-blue-200`}>
-                          💡 <strong>{t('admin.management.financial.binanceConsejo')}</strong>{' '}
-                          <a 
-                            href="https://p2p.binance.com/es/trade/VES/USDT" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className={`underline hover:text-blue-600 dark:hover:text-blue-400`}
-                          >
-                            {t('admin.management.financial.binanceConsejoLink')}
-                          </a>
-                          {' '}{t('admin.management.financial.binanceConsejoText')}
-                        </p>
-                      </div>
+                      {exchangeRateLastUpdatedBinance && (
+                        <div className={`text-xs text-gray-600 dark:text-slate-400 mt-2`}>
+                          <div className="flex items-center justify-between">
+                            <span>{t('admin.management.financial.updated')}</span>
+                            <Badge variant="secondary" className="text-xs">
+                              {getTimeAgo(exchangeRateLastUpdatedBinance)}
+                            </Badge>
+                          </div>
+                          {exchangeRateSourceBinance && (
+                            <div className="flex items-center justify-between mt-1">
+                              <span>{t('admin.management.financial.source')}</span>
+                              <span className="font-medium">{translateSource(exchangeRateSourceBinance)}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {/* Calculadora de Conversión USDT → VES */}
                       <div className={`mt-4 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border border-orange-200 dark:border-orange-800 rounded-lg`}>
@@ -1275,7 +1453,7 @@ export default function ConfiguracionPage() {
                             <div className="relative">
                               <div className={`flex items-center h-10 px-3 bg-white dark:bg-slate-700 border border-orange-300 dark:border-orange-700 rounded-md`}>
                                 <span className={`text-lg font-bold text-orange-600 dark:text-orange-400`}>
-                                  {(usdtAmount * config.binanceRate).toLocaleString('es-VE', {
+                                  {(usdtAmount * (config.auto_update_binance_rate ? (currentExchangeRateBinance || config.binanceRate) : config.binanceRate)).toLocaleString('es-VE', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                   })} Bs
@@ -1288,7 +1466,7 @@ export default function ConfiguracionPage() {
                         {/* Info adicional */}
                         <div className={`mt-3 pt-3 border-t border-orange-200 dark:border-orange-800`}>
                           <p className={`text-xs text-orange-700 dark:text-orange-300`}>
-                            📊 {t('admin.management.financial.calculadoraUsandoTasa')} <span className="font-semibold">{config.binanceRate} Bs/USDT</span>
+                            📊 {t('admin.management.financial.calculadoraUsandoTasa')} <span className="font-semibold">{config.auto_update_binance_rate ? (currentExchangeRateBinance !== null ? currentExchangeRateBinance.toFixed(2) : config.binanceRate.toFixed(2)) : config.binanceRate.toFixed(2)} Bs/USDT</span>
                           </p>
                         </div>
                       </div>
@@ -1296,7 +1474,152 @@ export default function ConfiguracionPage() {
                   </CardContent>
                 </Card>
 
-                {/* Tarjeta Margen de Ganancia (movida aquí) */}
+                {/* Tarjeta Binance VENTA */}
+                <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
+                  <CardHeader>
+                    <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
+                      <Globe className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
+                      {t('admin.management.financial.binanceRateTitle')} (Venta)
+                    </CardTitle>
+                    <CardDescription className={`text-black dark:text-slate-300 text-sm`}>
+                      Tasa de venta USDT → VES (5 ofertas más altas)
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className={`space-y-3 p-4 border border-orange-200 dark:border-orange-800 rounded-lg bg-orange-50/50 dark:bg-orange-900/20`}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🪙</span>
+                        <Label className={`text-sm font-semibold text-orange-800 dark:text-orange-300`}>Tasa Binance P2P</Label>
+                      </div>
+                      <div className="relative">
+                        <Input
+                          id="binanceRateSell"
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          value={config.auto_update_binance_rate_sell ? 
+                            (currentExchangeRateBinanceSell !== null ? parseFloat(currentExchangeRateBinanceSell.toFixed(2)) : '') : 
+                            config.binanceRateSell}
+                          onChange={(e) => {
+                            const val = parseFloat(e.target.value) || 0;
+                            setConfig(prev => ({ ...prev, binanceRateSell: val }));
+                            setBaselineVersion(v => v + 1);
+                          }}
+                          className={exchangeRateErrorBinanceSell ? 'border-red-300 pr-12' : 'pr-12'}
+                          disabled={isLoading || exchangeRateLoadingBinanceSell || config.auto_update_binance_rate_sell}
+                          placeholder="299.51"
+                          title={config.auto_update_binance_rate_sell ? "Campo bloqueado: Auto-actualización activada" : "Editar tasa manualmente"}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={refreshRateBinanceSell}
+                          disabled={isLoading || exchangeRateLoadingBinanceSell}
+                          className={`absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-slate-700`}
+                          title="Actualizar tasa de venta desde Binance P2P"
+                        >
+                          {exchangeRateLoadingBinanceSell ? (
+                            <RefreshCw className={`h-4 w-4 animate-spin text-black dark:text-white`} />
+                          ) : (
+                            <RefreshCw className={`h-4 w-4 text-black dark:text-white`} />
+                          )}
+                        </Button>
+                      </div>
+                      <div className="flex items-center justify-between space-x-2 mt-2">
+                        <div className="flex items-center space-x-2">
+                          {isAutoUpdatingBinanceSell ? (
+                            <Wifi className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <WifiOff className="h-4 w-4 text-gray-400" />
+                          )}
+                          <Label htmlFor="autoUpdateBinanceSell" className="text-xs cursor-pointer">
+                            Actualización automática Binance (Venta)
+                          </Label>
+                        </div>
+                        <Switch
+                          id="autoUpdateBinanceSell"
+                          checked={config.auto_update_binance_rate_sell}
+                          disabled={isLoading}
+                          onCheckedChange={(checked) => {
+                            if (isLoading) return;
+                            setConfig(prev => ({ ...prev, auto_update_binance_rate_sell: checked }));
+                            setBaselineVersion(v => v + 1);
+                          }}
+                        />
+                      </div>
+                      {exchangeRateLastUpdatedBinanceSell && (
+                        <div className={`text-xs text-gray-600 dark:text-slate-400 mt-2`}>
+                          <div className="flex items-center justify-between">
+                            <span>{t('admin.management.financial.updated')}</span>
+                            <Badge variant="secondary" className="text-xs">
+                              {getTimeAgo(exchangeRateLastUpdatedBinanceSell)}
+                            </Badge>
+                          </div>
+                          {exchangeRateSourceBinanceSell && (
+                            <div className="flex items-center justify-between mt-1">
+                              <span>{t('admin.management.financial.source')}</span>
+                              <span className="font-medium">{translateSource(exchangeRateSourceBinanceSell)}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Calculadora de Conversión USDT → VES (Venta) */}
+                      <div className={`mt-4 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border border-orange-200 dark:border-orange-800 rounded-lg`}>
+                        <div className="flex items-center gap-2 mb-3">
+                          <Calculator className={`w-5 h-5 text-orange-600 dark:text-orange-400`} />
+                          <h4 className={`text-sm font-semibold text-orange-900 dark:text-orange-200`}>{t('admin.management.financial.calculadoraTitle')}</h4>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Input USDT */}
+                          <div className="space-y-2">
+                            <Label htmlFor="usdtCalcSell" className={`text-xs text-orange-800 dark:text-orange-300`}>{t('admin.management.financial.calculadoraCantidadUSDT')}</Label>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-600 font-semibold">₮</span>
+                              <Input
+                                id="usdtCalcSell"
+                                type="number"
+                                step="0.01"
+                                min={0}
+                                value={usdtAmountSell}
+                                onChange={(e) => setUsdtAmountSell(parseFloat(e.target.value) || 0)}
+                                className="pl-8 border-orange-300 focus:border-orange-500 focus:ring-orange-500"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Output VES */}
+                          <div className="space-y-2">
+                            <Label className={`text-xs text-orange-800 dark:text-orange-300`}>{t('admin.management.financial.calculadoraEquivalenteVES')}</Label>
+                            <div className="relative">
+                              <div className={`flex items-center h-10 px-3 bg-white dark:bg-slate-700 border border-orange-300 dark:border-orange-700 rounded-md`}>
+                                <span className={`text-lg font-bold text-orange-600 dark:text-orange-400`}>
+                                  {(usdtAmountSell * (config.auto_update_binance_rate_sell ? (currentExchangeRateBinanceSell || config.binanceRateSell) : config.binanceRateSell)).toLocaleString('es-VE', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                  })} Bs
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Info adicional */}
+                        <div className={`mt-3 pt-3 border-t border-orange-200 dark:border-orange-800`}>
+                          <p className={`text-xs text-orange-700 dark:text-orange-300`}>
+                            📊 {t('admin.management.financial.calculadoraUsandoTasa')} <span className="font-semibold">{config.auto_update_binance_rate_sell ? (currentExchangeRateBinanceSell !== null ? currentExchangeRateBinanceSell.toFixed(2) : config.binanceRateSell.toFixed(2)) : config.binanceRateSell.toFixed(2)} Bs/USDT</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Tercera fila: Margen de Ganancia (movido aquí) */}
+              <div className="w-full mt-6">
                 <Card className={`shadow-lg border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm`}>
                   <CardHeader>
                     <CardTitle className={`flex items-center text-black dark:text-white text-base md:text-lg`}>
@@ -1380,7 +1703,7 @@ export default function ConfiguracionPage() {
                 </div>
                 <div className={`text-center p-3 bg-white dark:bg-slate-700 rounded-lg`}>
                   <p className={`text-slate-600 dark:text-slate-300`}>🪙 USDT → VES</p>
-                  <p className={`font-bold text-orange-600 dark:text-orange-400`}>{config.binanceRate} Bs</p>
+                  <p className={`font-bold text-orange-600 dark:text-orange-400`}>{config.auto_update_binance_rate ? (currentExchangeRateBinance !== null ? currentExchangeRateBinance.toFixed(2) : config.binanceRate.toFixed(2)) : config.binanceRate.toFixed(2)} Bs</p>
                 </div>
                 <div className={`text-center p-3 bg-white dark:bg-slate-700 rounded-lg`}>
                   <p className={`text-slate-600 dark:text-slate-300`}>{t('admin.management.summary.margin')}</p>

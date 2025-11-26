@@ -16,7 +16,7 @@ interface ApiConfig {
 }
 
 // Función para obtener la tasa de Binance P2P desde múltiples fuentes
-async function fetchBinanceRate(): Promise<number> {
+async function fetchBinanceRate(tradeType: 'BUY' | 'SELL' = 'BUY'): Promise<number> {
   // Lista de APIs en orden de prioridad
   const apis: ApiConfig[] = [
     {
@@ -28,19 +28,38 @@ async function fetchBinanceRate(): Promise<number> {
         fiat: 'VES',
         merchantCheck: false,
         page: 1,
-        payTypes: [],
+        payTypes: ['PagoMovil'], // Filtro: solo ofertas que aceptan Pago Móvil
         publisherType: null,
-        rows: 10,
-        tradeType: 'SELL'
+        rows: 20, // Aumentado para obtener más ofertas y encontrar las más caras
+        tradeType: tradeType // BUY para compra, SELL para venta
       },
       parser: (data: any) => {
         console.log('[Binance Rate] Binance Direct raw data:', JSON.stringify(data, null, 2));
         // Formato: { code: "000000", data: [{ adv: { price: "299.50" } }] }
         if (data.data && Array.isArray(data.data) && data.data.length > 0) {
-          // Obtener la tasa más alta (primer elemento cuando está ordenado por precio)
-          const firstOffer = data.data[0];
-          if (firstOffer.adv && firstOffer.adv.price) {
-            return parseFloat(firstOffer.adv.price);
+          // Ordenar ofertas por precio descendente (más caras primero) y tomar las top 5
+          const anunciosOrdenados = [...data.data].sort((a: any, b: any) => {
+            const precioA = parseFloat(a.adv?.price || '0');
+            const precioB = parseFloat(b.adv?.price || '0');
+            return precioB - precioA; // Orden descendente (más caras primero)
+          });
+          
+          const top5MasCaras = anunciosOrdenados.slice(0, 5); // Top 5 ofertas más caras
+          const precios = top5MasCaras
+            .map((anuncio: any) => {
+              if (anuncio.adv && anuncio.adv.price) {
+                return parseFloat(anuncio.adv.price);
+              }
+              return null;
+            })
+            .filter((precio: number | null): precio is number => precio !== null);
+          
+          if (precios.length > 0) {
+            // Calcular promedio de las top 5 tasas más caras
+            const promedio = precios.reduce((sum: number, precio: number) => sum + precio, 0) / precios.length;
+            console.log(`[Binance Rate] Calculated average from ${precios.length} highest offers: ${promedio.toFixed(2)} VES/USDT`);
+            console.log(`[Binance Rate] Prices used: ${precios.map(p => p.toFixed(2)).join(', ')}`);
+            return promedio;
           }
         }
         return null;
@@ -95,7 +114,9 @@ async function fetchBinanceRate(): Promise<number> {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'User-Agent': 'MornaProject/1.0'
+          'User-Agent': api.name === 'Binance-P2P-Direct' 
+            ? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            : 'MornaProject/1.0'
         },
         signal: AbortSignal.timeout(10000)
       };
@@ -145,14 +166,19 @@ async function fetchBinanceRate(): Promise<number> {
 // GET: Obtener tasa de cambio de Binance P2P
 export async function GET(request: NextRequest) {
   try {
+    // Verificar si se solicita forzar actualización (query param)
+    const { searchParams } = new URL(request.url);
+    const forceRefresh = searchParams.get('force') === 'true';
+    const tradeType = (searchParams.get('tradeType') as 'BUY' | 'SELL') || 'BUY';
+    
     // 1. Intentar obtener de APIs externas primero
     let apiRate: number | null = null;
-    let apiSource = 'Binance P2P';
+    let apiSource = tradeType === 'SELL' ? 'Binance P2P (Venta)' : 'Binance P2P';
     let apiError: any = null;
 
     try {
-      apiRate = await fetchBinanceRate();
-      console.log(`✅ [Binance Rate API] Success: ${apiRate} VES/USDT`);
+      apiRate = await fetchBinanceRate(tradeType);
+      console.log(`✅ [Binance Rate API] Success (${tradeType}): ${apiRate} VES/USDT`);
     } catch (error) {
       apiError = error;
       console.error('❌ [Binance Rate API] All external APIs failed:', error);
